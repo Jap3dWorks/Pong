@@ -7,46 +7,43 @@
 #include "Scene.h"
 #include "Level.h"
 
-
 #include <iostream>
-#include <string>
-#include <vector>
-#include <map>
 
 
+// TODO:
 int main()
 {
-	
-	constexpr int case_id = 2;
 
-	switch (case_id)
-	{
-	case 0:
-		{
-			Pong::Level  lvl1;
-			lvl1.run();
-			break;
-		}
+    constexpr int case_id = 1;
 
-	case 1:
-		{
-			std::cout << "case1, TestLevel\n";
-			Pong::TestLevel t_lvl;
-			t_lvl.run();
-			break;
-		}
+    switch (case_id)
+    {
+    case 0:
+        {
+            Pong::Level  lvl1;
+            lvl1.run();
+            break;
+        }
 
-	case 2:
-		{
-			Pong::PBRLevel pbr_lvl;
-			pbr_lvl.run();
-			break;
-		}
+    case 1:
+        {
+            std::cout << "case1, TestLevel\n";
+            Pong::TestLevel t_lvl;
+            t_lvl.run();
+            break;
+        }
 
-	default:
-		break;
-	
-	}
+    case 2:
+        {
+            Pong::PBRLevel pbr_lvl;
+            pbr_lvl.run();
+            break;
+        }
 
-	return 0;
+    default:
+        break;
+
+    }
+
+    return 0;
 }
