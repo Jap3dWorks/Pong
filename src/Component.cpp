@@ -4,18 +4,18 @@
 #include <time.h>
 
 namespace Pong {
-	void BallCollisionComponent::at_collision(Collider* other)
-	{
-		// Get ball actor
-		ABall* ball = static_cast<ABall*>(collider->actor);
-		SphereCollider* sphere_coll = static_cast<SphereCollider*>(collider);
+    void BallCollisionComponent::at_collision(Collider*& owner, Collider*& other)
+    {
+        // Get ball actor
+        auto* ball = static_cast<ABall*>(owner->actor);
+        auto* sphere_coll = static_cast<SphereCollider*>(owner);
 
-		const CollisionData* coll_data = other->get_collision_data();
-		// move ball out of collition zone
-		glm::vec3 ball_pnt = ball->getTransform()[3];
-		
-		// add radius data		
-		glm::vec3 intrs = glm::vec3(ball_pnt - coll_data->point);
+        const CollisionData* coll_data = other->get_collision_data();
+        // move ball out of collition zone
+        glm::vec3 ball_pnt = ball->getTransform()[3];
+
+        // add radius data
+        auto intrs = glm::vec3(ball_pnt - coll_data->point);
 
         glm::vec3 radius_vec = coll_data->normal * sphere_coll->getRadius();
         LOG_DEBUG("--" + other->getName() + "--");
@@ -29,46 +29,46 @@ namespace Pong {
         LOG_DEBUG("id collision: " << coll_data->face_id);
 
         // add 0.01 normal value, to avoid double collisions
-		glm::vec3 ajust_vec = intrs - radius_vec + coll_data->normal * 0.01f;
+        glm::vec3 ajust_vec = intrs - radius_vec + coll_data->normal * 0.01f;
 
-		// multiply ajust vector by 1.5 to avoid double collisions.
-		ball->setTransform(glm::translate(ball->getTransform(), ajust_vec * 1.1f));
+        // multiply ajust vector by 1.5 to avoid double collisions.
+        ball->setTransform(glm::translate(ball->getTransform(), ajust_vec * 1.1f));
 
-		// reflect direction
-		glm::vec3 collide_direction = glm::reflect(ball->getDirection(), coll_data->normal);
+        // reflect direction
+        glm::vec3 collide_direction = glm::reflect(ball->getDirection(), coll_data->normal);
 
-		if (dynamic_cast<APlayer*>(other->actor))
- 		{
-			APlayer* other_actor = static_cast<APlayer*>(other->actor);
-			collide_direction += other_actor->get_vector_director() * 30.f;  // player affecting ball direction
-			ball->setVelocity(ball->getVelocity() + 0.5);
-		}
+        if (dynamic_cast<APlayer*>(other->actor))
+        {
+            auto* other_actor = static_cast<APlayer*>(other->actor);
+            collide_direction += other_actor->get_vector_director() * 30.f;  // player affecting ball direction
+            ball->setVelocity(ball->getVelocity() + 0.5);
+        }
 
-		ball->set_direction(collide_direction);
-	}
+        ball->set_direction(collide_direction);
+    }
 
-	// BorderCollisionComponent
-	// ------------------------
-	void BorderCollisionComponent::at_collision(Collider* other)
-	{
-		ABall* ball = dynamic_cast<ABall*>(other->getActor());
+    // BorderCollisionComponent
+    // ------------------------
+    void BorderCollisionComponent::at_collision(Collider*& owner, Collider*& other)
+    {
+        ABall* ball = dynamic_cast<ABall*>(other->getActor());
 
-		if (ball)
-		{
-			glm::mat4 b_trnsform = ball->getTransform();
-			b_trnsform[3] = glm::vec4(0, 0, 0, 1);
-			ball->setTransform(b_trnsform);
-//			cout_matrix(b_trnsform);
-			// set a random direction
-			srand(time(NULL));
-			const double pi = 3.14159265358979323846;
-			float rand_angle =  2.f * pi * (rand() % 100) / 100.f;
+        if (ball)
+        {
+            glm::mat4 b_trnsform = ball->getTransform();
+            b_trnsform[3] = glm::vec4(0, 0, 0, 1);
+            ball->setTransform(b_trnsform);
 
-			float sin_val = sin(rand_angle);
-			float cos_val = cos(rand_angle);
+            // set a random direction
+            srand(time(nullptr));
+            const double pi = 3.14159265358979323846;
+            float rand_angle =  2.f * pi * (rand() % 100) / 100.f;
 
-			ball->set_direction(glm::vec3(cos_val, sin_val, 0));
-			ball->setVelocity(2.f);
-		}
-	}
+            float sin_val = sin(rand_angle);
+            float cos_val = cos(rand_angle);
+
+            ball->set_direction(glm::vec3(cos_val, sin_val, 0));
+            ball->setVelocity(2.f);
+        }
+    }
 }

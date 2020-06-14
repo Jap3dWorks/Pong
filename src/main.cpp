@@ -23,7 +23,7 @@ int main()
     case 0:
         {
             LOG_INFO("Case 0, Pong level")
-            Pong::Level  lvl1;
+            Pong::PongLevel  lvl1;
             lvl1.run();
             break;
         }

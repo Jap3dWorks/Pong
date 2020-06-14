@@ -37,7 +37,7 @@ namespace Pong {
 		virtual void run();
 	};
 
-	class Level: public AbstractLevel
+	class PongLevel: public AbstractLevel
 	{
 	public:
 		void _configInputs() override;

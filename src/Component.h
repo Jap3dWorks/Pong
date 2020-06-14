@@ -4,7 +4,7 @@
 //namespace Pong
 //{
 //    class Actor;
-////    class Collider;
+//    class Collider;
 //}
 
 #include "Actor.h"
@@ -28,21 +28,17 @@ namespace Pong {
     };
 
     // collision components
-    class CollisionComponent: public Component
-    {
+    class CollisionComponent: public Component {
     public:
-        virtual ~CollisionComponent() {
-            LOG_DEBUG("Collision component destructor");
-        }
+        virtual ~CollisionComponent() { LOG_DEBUG("Collision component destructor"); }
 
-        Collider* collider = nullptr;
-        virtual void at_collision(Collider* other) = 0;
+        virtual void at_collision(Collider *&owner, Collider *&other) = 0;
     };
 
 
     class BallCollisionComponent : public CollisionComponent {
     public:
-        void at_collision(Collider *other) override;
+        void at_collision(Collider*& owner, Collider*& other) override;
 
         virtual ~BallCollisionComponent() override {
             LOG_DEBUG("BallCollisionComponent destructor");
@@ -51,7 +47,7 @@ namespace Pong {
 
     class BorderCollisionComponent : public CollisionComponent {
     public:
-        void at_collision(Collider *other) override;
+        void at_collision(Collider*& owner, Collider*& other) override;
 
         virtual ~BorderCollisionComponent() override {
             LOG_DEBUG("BorderCollisionComponent destructor");
@@ -59,14 +55,14 @@ namespace Pong {
     };
 
     // actor components
-    class ActorComponent
-    {
+    class ActorComponent : public Component {
     public:
-        virtual ~ActorComponent()
-        {
+        virtual ~ActorComponent() {
             LOG_DEBUG("Actor component destructor");
         }
-        Actor* actor = nullptr;
+
+        virtual void at_init(Actor*& owner) = 0;
+        virtual void each_frame(Actor*& owner) = 0;
     };
 }
 #endif // COMPONENT_H

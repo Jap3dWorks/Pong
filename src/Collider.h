@@ -133,11 +133,7 @@ namespace Pong {
 
         /**
         Stores CollisionComponent object in collider data. TODO: move .cpp*/
-        void add_component(CollisionComponent* component)
-        {
-            component_list.push_back(component);
-            component->collider = this;
-        }
+        void add_component(CollisionComponent* component);
     };
 
 

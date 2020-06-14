@@ -209,6 +209,11 @@ namespace Pong {
 
     Actor* Collider::getActor() { return actor; }
 
+    void Collider::add_component(CollisionComponent *component)
+    {
+        component_list.push_back(component);
+    }
+
 
     // --box collider--
     // ----------------

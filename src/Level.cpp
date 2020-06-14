@@ -101,12 +101,12 @@ namespace Pong
                 {
                     for (CollisionComponent*& c : std::next(it, i)->second->component_list)
                     {
-                        c->at_collision(std::next(it, j)->second);
+                        c->at_collision(std::next(it, i)->second, std::next(it, j)->second);
                     }
 
                     for (CollisionComponent*& c : std::next(it, j)->second->component_list)
                     {
-                        c->at_collision(std::next(it, i)->second);
+                        c->at_collision(std::next(it, j)->second, std::next(it, i)->second);
                     }
                 }
             }
@@ -186,7 +186,7 @@ namespace Pong
 
     // Pong level
     // ----------
-    void Level::run()
+    void PongLevel::run()
     {
         // get camera
         Camera* camera = _scene->getCamera();
@@ -196,8 +196,6 @@ namespace Pong
         Shader blinn_shader(
                 "../shaders/blinn_v.glsl",
                 "../shaders/blinn_f.glsl");
-
-        LOG_DEBUG("shader memory " << &blinn_shader);
 
         Pong::Material material("blinn_mat", &blinn_shader, std::vector<Pong::Texture*>());
         material.set_param("glow", 64.f);
@@ -213,7 +211,7 @@ namespace Pong
         p1->setTransform(glm::translate(iniPos, glm::vec3(10.f, 0, 0)));
         p1->setMaterial(&material);
         p1->setScale(pScale);
-        LOG_DEBUG("Set collider");
+        LOG_DEBUG("Set collider p1_coll");
         p1->setCollider(_scene->createCollider<BoxCollider>("p1_coll"));
 
         auto* p2 = _scene->createActor<APlayer>("p2_ply");
@@ -221,6 +219,7 @@ namespace Pong
         p2->setTransform(glm::translate(iniPos, glm::vec3(-10.f, 0, 0)));
         p2->setMaterial(&material);
         p2->setScale(pScale);
+        LOG_DEBUG("Set collider p2_coll");
         p2->setCollider(_scene->createCollider<BoxCollider>("p2_coll"));
 
         // --config walls--
@@ -230,6 +229,7 @@ namespace Pong
         upper_wall->setTransform(glm::translate(iniPos, glm::vec3(0, 9, 0)));
         upper_wall->setMaterial(&material);
         upper_wall->setScale(wall_scale);
+        LOG_DEBUG("Set collider upper_wall_coll")
         upper_wall->setCollider(_scene->createCollider<BoxCollider>("upper_wall_coll"));
 
         auto* lower_wall = _scene->createActor<Actor>("lower_wall");
@@ -237,6 +237,7 @@ namespace Pong
         lower_wall->setTransform(glm::translate(iniPos, glm::vec3(0, -9, 0)));
         lower_wall->setMaterial(&material);
         lower_wall->setScale(wall_scale);
+        LOG_DEBUG("Set collider lower_wall_coll")
         lower_wall->setCollider(_scene->createCollider<BoxCollider>("lower_wall_coll"));
 
         // -- config out game area reset --
@@ -263,19 +264,22 @@ namespace Pong
         BorderCollisionComponent l_border_component;
         l_out_coll->add_component(&l_border_component);
 
-
         // --config ball--
         float radius = .75f;
         auto* ball = _scene->createActor<ABall>("ball");
         ball->set_direction(glm::vec3(1, 1, 0));
-        auto* ball_shp = _scene->createShape<IcosphereShape>("ball_shp");
-        ball_shp->setRadius(radius);
+
+//        auto* ball_shp = _scene->createShape<IcosphereShape>("ball_shp");
+//        ball_shp->setRadius(radius);
+//        ball->setShape(ball_shp);
+
+        ball->setShape(_scene->getShape("cube_shp"));
+
         auto* ball_col = _scene->createCollider<SphereCollider>("ball_col");
         ball_col->setRadius(radius);
-        ball->setShape(ball_shp);
         ball->setCollider(ball_col);
         ball->setMaterial(&material);
-        ball->setVelocity(10.f);
+        ball->setVelocity(1.f);
         BallCollisionComponent ball_component;
         ball_col->add_component(&ball_component);
 
@@ -286,19 +290,8 @@ namespace Pong
         mark_shp->setRadius(mark_r);
         mark->setShape(mark_shp);
         mark->setMaterial(&material);
-        // mark->setTransform(glm::translate(glm::mat4(1), pnt));
 
         // --config lighting--
-        // initial light positions 5 pl max
-        // scene->getPointLight(0)->position = glm::vec3(0.f, 0.f, 1.5f);
-        // scene->getPointLight(0)->color = glm::vec3(5.f, 5.f, 5.f);
-        // scene->getPointLight(1)->position = glm::vec3(-4.f, 0.5f, -3.f);
-        // scene->getPointLight(1)->color = glm::vec3(10.0f, 0.f, 0.f);
-        // scene->getPointLight(2)->position = glm::vec3(3.f, 0.5f, 1.f);
-        // scene->getPointLight(2)->color = glm::vec3(0.0f, 0.f, 15.f);
-        // scene->getPointLight(3)->position = glm::vec3(3.f, 0.5f, 1.f);
-        // scene->getPointLight(3)->color = glm::vec3(0.f, 5.f, 0.f);
-        // directional light values
         Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
@@ -322,6 +315,7 @@ namespace Pong
         {
             // pre-frame logic
             _render->calculate_deltaTime();
+
             // inputs
             _close_level();
             for (auto const &i : _inputList)
@@ -333,7 +327,6 @@ namespace Pong
 
             // --compute collisions--
             // implement here
-            // std::map<std::string, Collider*>::iterator it = _scene->_colliderMap.begin();
             auto it = _scene->collider_map.begin();
             for (int i = 0; i < _scene->collider_map.size() - 1; i++)
             {
@@ -343,12 +336,12 @@ namespace Pong
                     {
                         for (CollisionComponent*& c : std::next(it, i)->second->component_list)
                         {
-                            c->at_collision(std::next(it, j)->second);
+                            c->at_collision(std::next(it, i)->second, std::next(it, j)->second);
                         }
 
                         for (CollisionComponent*& c : std::next(it, j)->second->component_list)
                         {
-                            c->at_collision(std::next(it, i)->second);
+                            c->at_collision(std::next(it, j)->second, std::next(it, i)->second);
                         }
                     }
                 }
@@ -362,7 +355,7 @@ namespace Pong
             glm::mat4 view = camera->GetViewMatrix();
             glm::mat4 plane_model = glm::mat4(1);
             glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom),
-                (float)_render->SCR_WIDTH / (float)_render->SCR_HEIGHT,
+                (float)Pong::Render::SCR_WIDTH / (float)Pong::Render::SCR_HEIGHT,
                 0.1f,
                 10000.f);
 
@@ -374,20 +367,10 @@ namespace Pong
             blinn_shader.setVec3("directional.Color", directional_light->color);
             blinn_shader.setVec3("directional.Ambient", directional_light->ambient);
 
-            // set lighting uniforms
-            /*
-            for (unsigned int i = 0; i < Pong::Scene::POINT_LIGHTS; i++)
-            {
-                blinn_shader.setVec3("lights[" + std::to_string(i) + "].Position",
-                    scene->getPointLight->position(i));
-                blinn_shader.setVec3("lights[" + std::to_string(i) + "].Color",
-                    scene->getPointLight->color(i));
-            }
-            */
-
             // print actors
             for (const auto& kv : _scene->actor_map)
             {
+                LOG_DEBUG("Draw " + kv.second->getName())
                 kv.second->draw();
             }
 
@@ -399,7 +382,7 @@ namespace Pong
         LOG_DEBUG("Exit lvl");
     }
 
-    void Level::_configInputs()
+    void PongLevel::_configInputs()
     {
         // calls super class configinputs method
         AbstractLevel::_configInputs();
