@@ -1,4 +1,9 @@
 #include "Level.h"
+#include "logger.h"
+
+#include "Utils.h"
+
+#include <vector>
 #include <GLFW/glfw3.h>
 
 
@@ -51,7 +56,7 @@ namespace Pong
             glfwSwapBuffers(_render->getWindow());
             glfwPollEvents();
         }
-        std::cout << "Exit lvl\n";
+        LOG_DEBUG("Exit lvl");
     }
 
     void AbstractLevel::_close_level()
@@ -94,7 +99,6 @@ namespace Pong
             {
                 if (std::next(it, i)->second->collide(std::next(it, j)->second))
                 {
-                    // std::cout << "Collission!" << std::endl; // implement collision consequences
                     for (CollisionComponent*& c : std::next(it, i)->second->component_list)
                     {
                         c->at_collision(std::next(it, j)->second);
@@ -193,7 +197,7 @@ namespace Pong
                 "blinn_v.glsl",
                 "blinn_f.glsl");
 
-        std::cout << "shader memory " << &blinn_shader << std::endl;
+        LOG_DEBUG("shader memory " << &blinn_shader);
 
         Pong::Material material("blinn_mat", &blinn_shader, std::vector<Pong::Texture*>());
         material.set_param("glow", 64.f);
@@ -210,7 +214,7 @@ namespace Pong
         p1->setTransform(glm::translate(iniPos, glm::vec3(10.f, 0, 0)));
         p1->setMaterial(&material);
         p1->setScale(pScale);
-        std::cout << "Set collider\n";
+        LOG_DEBUG("Set collider");
         p1->setCollider(_scene->createCollider<BoxCollider>("p1_coll"));
 
         APlayer* p2 = _scene->createActor<APlayer>("p2_ply");
@@ -280,8 +284,6 @@ namespace Pong
         mark->setMaterial(&material);
         // mark->setTransform(glm::translate(glm::mat4(1), pnt));
 
-        //std::cout << "ball shape: " << ball_shp->getName() << std::endl;
-
         // --config lighting--
         // initial light positions 5 pl max
         // scene->getPointLight(0)->position = glm::vec3(0.f, 0.f, 1.5f);
@@ -306,7 +308,7 @@ namespace Pong
         // implement here
 
         // ------
-        std::cout << p1->getMaterial()->get_shader()->ID << " shader id\n";
+        LOG_DEBUG(p1->getMaterial()->get_shader()->ID << " shader id");
 
         glm::vec3 dir = glm::vec3(-1.f,0,0);
         float variation = 0.f;
@@ -335,7 +337,6 @@ namespace Pong
                 {
                     if (std::next(it, i)->second->collide(std::next(it, j)->second))
                     {
-                        // std::cout << "Collission!" << std::endl; // implement collision consequences
                         for (CollisionComponent*& c : std::next(it, i)->second->component_list)
                         {
                             c->at_collision(std::next(it, j)->second);
@@ -383,9 +384,7 @@ namespace Pong
             // print actors
             for (const auto& kv : _scene->actor_map)
             {
-                // std::cout << kv.first << ": " << kv.second->getName() << std::endl;
                 kv.second->draw();
-                // cout_matrix(kv.second->getTransform());
             }
 
             // clean buffers
@@ -393,7 +392,7 @@ namespace Pong
             glfwPollEvents();
         }
         // glfwTerminate();
-        std::cout << "Exit lvl\n";
+        LOG_DEBUG("Exit lvl");
     }
 
     void Level::_configInputs()
@@ -479,7 +478,7 @@ namespace Pong
         cube_01->setTransform(glm::translate(iniPos, glm::vec3(5,0,0)));
         cube_01->setMaterial(blinn_mat);
         cube_01->setScale(pScale);
-        std::cout << "Set collider\n";
+        LOG_DEBUG("Set collider");
         cube_01->setCollider(_scene->createCollider<BoxCollider>("cube_01_coll"));
 
         APlayer* cube_02 = _scene->createActor<APlayer>("cube_02");
@@ -520,7 +519,7 @@ namespace Pong
 
         glm::vec3 v_var(glm::mat3(_scene->getCamera()->GetViewMatrix()) * v_a);
 
-        cout_vector(v_var);
+//        cout_vector(v_var);
     }
 
     void TestLevel::_frame_calc()
@@ -535,7 +534,6 @@ namespace Pong
             }
             else
             {
-                std::cout << "start ray cast\n";
                 Camera* cam = _scene->getCamera();
                 //glm::mat4 cam_trns = cam->GetViewMatrix();
                 RayCast ray(glm::vec3(cam->Front.x, cam->Front.y, cam->Front.z),
@@ -549,8 +547,6 @@ namespace Pong
                 if (rcd.size())
                 {
                     sort_raycast_data(rcd, ray.position, 0, rcd.size() - 1);
-                    std::cout << rcd[0].face_id << std::endl;
-
                     draw_point(rcd[0].point);
                 }
             }
@@ -608,7 +604,7 @@ namespace Pong
         cube_01->setTransform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
         cube_01->setMaterial(pbr_mat);
         cube_01->setScale(pScale);
-        std::cout << "Set collider\n";
+        LOG_DEBUG("Set collider");
         cube_01->setCollider(_scene->createCollider<BoxCollider>("cube_01_coll"));
 
         APlayer* cube_02 = _scene->createActor<APlayer>("cube_02");

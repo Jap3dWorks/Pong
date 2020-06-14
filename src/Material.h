@@ -1,63 +1,66 @@
-#ifndef MATERIAL
-#define MATERIAL
+//#include "pongTypes.h"
+
+#ifndef MATERIAL_H
+#define MATERIAL_H
 
 #include "Shader_s.h"
+
 #include <iostream>
 #include <vector>
 #include <map>
 
 namespace Pong {
-	
-	class Texture
-	{
-		std::string _name;
-		int _Id;
-		std::string _path;
-		std::string _texture_type;
-	public:
-		Texture(std::string name, std::string path, std::string texture_type);
 
-		virtual ~Texture();
+    class Texture
+    {
+        std::string _name;
+        int _Id_texture;
+        std::string _path;
+        std::string _texture_type;
+    public:
+        Texture(std::string name, std::string path, std::string texture_type);
 
-		int get_id() { return _Id; }
-		std::string get_path() { return _path; }
-		std::string get_texture_type() { return _texture_type; }
-		std::string get_name() { return _name; }
-	};
+        virtual ~Texture();
 
-	class Material
-	{
-	private:
-		bool _is_setup = false;
+        int get_id() { return _Id_texture; }
+        std::string get_path() { return _path; }
+        std::string get_texture_type() { return _texture_type; }
+        std::string get_name() { return _name; }
+    };
 
-		void _setup_material();
+    class Material
+    {
+    private:
+        bool _is_setup = false;
 
-		std::map<std::string, float> _float_params;
-		std::map<std::string, int> _int_params;
-		std::map<std::string, glm::vec3> _vec3_params;
-		std::map<std::string, glm::mat4> _mat4_params;
+        void _setup_material();
 
-	protected:
-		Shader* _shader;
-		std::vector<Texture*> _textures;
-		std::string _name;
+        std::map<std::string, float> _float_params;
+        std::map<std::string, int> _int_params;
+        std::map<std::string, glm::vec3> _vec3_params;
+        std::map<std::string, glm::mat4> _mat4_params;
 
-	public:
-		Material(std::string name, Shader* shader, std::vector<Texture*> textures);
+    protected:
+        Shader* _shader;
+        std::vector<Texture*> _textures;
+        std::string _name;
 
-		virtual ~Material();
+    public:
+        Material(std::string name, Shader* shader, std::vector<Texture*> textures);
 
-		Shader* get_shader();
+        virtual ~Material();
 
-		void set_param(std::string, float);
-		void set_param(std::string, glm::vec3);
-		void set_param(std::string, int);
-		void set_param(std::string, glm::mat4);
+        Shader* get_shader();
 
-		virtual void use();
+        void set_param(std::string, float);
+        void set_param(std::string, glm::vec3);
+        void set_param(std::string, int);
+        void set_param(std::string, glm::mat4);
 
-		virtual void end_use();
-		/// unbind textures
-	};
+        virtual void use();
+
+        virtual void end_use();
+        /// unbind textures
+    };
 }
-#endif // !MATERIAL
+#endif // !MATERIAL_H

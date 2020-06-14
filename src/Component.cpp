@@ -1,13 +1,13 @@
 #include "Component.h"
-#include <time.h>
 #include "Utils.h"
+
+#include <time.h>
 
 namespace Pong {
 	void BallCollisionComponent::at_collision(Collider* other)
 	{
 		// Get ball actor
 		ABall* ball = static_cast<ABall*>(collider->actor);
-		//IcosphereShape* ball_shpe = static_cast<IcosphereShape*>(ball->getShape());
 		SphereCollider* sphere_coll = static_cast<SphereCollider*>(collider);
 
 		const CollisionData* coll_data = other->get_collision_data();
@@ -17,17 +17,18 @@ namespace Pong {
 		// add radius data		
 		glm::vec3 intrs = glm::vec3(ball_pnt - coll_data->point);
 
-		glm::vec3 radius_vec = coll_data->normal * sphere_coll->getRadius();
-		std::cout << "--" << other->getName() << "--\n";
-		std::cout << "Normal collision: " << coll_data->normal.x << ", " <<
-			coll_data->normal.y << "," << coll_data->normal.z << std::endl;
+        glm::vec3 radius_vec = coll_data->normal * sphere_coll->getRadius();
+        LOG_DEBUG("--" + other->getName() + "--");
 
-		std::cout << "Point collision: " << coll_data->point.x << ", " <<
-			coll_data->point.y << ", " << coll_data->point.z << std::endl;
+        LOG_DEBUG("Normal collision: " << coll_data->normal.x << ", " <<
+                                       coll_data->normal.y << "," << coll_data->normal.z);
 
-		std::cout << "id collision: " << coll_data->face_id << std::endl;
+        LOG_DEBUG("Point collision: " << coll_data->point.x << ", " <<
+                                      coll_data->point.y << ", " << coll_data->point.z);
 
-		// add 0.01 normal value, to avoid double collisions
+        LOG_DEBUG("id collision: " << coll_data->face_id);
+
+        // add 0.01 normal value, to avoid double collisions
 		glm::vec3 ajust_vec = intrs - radius_vec + coll_data->normal * 0.01f;
 
 		// multiply ajust vector by 1.5 to avoid double collisions.
@@ -57,7 +58,7 @@ namespace Pong {
 			glm::mat4 b_trnsform = ball->getTransform();
 			b_trnsform[3] = glm::vec4(0, 0, 0, 1);
 			ball->setTransform(b_trnsform);
-			cout_matrix(b_trnsform);
+//			cout_matrix(b_trnsform);
 			// set a random direction
 			srand(time(NULL));
 			const double pi = 3.14159265358979323846;

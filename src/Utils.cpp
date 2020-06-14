@@ -1,7 +1,24 @@
 #include "Utils.h"
+#include "logger.h"
+
+//namespace Pong
+//{
+//    class Scene;
+//    class Shader;
+//    class Material;
+//    class AKinetic;
+//    class IcosphereShape;
+//}
+
+#include "Actor.h"
+#include "Scene.h"
+#include "Shader_s.h"
+#include "Material.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
+
+#include <string>
 
 // utility to load textures
 unsigned int loadTexture(char const *path, const bool &gammaCorrection)
@@ -49,7 +66,7 @@ unsigned int loadTexture(char const *path, const bool &gammaCorrection)
     }
     else
     {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
+        LOG_WARNING("Texture failed to load at path: " << path);
         stbi_image_free(data);
     }
 
@@ -70,12 +87,6 @@ void cout_matrix(const glm::mat4 &matrix)
     std::cout << std::endl;
 }
 
-
-void cout_vector(glm::vec3 &vector)
-{
-    std::cout << vector.x << ", " << vector.y << ", " << vector.z << std::endl;
-}
-
 namespace Pong {
     void draw_point(glm::vec3 point)
     {
@@ -87,7 +98,6 @@ namespace Pong {
         while (true)
         {
             std::string try_nme = pnt_nme + std::to_string(number);
-            //std::cout << "try name-> " << try_nme << std::endl;
             if (scene->actor_map.find(try_nme) == scene->actor_map.end())
             {
                 pnt_nme = try_nme;
@@ -114,7 +124,7 @@ namespace Pong {
 
         s_point->setRadius(0.05f);
 
-        std::cout << "Point created-> " << pnt_nme << " at-> " << point.x << ", " << point.y <<
-            ", " << point.z  << std::endl;
+        LOG_DEBUG("Point created-> " << pnt_nme << " at-> " <<
+                                     point.x << ", " << point.y << ", " << point.z);
     }
 }

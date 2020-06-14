@@ -1,6 +1,5 @@
-
-#ifndef PACTION
-#define PACTION
+#ifndef P_ACTION_H
+#define P_ACTION_H
 
 namespace Pong {
 	/**
@@ -22,4 +21,4 @@ namespace Pong {
 		void reload(){active = true;}
 	};
 }
-#endif // !PACTION
+#endif // !P_ACTION_H

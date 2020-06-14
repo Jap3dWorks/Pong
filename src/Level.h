@@ -1,15 +1,14 @@
+#ifndef PONG_LEVEL
+#define PONG_LEVEL
+
 #include "pongTypes.h"
+
 #include "Scene.h"
 #include "Shape.h"
 #include "Actor.h"
 #include "Render.h"
 #include "processInput.h"
 #include <time.h>
-#include "Utils.h"
-
-
-#ifndef PONG_LEVEL
-#define PONG_LEVEL
 
 // specific config of a level
 namespace Pong {

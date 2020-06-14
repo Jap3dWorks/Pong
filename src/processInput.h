@@ -1,13 +1,13 @@
-#include <GLFW/glfw3.h>
+#ifndef PROCESS_INPUT_H
+#define PROCESS_INPUT_H
+
 #include "pongTypes.h"
 #include "Actor.h"
-#include "camera.h"
+//#include "Camera.h"
 
 #include <iostream>
+#include <GLFW/glfw3.h>
 #include <map>
-
-#ifndef PROCESS_INPUT
-#define PROCESS_INPUT
 
 namespace Pong {
 	/*
@@ -44,4 +44,4 @@ namespace Pong {
 		}
 	};
 }
-#endif // !PROCESS_INPUT
+#endif // !PROCESS_INPUT_H

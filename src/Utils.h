@@ -1,7 +1,7 @@
-#ifndef UTILS
-#define UTILS
+#ifndef UTILS_H
+#define UTILS_H
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,39 +10,32 @@
 #include <iostream>
 #include <vector>
 
-#include "Scene.h"
-#include "Actor.h"
-
 // utility to load textures
 unsigned int loadTexture(char const *path, const bool &gammaCorrection);
 
 
-void cout_matrix(const glm::mat4 &matrix);
+inline void cout_matrix(const glm::mat4 &matrix);
 
 
 template<typename T>
-void cout_buffer(const std::vector<T> v, int col)
+inline void cout_buffer(const std::vector<T> v, int col)
 {
-	for (int i = 0; i < v.size() / col; i++) 
-	{
+    for (int i = 0; i < v.size() / col; i++)
+    {
 
-		for (int j = 0; j < col; j++)
-		{
-			std::cout << v[(i*col) + j] << " | " << std::flush;
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-
+        for (int j = 0; j < col; j++)
+        {
+            std::cout <<  << std::flush;
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 
-void cout_vector(glm::vec3 &vector);
-
+//inline void cout_vector(glm::vec3 &vector);
 
 namespace Pong {
-	void draw_point(glm::vec3 point);
-
-
+    void draw_point(glm::vec3 point);
 }
-#endif // !UTILS
+#endif // !UTILS_H
 

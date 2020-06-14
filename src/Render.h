@@ -1,42 +1,44 @@
-#ifndef RENDER
-#define RENDER
+#ifndef RENDER_H
+#define RENDER_H
 
-#include "glad/glad.h"
+#include "pongTypes.h"
+
+#include <stb_image.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "stb_image.h"
 
 namespace Pong {
-	class Render
-	{
-	private:
-		// last frame member
-		float  _last_frame = 0;
+    class Render
+    {
+    private:
+        // last frame member
+        float  _last_frame = 0;
 
-		// draw scene class, SINGLETON
-		GLFWwindow* _window;
+        // draw scene class, SINGLETON
+        GLFWwindow* _window;
 
-		static Render* instance;
+        static Render* instance;
 
-		static void _framebuffer_size_callback(GLFWwindow* window, int width, int height);
+        static void _framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-		Render();
+        Render();
 
-	public:
-		static const unsigned int SCR_WIDTH = 1280;
-		static const unsigned int SCR_HEIGHT = 720;
+    public:
+        static const unsigned int SCR_WIDTH = 1280;
+        static const unsigned int SCR_HEIGHT = 720;
 
-		// time variables
-		static float DeltaTime;
+        // time variables
+        static float DeltaTime;
 
-		void calculate_deltaTime();
+        void calculate_deltaTime();
 
-		static Render* getInstance();
+        static Render* getInstance();
 
-		GLFWwindow* getWindow();
+        GLFWwindow* getWindow();
 
-		virtual ~Render();
-	};
+        virtual ~Render();
+    };
 }
 
-#endif // !RENDER
+#endif // !RENDER_H
