@@ -1,7 +1,7 @@
 #ifndef PROCESS_INPUT_H
 #define PROCESS_INPUT_H
 
-#include "pongTypes.h"
+#include "Movements.h"
 #include "Actor.h"
 //#include "Camera.h"
 

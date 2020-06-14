@@ -1,7 +1,7 @@
 #ifndef PONG_LEVEL
 #define PONG_LEVEL
 
-#include "pongTypes.h"
+#include "Movements.h"
 
 #include "Scene.h"
 #include "Shape.h"

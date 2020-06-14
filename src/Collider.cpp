@@ -200,10 +200,10 @@ namespace Pong {
     Collider::~Collider()
     {
         // Remove component ptrs
-        for (const auto &c : component_list)
-        {
-            delete c;
-        }
+//        for (const auto &c : component_list)
+//        {
+//            delete c;
+//        }
         delete _collision_data;
     }
 

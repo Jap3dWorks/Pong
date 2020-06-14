@@ -6,7 +6,7 @@ namespace Pong
     class Component;
 }
 
-#include "pongTypes.h"
+#include "Movements.h"
 
 #include "Shape.h"
 #include "Material.h"
@@ -83,7 +83,7 @@ namespace Pong {
         AKinetic(std::string name): Actor(name){}
         AKinetic(std::string name, glm::vec3 vector_director);
 
-        virtual ~AKinetic() { std::cout << "AKinetic destructor\n"; }
+        virtual ~AKinetic();
 
         virtual void update(float delta_time);
 
@@ -110,13 +110,13 @@ namespace Pong {
         bool _key_pressed = false;
 
     public:
-        APlayer(std::string name):AKinetic(name)
+        explicit APlayer(std::string name):AKinetic(std::move(name))
         {
             _base_drag = 0.5f;
             _base_speed = 0.1f;
             direction = glm::vec3{ 0.f, 1.f, 0.f };
         }
-        virtual ~APlayer() { std::cout << "APlayer destructor\n"; }
+        virtual ~APlayer();
 
         void update(float delta_time) override;
 
@@ -133,11 +133,14 @@ namespace Pong {
             glm::vec3 start_position=glm::vec3()) :
             AKinetic(name, vector_director){}
 
-        virtual ~ABall() { std::cout << "ABall destructor\n"; }
+        virtual ~ABall();
     };
 
     // --Camera--
     // ----------
+    /**
+    Camera Actor type preconfigured with input keyboard
+     */
     class Camera : public Actor {
     public:
         static const float YAW;
@@ -147,11 +150,11 @@ namespace Pong {
         static const float ZOOM;
 
         // camera attributes
-        glm::vec3 Position;
+        glm::vec3 Position{};
         glm::vec3 Front;
-        glm::vec3 Up;
-        glm::vec3 Right;
-        glm::vec3 WorldUp;
+        glm::vec3 Up{};
+        glm::vec3 Right{};
+        glm::vec3 WorldUp{};
 
         // Euler angles
         float Yaw;
@@ -162,7 +165,9 @@ namespace Pong {
         float MouseSensitivity;
         float Zoom;
 
-        // constructor with vectors
+        /**
+            Constructor using glm::vec3
+            */
         Camera(std::string name,
                glm::vec3 position = glm::vec3(0.f, 0.f, 0.f),
                glm::vec3 up = glm::vec3(0.f, 1.f, 0.f),
@@ -171,7 +176,7 @@ namespace Pong {
                                       MovementSpeed(SPEED),
                                       MouseSensitivity(SENSITIVITY),
                                       Zoom(ZOOM),
-                                      Actor(name) {
+                                      Actor(std::move(name)) {
             Position = position;
             WorldUp = up;
             Yaw = yaw;

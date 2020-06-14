@@ -81,10 +81,10 @@ namespace Pong
             {GLFW_KEY_E, Pong::Movements::UP},
             {GLFW_KEY_Q, Pong::Movements::DOWN}
         };
-        _inputList.push_back(Pong::ProcessInput(
+        _inputList.emplace_back(
             _scene->getCamera(),
             camMap,
-            render->getWindow()));
+            render->getWindow());
     }
 
     void AbstractLevel::_frame_collisions()
@@ -133,7 +133,7 @@ namespace Pong
     {
         shader->setMat4("view", _scene->getCamera()->GetViewMatrix());
         shader->setMat4("projection", glm::perspective(glm::radians(_scene->getCamera()->Zoom),
-            (float)_render->SCR_WIDTH / (float)_render->SCR_HEIGHT,
+            (float)Pong::Render::SCR_WIDTH / (float)Pong::Render::SCR_HEIGHT,
             0.1f,
             10000.f));
 
@@ -143,7 +143,7 @@ namespace Pong
         shader->setVec3("directional.Ambient", _scene->getDirectionalLight()->ambient);
 
         // points lights
-        for (unsigned int i = 0; i < _scene->POINT_LIGHTS; ++i)
+        for (unsigned int i = 0; i < Pong::Scene::POINT_LIGHTS; ++i)
         {
             shader->setVec3("pointLightPositions[" + std::to_string(i) + "]",
                     _scene->get_point_light(i).position);
@@ -160,7 +160,7 @@ namespace Pong
         for (int i = 0; i < _scene->actor_map.size(); i++)
         {
             // try to update only kinetic actors
-            std::next(it, i)->second->update(_render->DeltaTime);  // implement update >> actor
+            std::next(it, i)->second->update(Pong::Render::DeltaTime);
         }
     }
 
@@ -194,8 +194,8 @@ namespace Pong
 
         // build and compile the shader program
         Shader blinn_shader(
-                "blinn_v.glsl",
-                "blinn_f.glsl");
+                "../shaders/blinn_v.glsl",
+                "../shaders/blinn_f.glsl");
 
         LOG_DEBUG("shader memory " << &blinn_shader);
 
@@ -204,12 +204,11 @@ namespace Pong
         material.set_param("specular", 0.85f);
         material.set_param("surfaceColor", glm::vec3{ 0.3,0.3,0.5 });
 
-        // --config scene--
         // --config players--
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(0.5f, 2.5f, 0.5f);
 
-        APlayer* p1 = _scene->createActor<APlayer>("p1_ply");
+        auto* p1 = _scene->createActor<APlayer>("p1_ply");
         p1->setShape(_scene->createShape<CubeShape>("cube_shp"));
         p1->setTransform(glm::translate(iniPos, glm::vec3(10.f, 0, 0)));
         p1->setMaterial(&material);
@@ -217,7 +216,7 @@ namespace Pong
         LOG_DEBUG("Set collider");
         p1->setCollider(_scene->createCollider<BoxCollider>("p1_coll"));
 
-        APlayer* p2 = _scene->createActor<APlayer>("p2_ply");
+        auto* p2 = _scene->createActor<APlayer>("p2_ply");
         p2->setShape(_scene->getShape("cube_shp"));
         p2->setTransform(glm::translate(iniPos, glm::vec3(-10.f, 0, 0)));
         p2->setMaterial(&material);
@@ -226,14 +225,14 @@ namespace Pong
 
         // --config walls--
         glm::vec3 wall_scale = glm::vec3(20, 5, 5);
-        Actor* upper_wall = _scene->createActor<Actor>("upper_wall");
+        auto* upper_wall = _scene->createActor<Actor>("upper_wall");
         upper_wall->setShape(_scene->createShape<CubeShape>("wall_shp"));
         upper_wall->setTransform(glm::translate(iniPos, glm::vec3(0, 9, 0)));
         upper_wall->setMaterial(&material);
         upper_wall->setScale(wall_scale);
         upper_wall->setCollider(_scene->createCollider<BoxCollider>("upper_wall_coll"));
 
-        Actor* lower_wall = _scene->createActor<Actor>("lower_wall");
+        auto* lower_wall = _scene->createActor<Actor>("lower_wall");
         lower_wall->setShape(_scene->getShape("wall_shp"));
         lower_wall->setTransform(glm::translate(iniPos, glm::vec3(0, -9, 0)));
         lower_wall->setMaterial(&material);
@@ -242,43 +241,48 @@ namespace Pong
 
         // -- config out game area reset --
         glm::vec3 out_scale = glm::vec3(5, 20, 20);
-        Actor* right_outGame = _scene->createActor<Actor>("right_outGame");
+        auto* right_outGame = _scene->createActor<Actor>("right_outGame");
         //right_outGame->setShape(_scene->createShape<CubeShape>("out_shp"));
         right_outGame->setTransform(glm::translate(iniPos, glm::vec3(13, 0, 0)));
         right_outGame->setMaterial(&material);
         right_outGame->setScale(out_scale);
-        BoxCollider* r_out_coll = _scene->createCollider<BoxCollider>("right_out_coll");
+        auto* r_out_coll = _scene->createCollider<BoxCollider>("right_out_coll");
         right_outGame->setCollider(r_out_coll);
-        r_out_coll->add_component<BorderCollisionComponent>();
 
-        Actor* left_outGame = _scene->createActor<Actor>("left_outGame");
+        BorderCollisionComponent r_border_component;
+        r_out_coll->add_component(&r_border_component);
+
+        auto* left_outGame = _scene->createActor<Actor>("left_outGame");
         //left_outGame->setShape(_scene->getShape("out_shp"));
         left_outGame->setTransform(glm::translate(iniPos, glm::vec3(-13, 0, 0)));
         left_outGame->setMaterial(&material);
         left_outGame->setScale(out_scale);
-        BoxCollider* l_out_coll = _scene->createCollider<BoxCollider>("left_out_coll");
+        auto* l_out_coll = _scene->createCollider<BoxCollider>("left_out_coll");
         left_outGame->setCollider(l_out_coll);
-        l_out_coll->add_component<BorderCollisionComponent>();
+
+        BorderCollisionComponent l_border_component;
+        l_out_coll->add_component(&l_border_component);
 
 
         // --config ball--
         float radius = .75f;
-        ABall* ball = _scene->createActor<ABall>("ball");
+        auto* ball = _scene->createActor<ABall>("ball");
         ball->set_direction(glm::vec3(1, 1, 0));
-        IcosphereShape* ball_shp = _scene->createShape<IcosphereShape>("ball_shp");
+        auto* ball_shp = _scene->createShape<IcosphereShape>("ball_shp");
         ball_shp->setRadius(radius);
-        SphereCollider* ball_col = _scene->createCollider<SphereCollider>("ball_col");
+        auto* ball_col = _scene->createCollider<SphereCollider>("ball_col");
         ball_col->setRadius(radius);
         ball->setShape(ball_shp);
         ball->setCollider(ball_col);
         ball->setMaterial(&material);
         ball->setVelocity(10.f);
-        ball_col->add_component<BallCollisionComponent>();
+        BallCollisionComponent ball_component;
+        ball_col->add_component(&ball_component);
 
         // --test rt--
         float mark_r = .5f;
-        AKinetic* mark = _scene->createActor<AKinetic>("mark");
-        IcosphereShape* mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
+        auto* mark = _scene->createActor<AKinetic>("mark");
+        auto* mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
         mark_shp->setRadius(mark_r);
         mark->setShape(mark_shp);
         mark->setMaterial(&material);
@@ -323,9 +327,9 @@ namespace Pong
             for (auto const &i : _inputList)
                 i(Pong::Render::DeltaTime);
 
-            p1->update(_render->DeltaTime);
-            p2->update(_render->DeltaTime);
-            ball->update(_render->DeltaTime);
+            p1->update(Pong::Render::DeltaTime);
+            p2->update(Pong::Render::DeltaTime);
+            ball->update(Pong::Render::DeltaTime);
 
             // --compute collisions--
             // implement here
@@ -411,10 +415,10 @@ namespace Pong
             {GLFW_KEY_E, Pong::Movements::UP},
             {GLFW_KEY_Q, Pong::Movements::DOWN}
         };
-        _inputList.push_back(Pong::ProcessInput(
+        _inputList.emplace_back(
             _scene->getCamera(),
             camMap,
-            render->getWindow()));
+            render->getWindow());
 
         // p1 inputs
         std::map<int, Pong::Movements> p1Map =
@@ -422,10 +426,10 @@ namespace Pong
             {GLFW_KEY_O, Pong::Movements::UP },
             {GLFW_KEY_L, Pong::Movements::DOWN}
         };
-        _inputList.push_back(Pong::ProcessInput(
+        _inputList.emplace_back(
             _scene->getActor("p1_ply"),
             p1Map,
-            render->getWindow()));
+            render->getWindow());
 
         // p2 inputs
         std::map<int, Pong::Movements> p2Map =
@@ -433,10 +437,10 @@ namespace Pong
             {GLFW_KEY_U, Pong::Movements::UP},
             {GLFW_KEY_J, Pong::Movements::DOWN}
         };
-        _inputList.push_back(Pong::ProcessInput(
+        _inputList.emplace_back(
             _scene->getActor("p2_ply"),
             p2Map,
-            render->getWindow()));
+            render->getWindow());
     }
 
 

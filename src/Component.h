@@ -1,11 +1,11 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-namespace Pong
-{
-    class Actor;
-    class Collider;
-}
+//namespace Pong
+//{
+//    class Actor;
+////    class Collider;
+//}
 
 #include "Actor.h"
 #include "Collider.h"
@@ -40,21 +40,20 @@ namespace Pong {
     };
 
 
-    class BallCollisionComponent : public CollisionComponent
-    {
-        void at_collision(Collider* other) override;
+    class BallCollisionComponent : public CollisionComponent {
+    public:
+        void at_collision(Collider *other) override;
 
-        virtual ~BallCollisionComponent()
-        {
+        virtual ~BallCollisionComponent() override {
             LOG_DEBUG("BallCollisionComponent destructor");
         }
     };
 
-    class BorderCollisionComponent : public CollisionComponent
-    {
-        void at_collision(Collider* other) override;
-        virtual ~BorderCollisionComponent()
-        {
+    class BorderCollisionComponent : public CollisionComponent {
+    public:
+        void at_collision(Collider *other) override;
+
+        virtual ~BorderCollisionComponent() override {
             LOG_DEBUG("BorderCollisionComponent destructor");
         }
     };

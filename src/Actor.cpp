@@ -56,7 +56,10 @@ namespace Pong {
         _velocity = glm::length(vector_director);
     }
 
-    void AKinetic::update(float delta_time) {
+    AKinetic::~AKinetic() noexcept {LOG_DEBUG("AKinetic destructor");}
+
+    void AKinetic::update(float delta_time)
+    {
         _vector_director = direction * _velocity;
         _transform = glm::translate(_transform, _vector_director * delta_time);
     }
@@ -96,6 +99,8 @@ namespace Pong {
         }
     }
 
+    APlayer::~APlayer() noexcept {LOG_DEBUG("APlayer destructor");}
+
     void APlayer::update(float delta_time) {
         _vector_director = direction * _velocity;
         _transform = glm::translate(_transform, _vector_director);
@@ -114,4 +119,5 @@ namespace Pong {
     const float Camera::SENSITIVITY = .25f;
     const float Camera::ZOOM = 45.0f;
 
+    ABall::~ABall() noexcept {LOG_DEBUG("ABall destructor");}
 }

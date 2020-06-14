@@ -5,14 +5,12 @@
 namespace Pong
 {
     class Actor;
-    class Collider;
     class CollisionComponent;
+    class Collider;
 }
-
 
 #include "Actor.h"
 #include "Component.h"
-#include "Collider.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -134,19 +132,11 @@ namespace Pong {
         Actor* getActor();
 
         /**
-        This method creates a CollisionComponent object and save it in component_list.
-        class destructor will delete pointers at the end.*/
-        template<typename T>
-        T* add_component()
+        Stores CollisionComponent object in collider data. TODO: move .cpp*/
+        void add_component(CollisionComponent* component)
         {
-            if (!std::is_base_of<CollisionComponent, T>::value)
-            {
-                return nullptr;
-            }
-            T* component = new T;
             component_list.push_back(component);
             component->collider = this;
-            return component;
         }
     };
 

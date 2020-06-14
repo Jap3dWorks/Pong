@@ -1,7 +1,7 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include "pongTypes.h"
+#include "Movements.h"
 
 #include <stb_image.h>
 #include <glad/glad.h>
