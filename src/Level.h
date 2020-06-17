@@ -12,66 +12,72 @@
 
 // specific config of a level
 namespace Pong {
-	class AbstractLevel
-	{
-	protected:
-		Scene* _scene;
-		Render* _render;
-		std::vector<ProcessInput> _inputList;
+    class AbstractLevel
+    {
+    protected:
+        Scene* _scene;
+        Render* _render;
+        std::vector<ProcessInput> _inputList;
 
-		virtual void _configInputs();
+        virtual void _configInputs();
 
-		virtual void _close_level();  // close level inputs
-		virtual void _level_setup();
-		virtual void _frame_collisions();
-		virtual void _frame_calc();
-		virtual void _update_actors();
-		virtual void _frame_draw();
-		virtual void _components_start_level();
-		virtual void _update_shader(Shader* shader);
+        virtual void _close_level();  // close level inputs
+        virtual void _level_setup();
+        virtual void _frame_collisions();
+        virtual void _frame_calc();
+        virtual void _update_actors();
+        virtual void _frame_draw();
+        virtual void _components_start_level();
+        virtual void _update_shader(Shader* shader);
 
-	public:
-		AbstractLevel();
-		virtual ~AbstractLevel();
+    public:
+        AbstractLevel();
+        virtual ~AbstractLevel();
 
-		virtual void run();
-	};
+        virtual void run();
+    };
 
-	class PongLevel: public AbstractLevel
-	{
-	public:
-		void _configInputs() override;
-		void run() override;
-	};
+    class PongLevel: public AbstractLevel
+    {
+    public:
+        void _configInputs() override;
+        void run() override;
+    };
 
-	class TestLevel : public AbstractLevel
-	{
-	private:
-		float shot_delay;
+    class TestLevel : public AbstractLevel
+    {
+    private:
+        float shot_delay;
 
-	protected:
-		void _level_setup() override;
-		void _frame_calc() override;
+    protected:
+        void _level_setup() override;
+        void _frame_calc() override;
 
-		void _barycentric_tst();
-		//void _configInputs() override;
-	
-	public:
-		TestLevel()
-		{
-		}
-	};
+        void _barycentric_tst();
+        //void _configInputs() override;
 
-	class PBRLevel : public AbstractLevel
-	{
-	protected:
-		void _level_setup() override;
-		// void _frame_calc() override;
+    public:
+        TestLevel()
+        {
+        }
+    };
 
-	public:
-		PBRLevel()
-		{
-		}
-	};
+    class PBRLevel : public AbstractLevel
+    {
+    protected:
+        void _level_setup() override;
+        // void _frame_calc() override;
+
+    public:
+        PBRLevel()
+        {
+        }
+    };
+
+    class ModelLevel: public AbstractLevel
+    {
+    protected:
+        void _level_setup() override;
+    };
 }
 #endif // PONG_LEVEL

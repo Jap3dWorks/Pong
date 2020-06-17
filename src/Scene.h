@@ -22,7 +22,7 @@
 
 
 namespace Pong {
-    // todo move lights to its own file?
+    // todo move lights to its own file
     struct PointLight
     {
         glm::vec3 position = glm::vec3(0.f, 0.f, 0.f);

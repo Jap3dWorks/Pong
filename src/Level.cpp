@@ -443,6 +443,7 @@ namespace Pong
 
         Material* blinn_mat = _scene->createMaterial("blinn_mat", blinn_shd,
             std::vector<Pong::Texture*>());
+
         blinn_mat->set_param("glow", 64.f);
         blinn_mat->set_param("specular", 0.85f);
         blinn_mat->set_param("surfaceColor", glm::vec3{ 0.3,0.3,0.5 });
@@ -465,7 +466,6 @@ namespace Pong
         cube_01->setTransform(glm::translate(iniPos, glm::vec3(5,0,0)));
         cube_01->setMaterial(blinn_mat);
         cube_01->setScale(pScale);
-        LOG_DEBUG("Set collider");
         cube_01->setCollider(_scene->createCollider<BoxCollider>("cube_01_coll"));
 
         APlayer* cube_02 = _scene->createActor<APlayer>("cube_02");
@@ -512,7 +512,7 @@ namespace Pong
     void TestLevel::_frame_calc()
     {
         // shot markers
-        shot_delay += _render->DeltaTime;
+        shot_delay += Pong::Render::DeltaTime;
         if (shot_delay >= .2f
             && (glfwGetKey(_render->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS))
         {
@@ -539,14 +539,7 @@ namespace Pong
             }
             shot_delay = 0.f;
         }
-
     }
-
-    /*void TestLevel::_configInputs()
-    {
-        AbstractLevel::_configInputs();
-    }
-    */
 
 
     // PBRLevel
@@ -586,7 +579,7 @@ namespace Pong
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
-        APlayer* cube_01 = _scene->createActor<APlayer>("cube_01");
+        auto cube_01 = _scene->createActor<APlayer>("cube_01");
         cube_01->setShape(_scene->createShape<CubeShape>("cube_shp"));
         cube_01->setTransform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
         cube_01->setMaterial(pbr_mat);
@@ -594,7 +587,7 @@ namespace Pong
         LOG_DEBUG("Set collider");
         cube_01->setCollider(_scene->createCollider<BoxCollider>("cube_01_coll"));
 
-        APlayer* cube_02 = _scene->createActor<APlayer>("cube_02");
+        auto cube_02 = _scene->createActor<APlayer>("cube_02");
         cube_02->setShape(_scene->getShape("cube_shp"));
         cube_02->setTransform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
         cube_02->setMaterial(pbr_mat);
@@ -603,12 +596,12 @@ namespace Pong
 
         // --test rt--
         float mark_r = .5f;
-        AKinetic* mark = _scene->createActor<AKinetic>("mark");
-        IcosphereShape* mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
+        auto mark = _scene->createActor<AKinetic>("mark");
+        auto mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
         mark_shp->setRadius(mark_r);
         mark->setShape(mark_shp);
         mark->setMaterial(pbr_mat);
-        SphereCollider* m_coll = _scene->createCollider<SphereCollider>("mark_coll");
+        auto m_coll = _scene->createCollider<SphereCollider>("mark_coll");
         mark->setCollider(m_coll);
         m_coll->setRadius(mark_r);
 
@@ -621,5 +614,46 @@ namespace Pong
         // create point lights
         _scene->get_point_light(0).color = glm::vec3(10.f, 10.f, 10.f);
         _scene->get_point_light(0).position = glm::vec3(0.f, 0.f, 10.f);
+    }
+
+
+    // Model level
+    // -----------
+    void ModelLevel::_level_setup()
+    {
+        // get camera
+        Camera* camera = _scene->getCamera();
+        camera->Position = glm::vec3(0, 0, 9);
+
+        // build and compile the shader program
+        Shader* blinn_shd = _scene->create_shader("blinn_shd",
+                                                  "../shaders/blinn_V.glsl",
+                                                  "../shaders/blinn_F.glsl");
+
+        Material* blinn_mat = _scene->createMaterial("blinn_mat", blinn_shd,
+                                                     std::vector<Pong::Texture*>());
+
+        blinn_mat->set_param("glow", 64.f);
+        blinn_mat->set_param("specular", 0.85f);
+        blinn_mat->set_param("surfaceColor", glm::vec3{ 0.3,0.3,0.5 });
+
+        // --config scene--
+        glm::mat4 iniPos = glm::mat4(1);
+        glm::vec3 pScale(1.f, 1.f, 1.f);
+
+        auto sphere = _scene->createActor<Actor>("cube_02");
+        sphere->setShape(_scene->createShape<IcosphereShape>("cube_shp"));
+        sphere->setTransform(glm::translate(iniPos, glm::vec3(0.f, 0, 0)));
+        sphere->setMaterial(blinn_mat);
+        sphere->setScale(pScale);
+
+        // TODO if sphere doesn't has collider scene doesn't work
+        sphere->setCollider(_scene->createCollider<SphereCollider>("cube_02_coll"));
+
+        // --lighting--
+        Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
+        directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
+        directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
+        directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
     }
 }

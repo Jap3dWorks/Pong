@@ -3,13 +3,23 @@
 
 #include <stb_image.h>
 
+#include <utility>
 
-// TODO add glm
+
 namespace Pong {
 
     // --Shape--
     // ---------
-    Shape::Shape(std::string name) :_name(name) {}
+    Shape::Shape(std::string name) :_name(std::move(name)) {}
+
+    const float* Shape::getInterleavedVertices() const
+    { return _interleavedVertices.data(); }
+
+    unsigned int Shape::getInterleavedVertexSize() const
+    {return (unsigned int)_interleavedVertices.size() * sizeof(float);}
+
+    unsigned int Shape::getInterleavedVertexCount() const
+    { return getVertexCount(); }
 
     void Shape::_buildInterleavedVertices()
     {
@@ -44,10 +54,10 @@ namespace Pong {
 
         unsigned int VBO, EBO;
         // reset vertex array
-        glGenVertexArrays(1, &_VAO);
+        glGenVertexArrays(1, &VAO_id);
         glGenBuffers(1, &VBO);
 
-        glBindVertexArray(_VAO);
+        glBindVertexArray(VAO_id);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER,
@@ -56,7 +66,7 @@ namespace Pong {
             GL_STATIC_DRAW);
 
         // EBO object
-        if (_indices.size()) {
+        if (!_indices.empty()) {
             glGenBuffers(1, &EBO);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -100,7 +110,7 @@ namespace Pong {
 
     void Shape::draw() const
     {
-        glBindVertexArray(_VAO);
+        glBindVertexArray(VAO_id);
         // draw player
         if(_indices.size())
             glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, 0);
@@ -108,6 +118,25 @@ namespace Pong {
             glDrawArrays(GL_TRIANGLES, 0, getVertexCount());
         // detach vertex array
         glBindVertexArray(0);
+    }
+
+    void Shape::compute_face_normal(
+            const glm::vec3& vtx0, const glm::vec3& vtx1,
+            const glm::vec3& vtx2, glm::vec3& out_normal)
+    {
+        const float EPSILON = 0.000001f;
+
+        out_normal[0] = out_normal[1] = out_normal[2] = 0.f;
+
+        // edges v0-v1 v0-v2
+        glm::vec3 edge1 = vtx1 - vtx0;
+        glm::vec3 edge2 = vtx2 - vtx0;
+
+        // cross product
+        out_normal = glm::cross(edge1, edge2);
+
+        glm::normalize(out_normal);
+
     }
 
     // --Icosphere--
@@ -124,7 +153,7 @@ namespace Pong {
     }
 
     IcosphereShape::IcosphereShape(std::string name, float radius, int subdivision, bool smooth):
-        _radius(radius), _subdivision(subdivision), _smooth(smooth), Shape(name)
+        _radius(radius), _subdivision(subdivision), _smooth(smooth), Shape(std::move(name))
     {
         buildIcosphere();
     }
@@ -136,65 +165,117 @@ namespace Pong {
 
     }
 
-    void IcosphereShape::_buildVerticesSmooth()
+    inline std::vector<glm::vec3> IcosphereShape::_prepare_icosphere_data()
     {
-        const float S_STEP = 186 / 2048.f; // horizontal texture step
-        const float T_STEP = 322 / 1024.f; // vertical texture step
-
-        // compute de basic 12 vertices of a icosaedron
-        // vertices with different texcoords cannot be shared.
-        std::vector<glm::vec3> tmpVert = _computeIcosahedronVertices();
-
-        // clear prev arrays
         _vertices.clear();
         _normals.clear();
         _texCoords.clear();
         _indices.clear();
 
+        return _computeIcosahedronVertices();
+    }
+
+    void IcosphereShape::_buildVerticesFlat()
+    {
+
+        auto temp_vertex = _prepare_icosphere_data();
+
+
+        const glm::vec3 *v0, *v1, *v2, *v3, *v4, *v11;
+//        glm::vec3* v0;
+        glm::vec3 normal;
+        glm::vec2 t0, t1, t2, t3, t4, t11;
+        unsigned int index = 0;
+
+        //
+        v0 = &temp_vertex[0];
+        v11 = &temp_vertex[11];
+        for(int i = 1; i<=5; ++i)
+        {
+            v1 = &temp_vertex[i];
+            if(i<5){
+                v2 = &temp_vertex[i + 1];
+            }
+            else{
+                v2 = &temp_vertex[1];
+            }
+
+            v3 = &temp_vertex[i+5];
+            if((i + 5) < 10){
+                v4 = &temp_vertex[i + 6];
+            }
+            else{
+                v4 = &temp_vertex[6];
+            }
+
+            // texture coords
+            t0[0] = (2 * i - 1) * S_STEP; t0[1] = 0;
+            t1[0] = (2 * i -2) * S_STEP;  t1[1] = T_STEP;
+            t2[0] = (2 * i - 0) * S_STEP; t2[1] = T_STEP;
+            t3[0] = (2 * i - 1) * S_STEP; t3[1] = T_STEP * 2;
+            t4[0] = (2 * i + 1) * S_STEP; t4[1] = T_STEP * 2;
+            t11[0] = 2 * i * S_STEP; t11[1] = T_STEP * 3;
+
+            // triangles
+            IcosphereShape::compute_face_normal(
+                    *v0, *v1, *v2, normal);
+            _add_vertices(*v0, *v1, *v2);
+            _add_normals(normal, normal, normal);
+            _add_tex_coords(t0, t1, t2);
+        }
+
+    }
+
+    void IcosphereShape::_buildVerticesSmooth()
+    {
+
+        // compute de basic 12 vertices of a icosaedron
+        // vertices with different texcoords cannot be shared.
+        auto tmpVert = _prepare_icosphere_data();
+
         // smooth icosahedron has 14 non-shared vertices
         // and 8 shared vertices total 22 vertices.
-
         for (int i = 0; i < 5; i++)                        // v0, v1, v2, v3, v4 top
         {
-            _addVertex(tmpVert[0]);
-            _addNormal(0.f, 0.f, 1.f);
-            _addTexCoord(S_STEP + (S_STEP * (i*2)), 0.f);
+            _add_vertices(tmpVert[0]);
+            _add_normals(0.f, 0.f, 1.f);
+            _add_tex_coords(S_STEP + (S_STEP * (i * 2)), 0.f);
         }
 
         for (int i = 0; i < 5; i++)                       // v5, v6, v7, v8, v9 bottom
         {
-            _addVertex(tmpVert[11]);
-            _addNormal(0.f, 0.f, -1.f);
-            _addTexCoord(S_STEP * 2 + (S_STEP * (i * 2)), T_STEP * 3);
+            _add_vertices(tmpVert[11]);
+            _add_normals(0.f, 0.f, -1.f);
+            _add_tex_coords(S_STEP * 2 + (S_STEP * (i * 2)), T_STEP * 3);
         }
 
         for (int i = 0; i < 2; i++) {                     // v10 right, v11 left
-            _addVertex(tmpVert[1]);
-            _addNormal(glm::normalize(tmpVert[1]));
-            _addTexCoord(S_STEP * i * 10, T_STEP);
+            _add_vertices(tmpVert[1]);
+            _add_normals(glm::normalize(tmpVert[1]));
+            _add_tex_coords(S_STEP * i * 10, T_STEP);
         }
 
         for (int i = 0; i < 2; i++) {                     // v12 right, v13 left
-            _addVertex(tmpVert[6]);
-            _addNormal(glm::normalize(tmpVert[6]));
-            _addTexCoord(S_STEP + (S_STEP * i * 10), T_STEP * 2);
+            _add_vertices(tmpVert[6]);
+            _add_normals(glm::normalize(tmpVert[6]));
+            _add_tex_coords(S_STEP + (S_STEP * i * 10), T_STEP * 2);
         }
 
         // 8 shared vertices
         for (int i = 0; i < 4; i++)                       // v14, v15, v16, v17 shared
         {
-            _addVertex(tmpVert[i + 2]);
-            _addNormal(glm::normalize(tmpVert[i + 2]));
-            _addTexCoord(S_STEP * ((i+1)*2), T_STEP);
+            _add_vertices(tmpVert[i + 2]);
+            _add_normals(glm::normalize(tmpVert[i + 2]));
+            _add_tex_coords(S_STEP * ((i + 1) * 2), T_STEP);
             _sharedIndices[std::make_pair(S_STEP * ((i + 1) * 2), T_STEP)] = _texCoords.size() / 2 - 1;
 
         }
 
         for (int i = 0; i < 4; i++)
         {
-            _addVertex(tmpVert[i+7]);                     // v18, v19, v20, v21 shared
-            _addNormal(glm::normalize(tmpVert[i+7]));
-            _addTexCoord(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2);
+            _add_vertices(tmpVert[i + 7]);                     // v18, v19, v20, v21 shared
+            _add_normals(glm::normalize(tmpVert[i + 7]));
+            _add_tex_coords(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2);
             _sharedIndices[std::make_pair(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2)] = _texCoords.size() / 2 - 1;
         }
 
@@ -210,11 +291,11 @@ namespace Pong {
         _addIndices(18, 19, 15);
         _addIndices(15, 19, 16);
         _addIndices(19, 20, 16);
-        _addIndices(16, 20, 16);
+        _addIndices(16, 20, 17);
         _addIndices(20, 21, 17);
         _addIndices(17, 21, 11);
         _addIndices(21, 13, 11);
-        _addIndices(5, 18, 12);
+        _addIndices(5, 18, 12);  // 3rd row
         _addIndices(6, 19, 18);
         _addIndices(7, 20, 19);
         _addIndices(8, 21, 20);
@@ -351,18 +432,19 @@ namespace Pong {
 
     unsigned int IcosphereShape::_addSubVertexAttribs(const float v[3], const float n[3], const float t[2])
     {
+        // TODO: change to glm::vecX
         unsigned int index;
 
         // check if is shared vertex
         if (IcosphereShape::_isSharedTexCoord(t))
         {
             std::pair<float, float> key = std::make_pair(t[0], t[1]);
-            std::map<std::pair<float, float>, unsigned int>::iterator iter = _sharedIndices.find(key);
+            auto iter = _sharedIndices.find(key);
             if (iter == _sharedIndices.end())
             {
-                _addVertex(v[0], v[1], v[2]);
-                _addNormal(n[0], n[1], n[2]);
-                _addTexCoord(t[0], t[1]);
+                _add_vertices(v[0], v[1], v[2]);
+                _add_normals(n[0], n[1], n[2]);
+                _add_tex_coords(t[0], t[1]);
                 index = _texCoords.size() / 2 - 1;
                 _sharedIndices[key] = index;
             }
@@ -374,9 +456,9 @@ namespace Pong {
         // not shared index
         else
         {
-            _addVertex(v[0], v[1], v[2]);
-            _addNormal(n[0], n[1], n[2]);
-            _addTexCoord(t[0], t[1]);
+            _add_vertices(v[0], v[1], v[2]);
+            _add_normals(n[0], n[1], n[2]);
+            _add_tex_coords(t[0], t[1]);
             index = _texCoords.size() / 2 - 1;
         }
         return index;
@@ -409,7 +491,7 @@ namespace Pong {
         const float H_ANGLE = PI / 180 * 72;    // angle for each col
         const float V_ANGLE = atanf(1.f / 2);   // elevation angle
 
-        std::vector<glm::vec3> vertices(12);    // 12 vertices (xyz?)
+        std::vector<glm::vec3> vertices(12);    // 12 vertices
         int i1, i2;                             // indices
         float z, xy;
         // each row starts form a diferent angle, radians
@@ -498,13 +580,12 @@ namespace Pong {
         return true;
     }
 
-    IcosphereShape::~IcosphereShape()
-    {}
+    IcosphereShape::~IcosphereShape() = default;
 
     // --Cube--
     // --------
     CubeShape::CubeShape(std::string name, float height, float width, float depth):
-        _width(width), _height(height), _depth(depth), Shape(name)
+        _width(width), _height(height), _depth(depth), Shape(std::move(name))
     {
         _buildCubeVerticesHard();
 
@@ -514,7 +595,7 @@ namespace Pong {
         //cout_buffer<float>(_interleavedVertices, 8);
     }
 
-    CubeShape::~CubeShape() {}
+    CubeShape::~CubeShape() = default;
 
     void CubeShape::_buildCubeVerticesHard()
     {
@@ -538,123 +619,123 @@ namespace Pong {
             glm::vec2(0.f, 1.f), glm::vec2(0.f, 0.f) };
         // face 1
         glm::vec3 fNr(0.f, 1.f, 0.f);
-        _addVertex(tmpVert[0]);                      // v0 shared
-        _addNormal(fNr);
-        _addTexCoord(fUv[0]);
+        _add_vertices(tmpVert[0]);                      // v0 shared
+        _add_normals(fNr);
+        _add_tex_coords(fUv[0]);
         //_sharedIndices[std::make_pair(fNr, fUv[0])] = 0;
 
-        _addVertex(tmpVert[1]);                      // v1
-        _addNormal(fNr);
-        _addTexCoord(fUv[1]);
+        _add_vertices(tmpVert[1]);                      // v1
+        _add_normals(fNr);
+        _add_tex_coords(fUv[1]);
 
-        _addVertex(tmpVert[2]);                      // v2 shared
-        _addNormal(fNr);
-        _addTexCoord(fUv[2]);
+        _add_vertices(tmpVert[2]);                      // v2 shared
+        _add_normals(fNr);
+        _add_tex_coords(fUv[2]);
         //_sharedIndices[std::make_pair(fNr, fUv[2])] = 2;
 
-        _addVertex(tmpVert[3]);                      // v3
-        _addNormal(fNr);
-        _addTexCoord(fUv[3]);
+        _add_vertices(tmpVert[3]);                      // v3
+        _add_normals(fNr);
+        _add_tex_coords(fUv[3]);
 
         //face 2
         fNr = glm::vec3(1.f, 0.f, 0.f);
-        _addVertex(tmpVert[5]);                      // v4
-        _addNormal(fNr);
-        _addTexCoord(fUv[0]);
+        _add_vertices(tmpVert[5]);                      // v4
+        _add_normals(fNr);
+        _add_tex_coords(fUv[0]);
         //_sharedIndices[std::make_pair(fNr, fUv[0])] = 4;
 
-        _addVertex(tmpVert[1]);                      // v5
-        _addNormal(fNr);
-        _addTexCoord(fUv[1]);
+        _add_vertices(tmpVert[1]);                      // v5
+        _add_normals(fNr);
+        _add_tex_coords(fUv[1]);
 
-        _addVertex(tmpVert[0]);                      // v6
-        _addNormal(fNr);
-        _addTexCoord(fUv[2]);
+        _add_vertices(tmpVert[0]);                      // v6
+        _add_normals(fNr);
+        _add_tex_coords(fUv[2]);
         //_sharedIndices[std::make_pair(fNr, fUv[2])] = 6;
 
-        _addVertex(tmpVert[4]);                      // v7
-        _addNormal(fNr);
-        _addTexCoord(fUv[3]);
+        _add_vertices(tmpVert[4]);                      // v7
+        _add_normals(fNr);
+        _add_tex_coords(fUv[3]);
 
         //face 3
         fNr = glm::vec3(0.f, 0.f, -1.f);
-        _addVertex(tmpVert[6]);                     // v8
-        _addNormal(fNr);
-        _addTexCoord(fUv[0]);
+        _add_vertices(tmpVert[6]);                     // v8
+        _add_normals(fNr);
+        _add_tex_coords(fUv[0]);
         //_sharedIndices[std::make_pair(fNr, fUv[0])] = 8;
 
-        _addVertex(tmpVert[2]);                     // v9
-        _addNormal(fNr);
-        _addTexCoord(fUv[1]);
+        _add_vertices(tmpVert[2]);                     // v9
+        _add_normals(fNr);
+        _add_tex_coords(fUv[1]);
 
-        _addVertex(tmpVert[1]);                     // v10
-        _addNormal(fNr);
-        _addTexCoord(fUv[2]);
+        _add_vertices(tmpVert[1]);                     // v10
+        _add_normals(fNr);
+        _add_tex_coords(fUv[2]);
         //_sharedIndices[std::make_pair(fNr, fUv[2])] = 10;
 
-        _addVertex(tmpVert[5]);                     // v11
-        _addNormal(fNr);
-        _addTexCoord(fUv[3]);
+        _add_vertices(tmpVert[5]);                     // v11
+        _add_normals(fNr);
+        _add_tex_coords(fUv[3]);
 
         //face 4
         fNr = glm::vec3(-1.f, 0.f, 0.f);
-        _addVertex(tmpVert[7]);                     // v12
-        _addNormal(fNr);
-        _addTexCoord(fUv[0]);
+        _add_vertices(tmpVert[7]);                     // v12
+        _add_normals(fNr);
+        _add_tex_coords(fUv[0]);
         //_sharedIndices[std::make_pair(fNr, fUv[0])] = 12;
 
-        _addVertex(tmpVert[3]);                     // v13
-        _addNormal(fNr);
-        _addTexCoord(fUv[1]);
+        _add_vertices(tmpVert[3]);                     // v13
+        _add_normals(fNr);
+        _add_tex_coords(fUv[1]);
 
-        _addVertex(tmpVert[2]);                     // v14
-        _addNormal(fNr);
-        _addTexCoord(fUv[2]);
+        _add_vertices(tmpVert[2]);                     // v14
+        _add_normals(fNr);
+        _add_tex_coords(fUv[2]);
         //_sharedIndices[std::make_pair(fNr, fUv[2])] = 14;
 
-        _addVertex(tmpVert[6]);                     // v15
-        _addNormal(fNr);
-        _addTexCoord(fUv[3]);
+        _add_vertices(tmpVert[6]);                     // v15
+        _add_normals(fNr);
+        _add_tex_coords(fUv[3]);
 
         //face 5
         fNr = glm::vec3(0.f, 0.f, 1.f);
-        _addVertex(tmpVert[4]);                     // v16
-        _addNormal(fNr);
-        _addTexCoord(fUv[0]);
+        _add_vertices(tmpVert[4]);                     // v16
+        _add_normals(fNr);
+        _add_tex_coords(fUv[0]);
         //_sharedIndices[std::make_pair(fNr, fUv[0])] = 16;
 
-        _addVertex(tmpVert[0]);                     // v17
-        _addNormal(fNr);
-        _addTexCoord(fUv[1]);
+        _add_vertices(tmpVert[0]);                     // v17
+        _add_normals(fNr);
+        _add_tex_coords(fUv[1]);
 
-        _addVertex(tmpVert[3]);                     // v18
-        _addNormal(fNr);
-        _addTexCoord(fUv[2]);
+        _add_vertices(tmpVert[3]);                     // v18
+        _add_normals(fNr);
+        _add_tex_coords(fUv[2]);
         //_sharedIndices[std::make_pair(fNr, fUv[2])] = 18;
 
-        _addVertex(tmpVert[7]);                     // v19
-        _addNormal(fNr);
-        _addTexCoord(fUv[3]);
+        _add_vertices(tmpVert[7]);                     // v19
+        _add_normals(fNr);
+        _add_tex_coords(fUv[3]);
 
         //face 6
         fNr = glm::vec3(0.f, -1.f, 0.f);
-        _addVertex(tmpVert[4]);                     // v20
-        _addNormal(fNr);
-        _addTexCoord(fUv[0]);
+        _add_vertices(tmpVert[4]);                     // v20
+        _add_normals(fNr);
+        _add_tex_coords(fUv[0]);
         //_sharedIndices[std::make_pair(fNr, fUv[0])] = 20;
 
-        _addVertex(tmpVert[5]);                     // v21
-        _addNormal(fNr);
-        _addTexCoord(fUv[1]);
+        _add_vertices(tmpVert[5]);                     // v21
+        _add_normals(fNr);
+        _add_tex_coords(fUv[1]);
 
-        _addVertex(tmpVert[6]);                     // v22
-        _addNormal(fNr);
-        _addTexCoord(fUv[2]);
+        _add_vertices(tmpVert[6]);                     // v22
+        _add_normals(fNr);
+        _add_tex_coords(fUv[2]);
         //_sharedIndices[std::make_pair(fNr, fUv[2])] = 22;
 
-        _addVertex(tmpVert[7]);                     // v23
-        _addNormal(fNr);
-        _addTexCoord(fUv[3]);
+        _add_vertices(tmpVert[7]);                     // v23
+        _add_normals(fNr);
+        _add_tex_coords(fUv[3]);
 
         // triangle index list 12 triangles
         _addIndices(0, 1, 2);  // top face
@@ -677,7 +758,7 @@ namespace Pong {
         _buildInterleavedVertices();
     }
 
-    std::vector<glm::vec3> CubeShape::_computeCubeVertices()
+    std::vector<glm::vec3> CubeShape::_computeCubeVertices() const
     {
         std::vector<glm::vec3> tmpVert(8);
 
