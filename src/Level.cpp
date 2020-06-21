@@ -274,15 +274,12 @@ namespace Pong
 
         // smooth ball doen't work
         auto ball_shp = _scene->createShape<IcosphereShape>(
-                "ball_shp",
+                "ball_shape",
                 radius,
-                1,
-                false);
+                2,
+                true);
 
-        ball_shp->set_radius(radius);
         ball->setShape(ball_shp);
-
-//        ball->setShape(_scene->getShape("cube_shp"));
 
         auto* ball_col = _scene->createCollider<SphereCollider>("ball_col");
         ball_col->setRadius(radius);
@@ -369,8 +366,6 @@ namespace Pong
             glfwSwapBuffers(_render->getWindow());
             glfwPollEvents();
         }
-        // glfwTerminate();
-        LOG_DEBUG("Exit lvl");
     }
 
     void PongLevel::_configInputs()
