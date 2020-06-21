@@ -19,7 +19,7 @@ namespace Pong{
 
     Scene::~Scene()
     {
-        LOG_DEBUG("Scene destructor init");
+        LOG_DEBUG("Call scene destructor");
         delete _directionalLight;
         delete[] _pointLights;
 
@@ -60,8 +60,6 @@ namespace Pong{
         {
             delete std::next(tx_it, i)->second;
         }
-
-        LOG_DEBUG("Scene destructor finish");
     }
 
     void Scene::material_to_shape(Material* material, Actor* actor)

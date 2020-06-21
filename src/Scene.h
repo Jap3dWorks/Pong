@@ -73,7 +73,7 @@ namespace Pong {
         std::map<std::string, Material*> material_map;
         std::map<std::string, Collider*> collider_map;
         std::map<std::string, Shape*> shape_map;
-        std::map<std::string, Shader*> shader_map; // TODO map?
+        std::map<std::string, Shader*> shader_map;
         std::map<std::string, Texture*> textures_map;
 
         PointLight& get_point_light(int id);
@@ -128,14 +128,15 @@ namespace Pong {
         Actor* getActor(std::string name);
 
         // create a shape and save it in _shapeMap
-        template<typename T>
-        T* createShape(std::string name)
+        template<typename T, typename... Args>
+        T* createShape(std::string name, Args&&... args)
         {
             if (!std::is_base_of<Shape, T>::value)
                 return nullptr;
             if (shape_map.find(name) == shape_map.end())
             {
-                T* s_ptr = new T(name);  // create shape ptr
+                T* s_ptr = new T(name, std::forward<Args>(args)...);
+                // store shape pointer in internal level data
                 shape_map[name] = static_cast<Shape*>(s_ptr);
                 return s_ptr;
             }

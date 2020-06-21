@@ -307,10 +307,6 @@ namespace Pong {
         glm::vec3 r_dir = glm::inverse(actor->getTransform()) * glm::vec4(ray.direction,0.f);
         glm::vec3 r_pos = glm::inverse(actor->getTransform()) * glm::vec4(ray.position,1.f);
 
-        /*cout_vector(r_dir);
-        cout_vector(r_pos);
-        std::cout << std::endl;*/
-
         for (int i = 0; i < 6; i++)
         {
             // define a plane
@@ -332,7 +328,7 @@ namespace Pong {
 
             // look if ray is inside the plane
             bool check = false;
-            // face posibilities TODO.face combinations
+            // face posibilities
             if (i == 0){
                 check = (pln_pnt.x >= OBB_buffer[3].x &&
                     pln_pnt.x <= OBB_buffer[0].x &&

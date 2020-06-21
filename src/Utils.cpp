@@ -122,7 +122,7 @@ namespace Pong {
         a_point->setTransform(glm::translate(glm::mat4(1), point));
         a_point->setMaterial(point_mat);
 
-        s_point->setRadius(0.05f);
+        s_point->set_radius(0.05f);
 
         LOG_DEBUG("Point created-> " << pnt_nme << " at-> " <<
                                      point.x << ", " << point.y << ", " << point.z);

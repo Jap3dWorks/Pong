@@ -12,7 +12,6 @@ namespace Pong {
 
     Texture::~Texture()
     {
-        LOG_DEBUG( "Texture finish destructor");
     }
 
     Material::Material(std::string name, Shader* shader, std::vector<Texture*> textures):
@@ -23,7 +22,6 @@ namespace Pong {
 
     Material::~Material()
     {
-        LOG_DEBUG("Material finish destructor");
     }
 
     void Material::_setup_material()

@@ -8,7 +8,6 @@ namespace Pong {
         // remove components
         for (auto const &c : _componentList)
             delete c;
-        LOG_DEBUG("End Actor destructor")
     }
 
     void Actor::setScale(const glm::vec3 &scale) {
@@ -52,7 +51,7 @@ namespace Pong {
     // ------------
     AKinetic::AKinetic(std::string name, glm::vec3 vector_director) :
             Actor(name), _vector_director(vector_director) {
-        direction = glm::normalize(vector_director);
+        _direction = glm::normalize(vector_director);
         _velocity = glm::length(vector_director);
     }
 
@@ -60,13 +59,13 @@ namespace Pong {
 
     void AKinetic::update(float delta_time)
     {
-        _vector_director = direction * _velocity;
+        _vector_director = _direction * _velocity;
         _transform = glm::translate(_transform, _vector_director * delta_time);
     }
 
     // getters
     glm::vec3 AKinetic::getDirection() const {
-        return direction;
+        return _direction;
     }
 
     float AKinetic::getVelocity() const {
@@ -74,26 +73,24 @@ namespace Pong {
     }
 
     // setters
-    void AKinetic::set_direction(glm::vec3 direction) {
-        // normalized vector, only should represent the direction.
-        // velocity
-        direction = glm::normalize(direction);
+    void AKinetic::set_direction(const glm::vec3& input_direction) {
+        this->_direction = glm::normalize(input_direction);
     }
 
-    void AKinetic::setVelocity(float velocity) {
-        // velocity would be the magnitude
-        _velocity = velocity;
+    void AKinetic::setVelocity(float input_velocity) {
+        // input_velocity would be the magnitude
+        _velocity = input_velocity;
     }
 
     // --Player--
     // ----------
-    void APlayer::ProcessKeyboard(Movements direction, float delta_time) {
+    void APlayer::ProcessKeyboard(Movements move_direction, float delta_time) {
         float f_speed = _base_speed * delta_time;
 
-        if (direction == Pong::Movements::UP) {
+        if (move_direction == Pong::Movements::UP) {
             _velocity += f_speed;
             _key_pressed = true;
-        } else if (direction == Pong::Movements::DOWN) {
+        } else if (move_direction == Pong::Movements::DOWN) {
             _velocity -= f_speed;
             _key_pressed = true;
         }
@@ -102,7 +99,7 @@ namespace Pong {
     APlayer::~APlayer() noexcept {LOG_DEBUG("APlayer destructor");}
 
     void APlayer::update(float delta_time) {
-        _vector_director = direction * _velocity;
+        _vector_director = _direction * _velocity;
         _transform = glm::translate(_transform, _vector_director);
 
         if (!_key_pressed) {

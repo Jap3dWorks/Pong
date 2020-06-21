@@ -71,8 +71,8 @@ namespace Pong {
     class AKinetic : public Actor
     {
     protected:
-        glm::vec3 _vector_director;  // direction * velocity
-        glm::vec3 direction;
+        glm::vec3 _vector_director;  // _direction * velocity
+        glm::vec3 _direction;
         float _velocity = 0;
         float _acceleration = 0;
 
@@ -94,12 +94,12 @@ namespace Pong {
         float getVelocity() const;
 
         // Set AKinetic vector director
-        // normalized vector, only should represent the direction.
-        void set_direction(glm::vec3);
+        // normalized vector, only should represent the _direction.
+        void set_direction(const glm::vec3& input_direction);
 
 
-        // velocity would be the vector magnitude.
-        void setVelocity(float velocity);
+        // input_velocity would be the vector magnitude.
+        void setVelocity(float input_velocity);
 
     };
 
@@ -114,13 +114,13 @@ namespace Pong {
         {
             _base_drag = 0.5f;
             _base_speed = 0.1f;
-            direction = glm::vec3{ 0.f, 1.f, 0.f };
+            _direction = glm::vec3{0.f, 1.f, 0.f };
         }
         virtual ~APlayer();
 
         void update(float delta_time) override;
 
-        virtual void ProcessKeyboard(Movements movement, float delta_time) override;
+        virtual void ProcessKeyboard(Movements move_direction, float delta_time) override;
     };
 
     // --ABALL class--

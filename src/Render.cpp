@@ -28,7 +28,7 @@ Pong::Render::Render()
 
     if (!_window)
     {
-        LOG_DEBUG("Failed to creat GLFW window");
+        LOG_ERROR("Failed to creat GLFW window");
         glfwTerminate();
     }
 
@@ -74,6 +74,4 @@ GLFWwindow* Pong::Render::getWindow()
 Pong::Render::~Render()
 {
     glfwTerminate();
-    //delete _window
-    LOG_DEBUG("render destructor finish");
 }

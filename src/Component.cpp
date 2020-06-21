@@ -14,8 +14,7 @@ namespace Pong {
         // move ball out of collition zone
         glm::vec3 ball_pnt = ball->getTransform()[3];
 
-        // add radius data
-        auto intrs = glm::vec3(ball_pnt - coll_data->point);
+        auto collision_distance = glm::vec3(ball_pnt - coll_data->point);
 
         glm::vec3 radius_vec = coll_data->normal * sphere_coll->getRadius();
         LOG_DEBUG("--" + other->getName() + "--");
@@ -29,18 +28,20 @@ namespace Pong {
         LOG_DEBUG("id collision: " << coll_data->face_id);
 
         // add 0.01 normal value, to avoid double collisions
-        glm::vec3 ajust_vec = intrs - radius_vec + coll_data->normal * 0.01f;
+        glm::vec3 relocate_position = collision_distance - radius_vec + coll_data->normal * 0.05f;
 
         // multiply ajust vector by 1.5 to avoid double collisions.
-        ball->setTransform(glm::translate(ball->getTransform(), ajust_vec * 1.1f));
+        ball->setTransform(glm::translate(ball->getTransform(), relocate_position));
 
-        // reflect direction
+        // reflect _direction
         glm::vec3 collide_direction = glm::reflect(ball->getDirection(), coll_data->normal);
 
-        if (dynamic_cast<APlayer*>(other->actor))
-        {
-            auto* other_actor = static_cast<APlayer*>(other->actor);
-            collide_direction += other_actor->get_vector_director() * 30.f;  // player affecting ball direction
+        ball->set_direction(collide_direction);
+
+        if (auto other_actor = dynamic_cast<APlayer *>(other->actor)) {
+            if (other_actor->getVelocity()) {
+                collide_direction += other_actor->get_vector_director() * 30.f;  // player affecting ball _direction
+            }
             ball->setVelocity(ball->getVelocity() + 0.5);
         }
 
@@ -59,7 +60,7 @@ namespace Pong {
             b_trnsform[3] = glm::vec4(0, 0, 0, 1);
             ball->setTransform(b_trnsform);
 
-            // set a random direction
+            // set a random _direction
             srand(time(nullptr));
             const double pi = 3.14159265358979323846;
             float rand_angle =  2.f * pi * (rand() % 100) / 100.f;

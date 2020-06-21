@@ -29,7 +29,7 @@ namespace Pong
         // ----------
         _configInputs();
 
-        // --Run components start methds--
+        // --Run components start methods--
         // implement here
         _components_start_level();
 
@@ -89,13 +89,16 @@ namespace Pong
 
     void AbstractLevel::_frame_collisions()
     {
+        // TODO: thread pool to manage collisions
+
         // --compute collisions--
-        // implement here
-        // std::map<std::string, Collider*>::iterator it = _scene->_colliderMap.begin();
         auto it = _scene->collider_map.begin();
-        for (int i = 0; i < _scene->collider_map.size() - 1; i++)
+        unsigned int size = _scene->collider_map.size();
+        if(size < 2) return;
+
+        for (int i = 0; i < size - 1; ++i)
         {
-            for (int j = i + 1; j < _scene->collider_map.size(); j++)
+            for (int j = i + 1; j < size; ++j)
             {
                 if (std::next(it, i)->second->collide(std::next(it, j)->second))
                 {
@@ -244,7 +247,7 @@ namespace Pong
         glm::vec3 out_scale = glm::vec3(5, 20, 20);
         auto* right_outGame = _scene->createActor<Actor>("right_outGame");
         //right_outGame->setShape(_scene->createShape<CubeShape>("out_shp"));
-        right_outGame->setTransform(glm::translate(iniPos, glm::vec3(13, 0, 0)));
+        right_outGame->setTransform(glm::translate(iniPos, glm::vec3(15, 0, 0)));
         right_outGame->setMaterial(&material);
         right_outGame->setScale(out_scale);
         auto* r_out_coll = _scene->createCollider<BoxCollider>("right_out_coll");
@@ -255,7 +258,7 @@ namespace Pong
 
         auto* left_outGame = _scene->createActor<Actor>("left_outGame");
         //left_outGame->setShape(_scene->getShape("out_shp"));
-        left_outGame->setTransform(glm::translate(iniPos, glm::vec3(-13, 0, 0)));
+        left_outGame->setTransform(glm::translate(iniPos, glm::vec3(-15, 0, 0)));
         left_outGame->setMaterial(&material);
         left_outGame->setScale(out_scale);
         auto* l_out_coll = _scene->createCollider<BoxCollider>("left_out_coll");
@@ -266,20 +269,27 @@ namespace Pong
 
         // --config ball--
         float radius = .75f;
-        auto* ball = _scene->createActor<ABall>("ball");
+        auto ball = _scene->createActor<ABall>("ball");
         ball->set_direction(glm::vec3(1, 1, 0));
 
-//        auto* ball_shp = _scene->createShape<IcosphereShape>("ball_shp");
-//        ball_shp->setRadius(radius);
-//        ball->setShape(ball_shp);
+        // smooth ball doen't work
+        auto ball_shp = _scene->createShape<IcosphereShape>(
+                "ball_shp",
+                radius,
+                1,
+                false);
 
-        ball->setShape(_scene->getShape("cube_shp"));
+        ball_shp->set_radius(radius);
+        ball->setShape(ball_shp);
+
+//        ball->setShape(_scene->getShape("cube_shp"));
 
         auto* ball_col = _scene->createCollider<SphereCollider>("ball_col");
         ball_col->setRadius(radius);
         ball->setCollider(ball_col);
         ball->setMaterial(&material);
         ball->setVelocity(1.f);
+
         BallCollisionComponent ball_component;
         ball_col->add_component(&ball_component);
 
@@ -287,7 +297,7 @@ namespace Pong
         float mark_r = .5f;
         auto* mark = _scene->createActor<AKinetic>("mark");
         auto* mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
-        mark_shp->setRadius(mark_r);
+        mark_shp->set_radius(mark_r);
         mark->setShape(mark_shp);
         mark->setMaterial(&material);
 
@@ -325,27 +335,9 @@ namespace Pong
             p2->update(Pong::Render::DeltaTime);
             ball->update(Pong::Render::DeltaTime);
 
-            // --compute collisions--
-            // implement here
-            auto it = _scene->collider_map.begin();
-            for (int i = 0; i < _scene->collider_map.size() - 1; i++)
-            {
-                for (int j = i + 1; j < _scene->collider_map.size(); j++)
-                {
-                    if (std::next(it, i)->second->collide(std::next(it, j)->second))
-                    {
-                        for (CollisionComponent*& c : std::next(it, i)->second->component_list)
-                        {
-                            c->at_collision(std::next(it, i)->second, std::next(it, j)->second);
-                        }
 
-                        for (CollisionComponent*& c : std::next(it, j)->second->component_list)
-                        {
-                            c->at_collision(std::next(it, j)->second, std::next(it, i)->second);
-                        }
-                    }
-                }
-            }
+            // --compute collisions--
+            _frame_collisions();
 
             // --clean render--
             glClearColor(0.1f, 0.1f, 0.1f, 1.f);
@@ -370,7 +362,6 @@ namespace Pong
             // print actors
             for (const auto& kv : _scene->actor_map)
             {
-                LOG_DEBUG("Draw " + kv.second->getName())
                 kv.second->draw();
             }
 
@@ -479,7 +470,7 @@ namespace Pong
         float mark_r = .5f;
         AKinetic* mark = _scene->createActor<AKinetic>("mark");
         IcosphereShape* mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
-        mark_shp->setRadius(mark_r);
+        mark_shp->set_radius(mark_r);
         mark->setShape(mark_shp);
         mark->setMaterial(paint_mat);
         SphereCollider* m_coll = _scene->createCollider<SphereCollider>("mark_coll");
@@ -598,7 +589,7 @@ namespace Pong
         float mark_r = .5f;
         auto mark = _scene->createActor<AKinetic>("mark");
         auto mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
-        mark_shp->setRadius(mark_r);
+        mark_shp->set_radius(mark_r);
         mark->setShape(mark_shp);
         mark->setMaterial(pbr_mat);
         auto m_coll = _scene->createCollider<SphereCollider>("mark_coll");
@@ -606,10 +597,10 @@ namespace Pong
         m_coll->setRadius(mark_r);
 
         // --lighting--
-        // Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
-        // directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
-        // directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
-        // directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
+         Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
+         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
+         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
+         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
 
         // create point lights
         _scene->get_point_light(0).color = glm::vec3(10.f, 10.f, 10.f);
@@ -642,13 +633,17 @@ namespace Pong
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
         auto sphere = _scene->createActor<Actor>("cube_02");
-        sphere->setShape(_scene->createShape<IcosphereShape>("cube_shp"));
+        sphere->setShape(_scene->createShape<IcosphereShape>("cube_shp",
+                                                             2.f,
+                                                             1,
+                                                             true));
+
         sphere->setTransform(glm::translate(iniPos, glm::vec3(0.f, 0, 0)));
         sphere->setMaterial(blinn_mat);
         sphere->setScale(pScale);
 
         // TODO if sphere doesn't has collider scene doesn't work
-        sphere->setCollider(_scene->createCollider<SphereCollider>("cube_02_coll"));
+//        sphere->setCollider(_scene->createCollider<SphereCollider>("cube_02_coll"));
 
         // --lighting--
         Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();

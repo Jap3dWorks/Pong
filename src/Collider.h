@@ -132,7 +132,7 @@ namespace Pong {
         Actor* getActor();
 
         /**
-        Stores CollisionComponent object in collider data. TODO: move .cpp*/
+        Stores CollisionComponent object in collider data.*/
         void add_component(CollisionComponent* component);
     };
 
