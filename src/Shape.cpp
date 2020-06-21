@@ -37,8 +37,8 @@ namespace Pong {
             _interleavedVertices.push_back(_normals[i + 1]);
             _interleavedVertices.push_back(_normals[i + 2]);
 
-            _interleavedVertices.push_back(_texCoords[j]);
-            _interleavedVertices.push_back(_texCoords[j + 1]);
+            _interleavedVertices.push_back(_tex_coords[j]);
+            _interleavedVertices.push_back(_tex_coords[j + 1]);
         }
     }
 
@@ -139,12 +139,23 @@ namespace Pong {
 
     }
 
+    void Shape::compute_face_normal(
+            float* & vtx0, float * & vtx1,
+            float* & vtx2, glm::vec3& out_normal)
+    {
+        compute_face_normal(
+                glm::vec3(vtx0[0], vtx0[1],vtx0[2]),
+                glm::vec3(vtx1[0], vtx1[1], vtx1[2]),
+                glm::vec3(vtx2[0], vtx2[1], vtx2[2]),
+                out_normal);
+    }
+
     // --Icosphere--
     // -------------
     void IcosphereShape::buildIcosphere()
     {
         if (_smooth)
-            _buildVerticesSmooth();
+            _build_vertices_smooth();
 
         // set vertex buffers
         setVAO();
@@ -169,20 +180,19 @@ namespace Pong {
     {
         _vertices.clear();
         _normals.clear();
-        _texCoords.clear();
+        _tex_coords.clear();
         _indices.clear();
 
         return _computeIcosahedronVertices();
     }
 
-    void IcosphereShape::_buildVerticesFlat()
+    void IcosphereShape::_build_vertices_flat()
     {
 
         auto temp_vertex = _prepare_icosphere_data();
 
 
-        const glm::vec3 *v0, *v1, *v2, *v3, *v4, *v11;
-//        glm::vec3* v0;
+        glm::vec3 *v0, *v1, *v2, *v3, *v4, *v11;
         glm::vec3 normal;
         glm::vec2 t0, t1, t2, t3, t4, t11;
         unsigned int index = 0;
@@ -217,16 +227,53 @@ namespace Pong {
             t11[0] = 2 * i * S_STEP; t11[1] = T_STEP * 3;
 
             // triangles
-            IcosphereShape::compute_face_normal(
-                    *v0, *v1, *v2, normal);
-            _add_vertices(*v0, *v1, *v2);
-            _add_normals(normal, normal, normal);
-            _add_tex_coords(t0, t1, t2);
+            IcosphereShape::compute_face_normal(*v0, *v1, *v2, normal);
+            add_vertices(*v0, *v1, *v2);
+            add_normals(normal, normal, normal);
+            add_tex_coords(t0, t1, t2);
+            _add_indices(index, index + 1, index + 2);
+
+            IcosphereShape::compute_face_normal(*v1, *v3, *v2, normal);
+            add_vertices(*v1, *v3, *v2);
+            add_normals(normal, normal, normal);
+            add_tex_coords(t1, t3, t2);
+            _add_indices(index + 3, index + 4, index + 5);
+
+            IcosphereShape::compute_face_normal(*v2, *v3, *v4, normal);
+            add_vertices(*v2, *v3, *v4);
+            add_normals(normal, normal, normal);
+            add_tex_coords(t1, t3, t4);
+            _add_indices(index + 6, index + 7, index + 8);
+
+            IcosphereShape::compute_face_normal(*v3, *v11, *v4, normal);
+            add_vertices(*v3, *v11, *v4);
+            add_normals(normal, normal, normal);
+            add_tex_coords(t3, t11, t4);
+            _add_indices(index + 9, index + 10, index + 11);
+
+            // edge lines
+            _lineIndices.push_back(index);  //
+            _lineIndices.push_back(index + 1);
+            _lineIndices.push_back(index + 3); //
+            _lineIndices.push_back(index + 4);
+            _lineIndices.push_back(index + 3); //
+            _lineIndices.push_back(index + 5);
+            _lineIndices.push_back(index + 4); //
+            _lineIndices.push_back(index + 5);
+            _lineIndices.push_back(index + 9); //
+            _lineIndices.push_back(index + 10);
+            _lineIndices.push_back(index + 9); //
+            _lineIndices.push_back(index + 11);
+
+            index += 12;
         }
 
+        _subdivide_vertices_flat();
+
+        _buildInterleavedVertices();
     }
 
-    void IcosphereShape::_buildVerticesSmooth()
+    void IcosphereShape::_build_vertices_smooth()
     {
 
         // compute de basic 12 vertices of a icosaedron
@@ -237,69 +284,69 @@ namespace Pong {
         // and 8 shared vertices total 22 vertices.
         for (int i = 0; i < 5; i++)                        // v0, v1, v2, v3, v4 top
         {
-            _add_vertices(tmpVert[0]);
-            _add_normals(0.f, 0.f, 1.f);
-            _add_tex_coords(S_STEP + (S_STEP * (i * 2)), 0.f);
+            add_vertices(tmpVert[0]);
+            add_normals(0.f, 0.f, 1.f);
+            add_tex_coords(S_STEP + (S_STEP * (i * 2)), 0.f);
         }
 
         for (int i = 0; i < 5; i++)                       // v5, v6, v7, v8, v9 bottom
         {
-            _add_vertices(tmpVert[11]);
-            _add_normals(0.f, 0.f, -1.f);
-            _add_tex_coords(S_STEP * 2 + (S_STEP * (i * 2)), T_STEP * 3);
+            add_vertices(tmpVert[11]);
+            add_normals(0.f, 0.f, -1.f);
+            add_tex_coords(S_STEP * 2 + (S_STEP * (i * 2)), T_STEP * 3);
         }
 
         for (int i = 0; i < 2; i++) {                     // v10 right, v11 left
-            _add_vertices(tmpVert[1]);
-            _add_normals(glm::normalize(tmpVert[1]));
-            _add_tex_coords(S_STEP * i * 10, T_STEP);
+            add_vertices(tmpVert[1]);
+            add_normals(glm::normalize(tmpVert[1]));
+            add_tex_coords(S_STEP * i * 10, T_STEP);
         }
 
         for (int i = 0; i < 2; i++) {                     // v12 right, v13 left
-            _add_vertices(tmpVert[6]);
-            _add_normals(glm::normalize(tmpVert[6]));
-            _add_tex_coords(S_STEP + (S_STEP * i * 10), T_STEP * 2);
+            add_vertices(tmpVert[6]);
+            add_normals(glm::normalize(tmpVert[6]));
+            add_tex_coords(S_STEP + (S_STEP * i * 10), T_STEP * 2);
         }
 
         // 8 shared vertices
         for (int i = 0; i < 4; i++)                       // v14, v15, v16, v17 shared
         {
-            _add_vertices(tmpVert[i + 2]);
-            _add_normals(glm::normalize(tmpVert[i + 2]));
-            _add_tex_coords(S_STEP * ((i + 1) * 2), T_STEP);
-            _sharedIndices[std::make_pair(S_STEP * ((i + 1) * 2), T_STEP)] = _texCoords.size() / 2 - 1;
+            add_vertices(tmpVert[i + 2]);
+            add_normals(glm::normalize(tmpVert[i + 2]));
+            add_tex_coords(S_STEP * ((i + 1) * 2), T_STEP);
+            _shared_indices[std::make_pair(S_STEP * ((i + 1) * 2), T_STEP)] = _tex_coords.size() / 2 - 1;
 
         }
 
         for (int i = 0; i < 4; i++)
         {
-            _add_vertices(tmpVert[i + 7]);                     // v18, v19, v20, v21 shared
-            _add_normals(glm::normalize(tmpVert[i + 7]));
-            _add_tex_coords(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2);
-            _sharedIndices[std::make_pair(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2)] = _texCoords.size() / 2 - 1;
+            add_vertices(tmpVert[i + 7]);                     // v18, v19, v20, v21 shared
+            add_normals(glm::normalize(tmpVert[i + 7]));
+            add_tex_coords(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2);
+            _shared_indices[std::make_pair(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2)] = _tex_coords.size() / 2 - 1;
         }
 
         // build triangles index list (20 triangles)
-        _addIndices(0, 10, 14);     // 1st row
-        _addIndices(1, 14, 15);
-        _addIndices(2, 15, 16);
-        _addIndices(3, 16, 17);
-        _addIndices(4, 17, 11);
-        _addIndices(10, 12, 14);    // 2nd row
-        _addIndices(12, 18, 14);
-        _addIndices(14, 18, 15);
-        _addIndices(18, 19, 15);
-        _addIndices(15, 19, 16);
-        _addIndices(19, 20, 16);
-        _addIndices(16, 20, 17);
-        _addIndices(20, 21, 17);
-        _addIndices(17, 21, 11);
-        _addIndices(21, 13, 11);
-        _addIndices(5, 18, 12);  // 3rd row
-        _addIndices(6, 19, 18);
-        _addIndices(7, 20, 19);
-        _addIndices(8, 21, 20);
-        _addIndices(9, 13, 21);
+        _add_indices(0, 10, 14);     // 1st row
+        _add_indices(1, 14, 15);
+        _add_indices(2, 15, 16);
+        _add_indices(3, 16, 17);
+        _add_indices(4, 17, 11);
+        _add_indices(10, 12, 14);    // 2nd row
+        _add_indices(12, 18, 14);
+        _add_indices(14, 18, 15);
+        _add_indices(18, 19, 15);
+        _add_indices(15, 19, 16);
+        _add_indices(19, 20, 16);
+        _add_indices(16, 20, 17);
+        _add_indices(20, 21, 17);
+        _add_indices(17, 21, 11);
+        _add_indices(21, 13, 11);
+        _add_indices(5, 18, 12);  // 3rd row
+        _add_indices(6, 19, 18);
+        _add_indices(7, 20, 19);
+        _add_indices(8, 21, 20);
+        _add_indices(9, 13, 21);
 
         // add edge lines of icosahedron
         _lineIndices.push_back(0);   _lineIndices.push_back(10); // 00 - 10
@@ -334,7 +381,7 @@ namespace Pong {
         _lineIndices.push_back(9);   _lineIndices.push_back(21); // 09 - 21
 
         // subdivide icosahedron
-        _subdivideVerticesSmooth();
+        _subdivide_vertices_smooth();
 
 
         // gen interleaved vertex array, buffer open gl will use.
@@ -342,7 +389,7 @@ namespace Pong {
 
     }
 
-    void IcosphereShape::_subdivideVerticesSmooth()
+    void IcosphereShape::_subdivide_vertices_smooth()
     {
         std::vector<unsigned int> tmpIndices;
         int indexCount;
@@ -377,17 +424,17 @@ namespace Pong {
                 v1 = &_vertices[i1 * 3];
                 v2 = &_vertices[i2 * 3];
                 v3 = &_vertices[i3 * 3];
-                t1 = &_texCoords[i1 * 2];
-                t2 = &_texCoords[i2 * 2];
-                t3 = &_texCoords[i3 * 2];
+                t1 = &_tex_coords[i1 * 2];
+                t2 = &_tex_coords[i2 * 2];
+                t3 = &_tex_coords[i3 * 2];
 
                 // get 3 new vertex attribs by splitting half on each edge
-                computeHalfVertex(v1, v2, _radius, newV1);
-                computeHalfVertex(v2, v3, _radius, newV2);
-                computeHalfVertex(v1, v3, _radius, newV3);
-                _computeHalfTexCoord(t1, t2, newT1);
-                _computeHalfTexCoord(t2, t3, newT2);
-                _computeHalfTexCoord(t1, t3, newT3);
+                compute_half_vertex(v1, v2, _radius, newV1);
+                compute_half_vertex(v2, v3, _radius, newV2);
+                compute_half_vertex(v1, v3, _radius, newV3);
+                compute_half_tex_coords(t1, t2, newT1);
+                compute_half_tex_coords(t2, t3, newT2);
+                compute_half_tex_coords(t1, t3, newT3);
                 _computeVertexNormal(newV1, newN1);
                 _computeVertexNormal(newV2, newN2);
                 _computeVertexNormal(newV3, newN3);
@@ -399,19 +446,75 @@ namespace Pong {
                 newI3 = _addSubVertexAttribs(newV3, newN3, newT3);
 
                 // add 4 new triangle indices
-                _addIndices(i1, newI1, newI3);
-                _addIndices(newI1, i2, newI2);
-                _addIndices(newI1, newI2, newI3);
-                _addIndices(newI3, newI2, i3);
+                _add_indices(i1, newI1, newI3);
+                _add_indices(newI1, i2, newI2);
+                _add_indices(newI1, newI2, newI3);
+                _add_indices(newI3, newI2, i3);
 
                 // add new line indices
-                _addSubLineIndices(i1, newI1, i2, newI2, i3, newI3);
+                _add_sub_line_indices(i1, newI1, i2, newI2, i3, newI3);
             }
         }
     }
 
-    void IcosphereShape::_addSubLineIndices(unsigned int i1, unsigned int i2, unsigned int i3,
-        unsigned int i4, unsigned int i5, unsigned int i6)
+    void IcosphereShape::_subdivide_vertices_flat() {
+
+        std::vector<float> temp_vertices;
+        std::vector<float> temp_tex_coords;
+        std::vector<unsigned int> temp_indices;
+
+        int index_count;
+        float *v1, *v2, *v3;
+        float *t1, *t2, *t3;
+        glm::vec3 new_V1, new_V2, new_V3;
+        glm::vec2 new_T1, new_T2, new_T3;
+        glm::vec3 normal;
+        unsigned int index = 0;
+        int i, j;
+
+        for(i = 0; i <= _subdivision; ++i){
+            temp_vertices = _vertices;
+            temp_tex_coords = _tex_coords;
+            temp_indices = _indices;
+
+            _vertices.clear();
+            _tex_coords.clear();
+            _indices.clear();
+            _lineIndices.clear();
+            _normals.clear();
+
+            index = 0;
+            index_count = (int)temp_indices.size();
+            for(j=0; j < index_count; j += 3)
+            {
+                v1 = &temp_vertices[temp_indices[j] * 3];
+                v2 = &temp_vertices[temp_indices[j + 1] * 3];
+                v3 = &temp_vertices[temp_indices[j + 2] * 3];
+                t1 = &temp_tex_coords[temp_indices[j] * 2];
+                t2 = &temp_tex_coords[temp_indices[j + 1] * 2];
+                t3 = &temp_tex_coords[temp_indices[j + 2] * 2];
+
+                // get 3 new vertices
+                compute_half_vertex(v1, v2, _radius, new_V1);
+                compute_half_vertex(v2, v3, _radius, new_V2);
+                compute_half_vertex(v1, v3, _radius, new_V3);
+                compute_half_tex_coords(t1, t2, new_T1);
+                compute_half_tex_coords(t2, t3, new_T2);
+                compute_half_tex_coords(t1, t3, new_T3);
+
+                // add 4 new triangles
+                add_vertices(v1, new_V1, new_V3);
+                add_tex_coords(t1, new_T1, new_T3);
+                compute_face_normal(v1, new_V1, new_V3, normal);
+
+            }
+
+        }
+
+    }
+
+    void IcosphereShape::_add_sub_line_indices(unsigned int i1, unsigned int i2, unsigned int i3,
+                                               unsigned int i4, unsigned int i5, unsigned int i6)
     {
         _lineIndices.push_back(i1);      // i1 - i2
         _lineIndices.push_back(i2);
@@ -439,14 +542,14 @@ namespace Pong {
         if (IcosphereShape::_isSharedTexCoord(t))
         {
             std::pair<float, float> key = std::make_pair(t[0], t[1]);
-            auto iter = _sharedIndices.find(key);
-            if (iter == _sharedIndices.end())
+            auto iter = _shared_indices.find(key);
+            if (iter == _shared_indices.end())
             {
-                _add_vertices(v[0], v[1], v[2]);
-                _add_normals(n[0], n[1], n[2]);
-                _add_tex_coords(t[0], t[1]);
-                index = _texCoords.size() / 2 - 1;
-                _sharedIndices[key] = index;
+                add_vertices(v[0], v[1], v[2]);
+                add_normals(n[0], n[1], n[2]);
+                add_tex_coords(t[0], t[1]);
+                index = _tex_coords.size() / 2 - 1;
+                _shared_indices[key] = index;
             }
             else
             {
@@ -456,10 +559,10 @@ namespace Pong {
         // not shared index
         else
         {
-            _add_vertices(v[0], v[1], v[2]);
-            _add_normals(n[0], n[1], n[2]);
-            _add_tex_coords(t[0], t[1]);
-            index = _texCoords.size() / 2 - 1;
+            add_vertices(v[0], v[1], v[2]);
+            add_normals(n[0], n[1], n[2]);
+            add_tex_coords(t[0], t[1]);
+            index = _tex_coords.size() / 2 - 1;
         }
         return index;
     }
@@ -470,19 +573,34 @@ namespace Pong {
         n[0] = r.x; n[1] = r.y; n[2] = r.z;
     }
 
-    void IcosphereShape::_computeHalfTexCoord(const float t1[2], const float t2[2], float nt[2])
+    void IcosphereShape::compute_half_tex_coords(const float *t1, const float *t2, float *nt)
     {
         glm::vec2 rv = (glm::vec2(t1[0], t1[1]) + glm::vec2(t2[0], t2[1])) / 2.f;
         nt[0] = rv.x;
         nt[1] = rv.y;
     }
 
-    void IcosphereShape::computeHalfVertex(const float v1[3], const float v2[3], float length, float nv[3])
+    void IcosphereShape::compute_half_tex_coords(const float *t1, const float *t2, glm::vec2& nt)
+    {
+        glm::vec2 rv = (glm::vec2(t1[0], t1[1]) + glm::vec2(t2[0], t2[1])) / 2.f;
+        nt.x = rv.x;
+        nt.y = rv.y;
+    }
+
+    void IcosphereShape::compute_half_vertex(const float *v1, const float *v2, float length, float *nv)
     {
         glm::vec3 rVec = glm::normalize(glm::vec3(v1[0],v1[1],v1[2]) + glm::vec3(v2[0],v2[1],v2[2]));
         nv[0] = rVec.x;
         nv[1] = rVec.y;
         nv[2] = rVec.z;
+    }
+
+    void IcosphereShape::compute_half_vertex(const float v1[3], const float v2[3], float& length, glm::vec3& nv)
+    {
+        glm::vec3 rVec = glm::normalize(glm::vec3(v1[0],v1[1],v1[2]) + glm::vec3(v2[0],v2[1],v2[2]));
+        nv.x = rVec.x;
+        nv.y = rVec.y;
+        nv.z = rVec.z;
     }
 
     std::vector<glm::vec3> IcosphereShape::_computeIcosahedronVertices()
@@ -609,7 +727,7 @@ namespace Pong {
         // clear prev arrays
         _vertices.clear();
         _normals.clear();
-        _texCoords.clear();
+        _tex_coords.clear();
         _indices.clear();
         _sharedIndices.clear();
 
@@ -619,137 +737,137 @@ namespace Pong {
             glm::vec2(0.f, 1.f), glm::vec2(0.f, 0.f) };
         // face 1
         glm::vec3 fNr(0.f, 1.f, 0.f);
-        _add_vertices(tmpVert[0]);                      // v0 shared
-        _add_normals(fNr);
-        _add_tex_coords(fUv[0]);
-        //_sharedIndices[std::make_pair(fNr, fUv[0])] = 0;
+        add_vertices(tmpVert[0]);                      // v0 shared
+        add_normals(fNr);
+        add_tex_coords(fUv[0]);
+        //_shared_indices[std::make_pair(fNr, fUv[0])] = 0;
 
-        _add_vertices(tmpVert[1]);                      // v1
-        _add_normals(fNr);
-        _add_tex_coords(fUv[1]);
+        add_vertices(tmpVert[1]);                      // v1
+        add_normals(fNr);
+        add_tex_coords(fUv[1]);
 
-        _add_vertices(tmpVert[2]);                      // v2 shared
-        _add_normals(fNr);
-        _add_tex_coords(fUv[2]);
-        //_sharedIndices[std::make_pair(fNr, fUv[2])] = 2;
+        add_vertices(tmpVert[2]);                      // v2 shared
+        add_normals(fNr);
+        add_tex_coords(fUv[2]);
+        //_shared_indices[std::make_pair(fNr, fUv[2])] = 2;
 
-        _add_vertices(tmpVert[3]);                      // v3
-        _add_normals(fNr);
-        _add_tex_coords(fUv[3]);
+        add_vertices(tmpVert[3]);                      // v3
+        add_normals(fNr);
+        add_tex_coords(fUv[3]);
 
         //face 2
         fNr = glm::vec3(1.f, 0.f, 0.f);
-        _add_vertices(tmpVert[5]);                      // v4
-        _add_normals(fNr);
-        _add_tex_coords(fUv[0]);
-        //_sharedIndices[std::make_pair(fNr, fUv[0])] = 4;
+        add_vertices(tmpVert[5]);                      // v4
+        add_normals(fNr);
+        add_tex_coords(fUv[0]);
+        //_shared_indices[std::make_pair(fNr, fUv[0])] = 4;
 
-        _add_vertices(tmpVert[1]);                      // v5
-        _add_normals(fNr);
-        _add_tex_coords(fUv[1]);
+        add_vertices(tmpVert[1]);                      // v5
+        add_normals(fNr);
+        add_tex_coords(fUv[1]);
 
-        _add_vertices(tmpVert[0]);                      // v6
-        _add_normals(fNr);
-        _add_tex_coords(fUv[2]);
-        //_sharedIndices[std::make_pair(fNr, fUv[2])] = 6;
+        add_vertices(tmpVert[0]);                      // v6
+        add_normals(fNr);
+        add_tex_coords(fUv[2]);
+        //_shared_indices[std::make_pair(fNr, fUv[2])] = 6;
 
-        _add_vertices(tmpVert[4]);                      // v7
-        _add_normals(fNr);
-        _add_tex_coords(fUv[3]);
+        add_vertices(tmpVert[4]);                      // v7
+        add_normals(fNr);
+        add_tex_coords(fUv[3]);
 
         //face 3
         fNr = glm::vec3(0.f, 0.f, -1.f);
-        _add_vertices(tmpVert[6]);                     // v8
-        _add_normals(fNr);
-        _add_tex_coords(fUv[0]);
-        //_sharedIndices[std::make_pair(fNr, fUv[0])] = 8;
+        add_vertices(tmpVert[6]);                     // v8
+        add_normals(fNr);
+        add_tex_coords(fUv[0]);
+        //_shared_indices[std::make_pair(fNr, fUv[0])] = 8;
 
-        _add_vertices(tmpVert[2]);                     // v9
-        _add_normals(fNr);
-        _add_tex_coords(fUv[1]);
+        add_vertices(tmpVert[2]);                     // v9
+        add_normals(fNr);
+        add_tex_coords(fUv[1]);
 
-        _add_vertices(tmpVert[1]);                     // v10
-        _add_normals(fNr);
-        _add_tex_coords(fUv[2]);
-        //_sharedIndices[std::make_pair(fNr, fUv[2])] = 10;
+        add_vertices(tmpVert[1]);                     // v10
+        add_normals(fNr);
+        add_tex_coords(fUv[2]);
+        //_shared_indices[std::make_pair(fNr, fUv[2])] = 10;
 
-        _add_vertices(tmpVert[5]);                     // v11
-        _add_normals(fNr);
-        _add_tex_coords(fUv[3]);
+        add_vertices(tmpVert[5]);                     // v11
+        add_normals(fNr);
+        add_tex_coords(fUv[3]);
 
         //face 4
         fNr = glm::vec3(-1.f, 0.f, 0.f);
-        _add_vertices(tmpVert[7]);                     // v12
-        _add_normals(fNr);
-        _add_tex_coords(fUv[0]);
-        //_sharedIndices[std::make_pair(fNr, fUv[0])] = 12;
+        add_vertices(tmpVert[7]);                     // v12
+        add_normals(fNr);
+        add_tex_coords(fUv[0]);
+        //_shared_indices[std::make_pair(fNr, fUv[0])] = 12;
 
-        _add_vertices(tmpVert[3]);                     // v13
-        _add_normals(fNr);
-        _add_tex_coords(fUv[1]);
+        add_vertices(tmpVert[3]);                     // v13
+        add_normals(fNr);
+        add_tex_coords(fUv[1]);
 
-        _add_vertices(tmpVert[2]);                     // v14
-        _add_normals(fNr);
-        _add_tex_coords(fUv[2]);
-        //_sharedIndices[std::make_pair(fNr, fUv[2])] = 14;
+        add_vertices(tmpVert[2]);                     // v14
+        add_normals(fNr);
+        add_tex_coords(fUv[2]);
+        //_shared_indices[std::make_pair(fNr, fUv[2])] = 14;
 
-        _add_vertices(tmpVert[6]);                     // v15
-        _add_normals(fNr);
-        _add_tex_coords(fUv[3]);
+        add_vertices(tmpVert[6]);                     // v15
+        add_normals(fNr);
+        add_tex_coords(fUv[3]);
 
         //face 5
         fNr = glm::vec3(0.f, 0.f, 1.f);
-        _add_vertices(tmpVert[4]);                     // v16
-        _add_normals(fNr);
-        _add_tex_coords(fUv[0]);
-        //_sharedIndices[std::make_pair(fNr, fUv[0])] = 16;
+        add_vertices(tmpVert[4]);                     // v16
+        add_normals(fNr);
+        add_tex_coords(fUv[0]);
+        //_shared_indices[std::make_pair(fNr, fUv[0])] = 16;
 
-        _add_vertices(tmpVert[0]);                     // v17
-        _add_normals(fNr);
-        _add_tex_coords(fUv[1]);
+        add_vertices(tmpVert[0]);                     // v17
+        add_normals(fNr);
+        add_tex_coords(fUv[1]);
 
-        _add_vertices(tmpVert[3]);                     // v18
-        _add_normals(fNr);
-        _add_tex_coords(fUv[2]);
-        //_sharedIndices[std::make_pair(fNr, fUv[2])] = 18;
+        add_vertices(tmpVert[3]);                     // v18
+        add_normals(fNr);
+        add_tex_coords(fUv[2]);
+        //_shared_indices[std::make_pair(fNr, fUv[2])] = 18;
 
-        _add_vertices(tmpVert[7]);                     // v19
-        _add_normals(fNr);
-        _add_tex_coords(fUv[3]);
+        add_vertices(tmpVert[7]);                     // v19
+        add_normals(fNr);
+        add_tex_coords(fUv[3]);
 
         //face 6
         fNr = glm::vec3(0.f, -1.f, 0.f);
-        _add_vertices(tmpVert[4]);                     // v20
-        _add_normals(fNr);
-        _add_tex_coords(fUv[0]);
-        //_sharedIndices[std::make_pair(fNr, fUv[0])] = 20;
+        add_vertices(tmpVert[4]);                     // v20
+        add_normals(fNr);
+        add_tex_coords(fUv[0]);
+        //_shared_indices[std::make_pair(fNr, fUv[0])] = 20;
 
-        _add_vertices(tmpVert[5]);                     // v21
-        _add_normals(fNr);
-        _add_tex_coords(fUv[1]);
+        add_vertices(tmpVert[5]);                     // v21
+        add_normals(fNr);
+        add_tex_coords(fUv[1]);
 
-        _add_vertices(tmpVert[6]);                     // v22
-        _add_normals(fNr);
-        _add_tex_coords(fUv[2]);
-        //_sharedIndices[std::make_pair(fNr, fUv[2])] = 22;
+        add_vertices(tmpVert[6]);                     // v22
+        add_normals(fNr);
+        add_tex_coords(fUv[2]);
+        //_shared_indices[std::make_pair(fNr, fUv[2])] = 22;
 
-        _add_vertices(tmpVert[7]);                     // v23
-        _add_normals(fNr);
-        _add_tex_coords(fUv[3]);
+        add_vertices(tmpVert[7]);                     // v23
+        add_normals(fNr);
+        add_tex_coords(fUv[3]);
 
         // triangle index list 12 triangles
-        _addIndices(0, 1, 2);  // top face
-        _addIndices(0, 2, 3);
-        _addIndices(4, 5, 6);  // face 2
-        _addIndices(4, 6, 7);
-        _addIndices(8, 9, 10);  // face 3
-        _addIndices(8, 10, 11);
-        _addIndices(12, 13, 14);  // face 4
-        _addIndices(12, 14, 15);
-        _addIndices(16, 17, 18);  // face 5
-        _addIndices(16, 18, 19);
-        _addIndices(20, 21, 22);  // bottom face
-        _addIndices(20, 22, 23);
+        _add_indices(0, 1, 2);  // top face
+        _add_indices(0, 2, 3);
+        _add_indices(4, 5, 6);  // face 2
+        _add_indices(4, 6, 7);
+        _add_indices(8, 9, 10);  // face 3
+        _add_indices(8, 10, 11);
+        _add_indices(12, 13, 14);  // face 4
+        _add_indices(12, 14, 15);
+        _add_indices(16, 17, 18);  // face 5
+        _add_indices(16, 18, 19);
+        _add_indices(20, 21, 22);  // bottom face
+        _add_indices(20, 22, 23);
 
         // add edge lines, for now it is not necessary.
         // TODO: when implement subdivision, implement this too
