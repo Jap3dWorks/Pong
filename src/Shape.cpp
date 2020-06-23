@@ -947,17 +947,67 @@ namespace Pong {
 
 
     // read from file mesh functions
-    Mesh process_mesh(aiMesh* mesh, const aiScene* scene)
+    Mesh process_mesh(const aiMesh *& mesh)
     {
+        std::vector<Vertex> vertices;
+        std::vector<unsigned int> indices;
+        std::vector<Texture> Texture;
 
+        for(unsigned int i=0; i < mesh->mNumVertices; i++)
+        {
+            Vertex vertex{};
+            glm::vec3 vector;
+            // positions
+            vector.x = mesh->mVertices[i].x;
+            vector.y = mesh->mVertices[i].y;
+            vector.z = mesh->mVertices[i].z;
+            vertex.position = vector;
+            //normals
+            vector.x = mesh->mNormals[i].x;
+            vector.y = mesh->mNormals[i].y;
+            vector.z = mesh->mNormals[i].z;
+            vertex.normal = vector;
+            // texture coordinates
+            if (mesh->mTextureCoords[0])  // only one id
+            {
+                glm::vec2 vec;
+                vec.x = mesh->mTextureCoords[0][i].x;
+                vec.y = mesh->mTextureCoords[0][i].y;
+                vertex.tex_coords = vec;
+            }
+            else vertex.tex_coords = glm::vec2 (0.f);
+            // tangent
+            vector.x = mesh->mTangents[i].x;
+            vector.y = mesh->mTangents[i].y;
+            vector.z = mesh->mTangents[i].z;
+            vertex.tangent = vector;
+            // bitangent
+            vector.x = mesh->mBitangents[i].x;
+            vector.y = mesh->mBitangents[i].y;
+            vector.z = mesh->mBitangents[i].z;
+            vertex.bitangent = vector;
+
+            vertices.push_back(vertex);
+        }
+        // vertex indices
+        for(unsigned int i=0; i<mesh->mNumFaces; i++)
+        {
+            aiFace face = mesh->mFaces[i];
+            for (unsigned int j=0; j<face.mNumIndices; j++)
+            {
+                indices.push_back(face.mIndices[j]);
+            }
+        }
+
+        return Mesh(mesh->mName.C_Str(), vertices, indices);
     }
 
-    void process_node(aiNode *& node, const aiScene *& scene, std::vector<Mesh>& out_result)
+    void process_node(aiNode * node, const aiScene *& scene, std::vector<Mesh>& out_result)
     {
         for(unsigned int i = 0; i < node->mNumMeshes; i++)
         {
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            out_result.push_back(process_mesh(mesh, scene));
+            const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            out_result.push_back(process_mesh(mesh));
         }
 
         for (unsigned int i=0; i < node->mNumChildren; i++)
@@ -966,7 +1016,7 @@ namespace Pong {
         }
     }
 
-    std::vector<Mesh> Mesh::import_mesh_from_file(const std::string& model_path) {
+    std::vector<Mesh> Mesh::import_meshes(const std::string& model_path) {
 
         std::vector<Mesh> result;
 
@@ -987,6 +1037,7 @@ namespace Pong {
         std::string directory = model_path.substr(0,
                 model_path.find_last_of('/'));
 
+        process_node(scene->mRootNode, scene, result);
 
         return result;
     }

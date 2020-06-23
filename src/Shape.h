@@ -20,6 +20,22 @@
     // TODO: add material to shape not to actor
 
 namespace Pong {
+
+    // Exceptions
+    class MeshException : public std::exception {
+    private:
+        std::string _error;
+    public:
+        explicit MeshException(std::string error):
+                _error(std::move(error)){}
+
+        [[nodiscard]] const char *get_error() const {
+            return _error.c_str();
+        }
+    };
+
+
+    // data structures
     struct Vertex
     {
         //TODO: move all shapes to this system
@@ -31,6 +47,7 @@ namespace Pong {
     };
 
 
+    // shapes classes
     class Shape {
     public:
         explicit Shape(std::string name);
@@ -343,24 +360,10 @@ namespace Pong {
         // constructor
         Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices);
 
-
         void set_VAO() override;
 
-        static std::vector<Mesh> import_mesh_from_file(const std::string& model_path);
+        static std::vector<Mesh> import_meshes(const std::string& model_path);
 
-    };
-
-    // Exceptions
-    class MeshException : public std::exception {
-    private:
-        std::string _error;
-    public:
-        explicit MeshException(std::string error):
-                _error(std::move(error)){}
-
-        [[nodiscard]] const char *get_error() const {
-            return _error.c_str();
-        }
     };
 
 }
