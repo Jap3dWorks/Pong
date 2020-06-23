@@ -14,7 +14,7 @@ namespace Pong {
     class Texture
     {
         std::string _name;
-        int _Id_texture;
+        int _texture_id;
         std::string _path;
         std::string _texture_type;
     public:
@@ -22,7 +22,7 @@ namespace Pong {
 
         virtual ~Texture();
 
-        int get_id() { return _Id_texture; }
+        int get_id() { return _texture_id; }
         std::string get_path() { return _path; }
         std::string get_texture_type() { return _texture_type; }
         std::string get_name() { return _name; }

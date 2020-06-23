@@ -1,10 +1,12 @@
 #include "Shape.h"
 #include "logger.h"
 
-#include <stb_image.h>
+//#include <stb_image.h>
+//#include <utility>
 
-#include <utility>
-
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 namespace Pong {
 
@@ -44,6 +46,7 @@ namespace Pong {
 
     void Shape::set_VAO()
     {
+        // TODO: use Vertex struct
         int vRow = 0, nRow = 0, tRow = 0;
         if (get_vertex_count())
             vRow = 3;
@@ -66,12 +69,12 @@ namespace Pong {
                      GL_STATIC_DRAW);
 
         // EBO object
-        if (!_indices.empty()) {
+        if (!indices.empty()) {
             glGenBuffers(1, &EBO);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                          get_index_size(),
-                         _indices.data(),
+                         indices.data(),
                          GL_STATIC_DRAW);
         }
 
@@ -112,8 +115,8 @@ namespace Pong {
     {
         glBindVertexArray(VAO_id);
         // draw player
-        if(!_indices.empty())
-            glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, 0);
+        if(!indices.empty())
+            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         else
             glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
         // detach vertex array
@@ -164,7 +167,7 @@ namespace Pong {
         else _build_vertices_flat();
 
         // set vertex buffers
-        set_VAO();
+        Shape::set_VAO();
     }
 
     IcosphereShape::IcosphereShape(std::string name, float radius, int subdivision, bool smooth):
@@ -185,7 +188,7 @@ namespace Pong {
         vertices.clear();
         normals.clear();
         texture_coords.clear();
-        _indices.clear();
+        indices.clear();
 
         return _computeIcosahedronVertices();
     }
@@ -406,10 +409,10 @@ namespace Pong {
         for (i = 1; i <= _subdivision; ++i)
         {
             // copy prev indices
-            tmpIndices = _indices;
+            tmpIndices = indices;
 
             // clear prev arrays
-            _indices.clear();
+            indices.clear();
             line_indices.clear();
 
             indexCount = (int)tmpIndices.size();
@@ -475,11 +478,11 @@ namespace Pong {
         for(i = 0; i <= _subdivision; ++i){
             temp_vertices = vertices;
             temp_tex_coords = texture_coords;
-            temp_indices = _indices;
+            temp_indices = indices;
 
             vertices.clear();
             texture_coords.clear();
-            _indices.clear();
+            indices.clear();
             line_indices.clear();
             normals.clear();
 
@@ -695,7 +698,7 @@ namespace Pong {
         _buildCubeVerticesHard();
 
         // set vertex buffers
-        set_VAO();
+        Shape::set_VAO();
 
         //cout_buffer<float>(interleaved_vertices, 8);
     }
@@ -712,7 +715,7 @@ namespace Pong {
         vertices.clear();
         normals.clear();
         texture_coords.clear();
-        _indices.clear();
+        indices.clear();
         _sharedIndices.clear();
 
         // face cube has 12 non-shared vertices
@@ -863,4 +866,130 @@ namespace Pong {
 
         return tmpVert;
     }
+
+    // Mesh
+    // ----
+    Mesh::Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices) :
+            Shape(std::move(name)), vertices(std::move(vertices))
+    {
+        indices = std::move(indices);
+        Mesh::set_VAO();
+    }
+
+    void Mesh::set_VAO() {
+        unsigned int VBO, EBO;
+
+        glGenVertexArrays(1, &VAO_id);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
+
+        glBindVertexArray(VAO_id);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+        glBufferData(GL_ARRAY_BUFFER,
+                     vertices.size() * sizeof(Vertex),
+                     &vertices[0],
+                     GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     indices.size() * sizeof(unsigned int),
+                     &indices[0],
+                     GL_STATIC_DRAW);
+
+        // vertex points
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0,
+                              3,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              sizeof(Vertex),
+                              (void *) nullptr);
+
+        // vertex normals
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1,
+                              3,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              sizeof(Vertex),
+                              (void *) offsetof(Vertex, normal));
+
+        // texture coords
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2,
+                              2,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              sizeof(Vertex),
+                              (void *) offsetof(Vertex, tex_coords));
+
+        // vertex tangent
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3,
+                              3,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              sizeof(Vertex),
+                              (void *) offsetof(Vertex, tangent));
+
+        // vertex bitangent
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4,
+                              3,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              sizeof(Vertex),
+                              (void *) offsetof(Vertex, bitangent));
+
+        glBindVertexArray(0);
+    }
+
+
+    // read from file mesh functions
+    Mesh process_mesh(aiMesh* mesh, const aiScene* scene)
+    {
+
+    }
+
+    void process_node(aiNode *& node, const aiScene *& scene, std::vector<Mesh>& out_result)
+    {
+        for(unsigned int i = 0; i < node->mNumMeshes; i++)
+        {
+            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            out_result.push_back(process_mesh(mesh, scene));
+        }
+
+        for (unsigned int i=0; i < node->mNumChildren; i++)
+        {
+            process_node(node->mChildren[i], scene, out_result);
+        }
+    }
+
+    std::vector<Mesh> Mesh::import_mesh_from_file(const std::string& model_path) {
+
+        std::vector<Mesh> result;
+
+        // read file
+        Assimp::Importer importer;
+        const aiScene *scene = importer.ReadFile(model_path,
+                                                 aiProcess_Triangulate |
+                                                 aiProcess_CalcTangentSpace);
+
+        // check for errors
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+        {
+            LOG_ERROR("ASSIMP:: " << importer.GetErrorString());
+            throw MeshException(importer.GetErrorString());
+        }
+
+        // directory path
+        std::string directory = model_path.substr(0,
+                model_path.find_last_of('/'));
+
+
+        return result;
+    }
+
+
 }

@@ -2,12 +2,14 @@
 #define SHAPE_H
 
 #include "Utils.h"
+#include "Material.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <map>
 
@@ -15,32 +17,44 @@
 
     // TODO: Load models
     // TODO: Spaceship primitive shape
+    // TODO: add material to shape not to actor
 
 namespace Pong {
+    struct Vertex
+    {
+        //TODO: move all shapes to this system
+        glm::vec3 position;
+        glm::vec3 normal;
+        glm::vec2 tex_coords;
+        glm::vec3 tangent;
+        glm::vec3 bitangent;
+    };
+
+
     class Shape {
     public:
-        Shape(std::string name);
-        virtual ~Shape() {}
+        explicit Shape(std::string name);
+        virtual ~Shape() = default;
 
         [[nodiscard]] std::string get_name() const { return name; }
 
         [[nodiscard]] unsigned int get_vertex_count() const { return (unsigned int)vertices.size() / 3; }
         [[nodiscard]] unsigned int get_normal_count() const { return (unsigned int)normals.size() / 3; }
         [[nodiscard]] unsigned int get_texture_coords_count() const { return (unsigned int)texture_coords.size() / 2; }
-        [[nodiscard]] unsigned int get_index_count() const { return _indices.size(); }
+        [[nodiscard]] unsigned int get_index_count() const { return indices.size(); }
         [[nodiscard]] unsigned int get_line_index_count() const { return (unsigned int)line_indices.size(); }
         [[nodiscard]] unsigned int get_triangle_count() const { return get_index_count() / 3; }
 
         [[nodiscard]] unsigned int get_vertex_size() const { return (unsigned int)vertices.size() * sizeof(float); }
         [[nodiscard]] unsigned int get_normal_size() const { return (unsigned int)normals.size() * sizeof(float); }
         [[nodiscard]] unsigned int get_texture_coords_size() const { return (unsigned int)texture_coords.size() * sizeof(float); }
-        [[nodiscard]] unsigned int get_index_size() const { return (unsigned int)_indices.size() * sizeof(unsigned int); }
+        [[nodiscard]] unsigned int get_index_size() const { return (unsigned int)indices.size() * sizeof(unsigned int); }
         [[nodiscard]] unsigned int get_line_index_size() const { return (unsigned int)line_indices.size() * sizeof(unsigned int); }
 
         [[nodiscard]] const float* get_vertices() const { return vertices.data(); }
         [[nodiscard]] const float* get_normals() const { return normals.data(); }
         [[nodiscard]] const float* get_texture_coords() const { return texture_coords.data(); }
-        [[nodiscard]] const unsigned int* get_indices() const { return _indices.data(); }
+        [[nodiscard]] const unsigned int* get_indices() const { return indices.data(); }
         [[nodiscard]] const unsigned int* get_line_indices() const { return line_indices.data(); }
 
         [[nodiscard]] const float * get_interleaved_vertices() const;
@@ -49,7 +63,7 @@ namespace Pong {
 
         [[nodiscard]] unsigned int get_VAO() const { return VAO_id; }
 
-        void set_VAO();
+        virtual void set_VAO();
 
         virtual void draw() const;
 
@@ -86,9 +100,12 @@ namespace Pong {
         std::vector<float> vertices;
         std::vector<float> normals;
         std::vector<float> texture_coords;
-        std::vector<unsigned int> _indices;
+        std::vector<unsigned int> indices;
+
         std::vector<unsigned int> line_indices;
         std::vector<float> interleaved_vertices;
+
+        Material* material = nullptr;
 
         int interleavedStride = 32;  // (pos + normal + txtcoords) * 4
 
@@ -99,9 +116,9 @@ namespace Pong {
         template<typename I, typename J, typename K>
         inline void add_indices(I&& i, J&& j, K&& k)
         {
-            _indices.push_back(std::forward<I>(i));
-            _indices.push_back(std::forward<J>(j));
-            _indices.push_back(std::forward<K>(k));
+            indices.push_back(std::forward<I>(i));
+            indices.push_back(std::forward<J>(j));
+            indices.push_back(std::forward<K>(k));
         }
 
         inline void add_tex_coords(const float &u, const float &v)
@@ -317,6 +334,35 @@ namespace Pong {
 
         ~CubeShape() override;
     };
+
+    // Mesh
+    class Mesh : public Shape{
+    public:
+        std::vector<Vertex> vertices;
+
+        // constructor
+        Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices);
+
+
+        void set_VAO() override;
+
+        static std::vector<Mesh> import_mesh_from_file(const std::string& model_path);
+
+    };
+
+    // Exceptions
+    class MeshException : public std::exception {
+    private:
+        std::string _error;
+    public:
+        explicit MeshException(std::string error):
+                _error(std::move(error)){}
+
+        [[nodiscard]] const char *get_error() const {
+            return _error.c_str();
+        }
+    };
+
 }
 
 

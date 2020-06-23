@@ -14,12 +14,15 @@ namespace Pong
 #include "Collider.h"
 
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <string>
 #include <list>
 
 namespace Pong {
-
+ // TODO: more than one shape, and materials in shape not in Actor.
+ // TODO: load shapes from a file, using assimp, with not materials or textures.
+ // TODO: colliders vector, colliders with transform matrix to offset.
     class Actor
     {
     protected:
@@ -32,7 +35,7 @@ namespace Pong {
         std::list<Component*> _componentList; // list is faster than vector
 
     public:
-        Actor(std::string name): _name(name) {}
+        explicit Actor(std::string name): _name(std::move(name)) {}
 
         virtual ~Actor();
 
@@ -53,10 +56,10 @@ namespace Pong {
         void setScale(const glm::vec3 &scale);
 
         // getters
-        Shape* getShape() const { return _shape; }
-        glm::mat4 getTransform() const { return _transform; }
-        Material* getMaterial() const { return _material; }
-        Collider* getCollider() const { return _collider; }
+        [[nodiscard]] Shape* getShape() const { return _shape; }
+        [[nodiscard]] glm::mat4 getTransform() const { return _transform; }
+        [[nodiscard]] Material* getMaterial() const { return _material; }
+        [[nodiscard]] Collider* getCollider() const { return _collider; }
         std::string getName() { return _name; }
         std::list<Component*> get_components() { return _componentList; }
         bool getVisibility() { return _visible; }
@@ -168,7 +171,7 @@ namespace Pong {
         /**
             Constructor using glm::vec3
             */
-        Camera(std::string name,
+        explicit Camera(std::string name,
                glm::vec3 position = glm::vec3(0.f, 0.f, 0.f),
                glm::vec3 up = glm::vec3(0.f, 1.f, 0.f),
                float yaw = YAW,

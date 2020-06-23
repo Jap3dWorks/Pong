@@ -272,7 +272,7 @@ namespace Pong
         auto ball = _scene->createActor<ABall>("ball");
         ball->set_direction(glm::vec3(1, 1, 0));
 
-        // smooth ball doen't work
+        // smooth ball doesn't work
         auto ball_shp = _scene->createShape<IcosphereShape>(
                 "ball_shape",
                 radius,

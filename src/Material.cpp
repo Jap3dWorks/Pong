@@ -7,7 +7,7 @@ namespace Pong {
     Texture::Texture(std::string name, std::string path, std::string texture_type) :
         _name(name), _path(path), _texture_type(texture_type)
     {
-        _Id_texture = loadTexture(path.c_str(), false);
+        _texture_id = loadTexture(path.c_str(), false);
     }
 
     Texture::~Texture()
