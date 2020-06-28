@@ -222,8 +222,9 @@ namespace Pong{
     }
 
     // import model methods
-    /**Import model from a file like fbx or obj, the shapes that compoese the model,
-      Will be added to the scene.*/
+    /**Import model from a file like fbx or obj, the shapes that compose the model,
+      Will be added to the scene.
+      Returns: Number of shapes imported.*/
     int Scene::import_model(const std::string& model_path, Actor *& actor)
     {
 
