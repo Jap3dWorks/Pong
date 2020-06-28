@@ -1,19 +1,21 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-//#include "pongTypes.h"
-
 #include "Actor.h"
 
-//#include "Camera.h"
+// #include "Camera.h"
 #include "Shape.h"
 #include "Collider.h"
 #include "Render.h"
 
 #include <glm/glm.hpp>
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <vector>
 
 #include <map>
@@ -62,10 +64,15 @@ namespace Pong {
         //private methods
         Scene();
 
+        void _process_node(aiNode * node,
+                           const aiScene *& scene,
+                           std::vector<Mesh*>& out_result);
+        static Mesh * _process_mesh(const aiMesh *& mesh);
+
     public:
         virtual ~Scene();
 
-        static Scene* getInstance();
+        static Scene* get_instance();
 
         // std::map<std::string, std::vector> shader_meshes_map;
 
@@ -80,8 +87,6 @@ namespace Pong {
 
         DirectionalLight* getDirectionalLight();
 
-        void material_to_shape(Material*, Actor*);
-
         Shader* create_shader(std::string name,
             const GLchar* vertex_shader,
             const GLchar* fragment_shader,
@@ -90,12 +95,12 @@ namespace Pong {
         Shader* get_shader(std::string name);
 
         // create a material and save it in _materialMap
-        Material* createMaterial(std::string name,
-            Shader* shader,
-            std::vector<Texture*> textures);
+        Material* create_material(std::string name,
+                                  Shader* shader,
+                                  std::vector<Texture*> textures);
 
         // get a material by its name
-        Material* getMaterial(std::string name);
+        Material* get_material(std::string name);
 
         // create texture
         Texture* create_texture(std::string name,
@@ -106,7 +111,7 @@ namespace Pong {
 
         // Create an actor and save in _actorMap
         template<typename T>
-        T* createActor(std::string name)
+        T* create_actor(std::string name)
         {
             if (!std::is_base_of<Actor, T>::value)
                 return nullptr;
@@ -125,31 +130,11 @@ namespace Pong {
         }
 
         // get an actor by its name
-        Actor* getActor(std::string name);
-
-        // create a shape and save it in _shapeMap
-        template<typename T, typename... Args>
-        T* createShape(std::string name, Args&&... args)
-        {
-            if (!std::is_base_of<Shape, T>::value)
-                return nullptr;
-            if (shape_map.find(name) == shape_map.end())
-            {
-                T* s_ptr = new T(name, std::forward<Args>(args)...);
-                // store shape pointer in internal level data
-                shape_map[name] = static_cast<Shape*>(s_ptr);
-                return s_ptr;
-            }
-            else
-                // if shape exists in the map, return ptr to shape
-                return static_cast<T*>(shape_map[name]);
-        }
-        // get shape
-        Shape* getShape(std::string name);
+        Actor* get_actor(std::string name);
 
         // Create a collider, template you must specify the collider type
         template<typename T>
-        T* createCollider(std::string name)
+        T* create_collider(std::string name)
         {
             if (!std::is_base_of<Collider, T>::value) {
                 return nullptr;
@@ -164,11 +149,32 @@ namespace Pong {
                 return nullptr;
             }
         }
+
         // get a collider by its name
         Collider* getCollider(std::string name);
 
         // get camera ptr
-        Camera* getCamera();
+        Camera* get_camera();
+
+        template<typename T, typename... Args>
+        T* create_shape(std::string name, Args&&... args)
+        {
+            if (!std::is_base_of<Shape, T>::value)
+                return nullptr;
+            if (shape_map.find(name) == shape_map.end())
+            {
+                T* s_ptr = new T(name, std::forward<Args>(args)...);
+                // store shape pointer in internal level data
+                shape_map[name] = static_cast<Shape*>(s_ptr);
+                return s_ptr;
+            }
+            else
+                // if shape exists in the map, return ptr to shape
+                return static_cast<T*>(shape_map[name]);
+        }
+        Shape* get_shape(std::string name);
+
+        int import_model(const std::string& model_path, Actor *& actor);
 
     }; // end Scene
 }

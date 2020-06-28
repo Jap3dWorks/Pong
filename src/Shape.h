@@ -2,7 +2,6 @@
 #define SHAPE_H
 
 #include "Utils.h"
-#include "Material.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -17,28 +16,21 @@
 
     // TODO: Load models
     // TODO: Spaceship primitive shape
-    // TODO: add material to shape not to actor
 
 namespace Pong {
 
     // Exceptions
     class MeshException : public std::exception {
-    private:
-        std::string _error;
     public:
-        explicit MeshException(std::string error):
-                _error(std::move(error)){}
-
-        [[nodiscard]] const char *get_error() const {
-            return _error.c_str();
-        }
+        explicit MeshException(char const* const error) noexcept :
+                std::exception(error){}
     };
 
 
     // data structures
     struct Vertex
     {
-        //TODO: move all shapes to this system
+        //TODO: All _shapes class should use Vertex struct
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 tex_coords;
@@ -47,13 +39,14 @@ namespace Pong {
     };
 
 
-    // shapes classes
+    // _shapes classes
     class Shape {
     public:
         explicit Shape(std::string name);
         virtual ~Shape() = default;
 
         [[nodiscard]] std::string get_name() const { return name; }
+        void set_name(std::string new_name) {name = std::move(new_name);}
 
         [[nodiscard]] unsigned int get_vertex_count() const { return (unsigned int)vertices.size() / 3; }
         [[nodiscard]] unsigned int get_normal_count() const { return (unsigned int)normals.size() / 3; }
@@ -64,9 +57,12 @@ namespace Pong {
 
         [[nodiscard]] unsigned int get_vertex_size() const { return (unsigned int)vertices.size() * sizeof(float); }
         [[nodiscard]] unsigned int get_normal_size() const { return (unsigned int)normals.size() * sizeof(float); }
-        [[nodiscard]] unsigned int get_texture_coords_size() const { return (unsigned int)texture_coords.size() * sizeof(float); }
-        [[nodiscard]] unsigned int get_index_size() const { return (unsigned int)indices.size() * sizeof(unsigned int); }
-        [[nodiscard]] unsigned int get_line_index_size() const { return (unsigned int)line_indices.size() * sizeof(unsigned int); }
+        [[nodiscard]] unsigned int get_texture_coords_size() const {
+            return (unsigned int)texture_coords.size() * sizeof(float); }
+        [[nodiscard]] unsigned int get_index_size() const {
+            return (unsigned int)indices.size() * sizeof(unsigned int); }
+        [[nodiscard]] unsigned int get_line_index_size() const {
+            return (unsigned int)line_indices.size() * sizeof(unsigned int); }
 
         [[nodiscard]] const float* get_vertices() const { return vertices.data(); }
         [[nodiscard]] const float* get_normals() const { return normals.data(); }
@@ -121,8 +117,6 @@ namespace Pong {
 
         std::vector<unsigned int> line_indices;
         std::vector<float> interleaved_vertices;
-
-        Material* material = nullptr;
 
         int interleavedStride = 32;  // (pos + normal + txtcoords) * 4
 
@@ -241,8 +235,7 @@ namespace Pong {
                     out_normal);
         }
 
-        /**
-        determine a point c is on the segment a-b*/
+        /**determine a point c is on the segment a-b*/
         static bool _is_on_line_segment(const float *a, const float *b, const float *c);
 
     };
@@ -289,7 +282,7 @@ namespace Pong {
 
         /**
             Compute the 12 basic vertices of an icosahedron*/
-        std::vector<glm::vec3> _computeIcosahedronVertices();
+        std::vector<glm::vec3> _computeIcosahedronVertices() const;
 
         /**
             subdivide the icosahedron vertices with smooth results*/
@@ -309,10 +302,10 @@ namespace Pong {
         }
 
 
-        inline void _compute_half_tex_coords(const float *t1, const float *t2, float *nt);
-        inline void _compute_half_tex_coords(const float *t1, const float *t2, glm::vec2& nt);
+        static inline void _compute_half_tex_coords(const float *t1, const float *t2, float *nt);
+        static inline void _compute_half_tex_coords(const float *t1, const float *t2, glm::vec2& nt);
 
-        void _compute_vertex_normal(const float *v, float *n);
+        static void _compute_vertex_normal(const float *v, float *n);
 
         /**
             add vertex to arrays*/
@@ -361,8 +354,6 @@ namespace Pong {
         Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices);
 
         void set_VAO() override;
-
-        static std::vector<Mesh> import_meshes(const std::string& model_path);
 
     };
 

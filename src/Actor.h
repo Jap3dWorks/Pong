@@ -21,52 +21,62 @@ namespace Pong
 
 namespace Pong {
  // TODO: more than one shape, and materials in shape not in Actor.
- // TODO: load shapes from a file, using assimp, with not materials or textures.
+ // TODO: load _shapes from a file, using assimp, with not materials or textures.
  // TODO: colliders vector, colliders with transform matrix to offset.
     class Actor
     {
     protected:
         bool _visible=true;
-        Shape* _shape = nullptr;
-        Material* _material = nullptr;
+
         Collider* _collider = nullptr;
         glm::mat4 _transform = glm::mat4(1);
         std::string _name;
         std::list<Component*> _componentList; // list is faster than vector
+
+        std::vector<Shape*> _shapes;
+        std::vector<Material*> _materials;
 
     public:
         explicit Actor(std::string name): _name(std::move(name)) {}
 
         virtual ~Actor();
 
-        virtual void ProcessKeyboard(Movements movement, float deltaTime);
+        virtual void process_keyboard(Movements movement, float deltaTime);
 
         virtual void draw() const;
 
         virtual void update(float delta_time){}
 
-        // --setters--
-        void setShape(Shape* shape) { _shape = shape; }
-        void setTransform(glm::mat4 trans) { _transform = trans; }
-        void setMaterial(Material* mat) { _material = mat; }
-        void setCollider(Collider* coll);
+        void add_shape(Shape* shape) {_shapes.push_back(shape);}
+        [[nodiscard]] Shape* get_shape(unsigned int index=0) const {
+            return _shapes[index];
+        }
+        unsigned int shapes_count() {return _shapes.size();}
+
+        void add_material(Material* mat) { _materials.push_back(mat); }
+        [[nodiscard]] Material* get_material(unsigned int index=0) const {
+            return _materials[index];
+        }
+        unsigned int materials_count() {return _materials.size();}
+
+        void set_transform(glm::mat4 trans) { _transform = trans; }
+
+        void set_collider(Collider* coll);
         void setVisibility(bool vis) { _visible = vis; }
 
-        // transforms setters
-        void setScale(const glm::vec3 &scale);
+        void set_scale(const glm::vec3 & scale);
 
-        // getters
-        [[nodiscard]] Shape* getShape() const { return _shape; }
         [[nodiscard]] glm::mat4 getTransform() const { return _transform; }
-        [[nodiscard]] Material* getMaterial() const { return _material; }
         [[nodiscard]] Collider* getCollider() const { return _collider; }
+
         std::string getName() { return _name; }
         std::list<Component*> get_components() { return _componentList; }
-        bool getVisibility() { return _visible; }
+
+        bool get_visibility() const { return _visible; }
 
         // config members
         template <typename T>
-        void addComponent(T* c_ptr = nullptr);
+        void add_component(T* component = nullptr);
     };
 
     // --AKinetic class--
@@ -123,7 +133,7 @@ namespace Pong {
 
         void update(float delta_time) override;
 
-        virtual void ProcessKeyboard(Movements move_direction, float delta_time) override;
+        virtual void process_keyboard(Movements move_direction, float delta_time) override;
     };
 
     // --ABALL class--
@@ -210,7 +220,7 @@ namespace Pong {
         }
 
         // keyboard input
-        virtual void ProcessKeyboard(Pong::Movements direction, float delta_time) {
+        virtual void process_keyboard(Pong::Movements direction, float delta_time) {
             float velocity = MovementSpeed * delta_time;
             if (direction == Pong::Movements::FORWARD)
                 Position += Front * velocity;

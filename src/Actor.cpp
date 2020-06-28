@@ -10,41 +10,41 @@ namespace Pong {
             delete c;
     }
 
-    void Actor::setScale(const glm::vec3 &scale) {
+    void Actor::set_scale(const glm::vec3 &scale) {
         _transform = glm::scale(_transform, scale);
     }
 
     void Actor::draw() const {
         // draw if is visible and has a shape
-        if (_visible && _shape) {
-            _material->set_param("model", _transform);
-            _material->use();
+        if(! _visible) return;
 
-            _shape->draw();
-
-            _material->end_use();
+        for (unsigned int i=0; i <  _shapes.size(); ++i)
+        {
+            _materials[i]->use();
+            _shapes[i]->draw();
+            _materials[i]->end_use();
         }
     }
 
-    void Actor::ProcessKeyboard(Movements movement, float deltaTime) {}
+    void Actor::process_keyboard(Movements movement, float deltaTime) {}
 
-    void Actor::setCollider(Collider *coll) {
+    void Actor::set_collider(Collider *coll) {
         _collider = coll;
         coll->actor = this;
     }
 
     template<typename T>
-    void Actor::addComponent(T *c_ptr) {
+    void Actor::add_component(T * component) {
         if (!std::is_base_of<Component, T>::value)
             return;
 
         // create new component if not has input
-        if (!c_ptr)
-            c_ptr = new T;
+        if (!component)
+            component = new T;
 
         // A derivate component class
-        c_ptr->addActor(this);
-        _componentList.push_back(static_cast<Component *>(c_ptr));
+        component->addActor(this);
+        _componentList.push_back(static_cast<Component *>(component));
     }
 
     // --AKinetic--
@@ -84,7 +84,7 @@ namespace Pong {
 
     // --Player--
     // ----------
-    void APlayer::ProcessKeyboard(Movements move_direction, float delta_time) {
+    void APlayer::process_keyboard(Movements move_direction, float delta_time) {
         float f_speed = _base_speed * delta_time;
 
         if (move_direction == Pong::Movements::UP) {

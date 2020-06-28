@@ -24,7 +24,7 @@ namespace Pong {
 		/*
 		Constructor receives a pointer of template class, also a map with the relations
 		(Key, Movements::_anyMove_)
-		@param move_element: object pointer, this object should override ProcessKeyboard method.
+		@param move_element: object pointer, this object should override process_keyboard method.
 		@param glfw_keys(std::map): relations between keys and movements type.*/
 		ProcessInput(Actor* move_element, std::map<int, Movements> glfw_keys,
 			GLFWwindow* window) :_glfw_keys(glfw_keys), _window(window)
@@ -39,7 +39,7 @@ namespace Pong {
 			for (auto const& it: _glfw_keys)
 			{
 				if (glfwGetKey(_window, it.first) == GLFW_PRESS)
-					_move_element->ProcessKeyboard(it.second, deltaTime);
+                    _move_element->process_keyboard(it.second, deltaTime);
 			}
 		}
 	};

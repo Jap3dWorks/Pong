@@ -90,7 +90,7 @@ void cout_matrix(const glm::mat4 &matrix)
 namespace Pong {
     void draw_point(glm::vec3 point)
     {
-        Scene* scene = Scene::getInstance();
+        Scene* scene = Scene::get_instance();
 
         // point actor name
         std::string pnt_nme = "point_";
@@ -112,15 +112,16 @@ namespace Pong {
         // get shader
         Shader* point_shd = scene->create_shader("point_shd", "unlit_v.glsl", "unlit_f.glsl");
 
-        Material* point_mat = scene->createMaterial("point_mat", point_shd,
-            std::vector<Pong::Texture*>());
+        Material* point_mat = scene->create_material("point_mat", point_shd,
+                                                     std::vector<Pong::Texture *>());
 
         // point actor
-        AKinetic* a_point = scene->createActor<AKinetic>(pnt_nme);
-        IcosphereShape* s_point = scene->createShape<IcosphereShape>("point_shp");
-        a_point->setShape(s_point);
-        a_point->setTransform(glm::translate(glm::mat4(1), point));
-        a_point->setMaterial(point_mat);
+        auto* a_point = scene->create_actor<AKinetic>(pnt_nme);
+        auto* s_point = scene->create_shape<IcosphereShape>("point_shp");
+        a_point->add_shape(s_point);
+        a_point->set_transform(glm::translate(glm::mat4(1), point));
+
+        s_point->set_material(point_mat);
 
         s_point->set_radius(0.05f);
 

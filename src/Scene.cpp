@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "logger.h"
 
+
 Pong::Scene* Pong::Scene::instance = 0;
 namespace Pong{
     Scene::Scene()
@@ -62,15 +63,7 @@ namespace Pong{
         }
     }
 
-    void Scene::material_to_shape(Material* material, Actor* actor)
-    {
-        // posibly material set in shape class has more sense
-        actor->setMaterial(material);
-
-        // shader_meshes_map;
-    }
-
-    Scene* Pong::Scene::getInstance()
+    Scene* Pong::Scene::get_instance()
     {
         if (!instance)
         {
@@ -92,12 +85,12 @@ namespace Pong{
         return _directionalLight;
     }
 
-    Camera* Pong::Scene::getCamera()
+    Camera* Pong::Scene::get_camera()
     {return _camera;}
 
     // --Actors--
     //template<typename T>
-    //T* Scene::createActor(std::string name)
+    //T* Scene::create_actor(std::string name)
     //{
     //	if (!std::is_base_of<Actor, T>::value)
     //		return nullptr;
@@ -115,7 +108,7 @@ namespace Pong{
     //	}
     //}
 
-    Actor* Scene::getActor(std::string name)
+    Actor* Scene::get_actor(std::string name)
     {
         if (actor_map.find(name) != actor_map.end())
         {
@@ -141,7 +134,7 @@ namespace Pong{
     }
 
 
-    Shape* Scene::getShape(std::string name)
+    Shape* Scene::get_shape(std::string name)
     {
         if (shape_map.find(name) != shape_map.end())
         {
@@ -175,9 +168,9 @@ namespace Pong{
     }
 
     // --Materials--
-    Material* Scene::createMaterial(std::string name,
-        Shader* shader,
-        std::vector<Texture*> textures)
+    Material* Scene::create_material(std::string name,
+                                     Shader* shader,
+                                     std::vector<Texture*> textures)
     {
         if (material_map.find(name) == material_map.end())
         {
@@ -191,7 +184,7 @@ namespace Pong{
         }
     }
 
-    Material* Scene::getMaterial(std::string name)
+    Material* Scene::get_material(std::string name)
     {
         if (material_map.find(name) != material_map.end())
         {
@@ -228,32 +221,139 @@ namespace Pong{
             return nullptr;
     }
 
+    // import model methods
+    /**Import model from a file like fbx or obj, the shapes that compoese the model,
+      Will be added to the scene.*/
+    int Scene::import_model(const std::string& model_path, Actor *& actor)
+    {
+
+        // read file
+        Assimp::Importer importer;
+        const aiScene *ai_scene = importer.ReadFile(
+                model_path,
+                aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+
+        // check for errors
+        if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
+        {
+            LOG_ERROR("ASSIMP:: " << importer.GetErrorString());
+            throw MeshException(importer.GetErrorString());
+        }
+
+        // directory path
+        std::string directory = model_path.substr(0,
+                                                  model_path.find_last_of('/'));
+
+        std::string file_name = model_path.substr(model_path.find_last_of('/') + 1);
+
+        std::vector<Mesh *> result;
+        _process_node(ai_scene->mRootNode, ai_scene, result);
+
+        for(auto shape: result)
+        {
+            shape->set_name(file_name + ":" + shape->get_name());
+            shape_map[shape->get_name()] = shape;
+            actor->add_shape(shape);
+        }
+
+        return result.size();
+    }
+
+    void Scene::_process_node(aiNode * node,
+                              const aiScene *& scene,
+                              std::vector<Mesh*>& out_result)
+    {
+        for(unsigned int i = 0; i < node->mNumMeshes; i++)
+        {
+            const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            out_result.push_back(_process_mesh(mesh));
+        }
+
+        for (unsigned int i=0; i < node->mNumChildren; i++)
+        {
+            _process_node(node->mChildren[i], scene, out_result);
+        }
+    }
+
+    Mesh * Scene::_process_mesh(const aiMesh *& mesh)
+    {
+        std::vector<Vertex> vertices;
+        std::vector<unsigned int> indices;
+
+        for(unsigned int i=0; i < mesh->mNumVertices; i++)
+        {
+            Vertex vertex{};
+            glm::vec3 vector;
+            // positions
+            vector.x = mesh->mVertices[i].x;
+            vector.y = mesh->mVertices[i].y;
+            vector.z = mesh->mVertices[i].z;
+            vertex.position = vector;
+            //normals
+            vector.x = mesh->mNormals[i].x;
+            vector.y = mesh->mNormals[i].y;
+            vector.z = mesh->mNormals[i].z;
+            vertex.normal = vector;
+
+            // texture coordinates
+            if (mesh->mTextureCoords[0])  // only one id
+            {
+                glm::vec2 vec;
+                vec.x = mesh->mTextureCoords[0][i].x;
+                vec.y = mesh->mTextureCoords[0][i].y;
+                vertex.tex_coords = vec;
+            }
+            else vertex.tex_coords = glm::vec2 (0.f);
+            // tangent
+            vector.x = mesh->mTangents[i].x;
+            vector.y = mesh->mTangents[i].y;
+            vector.z = mesh->mTangents[i].z;
+            vertex.tangent = vector;
+            // bitangent
+            vector.x = mesh->mBitangents[i].x;
+            vector.y = mesh->mBitangents[i].y;
+            vector.z = mesh->mBitangents[i].z;
+            vertex.bitangent = vector;
+
+            vertices.push_back(vertex);
+        }
+        // vertex indices
+        for(unsigned int i=0; i<mesh->mNumFaces; i++)
+        {
+            aiFace face = mesh->mFaces[i];
+            for (unsigned int j=0; j<face.mNumIndices; j++)
+            {
+                indices.push_back(face.mIndices[j]);
+            }
+        }
+
+        return new Mesh(mesh->mName.C_Str(), vertices, indices);
+    }
+
     // callback funtions
     // -----------------
-    void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+    void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
     {
-        Scene* scene = Scene::getInstance();
+        Scene* scene = Scene::get_instance();
         if (scene->cam_firstMouse)
         {
-            scene->cam_lastX = xpos;
-            scene->cam_lastY = ypos;
+            scene->cam_lastX = x_pos;
+            scene->cam_lastY = y_pos;
             scene->cam_firstMouse = false;
         }
 
-        float xoffset = xpos - scene->cam_lastX;
-        float yoffset = scene->cam_lastY - ypos;
+        float xoffset = x_pos - scene->cam_lastX;
+        float yoffset = scene->cam_lastY - y_pos;
 
-        scene->cam_lastX = xpos;
-        scene->cam_lastY = ypos;
+        scene->cam_lastX = x_pos;
+        scene->cam_lastY = y_pos;
 
-        scene->getCamera()->ProcessMouseMovement(xoffset, yoffset);
+        scene->get_camera()->ProcessMouseMovement(xoffset, yoffset);
     }
-
-
 
     void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
-        Scene::getInstance()->getCamera()->ProcessMouseScroll(yoffset);
+        Scene::get_instance()->get_camera()->ProcessMouseScroll(yoffset);
     }
 
 }

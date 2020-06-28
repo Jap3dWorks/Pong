@@ -11,7 +11,7 @@ namespace Pong
 {
     AbstractLevel::AbstractLevel() {
         _render = Render::getInstance();
-        _scene = Scene::getInstance();
+        _scene = Scene::get_instance();
     }
 
     AbstractLevel::~AbstractLevel()
@@ -82,7 +82,7 @@ namespace Pong
             {GLFW_KEY_Q, Pong::Movements::DOWN}
         };
         _inputList.emplace_back(
-            _scene->getCamera(),
+                _scene->get_camera(),
             camMap,
             render->getWindow());
     }
@@ -134,8 +134,8 @@ namespace Pong
 
     void AbstractLevel::_update_shader(Shader* shader)
     {
-        shader->setMat4("view", _scene->getCamera()->GetViewMatrix());
-        shader->setMat4("projection", glm::perspective(glm::radians(_scene->getCamera()->Zoom),
+        shader->setMat4("view", _scene->get_camera()->GetViewMatrix());
+        shader->setMat4("projection", glm::perspective(glm::radians(_scene->get_camera()->Zoom),
             (float)Pong::Render::SCR_WIDTH / (float)Pong::Render::SCR_HEIGHT,
             0.1f,
             10000.f));
@@ -192,7 +192,7 @@ namespace Pong
     void PongLevel::run()
     {
         // get camera
-        Camera* camera = _scene->getCamera();
+        Camera* camera = _scene->get_camera();
         camera->Position=glm::vec3(0,0,18);
 
         // build and compile the shader program
@@ -209,82 +209,84 @@ namespace Pong
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(0.5f, 2.5f, 0.5f);
 
-        auto* p1 = _scene->createActor<APlayer>("p1_ply");
-        p1->setShape(_scene->createShape<CubeShape>("cube_shp"));
-        p1->setTransform(glm::translate(iniPos, glm::vec3(10.f, 0, 0)));
-        p1->setMaterial(&material);
-        p1->setScale(pScale);
-        LOG_DEBUG("Set collider p1_coll");
-        p1->setCollider(_scene->createCollider<BoxCollider>("p1_coll"));
+        auto cube_shape = _scene->create_shape<CubeShape>("cube_shp");
 
-        auto* p2 = _scene->createActor<APlayer>("p2_ply");
-        p2->setShape(_scene->getShape("cube_shp"));
-        p2->setTransform(glm::translate(iniPos, glm::vec3(-10.f, 0, 0)));
-        p2->setMaterial(&material);
-        p2->setScale(pScale);
-        LOG_DEBUG("Set collider p2_coll");
-        p2->setCollider(_scene->createCollider<BoxCollider>("p2_coll"));
+        auto* p1 = _scene->create_actor<APlayer>("p1_ply");
+        p1->add_shape(cube_shape);
+        p1->set_transform(glm::translate(iniPos, glm::vec3(10.f, 0, 0)));
+        p1->add_material(&material);
+        p1->set_scale(pScale);
+        LOG_DEBUG("Set collider p1_coll")
+        p1->set_collider(_scene->create_collider<BoxCollider>("p1_coll"));
+
+        auto* p2 = _scene->create_actor<APlayer>("p2_ply");
+        p2->add_shape(_scene->get_shape("cube_shp"));
+        p2->set_transform(glm::translate(iniPos, glm::vec3(-10.f, 0, 0)));
+        p2->add_material(&material);
+        p2->set_scale(pScale);
+        LOG_DEBUG("Set collider p2_coll")
+        p2->set_collider(_scene->create_collider<BoxCollider>("p2_coll"));
 
         // --config walls--
         glm::vec3 wall_scale = glm::vec3(20, 5, 5);
-        auto* upper_wall = _scene->createActor<Actor>("upper_wall");
-        upper_wall->setShape(_scene->createShape<CubeShape>("wall_shp"));
-        upper_wall->setTransform(glm::translate(iniPos, glm::vec3(0, 9, 0)));
-        upper_wall->setMaterial(&material);
-        upper_wall->setScale(wall_scale);
+        auto* upper_wall = _scene->create_actor<Actor>("upper_wall");
+        upper_wall->add_shape(_scene->create_shape<CubeShape>("wall_shp"));
+        upper_wall->set_transform(glm::translate(iniPos, glm::vec3(0, 9, 0)));
+        upper_wall->add_material(&material);
+        upper_wall->set_scale(wall_scale);
         LOG_DEBUG("Set collider upper_wall_coll")
-        upper_wall->setCollider(_scene->createCollider<BoxCollider>("upper_wall_coll"));
+        upper_wall->set_collider(_scene->create_collider<BoxCollider>("upper_wall_coll"));
 
-        auto* lower_wall = _scene->createActor<Actor>("lower_wall");
-        lower_wall->setShape(_scene->getShape("wall_shp"));
-        lower_wall->setTransform(glm::translate(iniPos, glm::vec3(0, -9, 0)));
-        lower_wall->setMaterial(&material);
-        lower_wall->setScale(wall_scale);
+        auto* lower_wall = _scene->create_actor<Actor>("lower_wall");
+        lower_wall->add_shape(_scene->get_shape("wall_shp"));
+        lower_wall->set_transform(glm::translate(iniPos, glm::vec3(0, -9, 0)));
+        lower_wall->add_material(&material);
+        lower_wall->set_scale(wall_scale);
         LOG_DEBUG("Set collider lower_wall_coll")
-        lower_wall->setCollider(_scene->createCollider<BoxCollider>("lower_wall_coll"));
+        lower_wall->set_collider(_scene->create_collider<BoxCollider>("lower_wall_coll"));
 
         // -- config out game area reset --
         glm::vec3 out_scale = glm::vec3(5, 20, 20);
-        auto* right_outGame = _scene->createActor<Actor>("right_outGame");
-        //right_outGame->setShape(_scene->createShape<CubeShape>("out_shp"));
-        right_outGame->setTransform(glm::translate(iniPos, glm::vec3(15, 0, 0)));
-        right_outGame->setMaterial(&material);
-        right_outGame->setScale(out_scale);
-        auto* r_out_coll = _scene->createCollider<BoxCollider>("right_out_coll");
-        right_outGame->setCollider(r_out_coll);
+        auto* right_outGame = _scene->create_actor<Actor>("right_outGame");
+        //right_outGame->add_shape(_scene->create_shape<CubeShape>("out_shp"));
+        right_outGame->set_transform(glm::translate(iniPos, glm::vec3(15, 0, 0)));
+        right_outGame->add_material(&material);
+        right_outGame->set_scale(out_scale);
+        auto* r_out_coll = _scene->create_collider<BoxCollider>("right_out_coll");
+        right_outGame->set_collider(r_out_coll);
 
         BorderCollisionComponent r_border_component;
         r_out_coll->add_component(&r_border_component);
 
-        auto* left_outGame = _scene->createActor<Actor>("left_outGame");
-        //left_outGame->setShape(_scene->getShape("out_shp"));
-        left_outGame->setTransform(glm::translate(iniPos, glm::vec3(-15, 0, 0)));
-        left_outGame->setMaterial(&material);
-        left_outGame->setScale(out_scale);
-        auto* l_out_coll = _scene->createCollider<BoxCollider>("left_out_coll");
-        left_outGame->setCollider(l_out_coll);
+        auto* left_outGame = _scene->create_actor<Actor>("left_outGame");
+        //left_outGame->add_shape(_scene->get_shape("out_shp"));
+        left_outGame->set_transform(glm::translate(iniPos, glm::vec3(-15, 0, 0)));
+        left_outGame->add_material(&material);
+        left_outGame->set_scale(out_scale);
+        auto* l_out_coll = _scene->create_collider<BoxCollider>("left_out_coll");
+        left_outGame->set_collider(l_out_coll);
 
         BorderCollisionComponent l_border_component;
         l_out_coll->add_component(&l_border_component);
 
         // --config ball--
         float radius = .75f;
-        auto ball = _scene->createActor<ABall>("ball");
+        auto ball = _scene->create_actor<ABall>("ball");
         ball->set_direction(glm::vec3(1, 1, 0));
 
         // smooth ball doesn't work
-        auto ball_shp = _scene->createShape<IcosphereShape>(
+        auto ball_shp = _scene->create_shape<IcosphereShape>(
                 "ball_shape",
                 radius,
                 2,
                 true);
 
-        ball->setShape(ball_shp);
+        ball->add_shape(ball_shp);
 
-        auto* ball_col = _scene->createCollider<SphereCollider>("ball_col");
+        auto* ball_col = _scene->create_collider<SphereCollider>("ball_col");
         ball_col->setRadius(radius);
-        ball->setCollider(ball_col);
-        ball->setMaterial(&material);
+        ball->set_collider(ball_col);
+        ball->add_material(&material);
         ball->setVelocity(1.f);
 
         BallCollisionComponent ball_component;
@@ -292,11 +294,11 @@ namespace Pong
 
         // --test rt--
         float mark_r = .5f;
-        auto* mark = _scene->createActor<AKinetic>("mark");
-        auto* mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
+        auto* mark = _scene->create_actor<AKinetic>("mark");
+        auto* mark_shp = _scene->create_shape<IcosphereShape>("mark_shp");
         mark_shp->set_radius(mark_r);
-        mark->setShape(mark_shp);
-        mark->setMaterial(&material);
+        mark->add_shape(mark_shp);
+        mark->add_material(&material);
 
         // --config lighting--
         Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
@@ -312,7 +314,7 @@ namespace Pong
         // implement here
 
         // ------
-        LOG_DEBUG(p1->getMaterial()->get_shader()->ID << " shader id");
+        LOG_DEBUG(p1->get_material()->get_shader()->ID << " shader id");
 
         glm::vec3 dir = glm::vec3(-1.f,0,0);
         float variation = 0.f;
@@ -385,7 +387,7 @@ namespace Pong
             {GLFW_KEY_Q, Pong::Movements::DOWN}
         };
         _inputList.emplace_back(
-            _scene->getCamera(),
+                _scene->get_camera(),
             camMap,
             render->getWindow());
 
@@ -396,7 +398,7 @@ namespace Pong
             {GLFW_KEY_L, Pong::Movements::DOWN}
         };
         _inputList.emplace_back(
-            _scene->getActor("p1_ply"),
+                _scene->get_actor("p1_ply"),
             p1Map,
             render->getWindow());
 
@@ -407,7 +409,7 @@ namespace Pong
             {GLFW_KEY_J, Pong::Movements::DOWN}
         };
         _inputList.emplace_back(
-            _scene->getActor("p2_ply"),
+                _scene->get_actor("p2_ply"),
             p2Map,
             render->getWindow());
     }
@@ -418,7 +420,7 @@ namespace Pong
     void TestLevel::_level_setup()
     {
         // get camera
-        Camera* camera = _scene->getCamera();
+        Camera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 
         // build and compile the shader program
@@ -427,8 +429,8 @@ namespace Pong
             "../shaders/blinn_F.glsl");
         //Shader* blinn_shd = _scene->create_shader("blinn_shd", "unlit_v.glsl", "unlit_f.glsl");
 
-        Material* blinn_mat = _scene->createMaterial("blinn_mat", blinn_shd,
-            std::vector<Pong::Texture*>());
+        Material* blinn_mat = _scene->create_material("blinn_mat", blinn_shd,
+                                                      std::vector<Pong::Texture *>());
 
         blinn_mat->set_param("glow", 64.f);
         blinn_mat->set_param("specular", 0.85f);
@@ -441,35 +443,35 @@ namespace Pong
 
         std::vector<Texture*> paint_tex = { _scene->create_texture(
             "waterColor", "../textures/waterColor.jpg", "texture1") };
-        Material* paint_mat = _scene->createMaterial("paint_mat", paint_shd, paint_tex);
+        Material* paint_mat = _scene->create_material("paint_mat", paint_shd, paint_tex);
 
         // --config scene--
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
-        APlayer* cube_01 = _scene->createActor<APlayer>("cube_01");
-        cube_01->setShape(_scene->createShape<CubeShape>("cube_shp"));
-        cube_01->setTransform(glm::translate(iniPos, glm::vec3(5,0,0)));
-        cube_01->setMaterial(blinn_mat);
-        cube_01->setScale(pScale);
-        cube_01->setCollider(_scene->createCollider<BoxCollider>("cube_01_coll"));
+        APlayer* cube_01 = _scene->create_actor<APlayer>("cube_01");
+        cube_01->add_shape(_scene->create_shape<CubeShape>("cube_shp"));
+        cube_01->set_transform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
+        cube_01->add_material(blinn_mat);
+        cube_01->set_scale(pScale);
+        cube_01->set_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
 
-        APlayer* cube_02 = _scene->createActor<APlayer>("cube_02");
-        cube_02->setShape(_scene->getShape("cube_shp"));
-        cube_02->setTransform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
-        cube_02->setMaterial(blinn_mat);
-        cube_02->setScale(pScale);
-        cube_02->setCollider(_scene->createCollider<BoxCollider>("cube_02_coll"));
+        APlayer* cube_02 = _scene->create_actor<APlayer>("cube_02");
+        cube_02->add_shape(_scene->get_shape("cube_shp"));
+        cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
+        cube_02->add_material(blinn_mat);
+        cube_02->set_scale(pScale);
+        cube_02->set_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
 
         // --test rt--
         float mark_r = .5f;
-        AKinetic* mark = _scene->createActor<AKinetic>("mark");
-        IcosphereShape* mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
+        AKinetic* mark = _scene->create_actor<AKinetic>("mark");
+        IcosphereShape* mark_shp = _scene->create_shape<IcosphereShape>("mark_shp");
         mark_shp->set_radius(mark_r);
-        mark->setShape(mark_shp);
-        mark->setMaterial(paint_mat);
-        SphereCollider* m_coll = _scene->createCollider<SphereCollider>("mark_coll");
-        mark->setCollider(m_coll);
+        mark->add_shape(mark_shp);
+        mark->add_material(paint_mat);
+        SphereCollider* m_coll = _scene->create_collider<SphereCollider>("mark_coll");
+        mark->set_collider(m_coll);
         m_coll->setRadius(mark_r);
 
         // --lighting--
@@ -490,7 +492,7 @@ namespace Pong
 
         //glm::mat3 m = glm::mat3(tr_m);
 
-        glm::vec3 v_var(glm::mat3(_scene->getCamera()->GetViewMatrix()) * v_a);
+        glm::vec3 v_var(glm::mat3(_scene->get_camera()->GetViewMatrix()) * v_a);
 
 //        cout_vector(v_var);
     }
@@ -507,7 +509,7 @@ namespace Pong
             }
             else
             {
-                Camera* cam = _scene->getCamera();
+                Camera* cam = _scene->get_camera();
                 //glm::mat4 cam_trns = cam->GetViewMatrix();
                 RayCast ray(glm::vec3(cam->Front.x, cam->Front.y, cam->Front.z),
                     cam->Position);
@@ -533,7 +535,7 @@ namespace Pong
     void PBRLevel::_level_setup()
     {
         // get camera
-        Camera* camera = _scene->getCamera();
+        Camera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 
         // build and compile the shader program
@@ -559,36 +561,36 @@ namespace Pong
                     "aoMap")
         };
 
-        Material* pbr_mat = _scene->createMaterial("pbr_mat", pbr_shd, pbr_textures);
+        Material* pbr_mat = _scene->create_material("pbr_mat", pbr_shd, pbr_textures);
 
         // --config scene--
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
-        auto cube_01 = _scene->createActor<APlayer>("cube_01");
-        cube_01->setShape(_scene->createShape<CubeShape>("cube_shp"));
-        cube_01->setTransform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
-        cube_01->setMaterial(pbr_mat);
-        cube_01->setScale(pScale);
+        auto cube_01 = _scene->create_actor<APlayer>("cube_01");
+        cube_01->add_shape(_scene->create_shape<CubeShape>("cube_shp"));
+        cube_01->set_transform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
+        cube_01->add_material(pbr_mat);
+        cube_01->set_scale(pScale);
         LOG_DEBUG("Set collider");
-        cube_01->setCollider(_scene->createCollider<BoxCollider>("cube_01_coll"));
+        cube_01->set_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
 
-        auto cube_02 = _scene->createActor<APlayer>("cube_02");
-        cube_02->setShape(_scene->getShape("cube_shp"));
-        cube_02->setTransform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
-        cube_02->setMaterial(pbr_mat);
-        cube_02->setScale(pScale);
-        cube_02->setCollider(_scene->createCollider<BoxCollider>("cube_02_coll"));
+        auto cube_02 = _scene->create_actor<APlayer>("cube_02");
+        cube_02->add_shape(_scene->get_shape("cube_shp"));
+        cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
+        cube_02->add_material(pbr_mat);
+        cube_02->set_scale(pScale);
+        cube_02->set_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
 
         // --test rt--
         float mark_r = .5f;
-        auto mark = _scene->createActor<AKinetic>("mark");
-        auto mark_shp = _scene->createShape<IcosphereShape>("mark_shp");
+        auto mark = _scene->create_actor<AKinetic>("mark");
+        auto mark_shp = _scene->create_shape<IcosphereShape>("mark_shp");
         mark_shp->set_radius(mark_r);
-        mark->setShape(mark_shp);
-        mark->setMaterial(pbr_mat);
-        auto m_coll = _scene->createCollider<SphereCollider>("mark_coll");
-        mark->setCollider(m_coll);
+        mark->add_shape(mark_shp);
+        mark->add_material(pbr_mat);
+        auto m_coll = _scene->create_collider<SphereCollider>("mark_coll");
+        mark->set_collider(m_coll);
         m_coll->setRadius(mark_r);
 
         // --lighting--
@@ -608,7 +610,7 @@ namespace Pong
     void ModelLevel::_level_setup()
     {
         // get camera
-        Camera* camera = _scene->getCamera();
+        Camera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 
         // build and compile the shader program
@@ -616,8 +618,8 @@ namespace Pong
                                                   "../shaders/blinn_V.glsl",
                                                   "../shaders/blinn_F.glsl");
 
-        Material* blinn_mat = _scene->createMaterial("blinn_mat", blinn_shd,
-                                                     std::vector<Pong::Texture*>());
+        Material* blinn_mat = _scene->create_material("blinn_mat", blinn_shd,
+                                                      std::vector<Pong::Texture *>());
 
         blinn_mat->set_param("glow", 64.f);
         blinn_mat->set_param("specular", 0.85f);
@@ -627,18 +629,18 @@ namespace Pong
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
-        auto sphere = _scene->createActor<Actor>("cube_02");
-        sphere->setShape(_scene->createShape<IcosphereShape>("cube_shp",
-                                                             2.f,
-                                                             1,
-                                                             true));
+        auto sphere = _scene->create_actor<Actor>("cube_02");
+        sphere->add_shape(_scene->create_shape<IcosphereShape>("cube_shp",
+                                                               2.f,
+                                                               1,
+                                                               true));
 
-        sphere->setTransform(glm::translate(iniPos, glm::vec3(0.f, 0, 0)));
-        sphere->setMaterial(blinn_mat);
-        sphere->setScale(pScale);
+        sphere->set_transform(glm::translate(iniPos, glm::vec3(0.f, 0, 0)));
+        sphere->add_material(blinn_mat);
+        sphere->set_scale(pScale);
 
         // TODO if sphere doesn't has collider scene doesn't work
-//        sphere->setCollider(_scene->createCollider<SphereCollider>("cube_02_coll"));
+//        sphere->set_collider(_scene->create_collider<SphereCollider>("cube_02_coll"));
 
         // --lighting--
         Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();

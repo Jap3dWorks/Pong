@@ -122,7 +122,7 @@ namespace Pong {
         virtual bool collide(Collider* other) = 0;
 
         /**
-        It is a vector because some shapes has front tho sides. like box, sphere, etc*/
+        It is a vector because some _shapes has front tho sides. like box, sphere, etc*/
         virtual bool ray_cast(const RayCast ray, std::vector<RayCastData> &ray_data) const = 0 ;
 
         // virtual bool on_collision(Collider* other) {// run collission components}

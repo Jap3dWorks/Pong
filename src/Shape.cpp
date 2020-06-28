@@ -1,9 +1,6 @@
 #include "Shape.h"
 #include "logger.h"
 
-//#include <stb_image.h>
-//#include <utility>
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -46,7 +43,6 @@ namespace Pong {
 
     void Shape::set_VAO()
     {
-        // TODO: use Vertex struct
         int vRow = 0, nRow = 0, tRow = 0;
         if (get_vertex_count())
             vRow = 3;
@@ -114,11 +110,13 @@ namespace Pong {
     void Shape::draw() const
     {
         glBindVertexArray(VAO_id);
+
         // draw player
         if(!indices.empty())
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         else
             glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
+
         // detach vertex array
         glBindVertexArray(0);
     }
@@ -611,7 +609,7 @@ namespace Pong {
         nt.y = rv.y;
     }
 
-    std::vector<glm::vec3> IcosphereShape::_computeIcosahedronVertices()
+    std::vector<glm::vec3> IcosphereShape::_computeIcosahedronVertices() const
     {
         const float PI = 3.1415926f;
         const float H_ANGLE = PI / 180 * 72;    // angle for each col
@@ -944,103 +942,5 @@ namespace Pong {
 
         glBindVertexArray(0);
     }
-
-
-    // read from file mesh functions
-    Mesh process_mesh(const aiMesh *& mesh)
-    {
-        std::vector<Vertex> vertices;
-        std::vector<unsigned int> indices;
-        std::vector<Texture> Texture;
-
-        for(unsigned int i=0; i < mesh->mNumVertices; i++)
-        {
-            Vertex vertex{};
-            glm::vec3 vector;
-            // positions
-            vector.x = mesh->mVertices[i].x;
-            vector.y = mesh->mVertices[i].y;
-            vector.z = mesh->mVertices[i].z;
-            vertex.position = vector;
-            //normals
-            vector.x = mesh->mNormals[i].x;
-            vector.y = mesh->mNormals[i].y;
-            vector.z = mesh->mNormals[i].z;
-            vertex.normal = vector;
-            // texture coordinates
-            if (mesh->mTextureCoords[0])  // only one id
-            {
-                glm::vec2 vec;
-                vec.x = mesh->mTextureCoords[0][i].x;
-                vec.y = mesh->mTextureCoords[0][i].y;
-                vertex.tex_coords = vec;
-            }
-            else vertex.tex_coords = glm::vec2 (0.f);
-            // tangent
-            vector.x = mesh->mTangents[i].x;
-            vector.y = mesh->mTangents[i].y;
-            vector.z = mesh->mTangents[i].z;
-            vertex.tangent = vector;
-            // bitangent
-            vector.x = mesh->mBitangents[i].x;
-            vector.y = mesh->mBitangents[i].y;
-            vector.z = mesh->mBitangents[i].z;
-            vertex.bitangent = vector;
-
-            vertices.push_back(vertex);
-        }
-        // vertex indices
-        for(unsigned int i=0; i<mesh->mNumFaces; i++)
-        {
-            aiFace face = mesh->mFaces[i];
-            for (unsigned int j=0; j<face.mNumIndices; j++)
-            {
-                indices.push_back(face.mIndices[j]);
-            }
-        }
-
-        return Mesh(mesh->mName.C_Str(), vertices, indices);
-    }
-
-    void process_node(aiNode * node, const aiScene *& scene, std::vector<Mesh>& out_result)
-    {
-        for(unsigned int i = 0; i < node->mNumMeshes; i++)
-        {
-            const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            out_result.push_back(process_mesh(mesh));
-        }
-
-        for (unsigned int i=0; i < node->mNumChildren; i++)
-        {
-            process_node(node->mChildren[i], scene, out_result);
-        }
-    }
-
-    std::vector<Mesh> Mesh::import_meshes(const std::string& model_path) {
-
-        std::vector<Mesh> result;
-
-        // read file
-        Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(model_path,
-                                                 aiProcess_Triangulate |
-                                                 aiProcess_CalcTangentSpace);
-
-        // check for errors
-        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-        {
-            LOG_ERROR("ASSIMP:: " << importer.GetErrorString());
-            throw MeshException(importer.GetErrorString());
-        }
-
-        // directory path
-        std::string directory = model_path.substr(0,
-                model_path.find_last_of('/'));
-
-        process_node(scene->mRootNode, scene, result);
-
-        return result;
-    }
-
 
 }

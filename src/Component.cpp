@@ -31,7 +31,7 @@ namespace Pong {
         glm::vec3 relocate_position = collision_distance - radius_vec + coll_data->normal * 0.05f;
 
         // multiply ajust vector by 1.5 to avoid double collisions.
-        ball->setTransform(glm::translate(ball->getTransform(), relocate_position));
+        ball->set_transform(glm::translate(ball->getTransform(), relocate_position));
 
         // reflect _direction
         glm::vec3 collide_direction = glm::reflect(ball->getDirection(), coll_data->normal);
@@ -58,7 +58,7 @@ namespace Pong {
         {
             glm::mat4 b_trnsform = ball->getTransform();
             b_trnsform[3] = glm::vec4(0, 0, 0, 1);
-            ball->setTransform(b_trnsform);
+            ball->set_transform(b_trnsform);
 
             // set a random _direction
             srand(time(nullptr));
