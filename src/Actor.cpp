@@ -28,8 +28,9 @@ namespace Pong {
 
     void Actor::process_keyboard(Movements movement, float deltaTime) {}
 
-    void Actor::set_collider(Collider *coll) {
-        _collider = coll;
+    void Actor::add_collider(Collider* coll)
+    {
+        _colliders.push_back(coll);
         coll->actor = this;
     }
 

@@ -7,6 +7,7 @@
 #include "Shape.h"
 #include "Collider.h"
 #include "Render.h"
+#include "Lights.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,19 +25,6 @@
 
 
 namespace Pong {
-    // todo move lights to its own file
-    struct PointLight
-    {
-        glm::vec3 position = glm::vec3(0.f, 0.f, 0.f);
-        glm::vec3 color = glm::vec3(0.f, 0.f, 0.f);
-
-    };
-
-    struct DirectionalLight {
-        glm::vec3 direction = glm::vec3(0.f, -1.f, 0.f);
-        glm::vec3 color = glm::vec3(0.f, 0.f, 0.f);
-        glm::vec3 ambient = glm::vec3(0.f, 0.f, 0.f);
-    };
 
     void mouse_callback(GLFWwindow*, double, double);
     void scroll_callback(GLFWwindow*, double, double);

@@ -20,21 +20,19 @@ namespace Pong
 #include <list>
 
 namespace Pong {
- // TODO: more than one shape, and materials in shape not in Actor.
- // TODO: load _shapes from a file, using assimp, with not materials or textures.
  // TODO: colliders vector, colliders with transform matrix to offset.
     class Actor
     {
     protected:
         bool _visible=true;
 
-        Collider* _collider = nullptr;
         glm::mat4 _transform = glm::mat4(1);
         std::string _name;
         std::list<Component*> _componentList; // list is faster than vector
 
         std::vector<Shape*> _shapes;
         std::vector<Material*> _materials;
+        std::vector<Collider*> _colliders;
 
     public:
         explicit Actor(std::string name): _name(std::move(name)) {}
@@ -61,7 +59,8 @@ namespace Pong {
 
         void set_transform(glm::mat4 trans) { _transform = trans; }
 
-        void set_collider(Collider* coll);
+        void add_collider(Collider* coll);
+
         void setVisibility(bool vis) { _visible = vis; }
 
         void set_scale(const glm::vec3 & scale);

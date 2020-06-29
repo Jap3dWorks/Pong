@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "logger.h"
+#include "Lights.h"
 
 
 Pong::Scene* Pong::Scene::instance = 0;
@@ -331,7 +332,7 @@ namespace Pong{
         return new Mesh(mesh->mName.C_Str(), vertices, indices);
     }
 
-    // callback funtions
+    // callback functions
     // -----------------
     void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
     {

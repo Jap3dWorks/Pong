@@ -14,7 +14,6 @@
 
 #include <cstdarg>
 
-    // TODO: Load models
     // TODO: Spaceship primitive shape
 
 namespace Pong {

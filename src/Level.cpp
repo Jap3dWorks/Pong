@@ -2,6 +2,7 @@
 #include "logger.h"
 
 #include "Utils.h"
+#include "Lights.h"
 
 #include <vector>
 #include <GLFW/glfw3.h>
@@ -217,7 +218,9 @@ namespace Pong
         p1->add_material(&material);
         p1->set_scale(pScale);
         LOG_DEBUG("Set collider p1_coll")
-        p1->set_collider(_scene->create_collider<BoxCollider>("p1_coll"));
+//        p1->set_collider(_scene->create_collider<BoxCollider>("p1_coll"));
+
+        p1->add_collider(_scene->create_collider<BoxCollider>("p1_coll"));
 
         auto* p2 = _scene->create_actor<APlayer>("p2_ply");
         p2->add_shape(_scene->get_shape("cube_shp"));
@@ -225,7 +228,8 @@ namespace Pong
         p2->add_material(&material);
         p2->set_scale(pScale);
         LOG_DEBUG("Set collider p2_coll")
-        p2->set_collider(_scene->create_collider<BoxCollider>("p2_coll"));
+//        p2->set_collider(_scene->create_collider<BoxCollider>("p2_coll"));
+        p2->add_collider(_scene->create_collider<BoxCollider>("p2_coll"));
 
         // --config walls--
         glm::vec3 wall_scale = glm::vec3(20, 5, 5);
@@ -235,7 +239,8 @@ namespace Pong
         upper_wall->add_material(&material);
         upper_wall->set_scale(wall_scale);
         LOG_DEBUG("Set collider upper_wall_coll")
-        upper_wall->set_collider(_scene->create_collider<BoxCollider>("upper_wall_coll"));
+//        upper_wall->set_collider(_scene->create_collider<BoxCollider>("upper_wall_coll"));
+        upper_wall->add_collider(_scene->create_collider<BoxCollider>("upper_wall_coll"));
 
         auto* lower_wall = _scene->create_actor<Actor>("lower_wall");
         lower_wall->add_shape(_scene->get_shape("wall_shp"));
@@ -243,7 +248,8 @@ namespace Pong
         lower_wall->add_material(&material);
         lower_wall->set_scale(wall_scale);
         LOG_DEBUG("Set collider lower_wall_coll")
-        lower_wall->set_collider(_scene->create_collider<BoxCollider>("lower_wall_coll"));
+//        lower_wall->set_collider(_scene->create_collider<BoxCollider>("lower_wall_coll"));
+        lower_wall->add_collider(_scene->create_collider<BoxCollider>("lower_wall_coll"));
 
         // -- config out game area reset --
         glm::vec3 out_scale = glm::vec3(5, 20, 20);
@@ -253,7 +259,8 @@ namespace Pong
         right_outGame->add_material(&material);
         right_outGame->set_scale(out_scale);
         auto* r_out_coll = _scene->create_collider<BoxCollider>("right_out_coll");
-        right_outGame->set_collider(r_out_coll);
+//        right_outGame->set_collider(r_out_coll);
+        right_outGame->add_collider(r_out_coll);
 
         BorderCollisionComponent r_border_component;
         r_out_coll->add_component(&r_border_component);
@@ -264,7 +271,8 @@ namespace Pong
         left_outGame->add_material(&material);
         left_outGame->set_scale(out_scale);
         auto* l_out_coll = _scene->create_collider<BoxCollider>("left_out_coll");
-        left_outGame->set_collider(l_out_coll);
+//        left_outGame->set_collider(l_out_coll);
+        left_outGame->add_collider(l_out_coll);
 
         BorderCollisionComponent l_border_component;
         l_out_coll->add_component(&l_border_component);
@@ -285,7 +293,7 @@ namespace Pong
 
         auto* ball_col = _scene->create_collider<SphereCollider>("ball_col");
         ball_col->setRadius(radius);
-        ball->set_collider(ball_col);
+        ball->add_collider(ball_col);
         ball->add_material(&material);
         ball->setVelocity(1.f);
 
@@ -301,7 +309,7 @@ namespace Pong
         mark->add_material(&material);
 
         // --config lighting--
-        Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
+        DirectionalLight* directional_light = _scene->getDirectionalLight();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
@@ -454,14 +462,14 @@ namespace Pong
         cube_01->set_transform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
         cube_01->add_material(blinn_mat);
         cube_01->set_scale(pScale);
-        cube_01->set_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
+        cube_01->add_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
 
         APlayer* cube_02 = _scene->create_actor<APlayer>("cube_02");
         cube_02->add_shape(_scene->get_shape("cube_shp"));
         cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
         cube_02->add_material(blinn_mat);
         cube_02->set_scale(pScale);
-        cube_02->set_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
+        cube_02->add_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
 
         // --test rt--
         float mark_r = .5f;
@@ -471,11 +479,11 @@ namespace Pong
         mark->add_shape(mark_shp);
         mark->add_material(paint_mat);
         SphereCollider* m_coll = _scene->create_collider<SphereCollider>("mark_coll");
-        mark->set_collider(m_coll);
+        mark->add_collider(m_coll);
         m_coll->setRadius(mark_r);
 
         // --lighting--
-        Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
+        DirectionalLight* directional_light = _scene->getDirectionalLight();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
@@ -573,14 +581,14 @@ namespace Pong
         cube_01->add_material(pbr_mat);
         cube_01->set_scale(pScale);
         LOG_DEBUG("Set collider");
-        cube_01->set_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
+        cube_01->add_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
 
         auto cube_02 = _scene->create_actor<APlayer>("cube_02");
         cube_02->add_shape(_scene->get_shape("cube_shp"));
         cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
         cube_02->add_material(pbr_mat);
         cube_02->set_scale(pScale);
-        cube_02->set_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
+        cube_02->add_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
 
         // --test rt--
         float mark_r = .5f;
@@ -590,11 +598,11 @@ namespace Pong
         mark->add_shape(mark_shp);
         mark->add_material(pbr_mat);
         auto m_coll = _scene->create_collider<SphereCollider>("mark_coll");
-        mark->set_collider(m_coll);
+        mark->add_collider(m_coll);
         m_coll->setRadius(mark_r);
 
         // --lighting--
-         Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
+         DirectionalLight* directional_light = _scene->getDirectionalLight();
          directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
          directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
          directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
@@ -639,11 +647,8 @@ namespace Pong
         sphere->add_material(blinn_mat);
         sphere->set_scale(pScale);
 
-        // TODO if sphere doesn't has collider scene doesn't work
-//        sphere->set_collider(_scene->create_collider<SphereCollider>("cube_02_coll"));
-
         // --lighting--
-        Pong::DirectionalLight* directional_light = _scene->getDirectionalLight();
+        DirectionalLight* directional_light = _scene->getDirectionalLight();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
