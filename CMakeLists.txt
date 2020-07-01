@@ -23,7 +23,7 @@ add_executable(${PROJECT_NAME}
         src/Scene.cpp
         src/Shape.cpp
         src/Component.cpp
-        src/Utils.cpp src/Lights.h)
+        src/Utils.cpp src/Lights.h src/Cubemap.h)
 
 #include_directories(src)
 

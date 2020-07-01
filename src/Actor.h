@@ -20,7 +20,7 @@ namespace Pong
 #include <list>
 
 namespace Pong {
- // TODO: colliders vector, colliders with transform matrix to offset.
+ // TODO: colliders with transform matrix to offset.
     class Actor
     {
     protected:

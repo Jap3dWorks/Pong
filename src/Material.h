@@ -6,6 +6,7 @@
 #include "Shader_s.h"
 
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <map>
 
@@ -14,18 +15,45 @@ namespace Pong {
     class Texture
     {
         std::string _name;
-        int _texture_id;
+        unsigned int _texture_id{};
         std::string _path;
         std::string _texture_type;
     public:
-        Texture(std::string name, std::string path, std::string texture_type);
+
+        static unsigned int load_texture(char const *path, const bool &gammaCorrection);
+
+        explicit Texture(std::string name): _name(std::move(name)){}
+        Texture(std::string name, const std::string& path, std::string texture_type);
 
         virtual ~Texture();
 
-        int get_id() { return _texture_id; }
+        [[nodiscard]] unsigned int get_id() const { return _texture_id; }
         std::string get_path() { return _path; }
         std::string get_texture_type() { return _texture_type; }
         std::string get_name() { return _name; }
+    };
+
+    class CubeMap : public Texture
+    {
+
+        std::vector<std::string> _cubemap_textures;
+    public:
+        CubeMap(std::string name,
+                const std::string &right, const std::string &left, const std::string &top,
+                const std::string &bottom,const std::string& front, const std::string& back) :
+                Texture(std::move(name))
+        {
+            _cubemap_textures.push_back(right);
+            _cubemap_textures.push_back(left);
+            _cubemap_textures.push_back(top);
+            _cubemap_textures.push_back(bottom);
+            _cubemap_textures.push_back(back);
+
+
+        }
+
+        static unsigned int load_cubemap(const std::vector<std::string>& faces);
+
     };
 
     class Material
