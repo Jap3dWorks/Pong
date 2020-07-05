@@ -24,7 +24,10 @@ namespace Pong {
         virtual void _close_level();  // close level inputs
         virtual void _level_setup();
         virtual void _frame_collisions();
+
+        /**While loop calculations*/
         virtual void _frame_calc();
+
         virtual void _update_actors();
         virtual void _frame_draw();
         virtual void _components_start_level();
@@ -47,19 +50,18 @@ namespace Pong {
     class TestLevel : public AbstractLevel
     {
     private:
-        float shot_delay;
+        float shot_delay{};
 
     protected:
         void _level_setup() override;
+
         void _frame_calc() override;
 
         void _barycentric_tst();
         //void _configInputs() override;
 
     public:
-        TestLevel()
-        {
-        }
+        TestLevel() = default;
     };
 
     class PBRLevel : public AbstractLevel
@@ -69,9 +71,7 @@ namespace Pong {
         // void _frame_calc() override;
 
     public:
-        PBRLevel()
-        {
-        }
+        PBRLevel() = default;
     };
 
     class ModelLevel: public AbstractLevel

@@ -121,7 +121,7 @@ namespace Pong {
         a_point->add_shape(s_point);
         a_point->set_transform(glm::translate(glm::mat4(1), point));
 
-        s_point->set_material(point_mat);
+        a_point->add_material(point_mat);
 
         s_point->set_radius(0.05f);
 

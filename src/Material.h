@@ -75,7 +75,6 @@ namespace Pong {
         std::string _name;
 
     public:
-        // TODO change vector textures -> args ?
         Material(std::string name, Shader* shader, std::vector<Texture*> textures);
 
         virtual ~Material();
@@ -86,6 +85,11 @@ namespace Pong {
         void set_param(std::string, glm::vec3);
         void set_param(std::string, int);
         void set_param(std::string, glm::mat4);
+
+        std::string get_name()
+        {
+            return _name;
+        }
 
         virtual void use();
 

@@ -128,11 +128,12 @@ namespace Pong
         // draw actors
         for (const auto& kv : _scene->actor_map)
         {
-            _update_shader(kv.second->getMaterial()->get_shader());
+            _update_shader(kv.second->get_material()->get_shader());
             kv.second->draw();
         }
     }
 
+    /**Updates Shader common attributes like view, projection or light attributes.*/
     void AbstractLevel::_update_shader(Shader* shader)
     {
         shader->setMat4("view", _scene->get_camera()->GetViewMatrix());
@@ -435,7 +436,6 @@ namespace Pong
         Shader* blinn_shd = _scene->create_shader("blinn_shd",
             "../shaders/blinn_V.glsl",
             "../shaders/blinn_F.glsl");
-        //Shader* blinn_shd = _scene->create_shader("blinn_shd", "unlit_v.glsl", "unlit_f.glsl");
 
         Material* blinn_mat = _scene->create_material("blinn_mat", blinn_shd,
                                                       std::vector<Pong::Texture *>());
@@ -443,15 +443,6 @@ namespace Pong
         blinn_mat->set_param("glow", 64.f);
         blinn_mat->set_param("specular", 0.85f);
         blinn_mat->set_param("surfaceColor", glm::vec3{ 0.3,0.3,0.5 });
-
-        //Shader* paint_shd = _scene->create_shader("paint_shd", "paint_V.glsl", "paint_F.glsl");
-        Shader* paint_shd = _scene->create_shader("paint_shd",
-            "../shaders/paint_V.glsl",
-            "../shaders/paint_F.glsl");
-
-        std::vector<Texture*> paint_tex = {_scene->create_texture(
-                "waterColor", "../textures/waterColor.jpg", "texture1") };
-        Material* paint_mat = _scene->create_material("paint_mat", paint_shd, paint_tex);
 
         // --config scene--
         glm::mat4 iniPos = glm::mat4(1);
@@ -471,24 +462,13 @@ namespace Pong
         cube_02->set_scale(pScale);
         cube_02->add_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
 
-        // --test rt--
-        float mark_r = .5f;
-        AKinetic* mark = _scene->create_actor<AKinetic>("mark");
-        IcosphereShape* mark_shp = _scene->create_shape<IcosphereShape>("mark_shp");
-        mark_shp->set_radius(mark_r);
-        mark->add_shape(mark_shp);
-        mark->add_material(paint_mat);
-        SphereCollider* m_coll = _scene->create_collider<SphereCollider>("mark_coll");
-        mark->add_collider(m_coll);
-        m_coll->setRadius(mark_r);
-
         // --lighting--
         DirectionalLight* directional_light = _scene->getDirectionalLight();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
 
-        // --vector baricentric test --
+        return;
 
         // Sky box, TODO: skybox creation method.
         // Sky box should be drawn last.
@@ -509,7 +489,8 @@ namespace Pong
                 skybox_shd,
                 skybox_tex);
 
-        auto *skybox_act = _scene->create_actor<Actor>("skybox_act");
+        // hack z_skybox to sort at the end of the map
+        auto *skybox_act = _scene->create_actor<Actor>("z_skybox_act");
         skybox_act->add_material(skybox_mat);
     }
 
@@ -520,11 +501,11 @@ namespace Pong
         glm::mat4 tr_m(1);
         tr_m = glm::rotate(tr_m, 3.14f/2, glm::normalize(glm::vec3(0, 1, 0)));*/
 
-        //glm::mat3 m = glm::mat3(tr_m);
+        // glm::mat3 m = glm::mat3(tr_m);
 
         glm::vec3 v_var(glm::mat3(_scene->get_camera()->GetViewMatrix()) * v_a);
 
-//        cout_vector(v_var);
+        // cout_vector(v_var);
     }
 
     void TestLevel::_frame_calc()
