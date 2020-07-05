@@ -71,6 +71,8 @@ namespace Pong {
         std::map<std::string, Shader*> shader_map;
         std::map<std::string, Texture*> textures_map;
 
+
+
         PointLight& get_point_light(int id);
 
         DirectionalLight* getDirectionalLight();
@@ -97,7 +99,7 @@ namespace Pong {
 
         Texture* get_texture(const std::string& name);
 
-        /**Sky box texture implementation.*/
+        /**create_texture Sky box overload.*/
         Texture* create_texture(const std::string& name,
                                 const std::string& right,
                                 const std::string& left,

@@ -66,12 +66,11 @@ namespace Pong {
         void set_scale(const glm::vec3 & scale);
 
         [[nodiscard]] glm::mat4 getTransform() const { return _transform; }
-        [[nodiscard]] Collider* getCollider() const { return _collider; }
 
         std::string getName() { return _name; }
         std::list<Component*> get_components() { return _componentList; }
 
-        bool get_visibility() const { return _visible; }
+        [[nodiscard]] bool get_visibility() const { return _visible; }
 
         // config members
         template <typename T>
@@ -92,18 +91,18 @@ namespace Pong {
         float _base_speed = 0.f;
 
     public:
-        AKinetic(std::string name): Actor(name){}
+        AKinetic(std::string name): Actor(std::move(name)){}
         AKinetic(std::string name, glm::vec3 vector_director);
 
-        virtual ~AKinetic();
+        ~AKinetic() override;
 
-        virtual void update(float delta_time);
+        void update(float delta_time) override;
 
         // returns AKinetic vector director
-        glm::vec3 getDirection() const;
-        glm::vec3 get_vector_director() const { return _vector_director; }
+        [[nodiscard]] glm::vec3 getDirection() const;
+        [[nodiscard]] glm::vec3 get_vector_director() const { return _vector_director; }
 
-        float getVelocity() const;
+        [[nodiscard]] float getVelocity() const;
 
         // Set AKinetic vector director
         // normalized vector, only should represent the _direction.
@@ -128,11 +127,11 @@ namespace Pong {
             _base_speed = 0.1f;
             _direction = glm::vec3{0.f, 1.f, 0.f };
         }
-        virtual ~APlayer();
+        ~APlayer() override;
 
         void update(float delta_time) override;
 
-        virtual void process_keyboard(Movements move_direction, float delta_time) override;
+        void process_keyboard(Movements move_direction, float delta_time) override;
     };
 
     // --ABALL class--

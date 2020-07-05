@@ -454,26 +454,17 @@ namespace Pong
         Material* paint_mat = _scene->create_material("paint_mat", paint_shd, paint_tex);
 
         // --config scene--
-        // cube map
-
-        Shader* sky_shd = _scene->create_shader("sky_shd",
-                                                "../shaders/skybox_v.glsl",
-                                                "../shaders/skybox_f.glsl");
-
-        Material *sky_mat = _scene->create_material("sky_mat", ,);
-        auto *sky_box = _scene->create_actor<Actor>("sky_box");
-
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
-        APlayer* cube_01 = _scene->create_actor<APlayer>("cube_01");
+        auto* cube_01 = _scene->create_actor<APlayer>("cube_01");
         cube_01->add_shape(_scene->create_shape<CubeShape>("cube_shp"));
         cube_01->set_transform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
         cube_01->add_material(blinn_mat);
         cube_01->set_scale(pScale);
         cube_01->add_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
 
-        APlayer* cube_02 = _scene->create_actor<APlayer>("cube_02");
+        auto* cube_02 = _scene->create_actor<APlayer>("cube_02");
         cube_02->add_shape(_scene->get_shape("cube_shp"));
         cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
         cube_02->add_material(blinn_mat);
@@ -498,6 +489,28 @@ namespace Pong
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
 
         // --vector baricentric test --
+
+        // Sky box, TODO: skybox creation method.
+        // Sky box should be drawn last.
+        std::vector<Texture *> skybox_tex = {
+                _scene->create_texture("skybox_tex",
+                                       "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
+                                       "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
+                                       "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")
+        };
+
+        Shader* skybox_shd = _scene->create_shader("skybox_shd",
+                                                   "../shaders/skybox_v.glsl",
+                                                   "../shaders/skybox_f.glsl");
+
+        // TODO: review texture vector overload, I think a single overload may be fine.
+        Material *skybox_mat = _scene->create_material(
+                "skybox_mat",
+                skybox_shd,
+                skybox_tex);
+
+        auto *skybox_act = _scene->create_actor<Actor>("skybox_act");
+        skybox_act->add_material(skybox_mat);
     }
 
     void TestLevel::_barycentric_tst()
