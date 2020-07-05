@@ -20,8 +20,6 @@ namespace Pong {
 
         for (unsigned int i=0; i <  _shapes.size(); ++i)
         {
-            LOG_DEBUG("DRAW " << i << ", " << _shapes[i]->get_name())
-            LOG_DEBUG("MAT " << i << ", " << _materials[i]->get_name())
             _materials[i]->use();
             _shapes[i]->draw();
             _materials[i]->end_use();

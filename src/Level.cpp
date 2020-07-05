@@ -444,7 +444,6 @@ namespace Pong
         blinn_mat->set_param("specular", 0.85f);
         blinn_mat->set_param("surfaceColor", glm::vec3{ 0.3,0.3,0.5 });
 
-        // --config scene--
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
@@ -455,12 +454,12 @@ namespace Pong
         cube_01->set_scale(pScale);
         cube_01->add_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
 
-        auto* cube_02 = _scene->create_actor<APlayer>("cube_02");
-        cube_02->add_shape(_scene->get_shape("cube_shp"));
-        cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
-        cube_02->add_material(blinn_mat);
-        cube_02->set_scale(pScale);
-        cube_02->add_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
+//        auto* cube_02 = _scene->create_actor<APlayer>("cube_02");
+//        cube_02->add_shape(_scene->get_shape("cube_shp"));
+//        cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
+//        cube_02->add_material(blinn_mat);
+//        cube_02->set_scale(pScale);
+//        cube_02->add_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
 
         // --lighting--
         DirectionalLight* directional_light = _scene->getDirectionalLight();
@@ -510,6 +509,7 @@ namespace Pong
 
     void TestLevel::_frame_calc()
     {
+        return;
         // shot markers
         shot_delay += Pong::Render::DeltaTime;
         if (shot_delay >= .2f
