@@ -1,4 +1,6 @@
 #include "Scene.h"
+
+#include <utility>
 #include "logger.h"
 #include "Lights.h"
 
@@ -109,7 +111,7 @@ namespace Pong{
     //	}
     //}
 
-    Actor* Scene::get_actor(std::string name)
+    Actor* Scene::get_actor(const std::string& name)
     {
         if (actor_map.find(name) != actor_map.end())
         {
@@ -124,7 +126,7 @@ namespace Pong{
 
     // -- Colliders--
 
-    Collider* Scene::getCollider(std::string name)
+    Collider* Scene::getCollider(const std::string& name)
     {
         if (collider_map.find(name) != collider_map.end())
         {
@@ -135,7 +137,7 @@ namespace Pong{
     }
 
 
-    Shape* Scene::get_shape(std::string name)
+    Shape* Scene::get_shape(const std::string& name)
     {
         if (shape_map.find(name) != shape_map.end())
         {
@@ -145,12 +147,12 @@ namespace Pong{
             return nullptr;
     }
 
-    Shader* Scene::create_shader(std::string name, const GLchar* vertex_shader,
+    Shader* Scene::create_shader(const std::string& name, const GLchar* vertex_shader,
         const GLchar* fragment_shader, const GLchar* geometry_shader)
     {
         if (shader_map.find(name) == shader_map.end())
         {
-            Shader* ptr = new Shader(vertex_shader, fragment_shader, geometry_shader);
+            auto* ptr = new Shader(vertex_shader, fragment_shader, geometry_shader);
             shader_map[name] = ptr;
             return ptr;
         }
@@ -158,7 +160,7 @@ namespace Pong{
             return shader_map[name];
     }
 
-    Shader* Scene::get_shader(std::string name)
+    Shader* Scene::get_shader(const std::string& name)
     {
         if (shader_map.find(name) != shader_map.end())
         {
@@ -169,13 +171,13 @@ namespace Pong{
     }
 
     // --Materials--
-    Material* Scene::create_material(std::string name,
+    Material* Scene::create_material(const std::string& name,
                                      Shader* shader,
                                      std::vector<Texture*> textures)
     {
         if (material_map.find(name) == material_map.end())
         {
-            Material* m_ptr = new Material(name, shader, textures);
+            auto* m_ptr = new Material(name, shader, std::move(textures));
             material_map[name] = m_ptr;
 
             return material_map[name];
@@ -185,7 +187,7 @@ namespace Pong{
         }
     }
 
-    Material* Scene::get_material(std::string name)
+    Material* Scene::get_material(const std::string& name)
     {
         if (material_map.find(name) != material_map.end())
         {
@@ -196,12 +198,12 @@ namespace Pong{
     }
 
     // --textures--
-    Texture* Scene::create_texture(std::string name,
-        std::string path, std::string texture_type)
+    Texture* Scene::create_texture(const std::string& name,
+                                   const std::string& path, std::string texture_type)
     {
         if (textures_map.find(name) == textures_map.end())
         {
-            Texture* t_ptr = new Texture(name, path, texture_type);
+            auto* t_ptr = new Texture(name, path, std::move(texture_type));
             textures_map[name] = t_ptr;
 
             return textures_map[name];
@@ -212,7 +214,28 @@ namespace Pong{
         }
     }
 
-    Texture* Scene::get_texture(std::string name)
+    Texture* Scene::create_texture(const std::string& name,
+                                   const std::string& right,
+                                   const std::string& left,
+                                   const std::string& top,
+                                   const std::string& bottom,
+                                   const std::string& front,
+                                   const std::string& back){
+        if (textures_map.find(name) == textures_map.end())
+        {
+            auto* sb_ptr = new SkyBox(
+                    name,
+                    right, left, top,
+                    bottom,front, back);
+
+            textures_map[name] = sb_ptr;
+
+            return textures_map[name];
+        }
+        else return textures_map[name];
+    }
+
+    Texture* Scene::get_texture(const std::string& name)
     {
         if (textures_map.find(name) != textures_map.end())
         {

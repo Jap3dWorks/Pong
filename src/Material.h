@@ -14,6 +14,7 @@ namespace Pong {
 
     class Texture
     {
+    protected:
         std::string _name;
         unsigned int _texture_id{};
         std::string _path;
@@ -33,14 +34,14 @@ namespace Pong {
         std::string get_name() { return _name; }
     };
 
-    class CubeMap : public Texture
+    class SkyBox : public Texture
     {
 
         std::vector<std::string> _cubemap_textures;
     public:
-        CubeMap(std::string name,
-                const std::string &right, const std::string &left, const std::string &top,
-                const std::string &bottom,const std::string& front, const std::string& back) :
+        SkyBox(std::string name,
+               const std::string &right, const std::string &left, const std::string &top,
+               const std::string &bottom, const std::string& front, const std::string& back) :
                 Texture(std::move(name))
         {
             _cubemap_textures.push_back(right);
@@ -49,7 +50,7 @@ namespace Pong {
             _cubemap_textures.push_back(bottom);
             _cubemap_textures.push_back(back);
 
-
+            _texture_id = load_cubemap(_cubemap_textures);
         }
 
         static unsigned int load_cubemap(const std::vector<std::string>& faces);
@@ -74,6 +75,7 @@ namespace Pong {
         std::string _name;
 
     public:
+        // TODO change vector textures -> args ?
         Material(std::string name, Shader* shader, std::vector<Texture*> textures);
 
         virtual ~Material();

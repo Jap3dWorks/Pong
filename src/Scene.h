@@ -75,27 +75,36 @@ namespace Pong {
 
         DirectionalLight* getDirectionalLight();
 
-        Shader* create_shader(std::string name,
+        Shader* create_shader(const std::string& name,
             const GLchar* vertex_shader,
             const GLchar* fragment_shader,
             const GLchar* geometry_shader = nullptr);
 
-        Shader* get_shader(std::string name);
+        Shader* get_shader(const std::string& name);
 
         // create a material and save it in _materialMap
-        Material* create_material(std::string name,
+        Material* create_material(const std::string& name,
                                   Shader* shader,
                                   std::vector<Texture*> textures);
 
         // get a material by its name
-        Material* get_material(std::string name);
+        Material* get_material(const std::string& name);
 
         // create texture
-        Texture* create_texture(std::string name,
-            std::string path,
-            std::string texture_type);
+        Texture* create_texture(const std::string& name,
+                                const std::string& path,
+                                std::string texture_type);
 
-        Texture* get_texture(std::string name);
+        Texture* get_texture(const std::string& name);
+
+        /**Sky box texture implementation.*/
+        Texture* create_texture(const std::string& name,
+                                const std::string& right,
+                                const std::string& left,
+                                const std::string& top,
+                                const std::string& bottom,
+                                const std::string& front,
+                                const std::string& back);
 
         // Create an actor and save in _actorMap
         template<typename T>
@@ -118,7 +127,7 @@ namespace Pong {
         }
 
         // get an actor by its name
-        Actor* get_actor(std::string name);
+        Actor* get_actor(const std::string& name);
 
         // Create a collider, template you must specify the collider type
         template<typename T>
@@ -139,7 +148,7 @@ namespace Pong {
         }
 
         // get a collider by its name
-        Collider* getCollider(std::string name);
+        Collider* getCollider(const std::string& name);
 
         // get camera ptr
         Camera* get_camera();
@@ -160,7 +169,7 @@ namespace Pong {
                 // if shape exists in the map, return ptr to shape
                 return static_cast<T*>(shape_map[name]);
         }
-        Shape* get_shape(std::string name);
+        Shape* get_shape(const std::string& name);
 
         int import_model(const std::string& model_path, Actor *& actor);
 

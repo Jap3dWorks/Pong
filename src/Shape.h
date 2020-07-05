@@ -356,6 +356,16 @@ namespace Pong {
 
     };
 
+    // Sky box shape
+    class SkyBoxShape : public Shape {
+    private:
+        void _build_sky_box();
+
+    public:
+        explicit SkyBoxShape(std::string name) : Shape(std::move(name)) {
+            _build_sky_box();
+        }
+    };
 }
 
 

@@ -449,11 +449,20 @@ namespace Pong
             "../shaders/paint_V.glsl",
             "../shaders/paint_F.glsl");
 
-        std::vector<Texture*> paint_tex = { _scene->create_texture(
-            "waterColor", "../textures/waterColor.jpg", "texture1") };
+        std::vector<Texture*> paint_tex = {_scene->create_texture(
+                "waterColor", "../textures/waterColor.jpg", "texture1") };
         Material* paint_mat = _scene->create_material("paint_mat", paint_shd, paint_tex);
 
         // --config scene--
+        // cube map
+
+        Shader* sky_shd = _scene->create_shader("sky_shd",
+                                                "../shaders/skybox_v.glsl",
+                                                "../shaders/skybox_f.glsl");
+
+        Material *sky_mat = _scene->create_material("sky_mat", ,);
+        auto *sky_box = _scene->create_actor<Actor>("sky_box");
+
         glm::mat4 iniPos = glm::mat4(1);
         glm::vec3 pScale(1.f, 1.f, 1.f);
 
@@ -552,21 +561,21 @@ namespace Pong
             "../shaders/pbr_basic_F.glsl");
 
         std::vector<Texture*> pbr_textures = {
-            _scene->create_texture("riron2_baseColor",
-                    "../textures/rustediron2_basecolor.png",
-                    "albedoMap"),
-            _scene->create_texture("riron2_metallic",
-                    "../textures/rustediron2_metallic.png",
-                    "metallicMap"),
-            _scene->create_texture("riron2_normal",
-                    "../textures/rustediron2_normal.png",
-                    "normalMap"),
-            _scene->create_texture("riron2_roughness",
-                    "../textures/rustediron2_roughness.png",
-                    "roughnessMap"),
-            _scene->create_texture("ao_map",
-                    "../textures/aoMap.png",
-                    "aoMap")
+                _scene->create_texture("riron2_baseColor",
+                                       "../textures/rustediron2_basecolor.png",
+                                       "albedoMap"),
+                _scene->create_texture("riron2_metallic",
+                                       "../textures/rustediron2_metallic.png",
+                                       "metallicMap"),
+                _scene->create_texture("riron2_normal",
+                                       "../textures/rustediron2_normal.png",
+                                       "normalMap"),
+                _scene->create_texture("riron2_roughness",
+                                       "../textures/rustediron2_roughness.png",
+                                       "roughnessMap"),
+                _scene->create_texture("ao_map",
+                                       "../textures/aoMap.png",
+                                       "aoMap")
         };
 
         Material* pbr_mat = _scene->create_material("pbr_mat", pbr_shd, pbr_textures);
