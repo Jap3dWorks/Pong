@@ -78,13 +78,23 @@ namespace Pong {
         void add_component(T* component = nullptr);
     };
 
+    // sky box
+    // -------
+    // TODO: i think this class don't need shape
+    class ASkyBox: public Actor
+    {
+    public:
+        explicit ASkyBox(std::string name): Actor(std::move(name)) {}
+        void draw() const override;
+    };
+
     // --AKinetic class--
     // ------------------
     class AKinetic : public Actor
     {
     protected:
-        glm::vec3 _vector_director;  // _direction * velocity
-        glm::vec3 _direction;
+        glm::vec3 _vector_director{};  // _direction * velocity
+        glm::vec3 _direction{};
         float _velocity = 0;
         float _acceleration = 0;
 

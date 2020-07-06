@@ -124,7 +124,6 @@ namespace Pong
         for (const auto& kv : _scene->actor_map)
         {
             // update shader attributes
-            LOG_DEBUG("Draw: " << kv.second->get_name())
             _update_shader(kv.second->get_material()->get_shader());
             kv.second->draw();
         }
@@ -453,7 +452,6 @@ namespace Pong
                                                    "../shaders/skybox_v.glsl",
                                                    "../shaders/skybox_f.glsl");
 
-        // TODO: review texture vector overload, I think a single overload may be fine.
         Material *skybox_mat = _scene->create_material(
                 "skybox_mat",
                 skybox_shd,
@@ -463,7 +461,8 @@ namespace Pong
                                        "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")});
 
         // hack z_skybox to sort at the end of the map
-        auto *skybox_act = _scene->create_actor<Actor>("z_skybox_act");
+        auto *skybox_act = _scene->create_actor<ASkyBox>("z_skybox_act");
+        skybox_act->add_shape(_scene->create_shape<SkyBoxShape>("skybox_shp"));
         skybox_act->add_material(skybox_mat);
 
         // --lighting--

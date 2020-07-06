@@ -111,11 +111,12 @@ namespace Pong {
     {
         glBindVertexArray(VAO_id);
 
-        if(!indices.empty())
+        if(!indices.empty()){
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
-        else
-            glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
 
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
+        }
         // detach vertex array
         glBindVertexArray(0);
     }
@@ -989,6 +990,8 @@ namespace Pong {
                 1.0f, -1.0f, -1.0f,
                 -1.0f, -1.0f,  1.0f,
                 1.0f, -1.0f,  1.0f};
+
+        interleaved_vertices = vertices;
 
         Shape::set_VAO();
     }

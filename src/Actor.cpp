@@ -2,6 +2,7 @@
 #include "logger.h"
 
 #include <algorithm>
+#include <utility>
 
 namespace Pong {
     Actor::~Actor() {
@@ -14,7 +15,8 @@ namespace Pong {
         _transform = glm::scale(_transform, scale);
     }
 
-    void Actor::draw() const {
+    void Actor::draw() const
+    {
         // draw if is visible and has a shape
         if(! _visible) return;
 
@@ -49,10 +51,30 @@ namespace Pong {
         _componentList.push_back(static_cast<Component *>(component));
     }
 
+    // ASkyBox
+    // -------
+    void ASkyBox::draw() const
+    {
+        // draw if is visible and has a shape
+        if(! _visible) return;
+        // change depth function so depth test passes
+        // when values are equal to depth buffer's content
+        glDepthFunc(GL_LEQUAL);
+
+        for (unsigned int i=0; i <  _shapes.size(); ++i)
+        {
+            _materials[i]->use();
+            _shapes[i]->draw();
+            _materials[i]->end_use();
+        }
+
+        glDepthFunc(GL_LESS);
+    }
+
     // --AKinetic--
     // ------------
     AKinetic::AKinetic(std::string name, glm::vec3 vector_director) :
-            Actor(name), _vector_director(vector_director) {
+            Actor(std::move(name)), _vector_director(vector_director) {
         _direction = glm::normalize(vector_director);
         _velocity = glm::length(vector_director);
     }
