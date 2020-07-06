@@ -20,6 +20,7 @@ namespace Pong {
 
         for (unsigned int i=0; i <  _shapes.size(); ++i)
         {
+            _materials[i]->set_param("model", _transform);
             _materials[i]->use();
             _shapes[i]->draw();
             _materials[i]->end_use();

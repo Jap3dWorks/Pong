@@ -17,16 +17,22 @@ namespace Pong {
         unsigned int _texture_id{};
         std::string _path;
         std::string _texture_type;
+        unsigned int _gl_bind_type=GL_TEXTURE_2D;
+
     public:
 
         static unsigned int load_texture(char const *path, const bool &gammaCorrection);
 
-        explicit Texture(std::string name): _name(std::move(name)){}
+        explicit Texture(std::string  name, std::string texture_type):
+        _name(std::move(name)), _texture_type(std::move(texture_type))
+        {}
+
         Texture(std::string name, const std::string& path, std::string texture_type);
 
         virtual ~Texture();
 
         [[nodiscard]] unsigned int get_id() const { return _texture_id; }
+        [[nodiscard]] unsigned int get_gl_bind_type() const {return _gl_bind_type;}
         std::string get_path() { return _path; }
         std::string get_texture_type() { return _texture_type; }
         std::string get_name() { return _name; }
@@ -34,14 +40,14 @@ namespace Pong {
 
     class SkyBox : public Texture
     {
-
         std::vector<std::string> _cubemap_textures;
+
     public:
-        SkyBox(std::string name,
+        SkyBox(std::string name, std::string texture_type,
                const std::string &right, const std::string &left, const std::string &top,
-               const std::string &bottom, const std::string& front, const std::string& back) :
-                Texture(std::move(name))
-        {
+               const std::string &bottom, const std::string &front, const std::string &back) :
+                Texture(std::move(name), std::move(texture_type))
+                {
             _cubemap_textures.push_back(right);
             _cubemap_textures.push_back(left);
             _cubemap_textures.push_back(top);
@@ -49,6 +55,8 @@ namespace Pong {
             _cubemap_textures.push_back(back);
 
             _texture_id = load_cubemap(_cubemap_textures);
+
+            _gl_bind_type = GL_TEXTURE_CUBE_MAP;
         }
 
         static unsigned int load_cubemap(const std::vector<std::string>& faces);

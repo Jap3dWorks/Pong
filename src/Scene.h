@@ -101,6 +101,7 @@ namespace Pong {
 
         /**create_texture Sky box overload.*/
         Texture* create_texture(const std::string& name,
+                                const std::string& texture_type,
                                 const std::string& right,
                                 const std::string& left,
                                 const std::string& top,

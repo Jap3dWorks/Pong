@@ -10,6 +10,7 @@ namespace Pong {
         _name(std::move(name)), _path(path), _texture_type(std::move(texture_type))
     {
         _texture_id = load_texture(path.c_str(), false);
+        _gl_bind_type = GL_TEXTURE_2D;
     }
 
     Texture::~Texture() = default;
@@ -72,8 +73,7 @@ namespace Pong {
         _setup_material();
     }
 
-    Material::~Material()
-    {}
+    Material::~Material() = default;
 
     void Material::_setup_material()
     {
@@ -83,6 +83,7 @@ namespace Pong {
         // configure shader for the material
         for (int i = 0; i < _textures.size(); i++)
         {
+            // assign an id to each texture slot
             _shader->setInt(_textures[i]->get_texture_type(), i);
 
         }
@@ -100,7 +101,9 @@ namespace Pong {
             // Active texture shader slot
             glActiveTexture(GL_TEXTURE0 + i);
             // bind texture ID
-            glBindTexture(GL_TEXTURE_2D, _textures[i]->get_id());
+            glBindTexture(
+                    _textures[i]->get_gl_bind_type(),  // e.g  GL_TEXTURE_2D or GL_TEXTURE_CUBE_MAP
+                    _textures[i]->get_id());
         }
         // set shader parametters
         for (auto &p : _float_params) // floats

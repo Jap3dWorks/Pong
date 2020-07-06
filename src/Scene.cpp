@@ -198,7 +198,8 @@ namespace Pong{
 
     // --textures--
     Texture* Scene::create_texture(const std::string& name,
-                                   const std::string& path, std::string texture_type)
+                                   const std::string& path,
+                                   std::string texture_type)
     {
         if (textures_map.find(name) == textures_map.end())
         {
@@ -214,6 +215,7 @@ namespace Pong{
     }
 
     Texture* Scene::create_texture(const std::string& name,
+                                   const std::string& texture_type,
                                    const std::string& right,
                                    const std::string& left,
                                    const std::string& top,
@@ -223,7 +225,7 @@ namespace Pong{
         if (textures_map.find(name) == textures_map.end())
         {
             auto* sb_ptr = new SkyBox(
-                    name,
+                    name, texture_type,
                     right, left, top,
                     bottom,front, back);
 

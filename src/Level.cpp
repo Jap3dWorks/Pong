@@ -123,6 +123,8 @@ namespace Pong
         // draw actors
         for (const auto& kv : _scene->actor_map)
         {
+            // update shader attributes
+            LOG_DEBUG("Draw: " << kv.second->get_name())
             _update_shader(kv.second->get_material()->get_shader());
             kv.second->draw();
         }
@@ -150,6 +152,7 @@ namespace Pong
             shader->setVec3("pointLightColors[" + std::to_string(i) + "]",
                     _scene->get_point_light(i).color);
         }
+
     }
 
     void AbstractLevel::_level_setup(){}
@@ -428,51 +431,24 @@ namespace Pong
         camera->Position = glm::vec3(0, 0, 9);
 
         // build and compile the shader program
-        Shader* blinn_shd = _scene->create_shader("blinn_shd",
-            "../shaders/blinn_V.glsl",
-            "../shaders/blinn_F.glsl");
+        Shader* paint_shd = _scene->create_shader("paint_shd",
+                                                  "../shaders/paint_V.glsl",
+                                                  "../shaders/paint_F.glsl");
 
-        Material* blinn_mat = _scene->create_material("blinn_mat", blinn_shd,
-                                                      std::vector<Pong::Texture *>());
-
-        blinn_mat->set_param("glow", 64.f);
-        blinn_mat->set_param("specular", 0.85f);
-        blinn_mat->set_param("surfaceColor", glm::vec3{ 0.3,0.3,0.5 });
-
-        glm::mat4 iniPos = glm::mat4(1);
-        glm::vec3 pScale(1.f, 1.f, 1.f);
+        Material *paint_mat = _scene->create_material(
+                "paint_mat",
+                paint_shd,
+                {_scene->create_texture("paint_tex",
+                                        "../textures/waterColor.jpg",
+                                        "texture1")});
 
         auto* cube_01 = _scene->create_actor<APlayer>("cube_01");
-        cube_01->add_shape(_scene->create_shape<CubeShape>("cube_shp"));
-        cube_01->set_transform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
-        cube_01->add_material(blinn_mat);
-        cube_01->set_scale(pScale);
-//        cube_01->add_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
-
-//        auto* cube_02 = _scene->create_actor<APlayer>("cube_02");
-//        cube_02->add_shape(_scene->get_shape("cube_shp"));
-//        cube_02->set_transform(glm::translate(iniPos, glm::vec3(-5.f, 0, 0)));
-//        cube_02->add_material(blinn_mat);
-//        cube_02->set_scale(pScale);
-//        cube_02->add_collider(_scene->create_collider<BoxCollider>("cube_02_coll"));
-
-        // --lighting--
-        DirectionalLight* directional_light = _scene->getDirectionalLight();
-        directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
-        directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
-        directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
-
-        return;
+        cube_01->add_shape(_scene->create_shape<IcosphereShape>("cube_shp", 1, 2));
+        cube_01->set_transform(glm::mat4(1));
+        cube_01->add_material(paint_mat);
 
         // Sky box, TODO: skybox creation method.
         // Sky box should be drawn last.
-        std::vector<Texture *> skybox_tex = {
-                _scene->create_texture("skybox_tex",
-                                       "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
-                                       "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
-                                       "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")
-        };
-
         Shader* skybox_shd = _scene->create_shader("skybox_shd",
                                                    "../shaders/skybox_v.glsl",
                                                    "../shaders/skybox_f.glsl");
@@ -481,11 +457,20 @@ namespace Pong
         Material *skybox_mat = _scene->create_material(
                 "skybox_mat",
                 skybox_shd,
-                skybox_tex);
+                {_scene->create_texture("skybox_tex", "skybox",
+                                       "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
+                                       "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
+                                       "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")});
 
         // hack z_skybox to sort at the end of the map
         auto *skybox_act = _scene->create_actor<Actor>("z_skybox_act");
         skybox_act->add_material(skybox_mat);
+
+        // --lighting--
+        DirectionalLight* directional_light = _scene->getDirectionalLight();
+        directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
+        directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
+        directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
     }
 
     void TestLevel::_barycentric_tst()
