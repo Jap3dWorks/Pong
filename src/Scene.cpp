@@ -2,7 +2,6 @@
 
 #include <utility>
 #include "logger.h"
-#include "Lights.h"
 
 
 Pong::Scene* Pong::Scene::instance = 0;

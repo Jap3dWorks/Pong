@@ -66,6 +66,7 @@ namespace Pong {
         void set_scale(const glm::vec3 & scale);
 
         [[nodiscard]] glm::mat4 getTransform() const { return _transform; }
+        [[nodiscard]] Collider* get_collider(unsigned int i=0) const { return _colliders[i]; }
 
         std::string getName() { return _name; }
         std::list<Component*> get_components() { return _componentList; }

@@ -1,12 +1,7 @@
 #include "Level.h"
 #include "logger.h"
 
-#include "Utils.h"
-#include "Lights.h"
-
 #include <vector>
-#include <GLFW/glfw3.h>
-
 
 namespace Pong
 {
@@ -452,7 +447,7 @@ namespace Pong
         cube_01->set_transform(glm::translate(iniPos, glm::vec3(5, 0, 0)));
         cube_01->add_material(blinn_mat);
         cube_01->set_scale(pScale);
-        cube_01->add_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
+//        cube_01->add_collider(_scene->create_collider<BoxCollider>("cube_01_coll"));
 
 //        auto* cube_02 = _scene->create_actor<APlayer>("cube_02");
 //        cube_02->add_shape(_scene->get_shape("cube_shp"));
