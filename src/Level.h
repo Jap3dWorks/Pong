@@ -31,7 +31,7 @@ namespace Pong {
         virtual void _update_actors();
         virtual void _frame_draw();
         virtual void _components_start_level();
-        virtual void _update_shader(Shader* shader);
+        virtual void _update_shader(const Shader& shader);
 
     public:
         AbstractLevel();

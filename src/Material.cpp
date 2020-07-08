@@ -92,8 +92,6 @@ namespace Pong {
 
     void Material::use()
     {
-        // bind shader
-        _shader->use();
         // bing textures texture
         for (unsigned int i =0; i < _textures.size(); i++)
         {
@@ -130,7 +128,7 @@ namespace Pong {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    Shader* Material::get_shader()
+    Shader* Material::get_shader() const
     {
         return _shader;
     }

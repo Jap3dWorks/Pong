@@ -88,7 +88,7 @@ namespace Pong {
 
         virtual ~Material();
 
-        Shader* get_shader();
+        [[nodiscard]]Shader* get_shader() const;
 
         void set_param(std::string, float);
         void set_param(std::string, glm::vec3);

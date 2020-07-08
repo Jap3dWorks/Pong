@@ -121,34 +121,36 @@ namespace Pong
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // draw actors
-        for (const auto& kv : _scene->actor_map)
+        for (const auto& actor_pair : _scene->actor_map)
         {
+            actor_pair.second->get_material()->get_shader()->use();
             // update shader attributes
-            _update_shader(kv.second->get_material()->get_shader());
-            kv.second->draw();
+            _update_shader(*actor_pair.second->get_material()->get_shader());
+            actor_pair.second->draw();
         }
     }
 
     /**Updates Shader common attributes like view, projection or light attributes.*/
-    void AbstractLevel::_update_shader(Shader* shader)
+    void AbstractLevel::_update_shader(const Shader& shader)
     {
-        shader->setMat4("view", _scene->get_camera()->GetViewMatrix());
-        shader->setMat4("projection", glm::perspective(glm::radians(_scene->get_camera()->Zoom),
+        shader.use();
+        shader.setMat4("view", _scene->get_camera()->GetViewMatrix());
+        shader.setMat4("projection", glm::perspective(glm::radians(_scene->get_camera()->Zoom),
             (float)Pong::Render::SCR_WIDTH / (float)Pong::Render::SCR_HEIGHT,
             0.1f,
             10000.f));
 
         // directional light
-        shader->setVec3("directional.Direction", _scene->getDirectionalLight()->direction);
-        shader->setVec3("directional.Color", _scene->getDirectionalLight()->color);
-        shader->setVec3("directional.Ambient", _scene->getDirectionalLight()->ambient);
+        shader.setVec3("directional.Direction", _scene->getDirectionalLight()->direction);
+        shader.setVec3("directional.Color", _scene->getDirectionalLight()->color);
+        shader.setVec3("directional.Ambient", _scene->getDirectionalLight()->ambient);
 
         // points lights
         for (unsigned int i = 0; i < Pong::Scene::POINT_LIGHTS; ++i)
         {
-            shader->setVec3("pointLightPositions[" + std::to_string(i) + "]",
+            shader.setVec3("pointLightPositions[" + std::to_string(i) + "]",
                     _scene->get_point_light(i).position);
-            shader->setVec3("pointLightColors[" + std::to_string(i) + "]",
+            shader.setVec3("pointLightColors[" + std::to_string(i) + "]",
                     _scene->get_point_light(i).color);
         }
 
