@@ -68,7 +68,7 @@ namespace Pong {
         [[nodiscard]] glm::mat4 getTransform() const { return _transform; }
         [[nodiscard]] Collider* get_collider(unsigned int i=0) const { return _colliders[i]; }
 
-        std::string get_name() { return _name; }
+        [[nodiscard]] std::string get_name() const { return _name; }
         std::list<Component*> get_components() { return _componentList; }
 
         [[nodiscard]] bool get_visibility() const { return _visible; }

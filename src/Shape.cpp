@@ -51,6 +51,8 @@ namespace Pong {
         if (get_texture_coords_count())
             tRow = 2;
 
+        interleavedStride = (vRow + nRow + tRow) * 4;
+
         unsigned int VBO, EBO;
         // reset vertex array
         glGenVertexArrays(1, &VAO_id);
@@ -946,7 +948,18 @@ namespace Pong {
 
     // Sky box shape
     // -------------
+    SkyBoxShape::SkyBoxShape(std::string name) : Shape(std::move(name)) {
+        _build_sky_box();
+
+    }
+
     void SkyBoxShape::_build_sky_box() {
+        vertices.clear();
+        normals.clear();
+        texture_coords.clear();
+        indices.clear();
+        interleaved_vertices.clear();
+
         vertices = {
                 // positions
                 -1.0f,  1.0f, -1.0f,

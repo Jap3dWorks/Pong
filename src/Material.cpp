@@ -85,7 +85,6 @@ namespace Pong {
         {
             // assign an id to each texture slot
             _shader->setInt(_textures[i]->get_texture_type(), i);
-
         }
 
         _is_setup = true;
@@ -101,9 +100,9 @@ namespace Pong {
             // Active texture shader slot
             glActiveTexture(GL_TEXTURE0 + i);
             // bind texture ID
-            glBindTexture(
-                    _textures[i]->get_gl_bind_type(),  // e.g  GL_TEXTURE_2D or GL_TEXTURE_CUBE_MAP
-                    _textures[i]->get_id());
+            // e.g  GL_TEXTURE_2D or GL_TEXTURE_CUBE_MAP
+            glBindTexture(_textures[i]->get_gl_bind_type(),
+                          _textures[i]->get_id());
         }
         // set shader parametters
         for (auto &p : _float_params) // floats
@@ -170,7 +169,7 @@ namespace Pong {
             _mat4_params.insert(std::pair<std::string, glm::mat4>(param, value));
     }
 
-    unsigned int SkyBox::load_cubemap(const std::vector<std::string> &faces) {
+    unsigned int SkyBox::load_skybox_textures(const std::vector<std::string> &faces) {
         unsigned int texture_id;
 
         glGenTextures(1, &texture_id);
@@ -188,7 +187,7 @@ namespace Pong {
 
                 stbi_image_free(data);
             } else{
-                LOG_ERROR("Cubemap texture failed to load at path: " << faces[i])
+                LOG_ERROR("Skybox texture failed to load at path: " << faces[i])
                 stbi_image_free(data);
             }
         }

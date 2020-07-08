@@ -425,6 +425,7 @@ namespace Pong
     // ---------
     void TestLevel::_level_setup()
     {
+        // TODO: loading more 1 shader fails
         // get camera
         Camera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
@@ -446,7 +447,6 @@ namespace Pong
         cube_01->set_transform(glm::mat4(1));
         cube_01->add_material(paint_mat);
 
-        // Sky box, TODO: skybox creation method.
         // Sky box should be drawn last.
         Shader* skybox_shd = _scene->create_shader("skybox_shd",
                                                    "../shaders/skybox_v.glsl",
@@ -455,7 +455,8 @@ namespace Pong
         Material *skybox_mat = _scene->create_material(
                 "skybox_mat",
                 skybox_shd,
-                {_scene->create_texture("skybox_tex", "skybox",
+                {_scene->create_texture("skybox_tex",
+                            "skybox",
                                        "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
                                        "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
                                        "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")});

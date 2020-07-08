@@ -42,6 +42,9 @@ namespace Pong {
     {
         std::vector<std::string> _cubemap_textures;
 
+    protected:
+
+
     public:
         SkyBox(std::string name, std::string texture_type,
                const std::string &right, const std::string &left, const std::string &top,
@@ -52,14 +55,14 @@ namespace Pong {
             _cubemap_textures.push_back(left);
             _cubemap_textures.push_back(top);
             _cubemap_textures.push_back(bottom);
+            _cubemap_textures.push_back(front);
             _cubemap_textures.push_back(back);
 
-            _texture_id = load_cubemap(_cubemap_textures);
-
-            _gl_bind_type = GL_TEXTURE_CUBE_MAP;
+            _texture_id = load_skybox_textures(_cubemap_textures);
+            Texture::_gl_bind_type = GL_TEXTURE_CUBE_MAP;
         }
 
-        static unsigned int load_cubemap(const std::vector<std::string>& faces);
+        static unsigned int load_skybox_textures(const std::vector<std::string>& faces);
 
     };
 

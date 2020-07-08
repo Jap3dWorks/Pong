@@ -362,10 +362,7 @@ namespace Pong {
         void _build_sky_box(); // TODO, rev draw requirements.
 
     public:
-        explicit SkyBoxShape(std::string name) : Shape(std::move(name)) {
-            _build_sky_box();
-
-        }
+        explicit SkyBoxShape(std::string name);
     };
 }
 
