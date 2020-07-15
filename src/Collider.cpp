@@ -63,8 +63,8 @@ namespace Pong {
         // transform buffers
         glm::vec3 buff[2][8];
         for (int i = 0; i < 8; i++) {
-            buff[0][i] = cA->actor->getTransform() * glm::vec4(cA->OBB_buffer[i], 1);
-            buff[1][i] = cB->actor->getTransform() * glm::vec4(cB->OBB_buffer[i], 1);
+            buff[0][i] = cA->actor->get_transform() * glm::vec4(cA->OBB_buffer[i], 1);
+            buff[1][i] = cB->actor->get_transform() * glm::vec4(cB->OBB_buffer[i], 1);
         }
 
         // SAT collision
@@ -113,7 +113,7 @@ namespace Pong {
         // transform buffer
         glm::vec3 buff[8];
         for (int i = 0; i < 8; i++) {
-            buff[i] = cb->actor->getTransform() * glm::vec4(cb->OBB_buffer[i], 1);
+            buff[i] = cb->actor->get_transform() * glm::vec4(cb->OBB_buffer[i], 1);
         }
 
         float collision_distance = std::numeric_limits<float>::max();
@@ -129,7 +129,7 @@ namespace Pong {
                 buff[BoxCollider::FACES[i][1]] - pnt));
 
             // dot with plane normal should be lower than radius for collision
-            glm::vec3 sph_translate = glm::vec3(cs->actor->getTransform()[3]);
+            glm::vec3 sph_translate = glm::vec3(cs->actor->get_transform()[3]);
             glm::vec3 sVec = sph_translate - pnt;
             float dot_val = glm::dot(norm, sVec);
             float dist_coll = dot_val - cs->getRadius();
@@ -165,8 +165,8 @@ namespace Pong {
     // sphere sphere
     bool checkCollision(const SphereCollider* scA, const SphereCollider* scB)
     {
-        glm::vec3 pnA = scA->actor->getTransform()[3];
-        glm::vec3 pnB = scB->actor->getTransform()[3];
+        glm::vec3 pnA = scA->actor->get_transform()[3];
+        glm::vec3 pnB = scB->actor->get_transform()[3];
 
         glm::vec3 AvB = pnB - pnA;
 
@@ -269,7 +269,7 @@ namespace Pong {
 
         for (int i = 0; i < 8; i++)
         {
-            glm::vec3 pTrans = glm::vec3(actor->getTransform() * glm::vec4(OBB_buffer[i], 1));
+            glm::vec3 pTrans = glm::vec3(actor->get_transform() * glm::vec4(OBB_buffer[i], 1));
             // compare min
             xmin = std::min<float>(xmin, pTrans.x);
             ymin = std::min<float>(ymin, pTrans.y);
@@ -304,8 +304,8 @@ namespace Pong {
         bool check_ray = false;
 
         // do not transform buffer, transform ray instead
-        glm::vec3 r_dir = glm::inverse(actor->getTransform()) * glm::vec4(ray.direction,0.f);
-        glm::vec3 r_pos = glm::inverse(actor->getTransform()) * glm::vec4(ray.position,1.f);
+        glm::vec3 r_dir = glm::inverse(actor->get_transform()) * glm::vec4(ray.direction, 0.f);
+        glm::vec3 r_pos = glm::inverse(actor->get_transform()) * glm::vec4(ray.position, 1.f);
 
         for (int i = 0; i < 6; i++)
         {
@@ -371,9 +371,9 @@ namespace Pong {
             if(check){
                 check_ray = true;
                 glm::mat3 normal_mat =
-                    glm::transpose(glm::inverse(glm::mat3(actor->getTransform())));
+                    glm::transpose(glm::inverse(glm::mat3(actor->get_transform())));
 
-                RayCastData r_cast{glm::vec3(actor->getTransform() * glm::vec4(pln_pnt, 1)),
+                RayCastData r_cast{glm::vec3(actor->get_transform() * glm::vec4(pln_pnt, 1)),
                     glm::normalize(normal_mat * norm),  // transform normal
                     i,
                     const_cast<BoxCollider*>(this)};
@@ -389,8 +389,8 @@ namespace Pong {
     bool SphereCollider::ray_cast(const RayCast ray, std::vector<RayCastData> &ray_data) const
     {
         // do not transform buffer, transform ray instead
-        glm::vec3 r_dir = glm::inverse(actor->getTransform()) * glm::vec4(ray.direction, 0.f);
-        glm::vec3 r_pos = glm::inverse(actor->getTransform()) * glm::vec4(ray.position, 1.f);
+        glm::vec3 r_dir = glm::inverse(actor->get_transform()) * glm::vec4(ray.direction, 0.f);
+        glm::vec3 r_pos = glm::inverse(actor->get_transform()) * glm::vec4(ray.position, 1.f);
 
         // (-b +-root(b^2 - 4ac)) / 2a
         float b = 2 * glm::dot(r_pos, r_dir);
@@ -405,10 +405,10 @@ namespace Pong {
         }
 
         float t = (-b - sqrtf(D)) / 2 * a;
-        glm::vec3 pnt = glm::vec3(actor->getTransform() * glm::vec4(r_pos + t * r_dir, 1));
+        glm::vec3 pnt = glm::vec3(actor->get_transform() * glm::vec4(r_pos + t * r_dir, 1));
         RayCastData rc_data{
             pnt,
-            glm::normalize(pnt - glm::vec3(actor->getTransform()[3])),
+            glm::normalize(pnt - glm::vec3(actor->get_transform()[3])),
             0,
             const_cast<SphereCollider*>(this) };
 
@@ -417,10 +417,10 @@ namespace Pong {
         if (D > 0)
         {
             float t = (-b + sqrtf(D)) / 2 * a;
-            pnt = glm::vec3(actor->getTransform() * glm::vec4(r_pos + t * r_dir, 1));
+            pnt = glm::vec3(actor->get_transform() * glm::vec4(r_pos + t * r_dir, 1));
             RayCastData rc_data_sec{
                 pnt,
-                glm::normalize(pnt - glm::vec3(actor->getTransform()[3])),
+                glm::normalize(pnt - glm::vec3(actor->get_transform()[3])),
                 0,
                 const_cast<SphereCollider*>(this) };
 
@@ -438,8 +438,8 @@ namespace Pong {
     glm::vec3* SphereCollider::getAABB() const
     {
         glm::vec3* result = new glm::vec3[2];
-        result[0] = actor->getTransform() * glm::vec4(-_radius, -_radius, -_radius, 1);
-        result[1] = actor->getTransform() * glm::vec4(_radius, _radius, _radius, 1);
+        result[0] = actor->get_transform() * glm::vec4(-_radius, -_radius, -_radius, 1);
+        result[1] = actor->get_transform() * glm::vec4(_radius, _radius, _radius, 1);
 
         return result;
     }

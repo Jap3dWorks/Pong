@@ -119,7 +119,7 @@ namespace Pong
         // --clean render--
         glClearColor(0.1f, 0.1f, 0.1f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        // TODO: try to draw objects with same material continously
         // draw actors
         for (const auto& actor_pair : _scene->actor_map)
         {
@@ -133,6 +133,7 @@ namespace Pong
     /**Updates Shader common attributes like view, projection or light attributes.*/
     void AbstractLevel::_update_shader(const Shader& shader)
     {
+        // TODO: move to material class
         shader.use();
         shader.setMat4("view", _scene->get_camera()->GetViewMatrix());
         shader.setMat4("projection", glm::perspective(glm::radians(_scene->get_camera()->Zoom),
@@ -141,9 +142,9 @@ namespace Pong
             10000.f));
 
         // directional light
-        shader.setVec3("directional.Direction", _scene->getDirectionalLight()->direction);
-        shader.setVec3("directional.Color", _scene->getDirectionalLight()->color);
-        shader.setVec3("directional.Ambient", _scene->getDirectionalLight()->ambient);
+        shader.setVec3("directional.Direction", _scene->get_directional_light()->direction);
+        shader.setVec3("directional.Color", _scene->get_directional_light()->color);
+        shader.setVec3("directional.Ambient", _scene->get_directional_light()->ambient);
 
         // points lights
         for (unsigned int i = 0; i < Pong::Scene::POINT_LIGHTS; ++i)
@@ -153,7 +154,6 @@ namespace Pong
             shader.setVec3("pointLightColors[" + std::to_string(i) + "]",
                     _scene->get_point_light(i).color);
         }
-
     }
 
     void AbstractLevel::_level_setup(){}
@@ -309,7 +309,7 @@ namespace Pong
         mark->add_material(&material);
 
         // --config lighting--
-        DirectionalLight* directional_light = _scene->getDirectionalLight();
+        DirectionalLight* directional_light = _scene->get_directional_light();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
@@ -427,7 +427,6 @@ namespace Pong
     // ---------
     void TestLevel::_level_setup()
     {
-        // TODO: loading more 1 shader fails
         // get camera
         Camera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
@@ -451,8 +450,8 @@ namespace Pong
 
         // Sky box should be drawn last.
         Shader* skybox_shd = _scene->create_shader("skybox_shd",
-                                                   "../shaders/skybox_v.glsl",
-                                                   "../shaders/skybox_f.glsl");
+                                                   "../shaders/reflect_skybox_v.glsl",
+                                                   "../shaders/reflect_skybox_f.glsl");
 
         Material *skybox_mat = _scene->create_material(
                 "skybox_mat",
@@ -469,7 +468,7 @@ namespace Pong
         skybox_act->add_material(skybox_mat);
 
         // --lighting--
-        DirectionalLight* directional_light = _scene->getDirectionalLight();
+        DirectionalLight* directional_light = _scene->get_directional_light();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
@@ -587,7 +586,7 @@ namespace Pong
         m_coll->setRadius(mark_r);
 
         // --lighting--
-         DirectionalLight* directional_light = _scene->getDirectionalLight();
+         DirectionalLight* directional_light = _scene->get_directional_light();
          directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
          directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
          directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });
@@ -633,7 +632,7 @@ namespace Pong
         sphere->set_scale(pScale);
 
         // --lighting--
-        DirectionalLight* directional_light = _scene->getDirectionalLight();
+        DirectionalLight* directional_light = _scene->get_directional_light();
         directional_light->ambient = glm::vec3{ 0.1f, 0.1f, 0.05f };
         directional_light->color = glm::vec3{ 0.8f, 0.8f, 0.3f };
         directional_light->direction = glm::normalize(glm::vec3{ 0.3f, -1.f, -0.5f });

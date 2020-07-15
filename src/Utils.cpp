@@ -12,7 +12,7 @@
 
 #include "Actor.h"
 #include "Scene.h"
-#include "Shader_s.h"
+#include "Shader.h"
 #include "Material.h"
 
 #define STB_IMAGE_IMPLEMENTATION

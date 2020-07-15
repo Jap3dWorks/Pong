@@ -1,6 +1,10 @@
 #include "Material.h"
+#include "Render.h"
 #include "logger.h"
+
 #include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <utility>
 
@@ -128,6 +132,29 @@ namespace Pong {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    void Material::update_shader(const Shader &shader, const Scene &scene) {
+        shader.use();
+        shader.setMat4("view", scene.get_camera()->GetViewMatrix());
+        shader.setMat4("projection", glm::perspective(glm::radians(scene.get_camera()->Zoom),
+                                                      (float)Pong::Render::SCR_WIDTH / (float)Pong::Render::SCR_HEIGHT,
+                                                      0.1f,
+                                                      10000.f));
+
+        // directional light
+        shader.setVec3("directional.Direction", scene.get_directional_light()->direction);
+        shader.setVec3("directional.Color", scene.get_directional_light()->color);
+        shader.setVec3("directional.Ambient", scene.get_directional_light()->ambient);
+
+        // points lights
+        for (unsigned int i = 0; i < Scene::POINT_LIGHTS; ++i)
+        {
+            shader.setVec3("pointLightPositions[" + std::to_string(i) + "]",
+                           scene.get_point_light(i).position);
+            shader.setVec3("pointLightColors[" + std::to_string(i) + "]",
+                           scene.get_point_light(i).color);
+        }
+    }
+
     Shader* Material::get_shader() const
     {
         return _shader;
@@ -197,4 +224,5 @@ namespace Pong {
 
         return texture_id;
     }
+
 }

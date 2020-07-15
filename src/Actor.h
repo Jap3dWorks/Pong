@@ -20,7 +20,7 @@ namespace Pong
 #include <list>
 
 namespace Pong {
- // TODO: colliders with transform matrix to offset.
+    // TODO: colliders with transform matrix to offset.
     class Actor
     {
     protected:
@@ -55,6 +55,7 @@ namespace Pong {
         [[nodiscard]] Material* get_material(unsigned int index=0) const {
             return _materials[index];
         }
+
         unsigned int materials_count() {return _materials.size();}
 
         void set_transform(glm::mat4 trans) { _transform = trans; }
@@ -65,7 +66,7 @@ namespace Pong {
 
         void set_scale(const glm::vec3 & scale);
 
-        [[nodiscard]] glm::mat4 getTransform() const { return _transform; }
+        [[nodiscard]] glm::mat4 get_transform() const { return _transform; }
         [[nodiscard]] Collider* get_collider(unsigned int i=0) const { return _colliders[i]; }
 
         [[nodiscard]] std::string get_name() const { return _name; }
@@ -80,7 +81,7 @@ namespace Pong {
 
     // sky box
     // -------
-    // TODO: i think this class don't need shape
+    // TODO: I think this class don't need shape, add in the draw process
     class ASkyBox: public Actor
     {
     public:

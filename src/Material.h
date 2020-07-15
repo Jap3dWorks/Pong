@@ -1,7 +1,8 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "Shader_s.h"
+#include "Shader.h"
+#include "Scene.h"
 
 #include <iostream>
 #include <utility>
@@ -20,7 +21,6 @@ namespace Pong {
         unsigned int _gl_bind_type=GL_TEXTURE_2D;
 
     public:
-
         static unsigned int load_texture(char const *path, const bool &gammaCorrection);
 
         explicit Texture(std::string  name, std::string texture_type):
@@ -84,6 +84,8 @@ namespace Pong {
         std::string _name;
 
     public:
+        unsigned int order{50};
+
         Material(std::string name, Shader* shader, std::vector<Texture*> textures);
 
         virtual ~Material();
@@ -91,19 +93,24 @@ namespace Pong {
         [[nodiscard]]Shader* get_shader() const;
 
         void set_param(std::string, float);
+
         void set_param(std::string, glm::vec3);
+
         void set_param(std::string, int);
+
         void set_param(std::string, glm::mat4);
 
-        std::string get_name()
-        {
-            return _name;
-        }
+        virtual void update_shader(const Shader &shader, const Scene &scene);
+
+        std::string get_name() { return _name; }
 
         virtual void use();
 
-        virtual void end_use();
         /// unbind textures
+        virtual void end_use();
+
+        const bool operator<(const Material& other) const { return order < other.order; }
+
     };
 }
 #endif // !MATERIAL_H

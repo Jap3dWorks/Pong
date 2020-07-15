@@ -13,11 +13,6 @@ namespace Pong{
         // create callbacks
         glfwSetCursorPosCallback(render->getWindow(), Pong::mouse_callback);
         glfwSetScrollCallback(render->getWindow(), scroll_callback);
-
-        //for (int i = 0; i < POINT_LIGHTS; i++)
-        //{
-        //	_pointLights[i] = new PointLight;
-        //}
     }
 
     Scene::~Scene()
@@ -74,7 +69,7 @@ namespace Pong{
         return instance;
     }
 
-    PointLight& Pong::Scene::get_point_light(int id)
+    PointLight& Pong::Scene::get_point_light(int id) const
     {
         if (id < POINT_LIGHTS)
             return _pointLights[id];
@@ -82,39 +77,19 @@ namespace Pong{
             return _pointLights[0];
     }
 
-    DirectionalLight* Pong::Scene::getDirectionalLight()
+    DirectionalLight* Pong::Scene::get_directional_light() const
     {
         return _directionalLight;
     }
 
-    Camera* Pong::Scene::get_camera()
+    Camera* Pong::Scene::get_camera() const
     {return _camera;}
 
-    // --Actors--
-    //template<typename T>
-    //T* Scene::create_actor(std::string name)
-    //{
-    //	if (!std::is_base_of<Actor, T>::value)
-    //		return nullptr;
-
-    //	if (_actorMap.find(name) == _actorMap.end())
-    //	{
-    //		T* a_ptr = new T(name);
-    //		_actorMap[name] = static_cast<Actor*>(a_ptr);
-    //		return a_ptr;
-    //	}
-    //	else
-    //	{
-    //		// if key is already in map, delete prev ptr and add the new ptr
-    //		return nullptr;
-    //	}
-    //}
-
-    Actor* Scene::get_actor(const std::string& name)
+    Actor* Scene::get_actor(const std::string& name) const
     {
         if (actor_map.find(name) != actor_map.end())
         {
-            return actor_map[name];
+            return actor_map.at(name);
         }
         else
         {
@@ -124,23 +99,22 @@ namespace Pong{
     }
 
     // -- Colliders--
-
-    Collider* Scene::getCollider(const std::string& name)
+    Collider* Scene::get_collider(const std::string& name) const
     {
         if (collider_map.find(name) != collider_map.end())
         {
-            return collider_map[name];
+            return collider_map.at(name);
         }
         else
             return nullptr;
     }
 
 
-    Shape* Scene::get_shape(const std::string& name)
+    Shape* Scene::get_shape(const std::string& name) const
     {
         if (shape_map.find(name) != shape_map.end())
         {
-            return shape_map[name];
+            return shape_map.at(name);
         }
         else
             return nullptr;
@@ -159,11 +133,11 @@ namespace Pong{
             return shader_map[name];
     }
 
-    Shader* Scene::get_shader(const std::string& name)
+    Shader* Scene::get_shader(const std::string& name) const
     {
         if (shader_map.find(name) != shader_map.end())
         {
-            return shader_map[name];
+            return shader_map.at(name);
         }
         else
             return nullptr;
@@ -186,11 +160,11 @@ namespace Pong{
         }
     }
 
-    Material* Scene::get_material(const std::string& name)
+    Material* Scene::get_material(const std::string& name) const
     {
         if (material_map.find(name) != material_map.end())
         {
-            return material_map[name];
+            return material_map.at(name);
         }
         else
             return nullptr;
@@ -236,11 +210,11 @@ namespace Pong{
         else return textures_map[name];
     }
 
-    Texture* Scene::get_texture(const std::string& name)
+    Texture* Scene::get_texture(const std::string& name) const
     {
         if (textures_map.find(name) != textures_map.end())
         {
-            return textures_map[name];
+            return textures_map.at(name);
         }
         else
             return nullptr;
@@ -356,6 +330,8 @@ namespace Pong{
         return new Mesh(mesh->mName.C_Str(), vertices, indices);
     }
 
+
+    // TODO: move to input callback functions file
     // callback functions
     // -----------------
     void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
