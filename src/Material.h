@@ -113,8 +113,6 @@ namespace Pong {
         /// unbind textures
         virtual void end_use();
 
-        bool operator<(const Material& other) const { return order < other.order; }
-
     };
 }
 #endif // !MATERIAL_H

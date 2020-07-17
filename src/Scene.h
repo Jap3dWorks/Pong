@@ -12,6 +12,8 @@
 #include "Lights.h"
 #include "Render.h"
 
+#include "MapKeyComparer.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -71,18 +73,21 @@ namespace Pong {
 
         // Material Actors map, use this map to draw objects by material.
         // TODO: fill this map
-        std::map<Material*, std::set<Actor*>> material_meshes_map{};
+        std::map<Material*, std::set<Shape*>, MapKeyComparer> material_shape_map{};
+        std::map<Shape*, std::set<Actor*>, MapKeyComparer> shape_actor_map{};
+        void assign_material(Material*, Shape*);
+        void assign_shape(Shape*, Actor*);
 
-        PointLight& get_point_light(int id) const;
+        [[nodiscard]] PointLight& get_point_light(int id) const;
 
-        DirectionalLight* get_directional_light() const;
+        [[nodiscard]] DirectionalLight* get_directional_light() const;
 
         Shader* create_shader(const std::string& name,
             const GLchar* vertex_shader,
             const GLchar* fragment_shader,
             const GLchar* geometry_shader = nullptr);
 
-        Shader* get_shader(const std::string& name) const;
+        [[nodiscard]] Shader* get_shader(const std::string& name) const;
 
         // create a material and save it in _materialMap
         Material* create_material(const std::string& name,
@@ -90,14 +95,14 @@ namespace Pong {
                                   std::vector<Texture*> textures);
 
         // get a material by its name
-        Material* get_material(const std::string& name) const;
+        [[nodiscard]] Material* get_material(const std::string& name) const;
 
         // create texture
         Texture* create_texture(const std::string& name,
                                 const std::string& path,
                                 std::string texture_type);
 
-        Texture* get_texture(const std::string& name) const;
+        [[nodiscard]] Texture* get_texture(const std::string& name) const;
 
         /**create_texture Sky box overload.*/
         Texture* create_texture(const std::string& name,
@@ -130,7 +135,7 @@ namespace Pong {
         }
 
         // get an actor by its name
-        Actor* get_actor(const std::string& name) const;
+        [[nodiscard]] Actor* get_actor(const std::string& name) const;
 
         // Create a collider, template you must specify the collider type
         template<typename T>
@@ -151,10 +156,10 @@ namespace Pong {
         }
 
         // get a collider by its name
-        Collider* get_collider(const std::string& name) const;
+        [[nodiscard]] Collider* get_collider(const std::string& name) const;
 
         // get camera ptr
-        ACamera* get_camera() const;
+        [[nodiscard]] ACamera* get_camera() const;
 
         template<typename T, typename... Args>
         T* create_shape(std::string name, Args&&... args)
@@ -172,7 +177,7 @@ namespace Pong {
                 // if shape exists in the map, return ptr to shape
                 return static_cast<T*>(shape_map[name]);
         }
-        Shape* get_shape(const std::string& name) const;
+        [[nodiscard]] Shape* get_shape(const std::string& name) const;
 
         int import_model(const std::string& model_path, Actor *& actor);
 

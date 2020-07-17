@@ -18,15 +18,12 @@ namespace Pong {
         _transform = glm::scale(_transform, scale);
     }
 
-    void Actor::draw(const Render *render, const Scene *scene) const
-    {
+    void Actor::draw(const Render *render, const Scene *scene, Material *material) const {
         // draw if is visible and has a shape
-        if(! _visible) return;
+        if (!_visible) return;
 
-        for (unsigned int i=0; i <  _shapes.size(); ++i)
-        {
-            _materials[i]->set_param("model", _transform);
-            _shapes[i]->draw();
+        for (unsigned int i = 0; i < _shapes.size(); ++i) {
+            material->set_param("model", _transform);
         }
     }
 
@@ -54,8 +51,7 @@ namespace Pong {
 
     // ASkyBox
     // -------
-    // TODO pass render scene level as reference
-    void ASkyBox::draw(const Render *render, const Scene *scene) const
+    void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
     {
         // draw if is visible and has a shape
         if(! _visible) return;
@@ -64,11 +60,13 @@ namespace Pong {
         // when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);
 
-        glm::mat4 view_mat = scene->get_camera()->get_view_matrix();
+        // Override view matrix
+        glm::mat4 view_mat = glm::mat4(glm::mat3(scene->get_camera()->get_view_matrix()));
+        _materials[0]->set_param("view", view_mat);
 
         for (auto _shape : _shapes)
         {
-            _shape->draw();
+            _shape->draw(nullptr, nullptr, nullptr);
         }
 
         glDepthFunc(GL_LESS);

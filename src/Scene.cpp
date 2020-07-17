@@ -331,7 +331,14 @@ namespace Pong{
         return new Mesh(mesh->mName.C_Str(), vertices, indices);
     }
 
+    void Scene::assign_material(Material * material, Shape * shape) {
+        material_shape_map[material].insert(shape);
+    }
+    void Scene::assign_shape(Shape * shape, Actor *actor) {
+        shape_actor_map[shape].insert(actor);
+    }
 
+    // TODO: Default scene per asset?
     // TODO: move to input callback functions file
     // callback functions
     // -----------------

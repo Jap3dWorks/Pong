@@ -1,6 +1,12 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
+namespace Pong{
+    class Scene;
+    class Render;
+    class Material;
+}
+
 #include "Utils.h"
 
 #include <glm/glm.hpp>
@@ -77,7 +83,7 @@ namespace Pong {
 
         virtual void set_VAO();
 
-        virtual void draw() const;
+        virtual void draw(Pong::Render *render, Pong::Scene *scene, Pong::Material *material) const;
 
     private:
         inline void _add_vertices_(const float& x, const float& y, const float& z)

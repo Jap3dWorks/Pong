@@ -45,7 +45,7 @@ namespace Pong {
 
         virtual void process_keyboard(Movements movement, float deltaTime);
 
-        virtual void draw(const Render *render, const Scene *scene) const;
+        virtual void draw(const Render *render, const Scene *scene, Material *material) const;
 
         virtual void update(float delta_time){}
 
@@ -82,11 +82,6 @@ namespace Pong {
         template<typename T>
         void add_component(T *component = nullptr);
 
-        // operators
-        bool operator<(const Actor *&other) const { return order < other->order; }
-
-        template<typename T>
-        bool operator<(const T &other) const { return order < other.order; }
 
     };
 
@@ -97,7 +92,7 @@ namespace Pong {
     {
     public:
         explicit ASkyBox(std::string name): Actor(std::move(name)) {}
-        void draw(const Render *render, const Scene *scene) const override;
+        void draw(const Render *render, const Scene *scene, Material *material) const override;
     };
 
     // --AKinetic class--

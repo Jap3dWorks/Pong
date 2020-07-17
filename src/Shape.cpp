@@ -1,4 +1,6 @@
 #include "Shape.h"
+#include "Material.h"
+#include "Scene.h"
 #include "logger.h"
 
 #include <assimp/Importer.hpp>
@@ -109,18 +111,14 @@ namespace Pong {
         glBindVertexArray(0);
     }
 
-    void Shape::draw() const
+    void Shape::draw(Pong::Render *render, Pong::Scene *scene, Pong::Material *material) const
     {
-        glBindVertexArray(VAO_id);
-
         if(!indices.empty()){
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 
         } else {
             glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
         }
-        // detach vertex array
-        glBindVertexArray(0);
     }
 
     void Shape::_compute_face_normal_(const glm::vec3 &vtx0, const glm::vec3 &vtx1,

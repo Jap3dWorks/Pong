@@ -23,8 +23,8 @@ int main()
     case 0:
         {
             LOG_INFO("Case 0, Pong level");
-            Pong::PongLevel  lvl1;
-            lvl1.run();
+//            Pong::PongLevel  lvl1;
+//            lvl1.run();
             break;
         }
 
@@ -39,16 +39,16 @@ int main()
     case 2:
         {
             LOG_INFO("Case 2, test level");
-            Pong::PBRLevel pbr_lvl;
-            pbr_lvl.run();
+//            Pong::PBRLevel pbr_lvl;
+//            pbr_lvl.run();
             break;
         }
 
     case 3:
         {
             LOG_INFO("Case 3, Model level");
-            Pong::ModelLevel model_lvl;
-            model_lvl.run();
+//            Pong::ModelLevel model_lvl;
+//            model_lvl.run();
         }
 
     default:
