@@ -6,8 +6,8 @@
 namespace Pong
 {
     AbstractLevel::AbstractLevel() {
-        _render = Render::getInstance();
-        _scene = Scene::get_instance();
+        _render = Pong::Render::getInstance();
+        _scene = Pong::Scene::get_instance();
     }
 
     AbstractLevel::~AbstractLevel()
@@ -121,12 +121,13 @@ namespace Pong
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // TODO: try to draw objects with same material continously
         // draw actors
-        for (const auto& actor_pair : _scene->actor_map)
-        {
-            actor_pair.second->get_material()->get_shader()->use();
-            // update shader attributes
-            _update_shader(*actor_pair.second->get_material()->get_shader());
-            actor_pair.second->draw();
+        for (const auto &actor_pair : _scene->actor_map) {
+            actor_pair.second->get_material()->update_shader(
+                    _render, _scene
+            );
+            actor_pair.second->get_material()->use();
+            actor_pair.second->draw(_render, _scene);
+            actor_pair.second->get_material()->end_use();
         }
     }
 
@@ -135,7 +136,7 @@ namespace Pong
     {
         // TODO: move to material class
         shader.use();
-        shader.setMat4("view", _scene->get_camera()->GetViewMatrix());
+        shader.setMat4("view", _scene->get_camera()->get_view_matrix());
         shader.setMat4("projection", glm::perspective(glm::radians(_scene->get_camera()->Zoom),
             (float)Pong::Render::SCR_WIDTH / (float)Pong::Render::SCR_HEIGHT,
             0.1f,
@@ -193,7 +194,7 @@ namespace Pong
     void PongLevel::run()
     {
         // get camera
-        Camera* camera = _scene->get_camera();
+        ACamera* camera = _scene->get_camera();
         camera->Position=glm::vec3(0,0,18);
 
         // build and compile the shader program
@@ -351,7 +352,7 @@ namespace Pong
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // --update camera pos--
-            glm::mat4 view = camera->GetViewMatrix();
+            glm::mat4 view = camera->get_view_matrix();
             glm::mat4 plane_model = glm::mat4(1);
             glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom),
                 (float)Pong::Render::SCR_WIDTH / (float)Pong::Render::SCR_HEIGHT,
@@ -369,7 +370,7 @@ namespace Pong
             // print actors
             for (const auto& kv : _scene->actor_map)
             {
-                kv.second->draw();
+                kv.second->draw(_render, _scene);
             }
 
             // clean buffers
@@ -428,7 +429,7 @@ namespace Pong
     void TestLevel::_level_setup()
     {
         // get camera
-        Camera* camera = _scene->get_camera();
+        ACamera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 
         // build and compile the shader program
@@ -483,7 +484,7 @@ namespace Pong
 
         // glm::mat3 m = glm::mat3(tr_m);
 
-        glm::vec3 v_var(glm::mat3(_scene->get_camera()->GetViewMatrix()) * v_a);
+        glm::vec3 v_var(glm::mat3(_scene->get_camera()->get_view_matrix()) * v_a);
 
         // cout_vector(v_var);
     }
@@ -501,8 +502,8 @@ namespace Pong
             }
             else
             {
-                Camera* cam = _scene->get_camera();
-                //glm::mat4 cam_trns = cam->GetViewMatrix();
+                ACamera* cam = _scene->get_camera();
+                //glm::mat4 cam_trns = cam->get_view_matrix();
                 RayCast ray(glm::vec3(cam->Front.x, cam->Front.y, cam->Front.z),
                     cam->Position);
 
@@ -527,7 +528,7 @@ namespace Pong
     void PBRLevel::_level_setup()
     {
         // get camera
-        Camera* camera = _scene->get_camera();
+        ACamera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 
         // build and compile the shader program
@@ -602,7 +603,7 @@ namespace Pong
     void ModelLevel::_level_setup()
     {
         // get camera
-        Camera* camera = _scene->get_camera();
+        ACamera* camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 
         // build and compile the shader program

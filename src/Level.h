@@ -15,8 +15,8 @@ namespace Pong {
     class AbstractLevel
     {
     protected:
-        Scene* _scene;
-        Render* _render;
+        Scene *_scene;
+        Render *_render;
         std::vector<ProcessInput> _inputList;
 
         virtual void _configInputs();

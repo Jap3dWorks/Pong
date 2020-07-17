@@ -4,13 +4,14 @@
 namespace Pong
 {
     class Component;
+    class Scene;
+    class Render;
 }
 
 #include "Movements.h"
 
 #include "Shape.h"
 #include "Material.h"
-#include "Component.h"
 #include "Collider.h"
 
 #include <iostream>
@@ -35,13 +36,16 @@ namespace Pong {
         std::vector<Collider*> _colliders;
 
     public:
+        /**Draw order*/
+        unsigned int order{5};
+
         explicit Actor(std::string name): _name(std::move(name)) {}
 
         virtual ~Actor();
 
         virtual void process_keyboard(Movements movement, float deltaTime);
 
-        virtual void draw() const;
+        virtual void draw(const Render *render, const Scene *scene) const;
 
         virtual void update(float delta_time){}
 
@@ -62,7 +66,7 @@ namespace Pong {
 
         void add_collider(Collider* coll);
 
-        void setVisibility(bool vis) { _visible = vis; }
+        void set_visibility(bool vis) { _visible = vis; }
 
         void set_scale(const glm::vec3 & scale);
 
@@ -75,8 +79,15 @@ namespace Pong {
         [[nodiscard]] bool get_visibility() const { return _visible; }
 
         // config members
-        template <typename T>
-        void add_component(T* component = nullptr);
+        template<typename T>
+        void add_component(T *component = nullptr);
+
+        // operators
+        bool operator<(const Actor *&other) const { return order < other->order; }
+
+        template<typename T>
+        bool operator<(const T &other) const { return order < other.order; }
+
     };
 
     // sky box
@@ -86,7 +97,7 @@ namespace Pong {
     {
     public:
         explicit ASkyBox(std::string name): Actor(std::move(name)) {}
-        void draw() const override;
+        void draw(const Render *render, const Scene *scene) const override;
     };
 
     // --AKinetic class--
@@ -103,7 +114,7 @@ namespace Pong {
         float _base_speed = 0.f;
 
     public:
-        AKinetic(std::string name): Actor(std::move(name)){}
+        explicit AKinetic(std::string name): Actor(std::move(name)){}
         AKinetic(std::string name, glm::vec3 vector_director);
 
         ~AKinetic() override;
@@ -152,19 +163,19 @@ namespace Pong {
     private:
 
     public:
-        ABall(std::string name, glm::vec3 vector_director=glm::vec3(2,0.f,0.f),
+        explicit ABall(std::string name, glm::vec3 vector_director=glm::vec3(2,0.f,0.f),
             glm::vec3 start_position=glm::vec3()) :
-            AKinetic(name, vector_director){}
+            AKinetic(std::move(name), vector_director){}
 
-        virtual ~ABall();
+        ~ABall() override;
     };
 
-    // --Camera--
+    // --ACamera--
     // ----------
     /**
-    Camera Actor type preconfigured with input keyboard
+    ACamera Actor type preconfigured with input keyboard
      */
-    class Camera : public Actor {
+    class ACamera : public Actor {
     public:
         static const float YAW;
         static const float PITCH;
@@ -183,7 +194,7 @@ namespace Pong {
         float Yaw;
         float Pitch;
 
-        // Camera options
+        // ACamera options
         float MovementSpeed;
         float MouseSensitivity;
         float Zoom;
@@ -191,60 +202,44 @@ namespace Pong {
         /**
             Constructor using glm::vec3
             */
-        explicit Camera(std::string name,
-               glm::vec3 position = glm::vec3(0.f, 0.f, 0.f),
-               glm::vec3 up = glm::vec3(0.f, 1.f, 0.f),
-               float yaw = YAW,
-               float pitch = PITCH) : Front(glm::vec3(0.f, 0.f, -1.f)),
+        explicit ACamera(std::string name,
+                         glm::vec3 position = glm::vec3(0.f, 0.f, 0.f),
+                         glm::vec3 up = glm::vec3(0.f, 1.f, 0.f),
+                         float yaw = YAW,
+                         float pitch = PITCH) : Front(glm::vec3(0.f, 0.f, -1.f)),
+                                                MovementSpeed(SPEED),
+                                                MouseSensitivity(SENSITIVITY),
+                                                Zoom(ZOOM),
+                                                Yaw(yaw),
+                                                Pitch(pitch),
+                                                Position(position),
+                                                WorldUp(up),
+                                                Actor(std::move(name)) {
+            update_camera_vectors();
+        }
+
+        // constructor with scalar values
+        ACamera(std::string name,
+                float posX, float posY, float posZ,
+                float upX, float upY, float upZ,
+                float yaw = YAW,
+                float pitch = PITCH) : Front(glm::vec3(0.f, 0.f, -1.f)),
                                       MovementSpeed(SPEED),
                                       MouseSensitivity(SENSITIVITY),
                                       Zoom(ZOOM),
                                       Actor(std::move(name)) {
-            Position = position;
-            WorldUp = up;
-            Yaw = yaw;
-            Pitch = pitch;
-            updateCameraVectors();
-        }
-
-        // constructor with scalar values
-        Camera(std::string name,
-               float posX, float posY, float posZ,
-               float upX, float upY, float upZ,
-               float yaw = YAW,
-               float pitch = PITCH) : Front(glm::vec3(0.f, 0.f, -1.f)),
-                                      MovementSpeed(SPEED),
-                                      MouseSensitivity(SENSITIVITY),
-                                      Zoom(ZOOM),
-                                      Actor(name) {
             Position = glm::vec3(posX, posY, posZ);
             WorldUp = glm::vec3(upX, upY, upZ);
             Yaw = yaw;
             Pitch = pitch;
-            updateCameraVectors();
+            update_camera_vectors();
         }
 
         // vew matrix calculated using euler angles and lookat matrix
-        glm::mat4 GetViewMatrix() {
-            return glm::lookAt(Position, Position + Front, Up);
-        }
+        [[nodiscard]] glm::mat4 get_view_matrix() const;
 
         // keyboard input
-        virtual void process_keyboard(Pong::Movements direction, float delta_time) {
-            float velocity = MovementSpeed * delta_time;
-            if (direction == Pong::Movements::FORWARD)
-                Position += Front * velocity;
-            if (direction == Pong::Movements::BACKWARD)
-                Position -= Front * velocity;
-            if (direction == Pong::Movements::LEFT)
-                Position -= Right * velocity;
-            if (direction == Pong::Movements::RIGHT)
-                Position += Right * velocity;
-            if (direction == Pong::Movements::UP)
-                Position += Up * velocity;
-            if (direction == Pong::Movements::DOWN)
-                Position -= Up * velocity;
-        }
+        void process_keyboard(Pong::Movements direction, float delta_time) override;
 
         // processes input received from a mouse input system.
         void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constraintPitch = true) {
@@ -262,7 +257,7 @@ namespace Pong {
                     Pitch = -89.9f;
             }
             // update Front, Right and Up vectos
-            updateCameraVectors();
+            update_camera_vectors();
         }
 
         // Processes input received from a mouse scroll-wheel event.
@@ -277,7 +272,7 @@ namespace Pong {
 
     private:
         // calculates the front vector from camera's euler angles
-        void updateCameraVectors() {
+        void update_camera_vectors() {
             // calculate new front vector
             glm::vec3 front;
             front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));

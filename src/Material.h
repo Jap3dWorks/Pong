@@ -1,8 +1,13 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+namespace Pong
+{
+    class Scene;
+    class Render;
+}
+
 #include "Shader.h"
-#include "Scene.h"
 
 #include <iostream>
 #include <utility>
@@ -18,7 +23,7 @@ namespace Pong {
         unsigned int _texture_id{};
         std::string _path;
         std::string _texture_type;
-        unsigned int _gl_bind_type=GL_TEXTURE_2D;
+        unsigned int _gl_bind_type = GL_TEXTURE_2D;
 
     public:
         static unsigned int load_texture(char const *path, const bool &gammaCorrection);
@@ -43,7 +48,6 @@ namespace Pong {
         std::vector<std::string> _cubemap_textures;
 
     protected:
-
 
     public:
         SkyBox(std::string name, std::string texture_type,
@@ -100,7 +104,7 @@ namespace Pong {
 
         void set_param(std::string, glm::mat4);
 
-        virtual void update_shader(const Shader &shader, const Scene &scene);
+        virtual void update_shader(const Render *render, const Scene *scene);
 
         std::string get_name() { return _name; }
 
@@ -109,7 +113,7 @@ namespace Pong {
         /// unbind textures
         virtual void end_use();
 
-        const bool operator<(const Material& other) const { return order < other.order; }
+        bool operator<(const Material& other) const { return order < other.order; }
 
     };
 }

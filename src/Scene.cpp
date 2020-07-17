@@ -4,8 +4,9 @@
 #include "logger.h"
 
 
-Pong::Scene* Pong::Scene::instance = 0;
 namespace Pong{
+    Scene* Scene::instance = nullptr;
+
     Scene::Scene()
     {
         // start Render
@@ -60,7 +61,7 @@ namespace Pong{
         }
     }
 
-    Scene* Pong::Scene::get_instance()
+    Scene* Scene::get_instance()
     {
         if (!instance)
         {
@@ -69,7 +70,7 @@ namespace Pong{
         return instance;
     }
 
-    PointLight& Pong::Scene::get_point_light(int id) const
+    PointLight& Scene::get_point_light(int id) const
     {
         if (id < POINT_LIGHTS)
             return _pointLights[id];
@@ -77,12 +78,12 @@ namespace Pong{
             return _pointLights[0];
     }
 
-    DirectionalLight* Pong::Scene::get_directional_light() const
+    DirectionalLight* Scene::get_directional_light() const
     {
         return _directionalLight;
     }
 
-    Camera* Pong::Scene::get_camera() const
+    ACamera* Scene::get_camera() const
     {return _camera;}
 
     Actor* Scene::get_actor(const std::string& name) const

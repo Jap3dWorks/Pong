@@ -1,5 +1,7 @@
 #include "Actor.h"
 #include "logger.h"
+#include "Scene.h"
+#include "Component.h"
 
 #include <algorithm>
 #include <utility>
@@ -16,7 +18,7 @@ namespace Pong {
         _transform = glm::scale(_transform, scale);
     }
 
-    void Actor::draw() const
+    void Actor::draw(const Render *render, const Scene *scene) const
     {
         // draw if is visible and has a shape
         if(! _visible) return;
@@ -24,9 +26,7 @@ namespace Pong {
         for (unsigned int i=0; i <  _shapes.size(); ++i)
         {
             _materials[i]->set_param("model", _transform);
-            _materials[i]->use();
             _shapes[i]->draw();
-            _materials[i]->end_use();
         }
     }
 
@@ -54,19 +54,21 @@ namespace Pong {
 
     // ASkyBox
     // -------
-    void ASkyBox::draw() const
+    // TODO pass render scene level as reference
+    void ASkyBox::draw(const Render *render, const Scene *scene) const
     {
         // draw if is visible and has a shape
         if(! _visible) return;
+
         // change depth function so depth test passes
         // when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);
 
-        for (unsigned int i=0; i <  _shapes.size(); ++i)
+        glm::mat4 view_mat = scene->get_camera()->get_view_matrix();
+
+        for (auto _shape : _shapes)
         {
-            _materials[i]->use();
-            _shapes[i]->draw();
-            _materials[i]->end_use();
+            _shape->draw();
         }
 
         glDepthFunc(GL_LESS);
@@ -135,11 +137,31 @@ namespace Pong {
         _key_pressed = false;
     }
 
-    const float Camera::YAW = -90.f;
-    const float Camera::PITCH = 0.f;
-    const float Camera::SPEED = 2.5f;
-    const float Camera::SENSITIVITY = .25f;
-    const float Camera::ZOOM = 45.0f;
+    const float ACamera::YAW = -90.f;
+    const float ACamera::PITCH = 0.f;
+    const float ACamera::SPEED = 2.5f;
+    const float ACamera::SENSITIVITY = .25f;
+    const float ACamera::ZOOM = 45.0f;
+
+    glm::mat4 ACamera::get_view_matrix() const {
+        return glm::lookAt(Position, Position + Front, Up);
+    }
+
+    void ACamera::process_keyboard(Pong::Movements direction, float delta_time) {
+        float velocity = MovementSpeed * delta_time;
+        if (direction == Pong::Movements::FORWARD)
+            Position += Front * velocity;
+        if (direction == Pong::Movements::BACKWARD)
+            Position -= Front * velocity;
+        if (direction == Pong::Movements::LEFT)
+            Position -= Right * velocity;
+        if (direction == Pong::Movements::RIGHT)
+            Position += Right * velocity;
+        if (direction == Pong::Movements::UP)
+            Position += Up * velocity;
+        if (direction == Pong::Movements::DOWN)
+            Position -= Up * velocity;
+    }
 
     ABall::~ABall() noexcept {LOG_DEBUG("ABall destructor");}
 }

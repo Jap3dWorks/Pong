@@ -1,24 +1,23 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "Actor.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
-// #include "Camera.h"
+#include "Actor.h"
+#include "Material.h"
 #include "Shape.h"
 #include "Collider.h"
-#include "Render.h"
 #include "Lights.h"
+#include "Render.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include <vector>
-
+#include <set>
 #include <map>
 #include <functional>
 
@@ -47,7 +46,7 @@ namespace Pong {
         DirectionalLight* _directionalLight = new DirectionalLight;
 
         // camera pointer
-        Camera* _camera = new Camera("default_cam", glm::vec3(0.f, 0.f, 5.f));
+        ACamera* _camera = new ACamera("default_cam", glm::vec3(0.f, 0.f, 5.f));
 
         //private methods
         Scene();
@@ -55,6 +54,7 @@ namespace Pong {
         void _process_node(aiNode * node,
                            const aiScene *& scene,
                            std::vector<Mesh*>& out_result);
+
         static Mesh * _process_mesh(const aiMesh *& mesh);
 
     public:
@@ -71,7 +71,7 @@ namespace Pong {
 
         // Material Actors map, use this map to draw objects by material.
         // TODO: fill this map
-        std::map<Material*, std::vector<Actor*>> material_meshes_map;
+        std::map<Material*, std::set<Actor*>> material_meshes_map{};
 
         PointLight& get_point_light(int id) const;
 
@@ -154,7 +154,7 @@ namespace Pong {
         Collider* get_collider(const std::string& name) const;
 
         // get camera ptr
-        Camera* get_camera() const;
+        ACamera* get_camera() const;
 
         template<typename T, typename... Args>
         T* create_shape(std::string name, Args&&... args)

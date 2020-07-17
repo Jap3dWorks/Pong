@@ -32,13 +32,13 @@ namespace Pong {
     public:
         virtual ~CollisionComponent() { LOG_DEBUG("Collision component destructor"); }
 
-        virtual void at_collision(Collider *&owner, Collider *&other) = 0;
+        virtual void at_collision(Collider *owner, Collider *other) = 0;
     };
 
 
     class BallCollisionComponent : public CollisionComponent {
     public:
-        void at_collision(Collider*& owner, Collider*& other) override;
+        void at_collision(Collider *owner, Collider *other) override;
 
         virtual ~BallCollisionComponent() override {
             LOG_DEBUG("BallCollisionComponent destructor");
@@ -47,7 +47,7 @@ namespace Pong {
 
     class BorderCollisionComponent : public CollisionComponent {
     public:
-        void at_collision(Collider*& owner, Collider*& other) override;
+        void at_collision(Collider *owner, Collider *other) override;
 
         virtual ~BorderCollisionComponent() override {
             LOG_DEBUG("BorderCollisionComponent destructor");

@@ -4,7 +4,7 @@
 #include <time.h>
 
 namespace Pong {
-    void BallCollisionComponent::at_collision(Collider*& owner, Collider*& other)
+    void BallCollisionComponent::at_collision(Collider *owner, Collider *other)
     {
         // Get ball actor
         auto* ball = static_cast<ABall*>(owner->actor);
@@ -50,7 +50,7 @@ namespace Pong {
 
     // BorderCollisionComponent
     // ------------------------
-    void BorderCollisionComponent::at_collision(Collider*& owner, Collider*& other)
+    void BorderCollisionComponent::at_collision(Collider *owner, Collider *other)
     {
         ABall* ball = dynamic_cast<ABall*>(other->getActor());
 
