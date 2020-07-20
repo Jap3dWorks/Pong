@@ -6,14 +6,22 @@
 #define PONG_MAPKEYCOMPARER_H
 
 namespace Pong {
-    class MapKeyComparer {
-
-        template<typename T>
-        bool operator()(const T &first, const T &second) {
+    template<typename T>
+    struct MapKeyComparer {
+    public:
+        bool operator()(const T& first, const T& second) const {
             return first.order <= second.order;
         }
-
     };
+
+    template<typename T>
+    struct MapKeyComparer<T*> {
+    public:
+        bool operator()(const T* first, const T* second) const {
+            return first->order <= second->order;
+        }
+    };
+
 
 }
 #endif //PONG_MAPKEYCOMPARER_H

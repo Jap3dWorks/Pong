@@ -30,8 +30,7 @@ namespace Pong {
         {
             GLenum internalFormat;
             GLenum dataFormat;
-            if (nrComponents == 1)
-                dataFormat = internalFormat = GL_RED;
+            if (nrComponents == 1) dataFormat = internalFormat = GL_RED;
             else if (nrComponents == 3)
             {
                 internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;

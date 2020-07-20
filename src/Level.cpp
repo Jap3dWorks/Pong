@@ -123,9 +123,10 @@ namespace Pong
         {
             mat_pair.first->update_shader(_render, _scene);
             mat_pair.first->use();
-            for (const auto & shape_actor: mat_pair.second)
+            for (const auto & shape_actor: _scene->shape_actor_map)
             {
                 glBindVertexArray(shape_actor.first->get_VAO());
+
                 shape_actor.first->draw(_render, _scene, nullptr);  // TODO: bind buffer
                 for (const auto & actor: shape_actor.second)
                 {
@@ -189,11 +190,10 @@ namespace Pong
                                         "texture1")});
 
         auto *cube_01 = _scene->create_actor<APlayer>("cube_01");
-        _scene->assign_material(paint_mat,
-                                _scene->create_shape<IcosphereShape>("cube_shp", 1, 2),
-                                cube_01);
+        auto *cube_shp = _scene->create_shape<IcosphereShape>("cube_shp", 1, 2);
+        _scene->assign_material(paint_mat, cube_shp);
+        _scene -> assign_shape(cube_shp, cube_01);
 
-        // Sky box should be drawn last.
         Shader *skybox_shd = _scene->create_shader("skybox_shd",
                                                    "../shaders/reflect_skybox_v.glsl",
                                                    "../shaders/reflect_skybox_f.glsl");
@@ -206,11 +206,14 @@ namespace Pong
                                         "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
                                         "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
                                         "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")});
-
-        // hack z_skybox to sort at the end of the map
+        // Sky box should be drawn last.
+        skybox_mat->order = 900;
+        // hack z_skybox to sort at the end of the map.
+        auto* skybox_shp = _scene->create_shape<SkyBoxShape>("skybox_shp");
+        auto* skybox_act = _scene->create_actor<ASkyBox>("skybox_act");
         _scene->assign_material(skybox_mat,
-                                _scene->create_shape<SkyBoxShape>("skybox_shp"),
-                                _scene->create_actor<ASkyBox>("z_skybox_act"));
+                                _scene->create_shape<SkyBoxShape>("skybox_shp"));
+        _scene->assign_shape(skybox_shp, skybox_act);
 
         // --lighting--
         DirectionalLight *directional_light = _scene->get_directional_light();

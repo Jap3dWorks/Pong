@@ -195,8 +195,7 @@ namespace Pong {
         float Zoom;
 
         /**
-            Constructor using glm::vec3
-            */
+        Constructor using glm::vec3*/
         explicit ACamera(std::string name,
                          glm::vec3 position = glm::vec3(0.f, 0.f, 0.f),
                          glm::vec3 up = glm::vec3(0.f, 1.f, 0.f),

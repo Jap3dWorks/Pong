@@ -47,6 +47,8 @@ namespace Pong {
     // _shapes classes
     class Shape {
     public:
+        unsigned int order{10};
+
         explicit Shape(std::string name);
         virtual ~Shape() = default;
 

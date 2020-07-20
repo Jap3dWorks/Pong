@@ -72,9 +72,10 @@ namespace Pong {
         std::map<std::string, Texture*> textures_map;
 
         // Material Actors map, use this map to draw objects by material.
-        // TODO: fill this map
-        std::map<Material*, std::set<Shape*>, MapKeyComparer> material_shape_map{};
-        std::map<Shape*, std::set<Actor*>, MapKeyComparer> shape_actor_map{};
+
+        std::map<Material*, std::set<Shape*>, MapKeyComparer<Material*>> material_shape_map{};
+        std::map<Shape*, std::set<Actor*>, MapKeyComparer<Shape*>> shape_actor_map{};
+
         void assign_material(Material*, Shape*);
         void assign_shape(Shape*, Actor*);
 
