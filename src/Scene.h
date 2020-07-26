@@ -91,9 +91,22 @@ namespace Pong {
         [[nodiscard]] Shader* get_shader(const std::string& name) const;
 
         // create a material and save it in _materialMap
-        Material* create_material(const std::string& name,
-                                  Shader* shader,
-                                  std::vector<Texture*> textures);
+        template<typename T>
+        T *create_material(const std::string &name,
+                           Shader *shader,
+                           std::vector<Texture *> textures) {
+            if (!std::is_base_of<Material, T>::value)
+                return nullptr;
+
+            if (material_map.find(name) == material_map.end()) {
+                auto *m_ptr = new T(name, shader, std::move(textures));
+                material_map[name] = static_cast<Material*>(m_ptr);
+                return m_ptr;
+
+            } else {
+                return nullptr;
+            }
+        }
 
         // get a material by its name
         [[nodiscard]] Material* get_material(const std::string& name) const;

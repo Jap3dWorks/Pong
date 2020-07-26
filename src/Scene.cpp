@@ -144,22 +144,6 @@ namespace Pong{
             return nullptr;
     }
 
-    // --Materials--
-    Material* Scene::create_material(const std::string& name,
-                                     Shader* shader,
-                                     std::vector<Texture*> textures)
-    {
-        if (material_map.find(name) == material_map.end())
-        {
-            auto* m_ptr = new Material(name, shader, std::move(textures));
-            material_map[name] = m_ptr;
-
-            return material_map[name];
-        }
-        else {
-            return material_map[name];
-        }
-    }
 
     Material* Scene::get_material(const std::string& name) const
     {
@@ -254,7 +238,7 @@ namespace Pong{
         {
             shape->set_name(file_name + ":" + shape->get_name());
             shape_map[shape->get_name()] = shape;
-            actor->add_shape(shape);
+            assign_shape(shape, actor);
         }
 
         return result.size();

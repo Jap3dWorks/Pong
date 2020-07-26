@@ -111,7 +111,7 @@ namespace Pong {
         glBindVertexArray(0);
     }
 
-    void Shape::draw(Pong::Render *render, Pong::Scene *scene, Pong::Material *material) const
+    void Shape::draw(const Render *render, const Scene *scene, Pong::Material *material) const
     {
         if(!indices.empty()){
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
@@ -153,6 +153,11 @@ namespace Pong {
                 return false;
         }
         return true;
+    }
+
+    void Shape::bind_VAO()
+    {
+        glBindVertexArray(VAO_id);
     }
 
 
@@ -1006,4 +1011,19 @@ namespace Pong {
 
         Shape::set_VAO();
     }
+
+    void SkyBoxShape::draw(const Render *render, const Scene *scene, Pong::Material *material) const
+    {
+        glDepthFunc(GL_LEQUAL);
+
+        if(!indices.empty()){
+            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
+        }
+        glDepthFunc(GL_LESS);
+
+    }
+
 }

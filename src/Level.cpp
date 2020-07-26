@@ -86,7 +86,6 @@ namespace Pong
     void AbstractLevel::_frame_collisions()
     {
         // TODO: thread pool to manage collisions
-
         // --compute collisions--
         auto it = _scene->collider_map.begin();
         unsigned int size = _scene->collider_map.size();
@@ -119,19 +118,17 @@ namespace Pong
         // --clean render--
         glClearColor(0.1f, 0.1f, 0.1f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        for (const auto & mat_pair: _scene->material_shape_map)
+        for (auto & mat_pair: _scene->material_shape_map)
         {
-            mat_pair.first->update_shader(_render, _scene);
             mat_pair.first->use();
-            for (const auto & shape_actor: _scene->shape_actor_map)
+            mat_pair.first->update_shader(_render, _scene);
+            for (auto & shape_actor: _scene->shape_actor_map)
             {
-                glBindVertexArray(shape_actor.first->get_VAO());
-
-                shape_actor.first->draw(_render, _scene, nullptr);  // TODO: bind buffer
-                for (const auto & actor: shape_actor.second)
+                shape_actor.first->bind_VAO();
+                for (auto & actor: shape_actor.second)
                 {
-                    actor->draw(_render, _scene, nullptr);
-                    shape_actor.first->draw(nullptr, nullptr, nullptr);
+                    actor->draw(_render, _scene, mat_pair.first);
+                    shape_actor.first->draw(_render, _scene, mat_pair.first);
                 }
             }
             mat_pair.first->end_use();
@@ -182,7 +179,7 @@ namespace Pong
                                                   "../shaders/paint_V.glsl",
                                                   "../shaders/paint_F.glsl");
 
-        Material *paint_mat = _scene->create_material(
+        Material *paint_mat = _scene->create_material<Material>(
                 "paint_mat",
                 paint_shd,
                 {_scene->create_texture("paint_tex",
@@ -190,7 +187,10 @@ namespace Pong
                                         "texture1")});
 
         auto *cube_01 = _scene->create_actor<APlayer>("cube_01");
-        auto *cube_shp = _scene->create_shape<IcosphereShape>("cube_shp", 1, 2);
+        auto *cube_shp = _scene->create_shape<IcosphereShape>(
+                "cube_shp",
+                1,
+                2);
         _scene->assign_material(paint_mat, cube_shp);
         _scene -> assign_shape(cube_shp, cube_01);
 
@@ -198,7 +198,7 @@ namespace Pong
                                                    "../shaders/reflect_skybox_v.glsl",
                                                    "../shaders/reflect_skybox_f.glsl");
 
-        Material *skybox_mat = _scene->create_material(
+        Material *skybox_mat = _scene->create_material<SKyBoxMaterial>(
                 "skybox_mat",
                 skybox_shd,
                 {_scene->create_texture("skybox_tex",
@@ -219,7 +219,8 @@ namespace Pong
         DirectionalLight *directional_light = _scene->get_directional_light();
         directional_light->ambient = glm::vec3{0.1f, 0.1f, 0.05f};
         directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
-        directional_light->direction = glm::normalize(glm::vec3{0.3f, -1.f, -0.5f});
+        directional_light->direction = glm::normalize(
+                glm::vec3{0.3f, -1.f, -0.5f});
     }
 
     void TestLevel::_barycentric_tst()

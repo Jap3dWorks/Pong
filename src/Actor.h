@@ -29,10 +29,7 @@ namespace Pong {
 
         glm::mat4 _transform = glm::mat4(1);
         std::string _name;
-        std::list<Component*> _componentList; // list is faster than vector
-
-        std::vector<Shape*> _shapes;
-        std::vector<Material*> _materials;
+        std::list<Component*> _components; // list is faster than vector
         std::vector<Collider*> _colliders;
 
     public:
@@ -49,19 +46,6 @@ namespace Pong {
 
         virtual void update(float delta_time){}
 
-        void add_shape(Shape* shape) {_shapes.push_back(shape);}
-        [[nodiscard]] Shape* get_shape(unsigned int index=0) const {
-            return _shapes[index];
-        }
-        unsigned int shapes_count() {return _shapes.size();}
-
-        void add_material(Material* mat) { _materials.push_back(mat); }
-        [[nodiscard]] Material* get_material(unsigned int index=0) const {
-            return _materials[index];
-        }
-
-        unsigned int materials_count() {return _materials.size();}
-
         void set_transform(glm::mat4 trans) { _transform = trans; }
 
         void add_collider(Collider* coll);
@@ -74,7 +58,7 @@ namespace Pong {
         [[nodiscard]] Collider* get_collider(unsigned int i=0) const { return _colliders[i]; }
 
         [[nodiscard]] std::string get_name() const { return _name; }
-        std::list<Component*> get_components() { return _componentList; }
+        std::list<Component*> get_components() { return _components; }
 
         [[nodiscard]] bool get_visibility() const { return _visible; }
 

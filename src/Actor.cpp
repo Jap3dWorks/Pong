@@ -10,7 +10,7 @@
 namespace Pong {
     Actor::~Actor() {
         // remove components
-        for (auto const &c : _componentList)
+        for (auto const &c : _components)
             delete c;
     }
 
@@ -22,9 +22,8 @@ namespace Pong {
         // draw if is visible and has a shape
         if (!_visible) return;
 
-        for (unsigned int i = 0; i < _shapes.size(); ++i) {
-            material->set_param("model", _transform);
-        }
+        material->set_param("model", _transform);
+
     }
 
     void Actor::process_keyboard(Movements movement, float deltaTime) {}
@@ -46,7 +45,7 @@ namespace Pong {
 
         // A derivate component class
         component->addActor(this);
-        _componentList.push_back(static_cast<Component *>(component));
+        _components.push_back(static_cast<Component *>(component));
     }
 
     // ASkyBox
@@ -56,20 +55,7 @@ namespace Pong {
         // draw if is visible and has a shape
         if(! _visible) return;
 
-        // change depth function so depth test passes
-        // when values are equal to depth buffer's content
-        glDepthFunc(GL_LEQUAL);
-
-        // Override view matrix
-        glm::mat4 view_mat = glm::mat4(glm::mat3(scene->get_camera()->get_view_matrix()));
-        _materials[0]->set_param("view", view_mat);
-
-        for (auto _shape : _shapes)
-        {
-            _shape->draw(nullptr, nullptr, nullptr);
-        }
-
-        glDepthFunc(GL_LESS);
+        material->set_param("model", glm::mat4(glm::mat3(_transform)));
     }
 
     // --AKinetic--

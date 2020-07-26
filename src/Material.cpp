@@ -95,6 +95,9 @@ namespace Pong {
 
     void Material::use()
     {
+        // bind shader
+        _shader->use();
+
         // bing textures texture
         for (unsigned int i =0; i < _textures.size(); i++)
         {
@@ -132,9 +135,6 @@ namespace Pong {
     }
 
     void Material::update_shader(const Render *render, const Scene *scene) {
-        // bind shader
-        _shader->use();
-
         _shader->setMat4("view", scene->get_camera()->get_view_matrix());
         _shader->setMat4("projection",
                          glm::perspective(glm::radians(scene->get_camera()->Zoom),
@@ -162,7 +162,7 @@ namespace Pong {
     }
 
     // set parameters
-    void Material::set_param(std::string param, float value)
+    void Material::set_param(const std::string& param, float value)
     {
         auto it = _float_params.find(param);
         if (it != _float_params.end())
@@ -170,7 +170,7 @@ namespace Pong {
         else
             _float_params.insert(std::pair<std::string, float>(param, value));
     }
-    void Material::set_param(std::string param, glm::vec3 value)
+    void Material::set_param(const std::string& param, glm::vec3 value)
     {
         auto it = _vec3_params.find(param);
         if (it != _vec3_params.end())
@@ -178,7 +178,7 @@ namespace Pong {
         else
             _vec3_params.insert(std::pair<std::string, glm::vec3>(param, value));
     }
-    void Material::set_param(std::string param, int value)
+    void Material::set_param(const std::string& param, int value)
     {
         auto it = _int_params.find(param);
         if (it != _int_params.end())
@@ -186,7 +186,7 @@ namespace Pong {
         else
             _int_params.insert(std::pair<std::string, int>(param, value));
     }
-    void Material::set_param(std::string param, glm::mat4 value)
+    void Material::set_param(const std::string& param, glm::mat4 value)
     {
         auto it = _mat4_params.find(param);
         if (it != _mat4_params.end())
@@ -226,4 +226,13 @@ namespace Pong {
         return texture_id;
     }
 
+    void SKyBoxMaterial::update_shader(const Render *render, const Scene *scene) {
+        _shader->setMat4("view",
+                glm::mat4(glm::mat3(scene->get_camera()->get_view_matrix())));
+        _shader->setMat4("projection",
+                         glm::perspective(glm::radians(scene->get_camera()->Zoom),
+                                          (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,
+                                          0.1f,  // TODO: move this to render
+                                          10000.f));
+    }
 }

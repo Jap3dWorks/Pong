@@ -85,7 +85,9 @@ namespace Pong {
 
         virtual void set_VAO();
 
-        virtual void draw(Pong::Render *render, Pong::Scene *scene, Pong::Material *material) const;
+        virtual void bind_VAO();
+
+        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const;
 
     private:
         inline void _add_vertices_(const float& x, const float& y, const float& z)
@@ -370,6 +372,7 @@ namespace Pong {
         void _build_sky_box(); // TODO, rev draw requirements.
 
     public:
+        void draw(const Render *render, const Scene *scene, Pong::Material *material) const override;
         explicit SkyBoxShape(std::string name);
     };
 }
