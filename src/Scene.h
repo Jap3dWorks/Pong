@@ -12,7 +12,7 @@
 #include "Lights.h"
 #include "Render.h"
 
-#include "MapKeyComparer.h"
+#include "DataComparers.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -71,13 +71,20 @@ namespace Pong {
         std::map<std::string, Shader*> shader_map;
         std::map<std::string, Texture*> textures_map;
 
-        // Material Actors map, use this map to draw objects by material.
+        std::vector<Material*> material_order;
+        std::vector<Shape*> shape_order;
+        std::vector<Actor*> actor_order;
 
-        std::map<Material*, std::set<Shape*>, MapKeyComparer<Material*>> material_shape_map{};
-        std::map<Shape*, std::set<Actor*>, MapKeyComparer<Shape*>> shape_actor_map{};
+        std::map<Material*, std::vector<Shape*>> material_shape_map{};
+        std::map<Shape*, std::vector<Actor*>> shape_actor_map{};
 
         void assign_material(Material*, Shape*);
         void assign_shape(Shape*, Actor*);
+
+        void sort_materials();
+        void sort_shapes_maps();
+        void sort_actor_maps();
+
 
         [[nodiscard]] PointLight& get_point_light(int id) const;
 
@@ -101,6 +108,7 @@ namespace Pong {
             if (material_map.find(name) == material_map.end()) {
                 auto *m_ptr = new T(name, shader, std::move(textures));
                 material_map[name] = static_cast<Material*>(m_ptr);
+                material_order.push_back(m_ptr);
                 return m_ptr;
 
             } else {
@@ -139,11 +147,11 @@ namespace Pong {
             {
                 T* a_ptr = new T(name);
                 actor_map[name] = static_cast<Actor*>(a_ptr);
+                actor_order.push_back(a_ptr);
                 return a_ptr;
             }
             else
             {
-                // if key is already in map, delete prev ptr and add the new ptr
                 return nullptr;
             }
         }
@@ -185,6 +193,7 @@ namespace Pong {
                 T* s_ptr = new T(name, std::forward<Args>(args)...);
                 // store shape pointer in internal level data
                 shape_map[name] = static_cast<Shape*>(s_ptr);
+                shape_order.push_back(s_ptr);
                 return s_ptr;
             }
             else

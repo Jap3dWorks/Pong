@@ -316,10 +316,28 @@ namespace Pong{
     }
 
     void Scene::assign_material(Material * material, Shape * shape) {
-        material_shape_map[material].insert(shape);
+        material_shape_map[material].push_back(shape);
     }
-    void Scene::assign_shape(Shape * shape, Actor *actor) {
-        shape_actor_map[shape].insert(actor);
+    void Scene::assign_shape(Shape * shape, Actor * actor) {
+        shape_actor_map[shape].push_back(actor);
+    }
+
+    void Scene::sort_materials() {
+        std::sort(material_order.begin(), material_order.end(), OrderComparer<Material *>());
+    }
+
+    void Scene::sort_shapes_maps() {
+        std::sort(shape_order.begin(), shape_order.end(), OrderComparer<Shape *>());
+        for (auto &pair: material_shape_map) {
+            std::sort(pair.second.begin(), pair.second.end(), OrderComparer<Shape *>());
+        }
+    }
+
+    void Scene::sort_actor_maps() {
+        std::sort(actor_order.begin(), actor_order.end(), OrderComparer<Actor *>());
+        for (auto &pair: shape_actor_map) {
+            std::sort(pair.second.begin(), pair.second.end(), OrderComparer<Actor *>());
+        }
     }
 
     // TODO: Default scene per asset?

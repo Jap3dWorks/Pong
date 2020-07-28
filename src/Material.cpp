@@ -229,6 +229,7 @@ namespace Pong {
     void SKyBoxMaterial::update_shader(const Render *render, const Scene *scene) {
         _shader->setMat4("view",
                 glm::mat4(glm::mat3(scene->get_camera()->get_view_matrix())));
+
         _shader->setMat4("projection",
                          glm::perspective(glm::radians(scene->get_camera()->Zoom),
                                           (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,

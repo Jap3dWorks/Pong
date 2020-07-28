@@ -34,7 +34,7 @@ namespace Pong {
 
     public:
         /**Draw order*/
-        unsigned int order{5};
+        unsigned int order{10};
 
         explicit Actor(std::string name): _name(std::move(name)) {}
 

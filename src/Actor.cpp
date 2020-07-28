@@ -20,8 +20,6 @@ namespace Pong {
 
     void Actor::draw(const Render *render, const Scene *scene, Material *material) const {
         // draw if is visible and has a shape
-        if (!_visible) return;
-
         material->set_param("model", _transform);
 
     }
@@ -53,9 +51,7 @@ namespace Pong {
     void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
     {
         // draw if is visible and has a shape
-        if(! _visible) return;
-
-        material->set_param("model", glm::mat4(glm::mat3(_transform)));
+        material->set_param("model", _transform);
     }
 
     // --AKinetic--
@@ -66,7 +62,7 @@ namespace Pong {
         _velocity = glm::length(vector_director);
     }
 
-    AKinetic::~AKinetic() noexcept {LOG_DEBUG("AKinetic destructor");}
+    AKinetic::~AKinetic() noexcept {}
 
     void AKinetic::update(float delta_time)
     {
@@ -107,7 +103,7 @@ namespace Pong {
         }
     }
 
-    APlayer::~APlayer() noexcept {LOG_DEBUG("APlayer destructor");}
+    APlayer::~APlayer() noexcept {}
 
     void APlayer::update(float delta_time) {
         _vector_director = _direction * _velocity;
@@ -147,5 +143,5 @@ namespace Pong {
             Position -= Up * velocity;
     }
 
-    ABall::~ABall() noexcept {LOG_DEBUG("ABall destructor");}
+    ABall::~ABall() noexcept {}
 }

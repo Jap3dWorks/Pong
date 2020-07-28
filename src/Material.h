@@ -106,7 +106,7 @@ namespace Pong {
 
         virtual void update_shader(const Render *render, const Scene *scene);
 
-        std::string get_name() { return _name; }
+        [[nodiscard]]std::string get_name() const { return _name; }
 
         virtual void use();
 
@@ -120,7 +120,8 @@ namespace Pong {
     public:
         SKyBoxMaterial(std::string name, Shader* shader, std::vector<Texture*> textures):
             Material(std::move(name), shader, std::move(textures) ){}
-        void update_shader(const Render * render, const Scene * scene) override;
+
+        void update_shader(const Render *render, const Scene *scene) override;
     };
 }
 
