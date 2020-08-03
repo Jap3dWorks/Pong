@@ -19,7 +19,7 @@ namespace Pong
     void AbstractLevel::run()
     {
         // --config scene--
-        LOG_INFO("Setup level");
+        LOG_INFO("Setup level")
         _level_setup();
         LOG_INFO("Sort materials, shapes and actors")
         _scene->sort_materials();
@@ -63,7 +63,8 @@ namespace Pong
     void AbstractLevel::_close_level()
     {
         // close level inputs
-        if (glfwGetKey(_render->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if (glfwGetKey(_render->getWindow(),
+                GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             glfwSetWindowShouldClose(_render->getWindow(), true);
         }

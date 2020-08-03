@@ -48,7 +48,8 @@ namespace Pong {
         DirectionalLight* _directionalLight = new DirectionalLight;
 
         // camera pointer
-        ACamera* _camera = new ACamera("default_cam", glm::vec3(0.f, 0.f, 5.f));
+        ACamera* _camera = new ACamera("default_cam",
+                glm::vec3(0.f, 0.f, 5.f));
 
         //private methods
         Scene();

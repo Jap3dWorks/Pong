@@ -112,7 +112,6 @@ namespace Pong {
 
         /// unbind textures
         virtual void end_use();
-
     };
 
     class SKyBoxMaterial: public Material

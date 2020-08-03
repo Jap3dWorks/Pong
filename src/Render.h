@@ -16,6 +16,16 @@ namespace Pong {
     class Render
     {
     private:
+        /**Draw render buffers in this screen quad*/
+        unsigned int _render_quad_vao;
+        void _build_render_quad();
+
+        unsigned int _framebuffer;
+        unsigned int _texture_color_buffer;
+        void _config_frame_buffers();
+        // TODO: framebuffer render operations,
+        //  render in framebuffer and draw later in _render_quad_vao
+
         // last frame member
         float  _last_frame = 0;
 

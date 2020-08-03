@@ -121,9 +121,10 @@ namespace Pong{
             return nullptr;
     }
 
-    Shader* Scene::create_shader(const std::string& name, const GLchar* vertex_shader,
-        const GLchar* fragment_shader, const GLchar* geometry_shader)
-    {
+    Shader *Scene::create_shader(const std::string &name,
+                                 const GLchar *vertex_shader,
+                                 const GLchar *fragment_shader,
+                                 const GLchar *geometry_shader) {
         if (shader_map.find(name) == shader_map.end())
         {
             auto* ptr = new Shader(vertex_shader, fragment_shader, geometry_shader);
@@ -289,11 +290,13 @@ namespace Pong{
                 vertex.tex_coords = vec;
             }
             else vertex.tex_coords = glm::vec2 (0.f);
+
             // tangent
             vector.x = mesh->mTangents[i].x;
             vector.y = mesh->mTangents[i].y;
             vector.z = mesh->mTangents[i].z;
             vertex.tangent = vector;
+
             // bitangent
             vector.x = mesh->mBitangents[i].x;
             vector.y = mesh->mBitangents[i].y;
@@ -302,6 +305,7 @@ namespace Pong{
 
             vertices.push_back(vertex);
         }
+
         // vertex indices
         for(unsigned int i=0; i<mesh->mNumFaces; i++)
         {
@@ -318,29 +322,39 @@ namespace Pong{
     void Scene::assign_material(Material * material, Shape * shape) {
         material_shape_map[material].push_back(shape);
     }
+
     void Scene::assign_shape(Shape * shape, Actor * actor) {
         shape_actor_map[shape].push_back(actor);
     }
 
     void Scene::sort_materials() {
-        std::sort(material_order.begin(), material_order.end(), OrderComparer<Material *>());
+        std::sort(material_order.begin(),
+                material_order.end(),
+                OrderComparer<Material *>());
     }
 
     void Scene::sort_shapes_maps() {
-        std::sort(shape_order.begin(), shape_order.end(), OrderComparer<Shape *>());
+        std::sort(shape_order.begin(),
+                shape_order.end(),
+                OrderComparer<Shape *>());
         for (auto &pair: material_shape_map) {
-            std::sort(pair.second.begin(), pair.second.end(), OrderComparer<Shape *>());
+            std::sort(pair.second.begin(),
+                    pair.second.end(),
+                    OrderComparer<Shape *>());
         }
     }
 
     void Scene::sort_actor_maps() {
-        std::sort(actor_order.begin(), actor_order.end(), OrderComparer<Actor *>());
+        std::sort(actor_order.begin(),
+                actor_order.end(),
+                OrderComparer<Actor *>());
         for (auto &pair: shape_actor_map) {
-            std::sort(pair.second.begin(), pair.second.end(), OrderComparer<Actor *>());
+            std::sort(pair.second.begin(),
+                    pair.second.end(),
+                    OrderComparer<Actor *>());
         }
     }
 
-    // TODO: Default scene per asset?
     // TODO: move to input callback functions file
     // callback functions
     // -----------------
