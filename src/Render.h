@@ -2,6 +2,7 @@
 #define RENDER_H
 
 #include "Movements.h"
+#include "Shader.h"
 
 #include <stb_image.h>
 #include <glad/glad.h>
@@ -17,15 +18,19 @@ namespace Pong {
     {
     private:
         /**Draw render buffers in this screen quad*/
-        unsigned int _render_quad_vao;
-        void _build_render_quad();
+        unsigned int _render_quad_vao{0};
+        void _build_screen_quad();
 
-        unsigned int _framebuffer;
-        unsigned int _texture_color_buffer;
+        Shader framebuffer_shader{
+                "../shaders/franebuffer_screen_V.glsl",
+                "../shaders/framebuffer_screen_F.glsl"};
+
+        unsigned int _framebuffer{0};
+        unsigned int _texture_color_buffer{0};
         void _config_frame_buffers();
+
         // TODO: framebuffer render operations,
         //  render in framebuffer and draw later in _render_quad_vao
-
         // last frame member
         float  _last_frame = 0;
 
@@ -39,6 +44,10 @@ namespace Pong {
         Render();
 
     public:
+        void bind_framebuffer() const;
+        void draw_framebuffer();
+        void swap_buffers_poll_events();
+
         static const unsigned int SCR_WIDTH = 1280;
         static const unsigned int SCR_HEIGHT = 720;
 

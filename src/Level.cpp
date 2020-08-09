@@ -51,11 +51,14 @@ namespace Pong
 
             _frame_calc();
 
+            _render->bind_framebuffer();
+
             _frame_draw();
 
-            // clean buffers
-            glfwSwapBuffers(_render->getWindow());
-            glfwPollEvents();
+            _render->draw_framebuffer();
+
+            _render->swap_buffers_poll_events();
+
         }
         LOG_DEBUG("Exit lvl");
     }
@@ -121,10 +124,6 @@ namespace Pong
 
     void AbstractLevel::_frame_draw()
     {
-        // --clean render--
-        glClearColor(0.1f, 0.1f, 0.1f, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         for (auto mat_shape: _scene->material_shape_map)
         {
             mat_shape.first->use();

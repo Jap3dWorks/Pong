@@ -47,6 +47,11 @@ Pong::Render::Render()
 
     glfwSetFramebufferSizeCallback(_window, _framebuffer_size_callback);
 
+    _build_screen_quad();
+    _config_frame_buffers();
+
+    // return default framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // configure global opengl state
     glEnable(GL_DEPTH_TEST);
 
@@ -78,7 +83,7 @@ Pong::Render::~Render()
     glfwTerminate();
 }
 
-void Pong::Render::_build_render_quad() {
+void Pong::Render::_build_screen_quad() {
     float quad_vertex[] =
             {
                     -1.0f, 1.0f, 0.0f, 1.0f,
@@ -104,12 +109,10 @@ void Pong::Render::_build_render_quad() {
 }
 
 void Pong::Render::_config_frame_buffers() {
-
     glGenFramebuffers(1, &_framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
     // create color attachment texture
-    unsigned int _texture_color_buffer;
     glGenTextures(1, &_texture_color_buffer);
     glBindTexture(GL_TEXTURE_2D, _texture_color_buffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT,
@@ -129,8 +132,33 @@ void Pong::Render::_config_frame_buffers() {
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-
-    // return default framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }
+
+void Pong::Render::bind_framebuffer() const {
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Pong::Render::draw_framebuffer() {
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    framebuffer_shader.use();
+    glBindVertexArray(_render_quad_vao);
+    glBindTexture(GL_TEXTURE_2D, _texture_color_buffer);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void Pong::Render::swap_buffers_poll_events() {
+    glfwSwapBuffers(_window);
+    glfwPollEvents();
+}
+
+
+
+
