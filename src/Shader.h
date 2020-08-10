@@ -2,6 +2,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include "logger.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -62,7 +63,8 @@ public:
         }
         catch (std::ifstream::failure e)
         {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCEFULLY_READ" << std::endl;
+            LOG_ERROR(vertexPath)
+            LOG_ERROR("ERROR::SHADER::FILE_NOT_SUCCEFULLY_READ")
         }
         // to c type
         const char * vShaderCode = vertexCode.c_str();

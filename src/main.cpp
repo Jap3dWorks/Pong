@@ -14,6 +14,8 @@ int main()
 {
     LOG_INFO("Case 1, test level");
     Pong::TestLevel t_lvl;
+    LOG_INFO("test level run");
+
     t_lvl.run();
 
     return 0;

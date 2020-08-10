@@ -21,9 +21,7 @@ namespace Pong {
         unsigned int _render_quad_vao{0};
         void _build_screen_quad();
 
-        Shader framebuffer_shader{
-                "../shaders/franebuffer_screen_V.glsl",
-                "../shaders/framebuffer_screen_F.glsl"};
+        Shader* framebuffer_shader=nullptr;
 
         unsigned int _framebuffer{0};
         unsigned int _texture_color_buffer{0};
@@ -46,6 +44,8 @@ namespace Pong {
     public:
         void bind_framebuffer() const;
         void draw_framebuffer();
+
+        /**once render buffer is completely drawn, put it in front of the window*/
         void swap_buffers_poll_events();
 
         static const unsigned int SCR_WIDTH = 1280;

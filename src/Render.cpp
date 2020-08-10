@@ -1,6 +1,7 @@
 #include "Render.h"
 #include "logger.h"
 
+#include <iostream>
 
 
 float Pong::Render::DeltaTime = 0;
@@ -47,13 +48,18 @@ Pong::Render::Render()
 
     glfwSetFramebufferSizeCallback(_window, _framebuffer_size_callback);
 
-    _build_screen_quad();
     _config_frame_buffers();
+    _build_screen_quad();
+    LOG_DEBUG("Framebuffers created")
 
     // return default framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // configure global opengl state
     glEnable(GL_DEPTH_TEST);
+
+    framebuffer_shader = new Shader(
+            "../shaders/framebuffer_screen_V.glsl",
+            "../shaders/framebuffer_screen_F.glsl");
 
 }
 
@@ -80,6 +86,7 @@ GLFWwindow* Pong::Render::getWindow()
 
 Pong::Render::~Render()
 {
+    delete framebuffer_shader;
     glfwTerminate();
 }
 
@@ -109,6 +116,7 @@ void Pong::Render::_build_screen_quad() {
 }
 
 void Pong::Render::_config_frame_buffers() {
+    LOG_DEBUG("Config framebuffer")
     glGenFramebuffers(1, &_framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
@@ -148,7 +156,7 @@ void Pong::Render::draw_framebuffer() {
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    framebuffer_shader.use();
+    framebuffer_shader->use();
     glBindVertexArray(_render_quad_vao);
     glBindTexture(GL_TEXTURE_2D, _texture_color_buffer);
     glDrawArrays(GL_TRIANGLES, 0, 6);
