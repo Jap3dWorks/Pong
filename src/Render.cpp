@@ -9,8 +9,8 @@ float Pong::Render::DeltaTime = 0;
 void Pong::Render::calculate_deltaTime()
 {
     float current_frame = glfwGetTime();
-    Pong::Render::DeltaTime = current_frame - _last_frame;
-    _last_frame = current_frame;
+    Pong::Render::DeltaTime = current_frame - _last_frame_time;
+    _last_frame_time = current_frame;
 }
 Pong::Render* Pong::Render::instance = 0;
 
@@ -160,9 +160,7 @@ void Pong::Render::draw_framebuffer() {
     glBindVertexArray(_render_quad_vao);
     glBindTexture(GL_TEXTURE_2D, _texture_color_buffer);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-}
 
-void Pong::Render::swap_buffers_poll_events() {
     glfwSwapBuffers(_window);
     glfwPollEvents();
 }

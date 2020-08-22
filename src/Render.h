@@ -17,39 +17,38 @@ namespace Pong {
     class Render
     {
     private:
-        /**Draw render buffers in this screen quad*/
+        //Draw render buffers in this screen quad
         unsigned int _render_quad_vao{0};
         void _build_screen_quad();
 
-        Shader* framebuffer_shader=nullptr;
+        Shader* framebuffer_shader = nullptr;
 
         unsigned int _framebuffer{0};
         unsigned int _texture_color_buffer{0};
         void _config_frame_buffers();
 
-        // TODO: framebuffer render operations,
-        //  render in framebuffer and draw later in _render_quad_vao
-        // last frame member
-        float  _last_frame = 0;
+        // Use for calculate delta time
+        float  _last_frame_time = 0;
 
-        // draw scene class, SINGLETON
         GLFWwindow* _window;
 
         static Render* instance;
 
         static void _framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+        // private constructor
         Render();
 
     public:
+        /**Binds framebuffer, in this buffer the scene is prerendered.*/
         void bind_framebuffer() const;
+        /**Draws framebuffer in default buffer*/
         void draw_framebuffer();
-
-        /**once render buffer is completely drawn, put it in front of the window*/
-        void swap_buffers_poll_events();
 
         static const unsigned int SCR_WIDTH = 1280;
         static const unsigned int SCR_HEIGHT = 720;
+        static constexpr float Z_NEAR = 0.1f;
+        static constexpr float Z_FAR = 10000.f;
 
         // time variables
         static float DeltaTime;

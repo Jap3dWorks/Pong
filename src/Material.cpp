@@ -233,7 +233,7 @@ namespace Pong {
         _shader->setMat4("projection",
                          glm::perspective(glm::radians(scene->get_camera()->Zoom),
                                           (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,
-                                          0.1f,  // TODO: move this to render
-                                          10000.f));
+                                          Pong::Render::Z_NEAR,
+                                          Pong::Render::Z_FAR));
     }
 }

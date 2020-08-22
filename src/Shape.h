@@ -20,8 +20,6 @@ namespace Pong{
 
 #include <cstdarg>
 
-    // TODO: Spaceship primitive shape
-
 namespace Pong {
 
     // Exceptions

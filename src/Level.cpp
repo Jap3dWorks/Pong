@@ -56,8 +56,6 @@ namespace Pong
             _frame_draw();
 
             _render->draw_framebuffer();
-
-            _render->swap_buffers_poll_events();
         }
         LOG_DEBUG("Exit lvl");
     }
