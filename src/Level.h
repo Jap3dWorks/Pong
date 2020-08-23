@@ -8,7 +8,7 @@
 #include "Actor.h"
 #include "Render.h"
 #include "processInput.h"
-#include <time.h>
+#include <ctime>
 
 // specific config of a level
 namespace Pong {
@@ -39,48 +39,13 @@ namespace Pong {
         virtual void run();
     };
 
-    class PongLevel: public AbstractLevel
-    {
-    public:
-        void _configInputs() override;
-        void run() override;
-    };
-
     class TestLevel : public AbstractLevel
     {
-    private:
-        float shot_delay{};
-
     protected:
         void _level_setup() override;
-
-        void _frame_calc() override;
-
-        void _barycentric_tst();
-        //void _configInputs() override;
 
     public:
         TestLevel() = default;
-
-//        void run() override {
-//            _level_setup();
-//        }
-    };
-
-    class PBRLevel : public AbstractLevel
-    {
-    protected:
-        void _level_setup() override;
-        // void _frame_calc() override;
-
-    public:
-        PBRLevel() = default;
-    };
-
-    class ModelLevel: public AbstractLevel
-    {
-    protected:
-        void _level_setup() override;
     };
 }
 #endif // PONG_LEVEL

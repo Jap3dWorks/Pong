@@ -19,11 +19,16 @@ add_executable(${PROJECT_NAME}
         src/Collider.cpp
         src/Level.cpp
         src/Material.cpp
+        src/Render.h
         src/Render.cpp
         src/Scene.cpp
         src/Shape.cpp
         src/Component.cpp
-        src/Utils.cpp src/Lights.h src/Cubemap.h src/DataComparers.cpp src/DataComparers.h)
+        src/Utils.cpp
+        src/Lights.h
+        src/Cubemap.h
+        src/DataComparers.cpp
+        src/DataComparers.h src/Levels/belending_level.cpp src/Levels/belending_level.h)
 
 #include_directories(src)
 

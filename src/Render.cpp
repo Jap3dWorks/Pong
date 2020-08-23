@@ -26,8 +26,8 @@ Pong::Render::Render()
     _window = glfwCreateWindow(SCR_WIDTH,
         SCR_HEIGHT,
         "LearnOpenGL",
-        NULL,
-        NULL);
+        nullptr,
+        nullptr);
 
     if (!_window)
     {
@@ -165,6 +165,18 @@ void Pong::Render::draw_framebuffer() {
     glfwPollEvents();
 }
 
+Pong::RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl){
+return static_cast<Pong::RenderLayer>(
+        static_cast<unsigned int>(lrl) | static_cast<unsigned int>(rrl));
+}
 
+Pong::RenderLayer operator&(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl){
+return static_cast<Pong::RenderLayer>(
+        static_cast<unsigned int>(lrl) & static_cast<unsigned int>(rrl));
+}
+
+bool any(const Pong::RenderLayer& rlay){
+    return rlay != Pong::RenderLayer::NO_LAYER;
+}
 
 

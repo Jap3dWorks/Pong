@@ -8,6 +8,7 @@ namespace Pong
 }
 
 #include "Shader.h"
+#include "Render.h"
 
 #include <iostream>
 #include <utility>
@@ -114,6 +115,7 @@ namespace Pong {
         virtual void end_use();
     };
 
+    /**Overrides update_shader from Material class*/
     class SKyBoxMaterial: public Material
     {
     public:

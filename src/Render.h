@@ -14,6 +14,15 @@
 // TODO: postprocessings
 
 namespace Pong {
+    enum class RenderLayer: unsigned int {
+        NO_LAYER=0,
+        BASE=1,
+        SKY_BOX=2,
+        BLENDING=4,};
+
+    RenderLayer operator|(const RenderLayer& lrl, const RenderLayer& rrl);
+    RenderLayer operator&(const RenderLayer& lrl, const RenderLayer& rrl);
+
     class Render
     {
     private:
@@ -62,5 +71,8 @@ namespace Pong {
         virtual ~Render();
     };
 }
+
+bool any(const Pong::RenderLayer& rlay);
+
 
 #endif // !RENDER_H

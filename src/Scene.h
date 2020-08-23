@@ -76,8 +76,15 @@ namespace Pong {
         std::vector<Shape*> shape_order;
         std::vector<Actor*> actor_order;
 
-        std::map<Material*, std::vector<Shape*>> material_shape_map{};
-        std::map<Shape*, std::vector<Actor*>> shape_actor_map{};
+        std::map<RenderLayer, std::vector<Material*>> renderlayer_material_map;
+        std::map<Material*, std::vector<Shape*>> material_shape_map;
+        std::map<Shape*, std::vector<Actor*>> shape_actor_map;
+
+        RenderLayer first_pass_renderlayers[3] = {RenderLayer::BASE,
+                                                  RenderLayer::SKY_BOX,
+                                                  RenderLayer::BLENDING};
+
+        void assign_layer(const RenderLayer&, Material*);
 
         void assign_material(Material*, Shape*);
         void assign_shape(Shape*, Actor*);
@@ -85,7 +92,6 @@ namespace Pong {
         void sort_materials();
         void sort_shapes_maps();
         void sort_actor_maps();
-
 
         [[nodiscard]] PointLight& get_point_light(int id) const;
 
@@ -102,14 +108,19 @@ namespace Pong {
         template<typename T>
         T *create_material(const std::string &name,
                            Shader *shader,
-                           std::vector<Texture *> textures) {
+                           const std::vector<Texture *> &textures,
+                           const RenderLayer &render_layer = RenderLayer::BASE)
+        {
             if (!std::is_base_of<Material, T>::value)
                 return nullptr;
 
             if (material_map.find(name) == material_map.end()) {
-                auto *m_ptr = new T(name, shader, std::move(textures));
-                material_map[name] = static_cast<Material*>(m_ptr);
+                auto *m_ptr = new T(name, shader, textures);
+                material_map[name] = static_cast<Material *>(m_ptr);
                 material_order.push_back(m_ptr);
+
+                assign_layer(render_layer, m_ptr);
+
                 return m_ptr;
 
             } else {
@@ -137,9 +148,8 @@ namespace Pong {
                                 const std::string& front,
                                 const std::string& back);
 
-        // Create an actor and save in _actorMap
         template<typename T>
-        T* create_actor(std::string name)
+        T* create_actor(const std::string& name)
         {
             if (!std::is_base_of<Actor, T>::value)
                 return nullptr;
@@ -162,7 +172,7 @@ namespace Pong {
 
         // Create a collider, template you must specify the collider type
         template<typename T>
-        T* create_collider(std::string name)
+        T* create_collider(const std::string& name)
         {
             if (!std::is_base_of<Collider, T>::value) {
                 return nullptr;
@@ -185,7 +195,7 @@ namespace Pong {
         [[nodiscard]] ACamera* get_camera() const;
 
         template<typename T, typename... Args>
-        T* create_shape(std::string name, Args&&... args)
+        T* create_shape(const std::string& name, Args&&... args)
         {
             if (!std::is_base_of<Shape, T>::value)
                 return nullptr;

@@ -121,22 +121,26 @@ namespace Pong
 
     void AbstractLevel::_frame_draw()
     {
-        for (auto mat_shape: _scene->material_shape_map)
+        for (auto layer: _scene->first_pass_renderlayers)
         {
-            mat_shape.first->use();
-            mat_shape.first->update_shader(_render, _scene);
-            for (auto shape: mat_shape.second)
+            for (auto material: _scene->renderlayer_material_map[layer])
             {
-                shape->bind_VAO();
-                for (auto actor: _scene->shape_actor_map[shape])
+                material->use();
+                material->update_shader(_render, _scene);
+                for (auto shape: _scene->material_shape_map[material])
                 {
-                    if (actor->get_visibility()) {
-                        actor->draw(_render, _scene, mat_shape.first);
-                        shape->draw(_render, _scene, mat_shape.first);
+                    shape->bind_VAO();
+                    for (auto actor: _scene->shape_actor_map[shape])
+                    {
+                        // Draw by actor
+                        if (actor->get_visibility()) {
+                            actor->draw(_render, _scene, material);
+                            shape->draw(_render, _scene, material);
+                        }
                     }
                 }
+                material->end_use();
             }
-            mat_shape.first->end_use();
         }
         glBindVertexArray(0);
     }
@@ -210,7 +214,9 @@ namespace Pong
                                         "skybox",
                                         "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
                                         "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
-                                        "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")});
+                                        "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")},
+                                        RenderLayer::SKY_BOX);
+
         // Sky box should be drawn last.
         skybox_mat->order = 900;
         // hack z_skybox to sort at the end of the map.
@@ -228,92 +234,5 @@ namespace Pong
         directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
         directional_light->direction = glm::normalize(
                 glm::vec3{0.3f, -1.f, -0.5f});
-
-
-        return;
-        LOG_DEBUG("debug TEST level")
-
-        // debug scene elements
-        for(const auto& material_shape: _scene->material_shape_map)
-        {
-            LOG_DEBUG("Material " << material_shape.first->get_name())
-
-            for (auto shape: material_shape.second)
-            {
-                LOG_DEBUG("Shape " << shape->get_name() << " " << shape)
-                LOG_DEBUG(typeid(shape).name())
-                if (_scene->shape_actor_map.find(shape) != _scene->shape_actor_map.end()) {
-                    LOG_DEBUG("Find shape " << shape->get_name() << "in map")
-                }
-                else { LOG_DEBUG("Not in map") }
-                for (auto actor: _scene->shape_actor_map[shape])
-                    LOG_DEBUG("Actor from shape actor map " << actor->get_name())
-            }
-        }
-
-        // debug scene elements
-        for(const auto& shape_actor: _scene->shape_actor_map)
-        {
-            LOG_DEBUG("Shape " << shape_actor.first->get_name() << " " << shape_actor.first)
-            LOG_DEBUG(typeid(shape_actor.first).name())
-
-            for (auto actor: shape_actor.second)
-            {
-                LOG_DEBUG("Actor " << actor->get_name())
-            }
-        }
-
-
-    }
-
-    void TestLevel::_barycentric_tst()
-    {
-        glm::vec3 v_a = glm::normalize(glm::vec3(1, 1, 1));
-/*
-        glm::mat4 tr_m(1);
-        tr_m = glm::rotate(tr_m, 3.14f/2, glm::normalize(glm::vec3(0, 1, 0)));*/
-
-        // glm::mat3 m = glm::mat3(tr_m);
-
-        glm::vec3 v_var(glm::mat3(_scene->get_camera()->get_view_matrix()) * v_a);
-
-        // cout_vector(v_var);
-    }
-
-    void TestLevel::_frame_calc()
-    {
-        return;
-        // shot markers
-        shot_delay += Pong::Render::DeltaTime;
-        if (shot_delay >= .2f
-            && (glfwGetKey(_render->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS))
-        {
-            if (true) {
-                _barycentric_tst();
-            }
-            else
-            {
-                ACamera* cam = _scene->get_camera();
-                //glm::mat4 cam_trns = cam->get_view_matrix();
-                RayCast ray(glm::vec3(cam->Front.x, cam->Front.y, cam->Front.z),
-                    cam->Position);
-
-                std::vector<RayCastData> rcd;
-                for (auto &coll : _scene->collider_map)
-                {
-                    coll.second->ray_cast(ray, rcd);
-                }
-                if (rcd.size())
-                {
-                    sort_raycast_data(rcd, ray.position, 0, rcd.size() - 1);
-                    draw_point(rcd[0].point);
-                }
-            }
-            shot_delay = 0.f;
-        }
-    }
-
-    void PongLevel::_configInputs() {
-        AbstractLevel::_configInputs();
     }
 }

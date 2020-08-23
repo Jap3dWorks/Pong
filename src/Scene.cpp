@@ -319,6 +319,11 @@ namespace Pong{
         return new Mesh(mesh->mName.C_Str(), vertices, indices);
     }
 
+    void Scene::assign_layer(const RenderLayer& rlay, Material* material)
+    {
+        renderlayer_material_map[rlay].push_back(material);
+    }
+
     void Scene::assign_material(Material * material, Shape * shape) {
         material_shape_map[material].push_back(shape);
     }
@@ -331,6 +336,12 @@ namespace Pong{
         std::sort(material_order.begin(),
                 material_order.end(),
                 OrderComparer<Material *>());
+
+        for (auto &pair: renderlayer_material_map)
+        {
+            std::sort(pair.second.begin(), pair.second.end(),
+                      OrderComparer<Material *>());
+        }
     }
 
     void Scene::sort_shapes_maps() {
@@ -340,8 +351,7 @@ namespace Pong{
         for (auto &pair: material_shape_map) {
             std::sort(pair.second.begin(),
                     pair.second.end(),
-                    OrderComparer<Shape *>());
-        }
+                    OrderComparer<Shape *>());}
     }
 
     void Scene::sort_actor_maps() {
@@ -351,8 +361,7 @@ namespace Pong{
         for (auto &pair: shape_actor_map) {
             std::sort(pair.second.begin(),
                     pair.second.end(),
-                    OrderComparer<Actor *>());
-        }
+                    OrderComparer<Actor *>());}
     }
 
     // TODO: move to input callback functions file
