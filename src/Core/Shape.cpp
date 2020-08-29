@@ -1,7 +1,7 @@
 #include "Shape.h"
-#include "Material.h"
+#include "../Graphic/Material.h"
 #include "Scene.h"
-#include "logger.h"
+#include "../logger.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

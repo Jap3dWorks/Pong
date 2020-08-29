@@ -1,5 +1,5 @@
 #include "Utils.h"
-#include "logger.h"
+#include "../logger.h"
 
 //namespace Pong
 //{
@@ -12,8 +12,8 @@
 
 #include "Actor.h"
 #include "Scene.h"
-#include "Shader.h"
-#include "Material.h"
+#include "../Graphic/Shader.h"
+#include "../Graphic/Material.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

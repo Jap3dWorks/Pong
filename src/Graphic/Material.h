@@ -8,7 +8,7 @@ namespace Pong
 }
 
 #include "Shader.h"
-#include "Render.h"
+#include "../Core/Render.h"
 
 #include <iostream>
 #include <utility>

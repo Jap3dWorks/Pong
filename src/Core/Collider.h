@@ -10,6 +10,7 @@ namespace Pong
 }
 
 #include "Actor.h"
+#include "Shape.h"
 #include "Component.h"
 
 #include <glm/glm.hpp>

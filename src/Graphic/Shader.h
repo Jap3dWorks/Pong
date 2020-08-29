@@ -2,7 +2,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "logger.h"
+#include "../logger.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 

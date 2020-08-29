@@ -1,6 +1,6 @@
 #include "Material.h"
-#include "logger.h"
-#include "Scene.h"
+#include "../logger.h"
+#include "../Core/Scene.h"
 
 #include <stb_image.h>
 #include <glm/glm.hpp>
@@ -29,7 +29,7 @@ namespace Pong {
         if (data)
         {
             GLenum internalFormat;
-            GLenum dataFormat;
+            GLenum dataFormat = GL_RED;
             if (nrComponents == 1) dataFormat = internalFormat = GL_RED;
             else if (nrComponents == 3)
             {

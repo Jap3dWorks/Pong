@@ -1,11 +1,10 @@
 #include "Actor.h"
-#include "logger.h"
-#include "Scene.h"
+#include "../logger.h"
 #include "Component.h"
 
 #include <algorithm>
 #include <utility>
-
+#include "../Graphic/Material.h"
 
 namespace Pong {
     Actor::~Actor() {
@@ -50,7 +49,6 @@ namespace Pong {
     // -------
     void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
     {
-        // draw if is visible and has a shape
         material->set_param("model", _transform);
     }
 

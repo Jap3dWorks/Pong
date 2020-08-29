@@ -5,7 +5,7 @@
 #ifndef PONG_DATACOMPARERS_H
 #define PONG_DATACOMPARERS_H
 
-#include "logger.h"
+#include "../logger.h"
 
 namespace Pong {
     template<typename T>

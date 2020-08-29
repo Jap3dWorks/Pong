@@ -6,13 +6,16 @@ namespace Pong
     class Component;
     class Scene;
     class Render;
+    class Material;
 }
 
 #include "Movements.h"
-
-#include "Shape.h"
-#include "Material.h"
 #include "Collider.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glad/glad.h>
 
 #include <iostream>
 #include <utility>
@@ -71,7 +74,6 @@ namespace Pong {
 
     // sky box
     // -------
-    // TODO: I think this class don't need shape, add in the draw process
     class ASkyBox: public Actor
     {
     public:

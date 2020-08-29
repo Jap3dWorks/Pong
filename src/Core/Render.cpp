@@ -1,5 +1,5 @@
 #include "Render.h"
-#include "logger.h"
+#include "../logger.h"
 
 #include <iostream>
 
@@ -56,7 +56,7 @@ Pong::Render::Render()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // configure global opengl state
     glEnable(GL_DEPTH_TEST);
-
+    // framebuffer shaders
     framebuffer_shader = new Shader(
             "../shaders/framebuffer_screen_V.glsl",
             "../shaders/framebuffer_screen_F.glsl");

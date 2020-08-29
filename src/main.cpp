@@ -1,22 +1,17 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Movements.h"
-#include "Actor.h"
-#include "Level.h"
-
 #include "logger.h"
+#include "Levels/blending_level.h"
 
 #include <iostream>
-#include <string>
 
 int main()
 {
-    LOG_INFO("Case 1, test level");
-    Pong::TestLevel t_lvl;
-    LOG_INFO("test level run");
+    BlendingLevel b_lvl;
+    LOG_INFO("Blnding level run");
 
-    t_lvl.run();
+    b_lvl.run();
 
     return 0;
 }

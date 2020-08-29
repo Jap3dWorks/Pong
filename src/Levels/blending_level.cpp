@@ -2,10 +2,20 @@
 // Created by Jordi on 8/23/2020.
 //
 
-#include "belending_level.h"
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include "../Graphic/Material.h"
+#include "../Graphic/Lights.h"
+
+
+#include "blending_level.h"
 
 void BlendingLevel::_level_setup() {
     AbstractLevel::_level_setup();
+
+    // config openGL global blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // get camera
     Pong::ACamera *a_camera = _scene->get_camera();
@@ -13,16 +23,37 @@ void BlendingLevel::_level_setup() {
 
     // grass planes
     auto grass_shd = _scene->create_shader("grass_shd",
-                                           "../../shaders/cutout_v.glsl",
-                                           "../../shaders/cutout_f.glsl");
+                                           "Graphic/Shaders/cutout_V.glsl",
+                                           "Graphic/Shaders/cutout_F.glsl");
 
-    auto grass_mat = _scene->create_material<Pong::Material>("grass_mat",
-                                                             grass_shd,
-                                                             {});
+    auto grass_mat = _scene->create_material<Pong::Material>(
+            "grass_mat",
+            grass_shd,
+            {_scene->create_texture("grass_tx",
+                                    "../textures/grass.png",
+                                    "texture1")});
 
+    auto grass_shp = _scene->create_shape<Pong::CubeShape>("grass_shp");
+    auto grass_act = _scene->create_actor<Pong::APlayer>("grass_act");
+
+    grass_act->set_transform(glm::rotate(grass_act->get_transform(),
+                                         (float)M_PI,
+                                         glm::vec3(0,0,1)));
+
+    _scene->assign_material(grass_mat, grass_shp);
+    _scene->assign_shape(grass_shp, grass_act);
+
+    glBindTexture(GL_TEXTURE_2D, _scene->get_texture("grass_tx")->get_id());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // semitransparent
+
+
+    // skybox
     auto skybox_shd = _scene->create_shader("skybox_shd",
-                                               "../../shaders/reflect_skybox_v.glsl",
-                                               "../../shaders/reflect_skybox_f.glsl");
+                                            "Graphic/shaders/reflect_skybox_v.glsl",
+                                            "Graphic/shaders/reflect_skybox_f.glsl");
 
     auto *skybox_mat = _scene->create_material<Pong::SKyBoxMaterial>(
             "skybox_mat",
@@ -41,6 +72,7 @@ void BlendingLevel::_level_setup() {
     auto* skybox_act = _scene->create_actor<Pong::ASkyBox>("skybox_act");
     _scene->assign_material(skybox_mat,
                             _scene->create_shape<Pong::SkyBoxShape>("skybox_shp"));
+
     _scene->assign_shape(skybox_shp, skybox_act);
 
     skybox_act->set_visibility(true);

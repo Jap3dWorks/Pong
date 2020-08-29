@@ -15,20 +15,19 @@ add_compile_definitions(
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/Actor.cpp
-        src/Collider.cpp
-        src/Level.cpp
-        src/Material.cpp
-        src/Render.h
-        src/Render.cpp
-        src/Scene.cpp
-        src/Shape.cpp
-        src/Component.cpp
-        src/Utils.cpp
-        src/Lights.h
-        src/Cubemap.h
-        src/DataComparers.cpp
-        src/DataComparers.h src/Levels/belending_level.cpp src/Levels/belending_level.h)
+        src/Core/Actor.cpp
+        src/Core/Collider.cpp
+        src/Core/Level.cpp
+        src/Graphic/Material.cpp
+        src/Core/Render.h
+        src/Core/Render.cpp
+        src/Core/Scene.cpp
+        src/Core/Shape.cpp
+        src/Core/Component.cpp
+        src/Core/Utils.cpp
+        src/Graphic/Lights.h
+        src/Core/DataComparers.cpp
+        src/Core/DataComparers.h src/Levels/blending_level.cpp src/Levels/blending_level.h)
 
 #include_directories(src)
 

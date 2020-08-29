@@ -6,10 +6,10 @@
 #include <assimp/postprocess.h>
 
 #include "Actor.h"
-#include "Material.h"
+#include "../Graphic/Material.h"
 #include "Shape.h"
 #include "Collider.h"
-#include "Lights.h"
+#include "../Graphic/Lights.h"
 #include "Render.h"
 
 #include "DataComparers.h"
