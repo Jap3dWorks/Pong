@@ -342,27 +342,33 @@ namespace Pong {
         float _depth;
 
         void _buildCubeVerticesHard();
-        //void _buildCubeVertices();
         [[nodiscard]] std::vector<glm::vec3> _computeCubeVertices() const;
-
-        std::map<std::pair<glm::vec3, glm::vec2>, unsigned int> _sharedIndices;
 
     public:
         explicit CubeShape(std::string name, float height=1.f, float width=1.f, float depth=1.f);
-
         ~CubeShape() override;
+    };
+
+    class PlaneShape: public Shape
+    {
+    private:
+        float _width;
+        float _height;
+
+        void _build_plane();
+        [[nodiscard]] std::vector<glm::vec3> _computePlaneVertices() const;
+
+    public:
+        explicit PlaneShape(const std::string& name, float height=1.f, float width=1.f);
     };
 
     // Mesh
     class Mesh : public Shape{
     public:
         std::vector<Vertex> vertices;
-
         // constructor
         Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices);
-
         void set_VAO() override;
-
     };
 
     // Sky box shape

@@ -364,6 +364,28 @@ namespace Pong{
                     OrderComparer<Actor *>());}
     }
 
+    void Scene::sort_blending_actors() {
+        std::sort(blending_actors.begin(),
+                  blending_actors.end(),
+                  _actor_blending_comparer);
+    }
+
+    void Scene::collect_blending_actors() {
+        blending_actors.clear();
+        blending_actor_shape_material_map.clear();
+        for (auto material: renderlayer_material_map[RenderLayer::BLENDING])
+        {
+            for(auto shp: material_shape_map[material])
+            {
+                for(auto act: shape_actor_map[shp])
+                {
+                    blending_actors.push_back(act);
+                    blending_actor_shape_material_map[act] = std::pair(shp, material);
+                }
+            }
+        }
+    }
+
     // TODO: move to input callback functions file
     // callback functions
     // -----------------

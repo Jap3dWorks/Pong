@@ -10,6 +10,9 @@
 class BlendingLevel : public Pong::AbstractLevel {
 protected:
     void _level_setup() override;
+
+    inline void _create_blending_actors();
+
 };
 
 

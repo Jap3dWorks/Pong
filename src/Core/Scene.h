@@ -50,6 +50,8 @@ namespace Pong {
         // camera pointer
         ACamera* _camera = new ACamera("default_cam",
                 glm::vec3(0.f, 0.f, 5.f));
+        ActorCameraDistanceComparer _actor_blending_comparer =
+                ActorCameraDistanceComparer(_camera);
 
         //private methods
         Scene();
@@ -76,13 +78,20 @@ namespace Pong {
         std::vector<Shape*> shape_order;
         std::vector<Actor*> actor_order;
 
+        // blending actors ordered by distance to render camera
+        std::vector<Actor*>blending_actors;
+        std::map<Actor*, std::pair<Shape*, Material*>> blending_actor_shape_material_map;
+        void collect_blending_actors();
+
+        // I have the problem of a shape in two different materials.
+        // shape actors will draw twice all materials in this case.
         std::map<RenderLayer, std::vector<Material*>> renderlayer_material_map;
         std::map<Material*, std::vector<Shape*>> material_shape_map;
         std::map<Shape*, std::vector<Actor*>> shape_actor_map;
 
-        RenderLayer first_pass_renderlayers[3] = {RenderLayer::BASE,
-                                                  RenderLayer::SKY_BOX,
-                                                  RenderLayer::BLENDING};
+        RenderLayer first_pass_renderlayers[2] = {RenderLayer::BASE,
+                                                  RenderLayer::SKY_BOX};
+
 
         void assign_layer(const RenderLayer&, Material*);
 
@@ -92,6 +101,8 @@ namespace Pong {
         void sort_materials();
         void sort_shapes_maps();
         void sort_actor_maps();
+
+        void sort_blending_actors();
 
         [[nodiscard]] PointLight& get_point_light(int id) const;
 

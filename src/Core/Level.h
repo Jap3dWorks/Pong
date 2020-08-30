@@ -32,6 +32,7 @@ namespace Pong {
         virtual void _frame_draw();
         virtual void _components_start_level();
 
+
     public:
         AbstractLevel();
         virtual ~AbstractLevel();

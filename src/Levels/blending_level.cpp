@@ -47,9 +47,6 @@ void BlendingLevel::_level_setup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    // semitransparent
-
-
     // skybox
     auto skybox_shd = _scene->create_shader("skybox_shd",
                                             "Graphic/shaders/reflect_skybox_v.glsl",
@@ -83,4 +80,49 @@ void BlendingLevel::_level_setup() {
     directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
     directional_light->direction = glm::normalize(
             glm::vec3{0.3f, -1.f, -0.5f});
+}
+
+void BlendingLevel::_create_blending_actors() {
+    // semitransparent
+    auto blnd_shader = _scene->create_shader("blnd_shader",
+                                             "Graphic/Shaders/blending_v.glsl",
+                                             "Graphic/Shaders/blending_f.glsl");
+
+    auto bld_mat = _scene->create_material<Pong::Material>(
+            "bld_mat",
+            blnd_shader,
+            {_scene->create_texture("bld_tex",
+                                    "texture1",
+                                    "../textures/blending_transparent_window.png")}
+    );
+    auto bld_shp = _scene->create_shape<Pong::PlaneShape>(
+            "blnd_shp1",
+            1.f, 1.f);
+
+    _scene->assign_layer(Pong::RenderLayer::BLENDING, bld_mat);
+    _scene->assign_material(bld_mat, bld_shp);
+
+    glm::vec3 positions[8]{
+        glm::vec3(11, 6, -5),
+        glm::vec3(-3, 2, -8),
+        glm::vec3(6.5, -6, 14),
+        glm::vec3(9, -2.1, 5),
+        glm::vec3(-7, -5, -9),
+        glm::vec3(5, -6, -0.8),
+        glm::vec3(1, -9, 20),
+        glm::vec3(22, 8, 14),
+    };
+
+    for(unsigned int i = 0; i < 8; i ++)
+    {
+        auto bld_act = _scene->create_actor<Pong::Actor>(
+                "bld_act" + std::to_string(i));
+
+        bld_act->set_transform(
+                glm::translate(bld_act->get_transform(),
+                positions[i]));
+
+        _scene->assign_shape(bld_shp, bld_act);
+    }
+
 }

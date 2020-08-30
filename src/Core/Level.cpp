@@ -21,11 +21,13 @@ namespace Pong
         // --config scene--
         LOG_INFO("Setup level")
         _level_setup();
+        LOG_INFO("Collect blending actors.")
+        // blending actors are drawn by distance to camera.
+        _scene->collect_blending_actors();
         LOG_INFO("Sort materials, shapes and actors")
         _scene->sort_materials();
         _scene->sort_shapes_maps();
         _scene->sort_actor_maps();
-
         // --inputs--
         // ----------
         _configInputs();
@@ -52,7 +54,6 @@ namespace Pong
             _frame_calc();
 
             _render->bind_framebuffer();
-
             _frame_draw();
 
             _render->draw_framebuffer();
@@ -121,17 +122,13 @@ namespace Pong
 
     void AbstractLevel::_frame_draw()
     {
-        for (auto layer: _scene->first_pass_renderlayers)
-        {
-            for (auto material: _scene->renderlayer_material_map[layer])
-            {
+        for (auto layer: _scene->first_pass_renderlayers){
+            for (auto material: _scene->renderlayer_material_map[layer]){
                 material->use();
                 material->update_shader(_render, _scene);
-                for (auto shape: _scene->material_shape_map[material])
-                {
+                for (auto shape: _scene->material_shape_map[material]){
                     shape->bind_VAO();
-                    for (auto actor: _scene->shape_actor_map[shape])
-                    {
+                    for (auto actor: _scene->shape_actor_map[shape]){
                         // Draw by actor
                         if (actor->get_visibility()) {
                             actor->draw(_render, _scene, material);
@@ -141,6 +138,23 @@ namespace Pong
                 }
                 material->end_use();
             }
+        }
+
+        // Draw first far objects
+        _scene->sort_blending_actors();
+        for (auto it = _scene->blending_actors.rbegin();
+                it != _scene->blending_actors.rend(); it ++)
+        {
+            auto act = *it;
+            if (!act->get_visibility()) continue;
+
+            auto shp = _scene->blending_actor_shape_material_map[*it].first;
+            auto mat = _scene->blending_actor_shape_material_map[*it].second;
+            mat->use();
+            mat->update_shader(_render, _scene);
+            shp->bind_VAO();
+            act->draw(_render, _scene, mat);
+            shp->draw(_render, _scene, mat);
         }
         glBindVertexArray(0);
     }

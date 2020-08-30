@@ -702,8 +702,6 @@ namespace Pong {
 
         // set vertex buffers
         Shape::set_VAO();
-
-        //cout_buffer<float>(interleaved_vertices, 8);
     }
 
     CubeShape::~CubeShape() = default;
@@ -719,7 +717,6 @@ namespace Pong {
         normals.clear();
         texture_coords.clear();
         indices.clear();
-        _sharedIndices.clear();
 
         // face cube has 12 non-shared vertices
         // and 12 shared vertices total 24 vertices.
@@ -868,6 +865,51 @@ namespace Pong {
         tmpVert[7] = glm::vec3(-_width / 2, -_height / 2, _depth / 2);
 
         return tmpVert;
+    }
+
+    // PlaneShape
+
+
+    void PlaneShape::_build_plane() {
+        std::vector<glm::vec3> tmpVert = _computePlaneVertices();
+
+        // clear prev arrays
+        vertices.clear();
+        normals.clear();
+        texture_coords.clear();
+
+        glm::vec3 fnormal(0.f, 0.f, 1.f);
+
+        for (unsigned int i = 0; i < 4; i++) {
+            add_vertices(tmpVert[i]);
+            add_normals(fnormal);
+            add_tex_coords(glm::vec2(tmpVert[i]) / (glm::length(tmpVert[i])));
+        }
+
+        // triangle index
+        add_indices(0, 1, 3);
+        add_indices(1,2,3);
+
+        build_interleaved_vertices();
+    }
+
+    std::vector<glm::vec3> PlaneShape::_computePlaneVertices() const
+    {
+        std::vector<glm::vec3> tmpVert(4);
+
+        tmpVert[0] = glm::vec3(_width / 2.f, _height / 2.f, 0.f);
+        tmpVert[1] = glm::vec3(-_width / 2.f, _height / 2.f, 0.f);
+        tmpVert[2] = glm::vec3(-_width / 2.f, -_height / 2.f, 0.f);
+        tmpVert[3] = glm::vec3(_width / 2.f, -_height / 2.f, 0.f);
+
+        return tmpVert;
+    }
+
+    PlaneShape::PlaneShape(const std::string& name, float height, float width):
+    _width(width), _height(height), Shape(name)
+    {
+        _build_plane();
+        Shape::set_VAO();
     }
 
     // Mesh
