@@ -4,7 +4,7 @@
 #ifndef PONG_BLENDING_LEVEL_H
 #define PONG_BLENDING_LEVEL_H
 
-#include "../core/Level.h"
+#include "../Core/Level.h"
 
 
 class BlendingLevel : public Pong::AbstractLevel {

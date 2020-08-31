@@ -111,7 +111,7 @@ namespace Pong {
 
         virtual void use();
 
-        /// unbind textures
+        /// unbind Textures
         virtual void end_use();
     };
 

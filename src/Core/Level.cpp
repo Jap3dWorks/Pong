@@ -155,6 +155,7 @@ namespace Pong
             shp->bind_VAO();
             act->draw(_render, _scene, mat);
             shp->draw(_render, _scene, mat);
+            mat->end_use();
         }
         glBindVertexArray(0);
     }
@@ -206,7 +207,7 @@ namespace Pong
                 "paint_mat",
                 paint_shd,
                 {_scene->create_texture("paint_tex",
-                                        "../textures/waterColor.jpg",
+                                        "../Textures/waterColor.jpg",
                                         "texture1")});
 
         auto *cube_01 = _scene->create_actor<APlayer>("icosphere_01");
@@ -226,9 +227,9 @@ namespace Pong
                 skybox_shd,
                 {_scene->create_texture("skybox_tex",
                                         "skybox",
-                                        "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
-                                        "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
-                                        "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")},
+                                        "../Textures/skybox_right.jpg", "../Textures/skybox_left.jpg",
+                                        "../Textures/skybox_top.jpg", "../Textures/skybox_bottom.jpg",
+                                        "../Textures/skybox_front.jpg", "../Textures/skybox_back.jpg")},
                                         RenderLayer::SKY_BOX);
 
         // Sky box should be drawn last.

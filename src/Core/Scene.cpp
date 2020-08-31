@@ -156,7 +156,7 @@ namespace Pong{
             return nullptr;
     }
 
-    // --textures--
+    // --Textures--
     Texture* Scene::create_texture(const std::string& name,
                                    const std::string& path,
                                    std::string texture_type)
@@ -379,6 +379,9 @@ namespace Pong{
             {
                 for(auto act: shape_actor_map[shp])
                 {
+                    LOG_DEBUG("Collect " << act->get_name());
+                    LOG_DEBUG("Collect " << material->get_name());
+                    LOG_DEBUG("Collect " << shp->get_name());
                     blending_actors.push_back(act);
                     blending_actor_shape_material_map[act] = std::pair(shp, material);
                 }

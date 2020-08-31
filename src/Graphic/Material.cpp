@@ -98,7 +98,7 @@ namespace Pong {
         // bind shader
         _shader->use();
 
-        // bing textures texture
+        // bing Textures texture
         for (unsigned int i =0; i < _textures.size(); i++)
         {
             // Active texture shader slot

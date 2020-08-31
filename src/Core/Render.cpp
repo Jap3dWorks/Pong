@@ -58,8 +58,8 @@ Pong::Render::Render()
     glEnable(GL_DEPTH_TEST);
     // framebuffer shaders
     framebuffer_shader = new Shader(
-            "../shaders/framebuffer_screen_V.glsl",
-            "../shaders/framebuffer_screen_F.glsl");
+            "./Shaders/framebuffer_screen_V.glsl",
+            "./Shaders/framebuffer_screen_F.glsl");
 
 }
 

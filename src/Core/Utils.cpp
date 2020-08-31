@@ -20,7 +20,7 @@
 
 #include <string>
 
-// utility to load textures
+// utility to load Textures
 unsigned int loadTexture(char const *path, const bool &gammaCorrection)
 {
     unsigned int textureID;

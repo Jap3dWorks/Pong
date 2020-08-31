@@ -12,25 +12,20 @@
 
 void BlendingLevel::_level_setup() {
     AbstractLevel::_level_setup();
-
-    // config openGL global blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     // get camera
     Pong::ACamera *a_camera = _scene->get_camera();
     a_camera->Position = glm::vec3(0, 0, 9);
 
     // grass planes
     auto grass_shd = _scene->create_shader("grass_shd",
-                                           "Graphic/Shaders/cutout_V.glsl",
-                                           "Graphic/Shaders/cutout_F.glsl");
+                                           "./Shaders/cutout_V.glsl",
+                                           "./Shaders/cutout_F.glsl");
 
     auto grass_mat = _scene->create_material<Pong::Material>(
             "grass_mat",
             grass_shd,
             {_scene->create_texture("grass_tx",
-                                    "../textures/grass.png",
+                                    "./Textures/grass.png",
                                     "texture1")});
 
     auto grass_shp = _scene->create_shape<Pong::CubeShape>("grass_shp");
@@ -47,19 +42,22 @@ void BlendingLevel::_level_setup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+    // blending
+    _create_blending_actors();
+
     // skybox
     auto skybox_shd = _scene->create_shader("skybox_shd",
-                                            "Graphic/shaders/reflect_skybox_v.glsl",
-                                            "Graphic/shaders/reflect_skybox_f.glsl");
+                                            "./Shaders/reflect_skybox_v.glsl",
+                                            "./Shaders/reflect_skybox_f.glsl");
 
     auto *skybox_mat = _scene->create_material<Pong::SKyBoxMaterial>(
             "skybox_mat",
             skybox_shd,
             {_scene->create_texture("skybox_tex",
                                     "skybox",
-                                    "../textures/skybox_right.jpg", "../textures/skybox_left.jpg",
-                                    "../textures/skybox_top.jpg", "../textures/skybox_bottom.jpg",
-                                    "../textures/skybox_front.jpg", "../textures/skybox_back.jpg")},
+                                    "./Textures/skybox_right.jpg", "./Textures/skybox_left.jpg",
+                                    "./Textures/skybox_top.jpg", "./Textures/skybox_bottom.jpg",
+                                    "./Textures/skybox_front.jpg", "./Textures/skybox_back.jpg")},
             Pong::RenderLayer::SKY_BOX);
 
     // Sky box should be drawn last.
@@ -80,24 +78,28 @@ void BlendingLevel::_level_setup() {
     directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
     directional_light->direction = glm::normalize(
             glm::vec3{0.3f, -1.f, -0.5f});
+
+    // config openGL global blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void BlendingLevel::_create_blending_actors() {
     // semitransparent
     auto blnd_shader = _scene->create_shader("blnd_shader",
-                                             "Graphic/Shaders/blending_v.glsl",
-                                             "Graphic/Shaders/blending_f.glsl");
+                                             "./Shaders/blending_v.glsl",
+                                             "./Shaders/blending_f.glsl");
 
     auto bld_mat = _scene->create_material<Pong::Material>(
             "bld_mat",
             blnd_shader,
             {_scene->create_texture("bld_tex",
                                     "texture1",
-                                    "../textures/blending_transparent_window.png")}
+                                    "./Textures/blending_transparent_window.png")}
     );
-    auto bld_shp = _scene->create_shape<Pong::PlaneShape>(
-            "blnd_shp1",
-            1.f, 1.f);
+    auto bld_shp = _scene->create_shape<Pong::CubeShape>(
+            "blnd_shp",
+            1.f, 1.f, 1.f);
 
     _scene->assign_layer(Pong::RenderLayer::BLENDING, bld_mat);
     _scene->assign_material(bld_mat, bld_shp);

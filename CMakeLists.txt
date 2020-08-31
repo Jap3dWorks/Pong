@@ -55,3 +55,23 @@ message("Include assimp")
 include_directories(${LIBRARIES}/assimp/include)
 message("Link assimp")
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBRARIES}/assimp/lib/assimp-vc140-mt.lib)
+
+message("copy Textures")
+set (source "${CMAKE_SOURCE_DIR}/Textures")
+set (destination "${CMAKE_CURRENT_BINARY_DIR}/Textures")
+add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${source} ${destination}
+        DEPENDS ${destination}
+        COMMENT "symbolic link resources folder from ${source} => ${destination}"
+)
+
+message("copy Shaders")
+set (source "${CMAKE_SOURCE_DIR}/Shaders")
+set (destination "${CMAKE_CURRENT_BINARY_DIR}/Shaders")
+add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${source} ${destination}
+        DEPENDS ${destination}
+        COMMENT "symbolic link resources folder from ${source} => ${destination}"
+)
