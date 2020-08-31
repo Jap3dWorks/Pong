@@ -11,8 +11,14 @@
 #include "blending_level.h"
 
 void BlendingLevel::_level_setup() {
+
+    // config openGL global blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glEnable(GL_CULL_FACE);
+
     AbstractLevel::_level_setup();
-    // get camera
+    // get camera_ptr
     Pong::ACamera *a_camera = _scene->get_camera();
     a_camera->Position = glm::vec3(0, 0, 9);
 
@@ -78,10 +84,6 @@ void BlendingLevel::_level_setup() {
     directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
     directional_light->direction = glm::normalize(
             glm::vec3{0.3f, -1.f, -0.5f});
-
-    // config openGL global blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void BlendingLevel::_create_blending_actors() {
@@ -94,25 +96,25 @@ void BlendingLevel::_create_blending_actors() {
             "bld_mat",
             blnd_shader,
             {_scene->create_texture("bld_tex",
-                                    "texture1",
-                                    "./Textures/blending_transparent_window.png")}
-    );
-    auto bld_shp = _scene->create_shape<Pong::CubeShape>(
-            "blnd_shp",
-            1.f, 1.f, 1.f);
+                                    "./Textures/blending_transparent_window.png",
+                                    "texture1")},
+            Pong::RenderLayer::BLENDING);
 
-    _scene->assign_layer(Pong::RenderLayer::BLENDING, bld_mat);
+    auto bld_shp = _scene->create_shape<Pong::PlaneShape>(
+            "blnd_shp",
+            1.f, 1.f);
+
     _scene->assign_material(bld_mat, bld_shp);
 
     glm::vec3 positions[8]{
-        glm::vec3(11, 6, -5),
-        glm::vec3(-3, 2, -8),
-        glm::vec3(6.5, -6, 14),
-        glm::vec3(9, -2.1, 5),
-        glm::vec3(-7, -5, -9),
-        glm::vec3(5, -6, -0.8),
-        glm::vec3(1, -9, 20),
-        glm::vec3(22, 8, 14),
+        glm::vec3(11.f, 6.f, -6.f),  // 0
+        glm::vec3(6.5f, -6.f, 14.f),  // 1
+        glm::vec3(9.f, -2.1f, 5.f),  // 2
+        glm::vec3(-7.f, -5.f, -9.f),  // 3
+        glm::vec3(-3.f, 2.f, -8.f),  // 4
+        glm::vec3(-4.f, -9.f, -20.f), // 5
+        glm::vec3(5.f, -6.f, -0.8f),  // 6
+        glm::vec3(22.f, 8.f, 14.f),
     };
 
     for(unsigned int i = 0; i < 8; i ++)

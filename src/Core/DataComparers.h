@@ -48,22 +48,32 @@ namespace Pong {
     }
 
     struct ActorCameraDistanceComparer {
-        const ACamera *camera = nullptr;
+        const ACamera *camera_ptr = nullptr;
 
-        explicit ActorCameraDistanceComparer(const ACamera *_camera) : camera(_camera) {}
+        explicit ActorCameraDistanceComparer(const ACamera *camera) : camera_ptr(camera) {}
 
-        static inline float get_distance(const glm::mat4 &mata, const glm::mat4 &matb) {
-            return glm::length(glm::vec3(mata[3]) - glm::vec3(matb[3]));
+        [[nodiscard]] inline float get_distance(const glm::mat4 &mat_a) const {
+            return glm::length<3, float>(glm::vec3(mat_a[3]) - camera_ptr->Position);
         }
 
         bool operator()(const Actor &act_a, const Actor &act_b) const {
-            return get_distance(act_a.get_transform(), camera->get_transform()) <
-                   get_distance(act_b.get_transform(), camera->get_transform());
+            return get_distance(act_a.get_transform()) < get_distance(act_b.get_transform());
         }
 
-        bool operator()(Actor* act_a, Actor* act_b) const {
-            return get_distance(act_a->get_transform(), camera->get_transform()) <
-                   get_distance(act_b->get_transform(), camera->get_transform());
+        bool operator()(const Actor * act_a, const Actor * act_b) const {
+//            LOG_DEBUG("Compare " << act_a->get_name() << " and " << act_b->get_name());
+//            LOG_DEBUG(act_a->get_name() << " " << act_a->get_transform()[3][0] << " " << act_a->get_transform()[3][1] << " " << act_a->get_transform()[3][2]);
+//            LOG_DEBUG(act_b->get_name() << " " << act_b->get_transform()[3][0] << " " << act_b->get_transform()[3][1] << " " << act_b->get_transform()[3][2]);
+//            LOG_DEBUG("Camera " << camera_ptr->get_name());
+//            LOG_DEBUG("Camera pos: ");
+//            LOG_DEBUG(act_a->get_name() << " " << get_distance(act_a->get_transform()));
+//            LOG_DEBUG(act_b->get_name() << " " << get_distance(act_b->get_transform()));
+
+            bool result = get_distance(act_a->get_transform()) < get_distance(act_b->get_transform());
+
+//            LOG_DEBUG(result);
+
+            return result;
         }
 
     };

@@ -164,7 +164,7 @@ namespace Pong {
         static const float SENSITIVITY;
         static const float ZOOM;
 
-        // camera attributes
+        // camera_ptr attributes
         glm::vec3 Position{};
         glm::vec3 Front;
         glm::vec3 Up{};
@@ -251,7 +251,7 @@ namespace Pong {
         }
 
     private:
-        // calculates the front vector from camera's euler angles
+        // calculates the front vector from camera_ptr's euler angles
         void update_camera_vectors() {
             // calculate new front vector
             glm::vec3 front;

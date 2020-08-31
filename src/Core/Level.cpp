@@ -22,7 +22,7 @@ namespace Pong
         LOG_INFO("Setup level")
         _level_setup();
         LOG_INFO("Collect blending actors.")
-        // blending actors are drawn by distance to camera.
+        // blending actors are drawn by distance to camera_ptr.
         _scene->collect_blending_actors();
         LOG_INFO("Sort materials, shapes and actors")
         _scene->sort_materials();
@@ -73,7 +73,7 @@ namespace Pong
 
     void AbstractLevel::_configInputs()
     {
-        // camera inputs
+        // camera_ptr inputs
         Render* render = Render::getInstance();
         std::map<int, Pong::Movements> camMap =
         {
@@ -122,6 +122,7 @@ namespace Pong
 
     void AbstractLevel::_frame_draw()
     {
+        LOG_DEBUG("--Draw base--")
         for (auto layer: _scene->first_pass_renderlayers){
             for (auto material: _scene->renderlayer_material_map[layer]){
                 material->use();
@@ -131,6 +132,7 @@ namespace Pong
                     for (auto actor: _scene->shape_actor_map[shape]){
                         // Draw by actor
                         if (actor->get_visibility()) {
+                            LOG_DEBUG("Draw " << actor->get_name())
                             actor->draw(_render, _scene, material);
                             shape->draw(_render, _scene, material);
                         }
@@ -140,11 +142,15 @@ namespace Pong
             }
         }
 
+        LOG_DEBUG("---Draw blending---");
+        LOG_DEBUG("Cam pos: " << _scene->get_camera()->Position[0] << ", " << _scene->get_camera()->Position[1] << ", " << _scene->get_camera()->Position[2]);
         // Draw first far objects
+//        glDisable(GL_DEPTH_TEST);
         _scene->sort_blending_actors();
         for (auto it = _scene->blending_actors.rbegin();
-                it != _scene->blending_actors.rend(); it ++)
+                it != _scene->blending_actors.rend(); it++)
         {
+            LOG_DEBUG("Draw " << (*it)->get_name())
             auto act = *it;
             if (!act->get_visibility()) continue;
 
@@ -157,7 +163,9 @@ namespace Pong
             shp->draw(_render, _scene, mat);
             mat->end_use();
         }
+//        glEnable(GL_DEPTH_TEST);
         glBindVertexArray(0);
+
     }
 
     void AbstractLevel::_level_setup(){}
@@ -194,7 +202,7 @@ namespace Pong
     // TestLevel
     // ---------
     void TestLevel::_level_setup() {
-        // get camera
+        // get camera_ptr
         ACamera *camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 

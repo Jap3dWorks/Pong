@@ -47,7 +47,7 @@ namespace Pong {
         // directional light
         DirectionalLight* _directionalLight = new DirectionalLight;
 
-        // camera pointer
+        // camera_ptr pointer
         ACamera* _camera = new ACamera("default_cam",
                 glm::vec3(0.f, 0.f, 5.f));
         ActorCameraDistanceComparer _actor_blending_comparer =
@@ -78,7 +78,7 @@ namespace Pong {
         std::vector<Shape*> shape_order;
         std::vector<Actor*> actor_order;
 
-        // blending actors ordered by distance to render camera
+        // blending actors ordered by distance to render camera_ptr
         std::vector<Actor*>blending_actors;
         std::map<Actor*, std::pair<Shape*, Material*>> blending_actor_shape_material_map;
         void collect_blending_actors();
@@ -202,7 +202,7 @@ namespace Pong {
         // get a collider by its name
         [[nodiscard]] Collider* get_collider(const std::string& name) const;
 
-        // get camera ptr
+        // get camera_ptr ptr
         [[nodiscard]] ACamera* get_camera() const;
 
         template<typename T, typename... Args>
