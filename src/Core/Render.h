@@ -50,7 +50,7 @@ namespace Pong {
 
     public:
         /**Binds framebuffer, in this buffer the scene is prerendered.*/
-        void bind_framebuffer() const;
+        static void bind_framebuffer(unsigned int in_framebuffer=0) ;
         /**Draws framebuffer in default buffer*/
         void draw_framebuffer();
 
@@ -58,6 +58,8 @@ namespace Pong {
         static const unsigned int SCR_HEIGHT = 720;
         static constexpr float Z_NEAR = 0.1f;
         static constexpr float Z_FAR = 10000.f;
+
+        [[nodiscard]] unsigned int get_framebuffer() const {return _framebuffer;}
 
         // time variables
         static float DeltaTime;
@@ -69,6 +71,11 @@ namespace Pong {
         GLFWwindow* getWindow();
 
         virtual ~Render();
+
+        RenderLayer first_pass_renderlayers[2] = {RenderLayer::BASE,
+                                                  RenderLayer::SKY_BOX
+        };
+
     };
 }
 

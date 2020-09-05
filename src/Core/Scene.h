@@ -89,10 +89,6 @@ namespace Pong {
         std::map<Material*, std::vector<Shape*>> material_shape_map;
         std::map<Shape*, std::vector<Actor*>> shape_actor_map;
 
-        RenderLayer first_pass_renderlayers[2] = {RenderLayer::BASE,
-                                                  RenderLayer::SKY_BOX};
-
-
         void assign_layer(const RenderLayer&, Material*);
 
         void assign_material(Material*, Shape*);

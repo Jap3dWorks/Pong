@@ -142,8 +142,8 @@ void Pong::Render::_config_frame_buffers() {
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 }
 
-void Pong::Render::bind_framebuffer() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+void Pong::Render::bind_framebuffer(unsigned int in_framebuffer) {
+    glBindFramebuffer(GL_FRAMEBUFFER, in_framebuffer);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

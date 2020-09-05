@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # log levels
 add_compile_definitions(
-        __LOG_DEBUG__
+#        __LOG_DEBUG__
         __LOG_INFO__
         __LOG_WARNING__
         __LOG_ERROR__

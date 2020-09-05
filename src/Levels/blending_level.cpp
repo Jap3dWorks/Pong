@@ -15,7 +15,6 @@ void BlendingLevel::_level_setup() {
     // config openGL global blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glEnable(GL_CULL_FACE);
 
     AbstractLevel::_level_setup();
     // get camera_ptr
@@ -34,15 +33,20 @@ void BlendingLevel::_level_setup() {
                                     "./Textures/grass.png",
                                     "texture1")});
 
-    auto grass_shp = _scene->create_shape<Pong::CubeShape>("grass_shp");
-    auto grass_act = _scene->create_actor<Pong::APlayer>("grass_act");
+    auto grass_shp = _scene->create_shape<Pong::PlaneShape>("grass_shp");
+    auto grass_act_01 = _scene->create_actor<Pong::APlayer>("grass_act_01");
+    auto grass_act_02 = _scene->create_actor<Pong::APlayer>("grass_act_02");
 
-    grass_act->set_transform(glm::rotate(grass_act->get_transform(),
-                                         (float)M_PI,
-                                         glm::vec3(0,0,1)));
+    grass_act_01->set_transform(glm::rotate(grass_act_01->get_transform(),
+                                            (float)M_PI,
+                                            glm::vec3(0,0,1)));
+
+    grass_act_02->set_transform(glm::translate(glm::mat4(1.f),
+                                               glm::vec3(2, 0, 1)));
 
     _scene->assign_material(grass_mat, grass_shp);
-    _scene->assign_shape(grass_shp, grass_act);
+    _scene->assign_shape(grass_shp, grass_act_01);
+    _scene->assign_shape(grass_shp, grass_act_02);
 
     glBindTexture(GL_TEXTURE_2D, _scene->get_texture("grass_tx")->get_id());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -107,19 +111,19 @@ void BlendingLevel::_create_blending_actors() {
     _scene->assign_material(bld_mat, bld_shp);
 
     glm::vec3 positions[8]{
-        glm::vec3(11.f, 6.f, -6.f),  // 0
-        glm::vec3(6.5f, -6.f, 14.f),  // 1
-        glm::vec3(9.f, -2.1f, 5.f),  // 2
+        glm::vec3(11.f, 6.f, 0),  // 0
+        glm::vec3(11.f, 6.f, 5),  // 1
+        glm::vec3(11.f, 6.f, -10.f),  // 2
         glm::vec3(-7.f, -5.f, -9.f),  // 3
         glm::vec3(-3.f, 2.f, -8.f),  // 4
         glm::vec3(-4.f, -9.f, -20.f), // 5
         glm::vec3(5.f, -6.f, -0.8f),  // 6
-        glm::vec3(22.f, 8.f, 14.f),
+        glm::vec3(8.f, 8.f, 14.f),
     };
 
     for(unsigned int i = 0; i < 8; i ++)
     {
-        auto bld_act = _scene->create_actor<Pong::Actor>(
+        auto bld_act = _scene->create_actor<Pong::APlayer>(
                 "bld_act" + std::to_string(i));
 
         bld_act->set_transform(

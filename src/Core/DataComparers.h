@@ -61,18 +61,7 @@ namespace Pong {
         }
 
         bool operator()(const Actor * act_a, const Actor * act_b) const {
-//            LOG_DEBUG("Compare " << act_a->get_name() << " and " << act_b->get_name());
-//            LOG_DEBUG(act_a->get_name() << " " << act_a->get_transform()[3][0] << " " << act_a->get_transform()[3][1] << " " << act_a->get_transform()[3][2]);
-//            LOG_DEBUG(act_b->get_name() << " " << act_b->get_transform()[3][0] << " " << act_b->get_transform()[3][1] << " " << act_b->get_transform()[3][2]);
-//            LOG_DEBUG("Camera " << camera_ptr->get_name());
-//            LOG_DEBUG("Camera pos: ");
-//            LOG_DEBUG(act_a->get_name() << " " << get_distance(act_a->get_transform()));
-//            LOG_DEBUG(act_b->get_name() << " " << get_distance(act_b->get_transform()));
-
             bool result = get_distance(act_a->get_transform()) < get_distance(act_b->get_transform());
-
-//            LOG_DEBUG(result);
-
             return result;
         }
 

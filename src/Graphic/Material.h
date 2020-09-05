@@ -97,14 +97,6 @@ namespace Pong {
 
         [[nodiscard]]Shader* get_shader() const;
 
-        void set_param(const std::string&, float);
-
-        void set_param(const std::string&, glm::vec3);
-
-        void set_param(const std::string&, int);
-
-        void set_param(const std::string&, glm::mat4);
-
         virtual void update_shader(const Render *render, const Scene *scene);
 
         [[nodiscard]]std::string get_name() const { return _name; }

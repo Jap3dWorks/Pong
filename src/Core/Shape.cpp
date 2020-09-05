@@ -106,7 +106,6 @@ namespace Pong {
             glVertexAttribPointer(attrId, tRow, GL_FLOAT, GL_FALSE, rowSize,
                 (void*)(offset * sizeof(float)));
         }
-
         // detach vertex array
         glBindVertexArray(0);
     }
@@ -115,14 +114,16 @@ namespace Pong {
     {
         if(!indices.empty()){
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
-
-        } else {
+        }
+        else {
             glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
         }
     }
 
-    void Shape::_compute_face_normal_(const glm::vec3 &vtx0, const glm::vec3 &vtx1,
-            const glm::vec3 &vtx2, glm::vec3 &out_normal) {
+    void Shape::_compute_face_normal_(const glm::vec3 &vtx0,
+                                      const glm::vec3 &vtx1,
+                                      const glm::vec3 &vtx2,
+                                      glm::vec3 &out_normal) {
         const float EPSILON = 0.000001f;
 
         out_normal[0] = out_normal[1] = out_normal[2] = 0.f;
@@ -883,7 +884,9 @@ namespace Pong {
         for (unsigned int i = 0; i < 4; i++) {
             add_vertices(tmpVert[i]);
             add_normals(fnormal);
-            add_tex_coords(glm::vec2(tmpVert[i]) / (glm::length(tmpVert[i])));
+            add_tex_coords(
+                    (glm::vec2(0.5f, 0.5f) + (glm::vec2(tmpVert[i]) / glm::vec2(_width, _height)))
+            );
         }
 
         // triangle index

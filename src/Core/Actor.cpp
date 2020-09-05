@@ -17,10 +17,11 @@ namespace Pong {
         _transform = glm::scale(_transform, scale);
     }
 
-    void Actor::draw(const Render *render, const Scene *scene, Material *material) const {
+    void Actor::draw(const Render *render, const Scene *scene, Material *material) const
+    {
         // draw if is visible and has a shape
-        material->set_param("model", _transform);
-
+//        material->set_param("model", _transform);
+        material->get_shader()->setMat4("model", _transform);
     }
 
     void Actor::process_keyboard(Movements movement, float deltaTime) {}
@@ -49,7 +50,7 @@ namespace Pong {
     // -------
     void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
     {
-        material->set_param("model", _transform);
+        material->get_shader()->setMat4("model", _transform);
     }
 
     // --AKinetic--

@@ -53,9 +53,11 @@ namespace Pong
 
             _frame_calc();
 
-            _render->bind_framebuffer();
+            Pong::Render::bind_framebuffer(_render->get_framebuffer());
+//            Pong::Render::bind_framebuffer(0);
             _frame_draw();
-
+//            glfwSwapBuffers(_render->getWindow());
+//            glfwPollEvents();
             _render->draw_framebuffer();
         }
         LOG_DEBUG("Exit lvl");
@@ -122,30 +124,40 @@ namespace Pong
 
     void AbstractLevel::_frame_draw()
     {
-        LOG_DEBUG("--Draw base--")
-        for (auto layer: _scene->first_pass_renderlayers){
+        LOG_DEBUG("---Draw Base---")
+        for (auto layer: _render->first_pass_renderlayers){
             for (auto material: _scene->renderlayer_material_map[layer]){
                 material->use();
                 material->update_shader(_render, _scene);
-                for (auto shape: _scene->material_shape_map[material]){
+                for (auto shape: _scene->material_shape_map[material])
+                {
                     shape->bind_VAO();
-                    for (auto actor: _scene->shape_actor_map[shape]){
+                    for (auto actor: _scene->shape_actor_map[shape])
+                    {
                         // Draw by actor
-                        if (actor->get_visibility()) {
-                            LOG_DEBUG("Draw " << actor->get_name())
+                        if (actor->get_visibility())
+                        {
+                            LOG_DEBUG("Draw: actor " << actor->get_name()
+                                                     << ", shape " << shape->get_name()
+                                                     << ", material " << material->get_name())
+                            LOG_DEBUG("Ptr: actor " << actor
+                                                    << ", shape " << shape
+                                                    << ", material " << material)
                             actor->draw(_render, _scene, material);
                             shape->draw(_render, _scene, material);
                         }
                     }
                 }
-                material->end_use();
             }
         }
 
-        LOG_DEBUG("---Draw blending---");
-        LOG_DEBUG("Cam pos: " << _scene->get_camera()->Position[0] << ", " << _scene->get_camera()->Position[1] << ", " << _scene->get_camera()->Position[2]);
+        LOG_DEBUG("---Draw blending---")
+        LOG_DEBUG("Cam pos: " <<
+        _scene->get_camera()->Position[0] << ", " <<
+        _scene->get_camera()->Position[1] << ", " <<
+        _scene->get_camera()->Position[2])
+
         // Draw first far objects
-//        glDisable(GL_DEPTH_TEST);
         _scene->sort_blending_actors();
         for (auto it = _scene->blending_actors.rbegin();
                 it != _scene->blending_actors.rend(); it++)
@@ -161,11 +173,10 @@ namespace Pong
             shp->bind_VAO();
             act->draw(_render, _scene, mat);
             shp->draw(_render, _scene, mat);
-            mat->end_use();
         }
-//        glEnable(GL_DEPTH_TEST);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
-
     }
 
     void AbstractLevel::_level_setup(){}
@@ -180,8 +191,7 @@ namespace Pong
         }
     }
 
-    void AbstractLevel::_components_start_level()
-    {
+    void AbstractLevel::_components_start_level(){
         for (auto &act: _scene->actor_map)
         {
             for (auto &cmp : act.second->get_components())
@@ -255,7 +265,6 @@ namespace Pong
         DirectionalLight *directional_light = _scene->get_directional_light();
         directional_light->ambient = glm::vec3{0.1f, 0.1f, 0.05f};
         directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
-        directional_light->direction = glm::normalize(
-                glm::vec3{0.3f, -1.f, -0.5f});
+        directional_light->direction = glm::normalize(glm::vec3{0.3f, -1.f, -0.5f});
     }
 }
