@@ -118,6 +118,8 @@ namespace Pong {
     }
 
     void Material::update_shader(const Render *render, const Scene *scene) {
+        update_params();
+
         _shader->setMat4("view", scene->get_camera()->get_view_matrix());
         _shader->setMat4("projection",
                          glm::perspective(glm::radians(scene->get_camera()->Zoom),
@@ -142,6 +144,61 @@ namespace Pong {
     Shader* Material::get_shader() const
     {
         return _shader;
+    }
+
+    void Material::update_params()
+    {
+        // set shader parametters
+        for (auto &p : _float_params) // floats
+        {
+            _shader->setFloat(p.first, p.second);
+        }
+        for (auto &p : _int_params) // ints
+        {
+            _shader->setInt(p.first, p.second);
+        }
+        for (auto &p : _vec3_params) // vec3
+        {
+            _shader->setVec3(p.first, p.second);
+        }
+        for (auto &p : _mat4_params) //mat4
+        {
+            _shader->setMat4(p.first, p.second);
+        }
+    }
+
+    // set parameters
+    void Material::set_param(const std::string& param, float value)
+    {
+        auto it = _float_params.find(param);
+        if (it != _float_params.end())
+            it->second = value;
+        else
+            _float_params.insert(std::pair<std::string, float>(param, value));
+    }
+    void Material::set_param(const std::string& param, glm::vec3 value)
+    {
+        auto it = _vec3_params.find(param);
+        if (it != _vec3_params.end())
+            it->second = value;
+        else
+            _vec3_params.insert(std::pair<std::string, glm::vec3>(param, value));
+    }
+    void Material::set_param(const std::string& param, int value)
+    {
+        auto it = _int_params.find(param);
+        if (it != _int_params.end())
+            it->second = value;
+        else
+            _int_params.insert(std::pair<std::string, int>(param, value));
+    }
+    void Material::set_param(const std::string& param, glm::mat4 value)
+    {
+        auto it = _mat4_params.find(param);
+        if (it != _mat4_params.end())
+            it->second = value;
+        else
+            _mat4_params.insert(std::pair<std::string, glm::mat4>(param, value));
     }
 
     unsigned int SkyBox::load_skybox_textures(const std::vector<std::string> &faces) {

@@ -12,10 +12,6 @@
 
 void BlendingLevel::_level_setup() {
 
-    // config openGL global blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     AbstractLevel::_level_setup();
     // get camera_ptr
     Pong::ACamera *a_camera = _scene->get_camera();

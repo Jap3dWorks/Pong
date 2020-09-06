@@ -15,3 +15,6 @@ int main()
 
     return 0;
 }
+
+// https://www.khronos.org/opengl/wiki/Built-in_Variable_(GLSL)
+// https://www.youtube.com/watch?v=pXoDkHYmTxc&ab_channel=javidx9

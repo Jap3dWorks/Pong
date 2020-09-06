@@ -53,14 +53,32 @@ Pong::Render::Render()
     LOG_DEBUG("Framebuffers created")
 
     // return default framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // configure global opengl state
-    glEnable(GL_DEPTH_TEST);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // glEnable operations
+    update_enables();
+
     // framebuffer shaders
     framebuffer_shader = new Shader(
             "./Shaders/framebuffer_screen_V.glsl",
             "./Shaders/framebuffer_screen_F.glsl");
 
+}
+
+void Pong::Render::update_enables() const {
+    // configure global opengl state
+    if (gl_enables_config & 1){
+        glEnable(GL_DEPTH_TEST);
+    }
+    if(gl_enables_config & 2)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+    if (gl_enables_config & 4)
+    {
+        glEnable(GL_CULL_FACE);
+    }
 }
 
 void  Pong::Render::_framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -125,6 +143,7 @@ void Pong::Render::_config_frame_buffers() {
     glBindTexture(GL_TEXTURE_2D, _texture_color_buffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT,
             0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
@@ -134,11 +153,14 @@ void Pong::Render::_config_frame_buffers() {
     unsigned int rbo;
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
-    // attach renderbuffer with framebuffer
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
+                          SCR_WIDTH, SCR_HEIGHT);
 
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    // attach renderbuffer with framebuffer
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                              GL_RENDERBUFFER, rbo);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 }
 

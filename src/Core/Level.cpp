@@ -158,6 +158,9 @@ namespace Pong
         _scene->get_camera()->Position[2])
 
         // Draw first far objects
+        if (_render->gl_enables_config & 4){
+            glDisable(GL_CULL_FACE);}
+
         _scene->sort_blending_actors();
         for (auto it = _scene->blending_actors.rbegin();
                 it != _scene->blending_actors.rend(); it++)
@@ -177,6 +180,9 @@ namespace Pong
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
+
+        if (_render->gl_enables_config & 4){
+            glEnable(GL_CULL_FACE);}
     }
 
     void AbstractLevel::_level_setup(){}
