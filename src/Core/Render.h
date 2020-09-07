@@ -14,6 +14,8 @@
 // TODO: postprocessings
 
 namespace Pong {
+    class ACamera;
+
     enum class RenderLayer: unsigned int {
         NO_LAYER=0,
         BASE=1,
@@ -35,6 +37,13 @@ namespace Pong {
         unsigned int _framebuffer{0};
         unsigned int _texture_color_buffer{0};
         void _config_frame_buffers();
+
+        // uniform buffer, stores projection matrix and view matrix
+        // TODO: here, configure camera uniform buffers
+        /**uniform buffer view matrices is bind in binding point 0*/
+        unsigned int _ubo_matrices;
+        void _config_ubo_matrices();
+        void _update_ubo_matrices(ACamera* camera);
 
         // Use for calculate delta time
         float  _last_frame_time = 0;

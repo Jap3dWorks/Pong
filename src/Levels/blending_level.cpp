@@ -13,6 +13,11 @@
 void BlendingLevel::_level_setup() {
 
     AbstractLevel::_level_setup();
+
+    // Enable GL_PROGRAM_POINT_SIZE
+    _render->gl_enables_config |= 8;
+    _render->update_enables();
+
     // get camera_ptr
     Pong::ACamera *a_camera = _scene->get_camera();
     a_camera->Position = glm::vec3(0, 0, 9);
@@ -50,6 +55,29 @@ void BlendingLevel::_level_setup() {
 
     // blending
     _create_blending_actors();
+
+    // vertex size
+    auto vert_shd = _scene->create_shader("vert_shd",
+                                          "./Shaders/point_v.glsl",
+                                          "./Shaders/point_f.glsl");
+    auto vert_mat = _scene->create_material<Pong::Material>("vert_mat",
+                                                            vert_shd,
+                                                            {});
+    auto vert_shp = _scene->create_shape<Pong::IcosphereShape>("vert_shp", 2.0);
+    vert_shp->draw_primitive = GL_POINTS;
+    LOG_DEBUG("Change vert_shp to GL_POINTS primitive " << GL_POINTS);
+    auto vert2_shp = _scene->create_shape<Pong::IcosphereShape>("vert2_shp", 2.0);
+    vert2_shp->draw_primitive = GL_LINE_STRIP;
+    LOG_DEBUG("Change vert2_shp to GL_LINE_STRIP primitive " << GL_LINE_STRIP);
+
+    LOG_DEBUG("GL_TRIANGLES id " << GL_TRIANGLES);
+
+    auto vert_act = _scene->create_actor<Pong::Actor>("vert_act");
+    _scene->assign_material(vert_mat, vert_shp);
+    _scene->assign_material(vert_mat, vert2_shp);
+    _scene->assign_shape(vert_shp, vert_act);
+    _scene->assign_shape(vert2_shp, vert_act);
+    vert_act->set_transform(glm::translate(vert_act->get_transform(), glm::vec3(4, 0, 0)));
 
     // skybox
     auto skybox_shd = _scene->create_shader("skybox_shd",

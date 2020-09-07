@@ -113,10 +113,10 @@ namespace Pong {
     void Shape::draw(const Render *render, const Scene *scene, Pong::Material *material) const
     {
         if(!indices.empty()){
-            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(draw_primitive, indices.size(), GL_UNSIGNED_INT, nullptr);
         }
         else {
-            glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
+            glDrawArrays(draw_primitive, 0, get_vertex_count());
         }
     }
 

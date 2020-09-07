@@ -48,6 +48,8 @@ namespace Pong {
     public:
         unsigned int order{10};
 
+        unsigned int draw_primitive = GL_TRIANGLES;
+
         explicit Shape(std::string name);
         virtual ~Shape() = default;
 

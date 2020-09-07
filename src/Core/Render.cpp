@@ -1,6 +1,8 @@
 #include "Render.h"
 #include "../logger.h"
 
+#include "Actor.h"
+
 #include <iostream>
 
 
@@ -68,16 +70,24 @@ Pong::Render::Render()
 void Pong::Render::update_enables() const {
     // configure global opengl state
     if (gl_enables_config & 1){
+        LOG_DEBUG("Active GL_DEPTH_TEST.")
         glEnable(GL_DEPTH_TEST);
     }
     if(gl_enables_config & 2)
     {
+        LOG_DEBUG("Active GL_BLEND, GL_ONE_MINUS_SRC_ALPHA.")
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
     if (gl_enables_config & 4)
     {
+        LOG_DEBUG("Active GL_CULL_FACE.")
         glEnable(GL_CULL_FACE);
+    }
+    if (gl_enables_config & 8)
+    {
+        LOG_DEBUG("Active GL_PROGRAM_POINT_SIZE.")
+        glEnable(GL_PROGRAM_POINT_SIZE);
     }
 }
 
@@ -171,8 +181,8 @@ void Pong::Render::bind_framebuffer(unsigned int in_framebuffer) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Pong::Render::draw_framebuffer() {
-
+void Pong::Render::draw_framebuffer()
+{
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);
     glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -185,6 +195,34 @@ void Pong::Render::draw_framebuffer() {
 
     glfwSwapBuffers(_window);
     glfwPollEvents();
+}
+
+void Pong::Render::_config_ubo_matrices()
+{
+    glGenBuffers(1, &_ubo_matrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_matrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    // bind ubo matrices to index 0
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_matrices, 0, 2 * sizeof(glm::mat4));
+}
+
+void Pong::Render::_update_ubo_matrices(Pong::ACamera* camera) {
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_matrices);
+    // set projection
+    glBufferSubData(GL_UNIFORM_BUFFER,
+                    0, sizeof(glm::mat4),
+                    glm::value_ptr(glm::perspective(glm::radians(camera->Zoom),
+                                                    (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,
+                                                    Pong::Render::Z_NEAR,
+                                                    Pong::Render::Z_FAR)));
+
+    // set view
+    glBufferSubData(GL_UNIFORM_BUFFER,
+                    sizeof(glm::mat4), sizeof(glm::mat4),
+                    glm::value_ptr(camera->get_view_matrix()));
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 Pong::RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl){
