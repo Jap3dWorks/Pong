@@ -125,7 +125,6 @@ namespace Pong
     void AbstractLevel::_frame_draw()
     {
         _render->update_ubo_view_matrices(_scene->get_camera());
-        LOG_DEBUG("---Draw Base---")
         for (auto layer: _render->first_pass_renderlayers){
             for (auto material: _scene->renderlayer_material_map[layer]){
                 material->use();
@@ -138,12 +137,6 @@ namespace Pong
                         // Draw by actor
                         if (actor->get_visibility())
                         {
-                            LOG_DEBUG("Draw: actor " << actor->get_name()
-                                                     << ", shape " << shape->get_name()
-                                                     << ", material " << material->get_name())
-                            LOG_DEBUG("Ptr: actor " << actor
-                                                    << ", shape " << shape
-                                                    << ", material " << material)
                             actor->draw(_render, _scene, material);
                             shape->draw(_render, _scene, material);
                         }
@@ -152,7 +145,6 @@ namespace Pong
             }
         }
 
-        LOG_DEBUG("---Draw blending---")
         // if backface cull is enabled, disable it to draw transparent objects.
         glDisable(GL_CULL_FACE);
         // Draw first far objects
@@ -160,7 +152,6 @@ namespace Pong
         for (auto it = _scene->blending_actors.rbegin();
                 it != _scene->blending_actors.rend(); it++)
         {
-            LOG_DEBUG("Draw " << (*it)->get_name())
             auto act = *it;
             if (!act->get_visibility()) continue;
 

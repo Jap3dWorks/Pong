@@ -10,7 +10,6 @@
 #include <iostream>
 
 // TODO: PBR materials
-// TODO: buffered render
 // TODO: postprocessings
 
 namespace Pong {
