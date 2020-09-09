@@ -124,6 +124,7 @@ namespace Pong
 
     void AbstractLevel::_frame_draw()
     {
+        _render->update_ubo_view_matrices(_scene->get_camera());
         LOG_DEBUG("---Draw Base---")
         for (auto layer: _render->first_pass_renderlayers){
             for (auto material: _scene->renderlayer_material_map[layer]){
@@ -152,15 +153,9 @@ namespace Pong
         }
 
         LOG_DEBUG("---Draw blending---")
-        LOG_DEBUG("Cam pos: " <<
-        _scene->get_camera()->Position[0] << ", " <<
-        _scene->get_camera()->Position[1] << ", " <<
-        _scene->get_camera()->Position[2])
-
+        // if backface cull is enabled, disable it to draw transparent objects.
+        glDisable(GL_CULL_FACE);
         // Draw first far objects
-        if (_render->gl_enables_config & 4){
-            glDisable(GL_CULL_FACE);}
-
         _scene->sort_blending_actors();
         for (auto it = _scene->blending_actors.rbegin();
                 it != _scene->blending_actors.rend(); it++)
@@ -177,6 +172,7 @@ namespace Pong
             act->draw(_render, _scene, mat);
             shp->draw(_render, _scene, mat);
         }
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);

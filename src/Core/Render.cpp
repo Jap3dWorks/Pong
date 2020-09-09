@@ -65,6 +65,8 @@ Pong::Render::Render()
             "./Shaders/framebuffer_screen_V.glsl",
             "./Shaders/framebuffer_screen_F.glsl");
 
+    _create_ubo_view_matrices();
+
 }
 
 void Pong::Render::update_enables() const {
@@ -197,7 +199,7 @@ void Pong::Render::draw_framebuffer()
     glfwPollEvents();
 }
 
-void Pong::Render::_config_ubo_matrices()
+void Pong::Render::_create_ubo_view_matrices()
 {
     glGenBuffers(1, &_ubo_matrices);
     glBindBuffer(GL_UNIFORM_BUFFER, _ubo_matrices);
@@ -207,15 +209,16 @@ void Pong::Render::_config_ubo_matrices()
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_matrices, 0, 2 * sizeof(glm::mat4));
 }
 
-void Pong::Render::_update_ubo_matrices(Pong::ACamera* camera) {
+void Pong::Render::update_ubo_view_matrices(Pong::ACamera *camera) const {
     glBindBuffer(GL_UNIFORM_BUFFER, _ubo_matrices);
     // set projection
     glBufferSubData(GL_UNIFORM_BUFFER,
                     0, sizeof(glm::mat4),
-                    glm::value_ptr(glm::perspective(glm::radians(camera->Zoom),
-                                                    (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,
-                                                    Pong::Render::Z_NEAR,
-                                                    Pong::Render::Z_FAR)));
+                    glm::value_ptr(
+                            glm::perspective(glm::radians(camera->Zoom),
+                                             (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,
+                                             Pong::Render::Z_NEAR,
+                                             Pong::Render::Z_FAR)));
 
     // set view
     glBufferSubData(GL_UNIFORM_BUFFER,

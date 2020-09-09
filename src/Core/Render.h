@@ -42,8 +42,7 @@ namespace Pong {
         // TODO: here, configure camera uniform buffers
         /**uniform buffer view matrices is bind in binding point 0*/
         unsigned int _ubo_matrices;
-        void _config_ubo_matrices();
-        void _update_ubo_matrices(ACamera* camera);
+        void _create_ubo_view_matrices();
 
         // Use for calculate delta time
         float  _last_frame_time = 0;
@@ -62,6 +61,8 @@ namespace Pong {
         static void bind_framebuffer(unsigned int in_framebuffer=0) ;
         /**Draws framebuffer in default buffer*/
         void draw_framebuffer();
+
+        void update_ubo_view_matrices(ACamera* camera) const;
 
         static const unsigned int SCR_WIDTH = 1280;
         static const unsigned int SCR_HEIGHT = 720;
