@@ -201,16 +201,32 @@ void Pong::Render::draw_framebuffer()
 
 void Pong::Render::_create_ubo_view_matrices()
 {
-    glGenBuffers(1, &_ubo_matrices);
-    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_matrices);
+    glGenBuffers(1, &_ubo_view_matrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view_matrices);
     glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     // bind ubo matrices to index 0
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_matrices, 0, 2 * sizeof(glm::mat4));
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_view_matrices, 0, 2 * sizeof(glm::mat4));
+}
+
+void Pong::Render::_create_ubo_lights() {
+    // TODO: here
+    glGenBuffers(1, &_ubo_lights);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
+
+    // https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
+    /*
+     * vec3 directional.direction  -> vec4
+     * vec3 directionsl.color
+     * vec3 directional.ambient
+     * vec3 pointLight[5].position
+     * vec3 pointLight[5].color
+     * */
+//    glBufferData(GL_UNIFORM_BUFFER, )
 }
 
 void Pong::Render::update_ubo_view_matrices(Pong::ACamera *camera) const {
-    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_matrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view_matrices);
     // set projection
     glBufferSubData(GL_UNIFORM_BUFFER,
                     0, sizeof(glm::mat4),

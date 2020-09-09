@@ -11,7 +11,7 @@
 
 // TODO: PBR materials
 // TODO: postprocessings
-
+// TODO: UBO for scene lights
 namespace Pong {
     class ACamera;
 
@@ -40,8 +40,11 @@ namespace Pong {
         // uniform buffer, stores projection matrix and view matrix
         // TODO: here, configure camera uniform buffers
         /**uniform buffer view matrices is bind in binding point 0*/
-        unsigned int _ubo_matrices;
+        unsigned int _ubo_view_matrices;
         void _create_ubo_view_matrices();
+
+        unsigned int _ubo_lights;
+        void _create_ubo_lights();
 
         // Use for calculate delta time
         float  _last_frame_time = 0;
