@@ -119,20 +119,6 @@ namespace Pong {
 
     void Material::update_shader(const Render *render, const Scene *scene) {
         update_params();
-
-        // directional light
-        // TODO: move lights values to ubo matrices
-        _shader->setVec3("directional.Direction", scene->get_directional_light()->direction);
-        _shader->setVec3("directional.Color", scene->get_directional_light()->color);
-        _shader->setVec3("directional.Ambient", scene->get_directional_light()->ambient);
-
-        // points lights
-        for (unsigned int i = 0; i < Scene::POINT_LIGHTS; ++i) {
-            _shader->setVec3("pointLightPositions[" + std::to_string(i) + "]",
-                             scene->get_point_light(i).position);
-            _shader->setVec3("pointLightColors[" + std::to_string(i) + "]",
-                             scene->get_point_light(i).color);
-        }
     }
 
     Shader* Material::get_shader() const
@@ -227,6 +213,8 @@ namespace Pong {
     }
 
     void SKyBoxMaterial::update_shader(const Render *render, const Scene *scene) {
+        update_params();
+        // Do not use ubo view for cube maps, because a cube map only should rotate.
         _shader->setMat4("view", glm::mat4(glm::mat3(scene->get_camera()->get_view_matrix())));
     }
 }

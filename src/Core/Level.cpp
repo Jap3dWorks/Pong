@@ -124,7 +124,8 @@ namespace Pong
 
     void AbstractLevel::_frame_draw()
     {
-        _render->update_ubo_view_matrices(_scene->get_camera());
+        _render->update_ubo_view(_scene->get_camera());
+        _render->update_ubo_lights(_scene);
         for (auto layer: _render->first_pass_renderlayers){
             for (auto material: _scene->renderlayer_material_map[layer]){
                 material->use();
@@ -256,8 +257,8 @@ namespace Pong
 
         // --lighting--
         DirectionalLight *directional_light = _scene->get_directional_light();
-        directional_light->ambient = glm::vec3{0.1f, 0.1f, 0.05f};
-        directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
-        directional_light->direction = glm::normalize(glm::vec3{0.3f, -1.f, -0.5f});
+        directional_light->ambient = glm::vec4{0.1f, 0.1f, 0.05f, 1.f};
+        directional_light->color = glm::vec4{0.8f, 0.8f, 0.3f, 1.f};
+        directional_light->direction = glm::normalize(glm::vec4{0.3f, -1.f, -0.5f, 1.f});
     }
 }

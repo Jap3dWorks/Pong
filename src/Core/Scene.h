@@ -34,7 +34,10 @@ namespace Pong {
     {
     // singleton class
     public:
-        static const int POINT_LIGHTS = 5;
+        static const int POINT_LIGHTS_COUNT = 5;
+
+        // point lights pointers
+        PointLight point_lights_array[POINT_LIGHTS_COUNT];
 
         float cam_lastX = (float)Render::SCR_WIDTH / 2.0;
         float cam_lastY = (float)Render::SCR_HEIGHT / 2.0;
@@ -42,8 +45,7 @@ namespace Pong {
 
     private:
         static Scene* instance;  // singleton static
-        // point lights pointers
-        PointLight* _pointLights = new PointLight[POINT_LIGHTS];
+
         // directional light
         DirectionalLight* _directionalLight = new DirectionalLight;
 
@@ -100,7 +102,7 @@ namespace Pong {
 
         void sort_blending_actors();
 
-        [[nodiscard]] PointLight& get_point_light(int id) const;
+        [[nodiscard]] PointLight& get_point_light(int id);
 
         [[nodiscard]] DirectionalLight* get_directional_light() const;
 

@@ -14,6 +14,7 @@
 // TODO: UBO for scene lights
 namespace Pong {
     class ACamera;
+    class Scene;
 
     enum class RenderLayer: unsigned int {
         NO_LAYER=0,
@@ -40,7 +41,7 @@ namespace Pong {
         // uniform buffer, stores projection matrix and view matrix
         // TODO: here, configure camera uniform buffers
         /**uniform buffer view matrices is bind in binding point 0*/
-        unsigned int _ubo_view_matrices;
+        unsigned int _ubo_view;
         void _create_ubo_view_matrices();
 
         unsigned int _ubo_lights;
@@ -64,7 +65,8 @@ namespace Pong {
         /**Draws framebuffer in default buffer*/
         void draw_framebuffer();
 
-        void update_ubo_view_matrices(ACamera* camera) const;
+        void update_ubo_view(ACamera* camera) const;
+        void update_ubo_lights(Scene* scene) const;
 
         static const unsigned int SCR_WIDTH = 1280;
         static const unsigned int SCR_HEIGHT = 720;

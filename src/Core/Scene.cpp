@@ -20,7 +20,6 @@ namespace Pong{
     {
         LOG_DEBUG("Call scene destructor");
         delete _directionalLight;
-        delete[] _pointLights;
 
         delete _camera;
 
@@ -70,12 +69,12 @@ namespace Pong{
         return instance;
     }
 
-    PointLight& Scene::get_point_light(int id) const
+    PointLight& Scene::get_point_light(int id)
     {
-        if (id < POINT_LIGHTS)
-            return _pointLights[id];
+        if (id < POINT_LIGHTS_COUNT)
+            return point_lights_array[id];
         else
-            return _pointLights[0];
+            return point_lights_array[0];
     }
 
     DirectionalLight* Scene::get_directional_light() const

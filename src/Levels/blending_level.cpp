@@ -106,12 +106,29 @@ void BlendingLevel::_level_setup() {
 
     skybox_act->set_visibility(true);
 
+    // a blinn material
+    auto blinn_shd = _scene->create_shader("blinn_shd",
+                                           "./Shaders/blinn_V.glsl",
+                                           "./Shaders/blinn_F.glsl");
+
+    auto blinn_mat = _scene->create_material<Pong::Material>("blinn_mat",
+                                                             blinn_shd,
+                                                             {});
+
+    blinn_mat->set_param("surfaceColor", glm::vec3(0.1, 0.2, 0.3));
+    blinn_mat->set_param("glow", glm::vec3(0.2));
+    blinn_mat->set_param("specular", glm::vec3(0.3));
+
+    auto blinn_shp = _scene->create_shape<Pong::IcosphereShape>("blinn_shp");
+    _scene->assign_material(blinn_mat, blinn_shp);
+    _scene->assign_shape(blinn_shp, vert_act);
+
     // --lighting--
     Pong::DirectionalLight *directional_light = _scene->get_directional_light();
-    directional_light->ambient = glm::vec3{0.1f, 0.1f, 0.05f};
-    directional_light->color = glm::vec3{0.8f, 0.8f, 0.3f};
+    directional_light->ambient = glm::vec4{0.1f, 0.1f, 0.05f, 1.f};
+    directional_light->color = glm::vec4{0.8f, 0.8f, 0.3f, 1.f};
     directional_light->direction = glm::normalize(
-            glm::vec3{0.3f, -1.f, -0.5f});
+            glm::vec4{0.3f, -1.f, -0.5f, 1.f});
 }
 
 void BlendingLevel::_create_blending_actors() {

@@ -2,7 +2,7 @@
 #include "../logger.h"
 
 #include "Actor.h"
-
+#include "Scene.h"
 #include <iostream>
 
 
@@ -66,7 +66,7 @@ Pong::Render::Render()
             "./Shaders/framebuffer_screen_F.glsl");
 
     _create_ubo_view_matrices();
-
+    _create_ubo_lights();
 }
 
 void Pong::Render::update_enables() const {
@@ -201,32 +201,15 @@ void Pong::Render::draw_framebuffer()
 
 void Pong::Render::_create_ubo_view_matrices()
 {
-    glGenBuffers(1, &_ubo_view_matrices);
-    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view_matrices);
+    glGenBuffers(1, &_ubo_view);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
     glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     // bind ubo matrices to index 0
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_view_matrices, 0, 2 * sizeof(glm::mat4));
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_view, 0, 2 * sizeof(glm::mat4));
 }
-
-void Pong::Render::_create_ubo_lights() {
-    // TODO: here
-    glGenBuffers(1, &_ubo_lights);
-    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
-
-    // https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
-    /*
-     * vec3 directional.direction  -> vec4
-     * vec3 directionsl.color
-     * vec3 directional.ambient
-     * vec3 pointLight[5].position
-     * vec3 pointLight[5].color
-     * */
-//    glBufferData(GL_UNIFORM_BUFFER, )
-}
-
-void Pong::Render::update_ubo_view_matrices(Pong::ACamera *camera) const {
-    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view_matrices);
+void Pong::Render::update_ubo_view(Pong::ACamera *camera) const {
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
     // set projection
     glBufferSubData(GL_UNIFORM_BUFFER,
                     0, sizeof(glm::mat4),
@@ -242,6 +225,36 @@ void Pong::Render::update_ubo_view_matrices(Pong::ACamera *camera) const {
                     glm::value_ptr(camera->get_view_matrix()));
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void Pong::Render::_create_ubo_lights()
+{
+    glGenBuffers(1, &_ubo_lights);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
+
+    // https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
+
+    unsigned int size_buffer = sizeof(PointLight) + (sizeof(DirectionalLight) * Pong::Scene::POINT_LIGHTS_COUNT);
+    glBufferData(GL_UNIFORM_BUFFER,  size_buffer, nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 1, _ubo_lights, 0, size_buffer);
+}
+
+void Pong::Render::update_ubo_lights(Scene *scene) const
+{
+    // https://community.khronos.org/t/sending-an-array-of-structs-to-shader-via-an-uniform-buffer-object/75092
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
+    // set directional
+    auto dir_ptr = scene->get_directional_light();
+    glBufferSubData(GL_UNIFORM_BUFFER,
+                    0, sizeof(glm::vec4),
+                    static_cast<void*>(dir_ptr));
+
+    // set point
+    glBufferSubData(GL_UNIFORM_BUFFER,
+                    sizeof(DirectionalLight),
+                    sizeof(PointLight) * Scene::POINT_LIGHTS_COUNT,
+                    static_cast<void*>(scene->point_lights_array));
 }
 
 Pong::RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl){
