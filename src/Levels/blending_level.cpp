@@ -116,19 +116,20 @@ void BlendingLevel::_level_setup() {
                                                              {});
 
     blinn_mat->set_param("surfaceColor", glm::vec3(0.1, 0.2, 0.3));
-    blinn_mat->set_param("glow", glm::vec3(0.2));
-    blinn_mat->set_param("specular", glm::vec3(0.3));
+    blinn_mat->set_param("glow", 16.f);
+    blinn_mat->set_param("specular", .8f);
 
     auto blinn_shp = _scene->create_shape<Pong::IcosphereShape>("blinn_shp");
     _scene->assign_material(blinn_mat, blinn_shp);
     _scene->assign_shape(blinn_shp, vert_act);
 
+    // TODO: https://learnopengl.com/Advanced-OpenGL/Geometry-Shader
+
     // --lighting--
     Pong::DirectionalLight *directional_light = _scene->get_directional_light();
-    directional_light->ambient = glm::vec4{0.1f, 0.1f, 0.05f, 1.f};
+    directional_light->direction = glm::normalize(glm::vec4{0.3f, -1.f, -0.5f, 1.f});
     directional_light->color = glm::vec4{0.8f, 0.8f, 0.3f, 1.f};
-    directional_light->direction = glm::normalize(
-            glm::vec4{0.3f, -1.f, -0.5f, 1.f});
+    directional_light->ambient = glm::vec4{0.22f, 0.3f, 0.4f, 1.f};
 }
 
 void BlendingLevel::_create_blending_actors() {

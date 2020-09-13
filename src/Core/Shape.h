@@ -376,7 +376,7 @@ namespace Pong {
     // Sky box shape
     class SkyBoxShape : public Shape {
     private:
-        void _build_sky_box(); // TODO, rev draw requirements.
+        void _build_sky_box();
 
     public:
         void draw(const Render *render, const Scene *scene, Pong::Material *material) const override;
@@ -384,8 +384,4 @@ namespace Pong {
     };
 }
 
-
 #endif // SHAPE_H
-
-
-

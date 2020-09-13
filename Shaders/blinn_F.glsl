@@ -1,18 +1,25 @@
 #version 450 core
 layout (location = 0) out vec4 FragColor;
 
+layout (std140, binding = 0) uniform ViewMatrices
+{
+	mat4 projection;
+	mat4 view;
+	vec3 viewPos;
+};
+
 struct Directional{
-	vec4 Direction;
-	vec4 Color;
-	vec4 Ambient;
+	vec3 direction;
+	vec3 color;
+	vec3 ambient;
 };
 
 struct Point{
-	vec4 Position;
+	vec3 Position;
 	vec4 Color;
 };
 
-layout (std140, binding = 1) uniform Lights{
+layout (std140, binding = 1) uniform LightsSourceBlock{
 	Directional directional;
 	Point lights[5];
 };
@@ -24,7 +31,6 @@ in VS_OUT{
 }fs_in;
 
 uniform vec3 surfaceColor;
-uniform vec3 viewPos;
 
 uniform float glow;
 uniform float specular;
@@ -32,16 +38,16 @@ uniform float specular;
 void main()
 {
 	vec3 color = surfaceColor;
-	vec3 dir_color = vec3(directional.Color);
+	vec3 dir_color = directional.color;
 	vec3 normal = normalize(fs_in.Normal);
 
-	vec3 ambient = 0.1 * color + vec3(directional.Ambient);
+	vec3 ambient = 0.1 * color + directional.ambient;
 
 	vec3 lighting = ambient;
 	vec3 viewDir = normalize(viewPos - fs_in.FragPos);
 
 	// calculate directional
-	vec3 lightDir = normalize(-vec3(directional.Direction));
+	vec3 lightDir = normalize(-directional.direction);
 	float diff = max(dot(lightDir, normal), 0.0);
 	lighting += dir_color * diff * color;
 	// specular
@@ -61,7 +67,6 @@ void main()
 //		lighting += result * 1.0 / (distance * distance);
 //	}
 
-//	vec3 result = lighting;
-//	FragColor = vec4(lighting, 1.0);
-	FragColor = vec4(directional.Color);
+	FragColor = vec4(lighting, 1.0);
+//	FragColor = vec4(directional.color, 1.0);
 }

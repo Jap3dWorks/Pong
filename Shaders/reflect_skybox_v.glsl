@@ -4,6 +4,7 @@ layout (location = 0) in vec3 aPos;
 layout (std140, binding = 0) uniform ViewMatrices
 {
     mat4 projection;
+    vec3 viewPos;
 };
 
 out vec3 TexCoords;

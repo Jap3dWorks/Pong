@@ -842,8 +842,8 @@ namespace Pong {
         add_indices(12, 14, 15);
         add_indices(16, 17, 18);  // face 5
         add_indices(16, 18, 19);
-        add_indices(20, 21, 22);  // bottom face
-        add_indices(20, 22, 23);
+        add_indices(20, 22, 21);  // bottom face
+        add_indices(20, 23, 22);
 
         // gen interleaved vertex array, buffer open gl will use.
         build_interleaved_vertices();
@@ -853,7 +853,7 @@ namespace Pong {
     {
         std::vector<glm::vec3> tmpVert(8);
 
-        // uper vertices
+        // upper vertices
         tmpVert[0] = glm::vec3(_width / 2, _height / 2, _depth / 2);
         tmpVert[1] = glm::vec3(_width / 2, _height / 2, -_depth / 2);
         tmpVert[2] = glm::vec3(-_width / 2, _height / 2, -_depth / 2);

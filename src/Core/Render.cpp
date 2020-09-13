@@ -201,12 +201,14 @@ void Pong::Render::draw_framebuffer()
 
 void Pong::Render::_create_ubo_view_matrices()
 {
+    unsigned int ubo_size = (2 * sizeof(glm::mat4)) + sizeof(glm::vec4);
+
     glGenBuffers(1, &_ubo_view);
     glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
-    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, ubo_size, nullptr, GL_STATIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     // bind ubo matrices to index 0
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_view, 0, 2 * sizeof(glm::mat4));
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_view, 0, ubo_size);
 }
 void Pong::Render::update_ubo_view(Pong::ACamera *camera) const {
     glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
@@ -223,6 +225,11 @@ void Pong::Render::update_ubo_view(Pong::ACamera *camera) const {
     glBufferSubData(GL_UNIFORM_BUFFER,
                     sizeof(glm::mat4), sizeof(glm::mat4),
                     glm::value_ptr(camera->get_view_matrix()));
+
+    // view pos
+    glBufferSubData(GL_UNIFORM_BUFFER,
+                    sizeof(glm::mat4) * 2, sizeof(glm::vec4),
+                    glm::value_ptr(camera->Position));
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
@@ -244,17 +251,21 @@ void Pong::Render::update_ubo_lights(Scene *scene) const
 {
     // https://community.khronos.org/t/sending-an-array-of-structs-to-shader-via-an-uniform-buffer-object/75092
     glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
+
     // set directional
     auto dir_ptr = scene->get_directional_light();
     glBufferSubData(GL_UNIFORM_BUFFER,
-                    0, sizeof(glm::vec4),
-                    static_cast<void*>(dir_ptr));
+                    0,
+                    sizeof(DirectionalLight),
+                    (void*)dir_ptr);
 
     // set point
     glBufferSubData(GL_UNIFORM_BUFFER,
                     sizeof(DirectionalLight),
                     sizeof(PointLight) * Scene::POINT_LIGHTS_COUNT,
-                    static_cast<void*>(scene->point_lights_array));
+                    (void*)scene->point_lights_array);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 Pong::RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl){

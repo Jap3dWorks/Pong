@@ -7,6 +7,7 @@ layout (std140, binding = 0) uniform ViewMatrices
 {
 	mat4 projection;
 	mat4 view;
+	vec3 viewPos;
 };
 
 
@@ -22,7 +23,6 @@ void main()
 {
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
 	vs_out.TexCoords = aTexCoords;
-
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
 	vs_out.Normal = normalize(normalMatrix * aNormal);
 

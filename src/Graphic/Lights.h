@@ -10,17 +10,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
 namespace Pong {
     struct DirectionalLight {
-        glm::vec4 direction = glm::vec4(0.f, -1.f, 0.f, 0.f);
-        glm::vec4 color = glm::vec4(0.f, 0.f, 0.f, 0.f);
-        glm::vec4 ambient = glm::vec4(0.f, 0.f, 0.f, 0.f);
+        glm::vec4 direction = glm::vec4(0.f, -1.f, 0.f, 1.f);
+        glm::vec4 color = glm::vec4(0.f, 0.f, 0.f, 1.f);
+        glm::vec4 ambient = glm::vec4(0.f, 0.f, 0.f, 1.f);
     };
 
     struct PointLight
     {
-        glm::vec4 position = glm::vec4(0.f, 0.f, 0.f, 0.f);
-        glm::vec4 color = glm::vec4(0.f, 0.f, 0.f, 0.f);
+        glm::vec4 position = glm::vec4(0.f, 0.f, 0.f, 1.f);
+        glm::vec4 color = glm::vec4(0.f, 0.f, 0.f, 1.f);
         // float Linear;
         // float Quadratic;
         // float Radius;
