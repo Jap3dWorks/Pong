@@ -123,7 +123,7 @@ void BlendingLevel::_level_setup() {
     _scene->assign_material(blinn_mat, blinn_shp);
     _scene->assign_shape(blinn_shp, vert_act);
 
-    // TODO: https://learnopengl.com/Advanced-OpenGL/Geometry-Shader
+    // TODO: https://learnopengl.com/Advanced-OpenGL/Instancing
 
     // --lighting--
     Pong::DirectionalLight *directional_light = _scene->get_directional_light();
