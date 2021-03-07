@@ -4,16 +4,29 @@
 #include "logger.h"
 #include "Levels/blending_level.h"
 
+#include "sandbox.h"
+
 #include <iostream>
 
 int main()
 {
-    BlendingLevel b_lvl;
-    LOG_INFO("Blnding level run");
+    // sandbox text
+    auto vertex = quad_vertex();
 
-    b_lvl.run();
+    for (auto v: vertex)
+    {
+        std::cout << v.color.x << std::endl;
+    }
 
     return 0;
+
+//    BlendingLevel b_lvl;
+//    LOG_INFO("Blnding level run");
+//
+//    b_lvl.run();
+//
+//
+//    return 0;
 }
 
 // https://www.khronos.org/opengl/wiki/Built-in_Variable_(GLSL)

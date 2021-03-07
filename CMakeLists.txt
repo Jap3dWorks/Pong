@@ -27,7 +27,7 @@ add_executable(${PROJECT_NAME}
         src/Core/Utils.cpp
         src/Graphic/Lights.h
         src/Core/DataComparers.cpp
-        src/Core/DataComparers.h src/Levels/blending_level.cpp src/Levels/blending_level.h)
+        src/Core/DataComparers.h src/Levels/blending_level.cpp src/Levels/blending_level.h src/sandbox.h)
 
 #include_directories(src)
 
