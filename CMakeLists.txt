@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 SET(PROJECT_NAME Pong)
 
-project(${PROJECT_NAME})
+project(${PROJECT_NAME}
+        VERSION 0.0.1
+        LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -42,6 +44,7 @@ set(LIBRARIES D:/libraries)
 message("Compile and linking glad")
 add_library(glad "${LIBRARIES}/glad/include/glad/glad.h"  "${LIBRARIES}/glad/lib/glad.c")
 target_include_directories(glad PUBLIC ${LIBRARIES}/glad/include)
+set_target_properties(glad PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
 
 message("Include glfw")
