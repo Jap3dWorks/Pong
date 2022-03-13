@@ -1,5 +1,5 @@
-#include "Component.h"
-#include "Utils.h"
+#include "../../include/Core/Component.h"
+#include "../../include/Core/Utils.h"
 
 #include <time.h>
 

@@ -19,17 +19,21 @@ add_executable(${PROJECT_NAME}
         src/Core/Collider.cpp
         src/Core/Level.cpp
         src/Graphic/Material.cpp
-        src/Core/Render.h
+#        include/Core/Render.h
         src/Core/Render.cpp
         src/Core/Scene.cpp
         src/Core/Shape.cpp
         src/Core/Component.cpp
         src/Core/Utils.cpp
-        src/Graphic/Lights.h
+#        include/Graphic/Lights.h
         src/Core/DataComparers.cpp
-        src/Core/DataComparers.h src/Levels/blending_level.cpp src/Levels/blending_level.h src/sandbox.h)
+#        include/Core/DataComparers.h
+        src/Levels/blending_level.cpp
+#        include/Levels/blending_level.h
+#        include/sandbox.h
+        )
 
-#include_directories(src)
+include_directories("./include")
 
 # --External Libraries--
 set(LIBRARIES D:/libraries)

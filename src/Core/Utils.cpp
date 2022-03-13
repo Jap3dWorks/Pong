@@ -1,5 +1,5 @@
-#include "Utils.h"
-#include "../logger.h"
+#include "../../include/Core/Utils.h"
+#include "../../include/logger.h"
 
 //namespace Pong
 //{
@@ -10,10 +10,10 @@
 //    class IcosphereShape;
 //}
 
-#include "Actor.h"
-#include "Scene.h"
-#include "../Graphic/Shader.h"
-#include "../Graphic/Material.h"
+#include "../../include/Core/Actor.h"
+#include "../../include/Core/Scene.h"
+#include "../../include/Graphic/Shader.h"
+#include "../../include/Graphic/Material.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

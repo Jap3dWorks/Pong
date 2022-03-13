@@ -1,5 +1,5 @@
-#include "Collider.h"
-#include "../logger.h"
+#include "../../include/Core/Collider.h"
+#include "../../include/logger.h"
 
 #include <limits>
 #include <algorithm>

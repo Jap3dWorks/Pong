@@ -4,11 +4,11 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include "../Graphic/Material.h"
-#include "../Graphic/Lights.h"
+#include "../../include/Graphic/Material.h"
+#include "../../include/Graphic/Lights.h"
 
 
-#include "blending_level.h"
+#include "../../include/Levels/blending_level.h"
 
 void BlendingLevel::_level_setup() {
 

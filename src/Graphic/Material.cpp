@@ -1,6 +1,6 @@
-#include "Material.h"
-#include "../logger.h"
-#include "../Core/Scene.h"
+#include "../../include/Graphic/Material.h"
+#include "../../include/logger.h"
+#include "../../include/Core/Scene.h"
 
 #include <stb_image.h>
 #include <glm/glm.hpp>

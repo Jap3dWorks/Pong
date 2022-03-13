@@ -1,8 +1,8 @@
-#include "Render.h"
-#include "../logger.h"
+#include "../../include/Core/Render.h"
+#include "../../include/logger.h"
 
-#include "Actor.h"
-#include "Scene.h"
+#include "../../include/Core/Actor.h"
+#include "../../include/Core/Scene.h"
 #include <iostream>
 
 

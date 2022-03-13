@@ -1,5 +1,5 @@
-#include "Level.h"
-#include "../logger.h"
+#include "../../include/Core/Level.h"
+#include "../../include/logger.h"
 
 #include <vector>
 

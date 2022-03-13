@@ -1,7 +1,7 @@
-#include "Scene.h"
+#include "../../include/Core/Scene.h"
 
 #include <utility>
-#include "../logger.h"
+#include "../../include/logger.h"
 
 
 namespace Pong{
