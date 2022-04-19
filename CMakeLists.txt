@@ -3,9 +3,9 @@ SET(PROJECT_NAME Pong)
 
 project(${PROJECT_NAME}
         VERSION 0.0.1
-        LANGUAGES CXX)
+        )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # log levels
 add_compile_definitions(
@@ -15,27 +15,23 @@ add_compile_definitions(
         __LOG_ERROR__
 )
 
+include_directories("./include")
+
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/Core/Actor.cpp
         src/Core/Collider.cpp
         src/Core/Level.cpp
         src/Graphic/Material.cpp
-#        include/Core/Render.h
         src/Core/Render.cpp
         src/Core/Scene.cpp
         src/Core/Shape.cpp
         src/Core/Component.cpp
         src/Core/Utils.cpp
-#        include/Graphic/Lights.h
         src/Core/DataComparers.cpp
-#        include/Core/DataComparers.h
         src/Levels/blending_level.cpp
-#        include/Levels/blending_level.h
-#        include/sandbox.h
         )
 
-include_directories("./include")
 
 # --External Libraries--
 set(LIBRARIES D:/libraries)

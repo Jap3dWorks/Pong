@@ -49,104 +49,104 @@
 
 
 
-// { Driver Code Starts
-//#include <bits/stdc++.h>
-using namespace std;
-#include <stack>
-
-
-
-// } Driver Code Ends
-/*
-The structure of the class is as follows
-class _stack{
-stack<int> s;
-int minEle;
-public :
-    int getMin();
-    int pop();
-    void push(int);
-};
-*/
-
-class Solution{
-    int minEle;
-    stack<int> s;
-    stack<int> minims;
-
-public:
-
-    /*returns min element from stack*/
-    int getMin()
-    {
-        //Write your code here
-        return minEle;
-    }
-
-    /*returns poped element from stack*/
-    int pop(){
-        int val = s.top();
-
-        if (minims.size() && val == minEle)
-        {
-            minims.pop();
-            minEle = minims.top();
-        }
-        //Write your code here
-
-        s.pop();
-
-        return val;
-    }
-
-    /*push element x into the stack*/
-    void push(int x){
-        if ((! s.size()) || x > minEle)
-
-        {
-            minEle = x;
-            minims.push(x);
-        }
-        s.push(x);
-
-    }
-};
-
-// { Driver Code Starts.
-
-int main()
-{
-    long long t;
-
-    cin>>t;
-    while(t--)
-    {
-        int q;
-        cin>>q;
-        Solution ob;
-        while(q--){
-            int qt;
-            cin>>qt;
-            if(qt==1)
-            {
-                //push
-                int att;
-                cin>>att;
-                ob.push(att);
-            }
-            else if(qt==2)
-            {
-                //pop
-                cout<<ob.pop()<<" ";
-            }
-            else if(qt==3)
-            {
-                //getMin
-                cout<<ob.getMin()<<" ";
-            }
-        }
-        cout<<endl;
-    }
-    return 0;
-}
-// } Driver Code Ends
+//// { Driver Code Starts
+////#include <bits/stdc++.h>
+//using namespace std;
+//#include <stack>
+//
+//
+//
+//// } Driver Code Ends
+///*
+//The structure of the class is as follows
+//class _stack{
+//stack<int> s;
+//int minEle;
+//public :
+//    int getMin();
+//    int pop();
+//    void push(int);
+//};
+//*/
+//
+//class Solution{
+//    int minEle;
+//    stack<int> s;
+//    stack<int> minims;
+//
+//public:
+//
+//    /*returns min element from stack*/
+//    int getMin()
+//    {
+//        //Write your code here
+//        return minEle;
+//    }
+//
+//    /*returns poped element from stack*/
+//    int pop(){
+//        int val = s.top();
+//
+//        if (minims.size() && val == minEle)
+//        {
+//            minims.pop();
+//            minEle = minims.top();
+//        }
+//        //Write your code here
+//
+//        s.pop();
+//
+//        return val;
+//    }
+//
+//    /*push element x into the stack*/
+//    void push(int x){
+//        if ((! s.size()) || x > minEle)
+//
+//        {
+//            minEle = x;
+//            minims.push(x);
+//        }
+//        s.push(x);
+//
+//    }
+//};
+//
+//// { Driver Code Starts.
+//
+//int main()
+//{
+//    long long t;
+//
+//    cin>>t;
+//    while(t--)
+//    {
+//        int q;
+//        cin>>q;
+//        Solution ob;
+//        while(q--){
+//            int qt;
+//            cin>>qt;
+//            if(qt==1)
+//            {
+//                //push
+//                int att;
+//                cin>>att;
+//                ob.push(att);
+//            }
+//            else if(qt==2)
+//            {
+//                //pop
+//                cout<<ob.pop()<<" ";
+//            }
+//            else if(qt==3)
+//            {
+//                //getMin
+//                cout<<ob.getMin()<<" ";
+//            }
+//        }
+//        cout<<endl;
+//    }
+//    return 0;
+//}
+//// } Driver Code Ends

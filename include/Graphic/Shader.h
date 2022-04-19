@@ -61,6 +61,7 @@ unsigned int CompileShader(unsigned int type, const std::string& source)
     glShaderSource(id, 1, &src, nullptr);
     glCompileShader(id);
 
+    return 0;
 
 }
 
