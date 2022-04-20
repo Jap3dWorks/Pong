@@ -1,12 +1,6 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-//namespace Pong
-//{
-//    class Actor;
-//    class Collider;
-//}
-
 #include "Actor.h"
 #include "Collider.h"
 #include "../logger.h"

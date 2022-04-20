@@ -1,11 +1,6 @@
 #include "../../include/Core/Shape.h"
-#include "../../include/Graphic/Material.h"
-#include "../../include/Core/Scene.h"
 #include "../../include/logger.h"
-
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 namespace Pong {
 
@@ -27,7 +22,7 @@ namespace Pong {
         interleaved_vertices.clear();
 
         std::size_t i, j;
-        std:size_t count = vertices.size();
+        std::size_t count = vertices.size();
         for (i = 0, j = 0; i < count; i += 3, j += 2)
         {
             interleaved_vertices.push_back(vertices[i]);

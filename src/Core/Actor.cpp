@@ -1,10 +1,8 @@
-#include "../../include/Core/Actor.h"
-#include "../../include/logger.h"
-#include "../../include/Core/Component.h"
+#include "Core/Actor.h"
+#include "logger.h"
 
-#include <algorithm>
 #include <utility>
-#include "../../include/Graphic/Material.h"
+#include "Graphic/Material.h"
 
 namespace Pong {
     Actor::~Actor() {

@@ -1,6 +1,4 @@
-#include "../../include/Core/Component.h"
-#include "../../include/Core/Utils.h"
-
+#include "Core/Component.h"
 #include <time.h>
 
 namespace Pong {

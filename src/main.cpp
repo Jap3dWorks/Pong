@@ -1,11 +1,5 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include "../include/logger.h"
-#include "../include/Levels/blending_level.h"
-
-#include "../include/sandbox.h"
-
+#include "logger.h"
+#include "sandbox.h"
 #include <iostream>
 
 int main()

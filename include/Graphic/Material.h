@@ -1,20 +1,19 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-namespace Pong
-{
-    class Scene;
-    class Render;
-}
-
 #include "Shader.h"
-#include "../Core/Render.h"
+#include "Core/Render.h"
 
 #include <iostream>
 #include <utility>
 #include <vector>
 #include <map>
 
+namespace Pong
+{
+    class Scene;
+    class Render;
+}
 namespace Pong {
 
     class Texture
@@ -27,7 +26,7 @@ namespace Pong {
         unsigned int _gl_bind_type = GL_TEXTURE_2D;
 
     public:
-        static unsigned int load_texture(char const *path, const bool &gammaCorrection);
+        static unsigned int load_texture(const char *path, const bool &gammaCorrection);
 
         explicit Texture(std::string  name, std::string texture_type):
         _name(std::move(name)), _texture_type(std::move(texture_type))
@@ -37,8 +36,8 @@ namespace Pong {
 
         virtual ~Texture();
 
-        [[nodiscard]] unsigned int get_id() const { return _texture_id; }
-        [[nodiscard]] unsigned int get_gl_bind_type() const {return _gl_bind_type;}
+        _NODISCARD unsigned int get_id() const { return _texture_id; }
+        _NODISCARD unsigned int get_gl_bind_type() const {return _gl_bind_type;}
         std::string get_path() { return _path; }
         std::string get_texture_type() { return _texture_type; }
         std::string get_name() { return _name; }
@@ -95,7 +94,7 @@ namespace Pong {
 
         virtual ~Material();
 
-        [[nodiscard]]Shader* get_shader() const;
+        _NODISCARD Shader* get_shader() const;
 
         // stared Parameters that not vary each frame,
         // it can be a roughness value.

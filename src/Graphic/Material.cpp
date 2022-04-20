@@ -1,8 +1,10 @@
-#include "../../include/Graphic/Material.h"
-#include "../../include/logger.h"
-#include "../../include/Core/Scene.h"
+#include "Graphic/Material.h"
+#include "logger.h"
+#include "Core/Scene.h"
 
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 

@@ -5,12 +5,12 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "Actor.h"
-#include "../Graphic/Material.h"
-#include "Shape.h"
-#include "Collider.h"
-#include "../Graphic/Lights.h"
-#include "Render.h"
+#include "Core/Actor.h"
+#include "Graphic/Material.h"
+#include "Core/Shape.h"
+#include "Core/Collider.h"
+#include "Graphic/Lights.h"
+#include "Core/Render.h"
 
 #include "DataComparers.h"
 

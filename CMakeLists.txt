@@ -27,7 +27,6 @@ add_executable(${PROJECT_NAME}
         src/Core/Scene.cpp
         src/Core/Shape.cpp
         src/Core/Component.cpp
-        src/Core/Utils.cpp
         src/Core/DataComparers.cpp
         src/Levels/blending_level.cpp
         )

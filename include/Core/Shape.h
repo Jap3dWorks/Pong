@@ -1,13 +1,9 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-namespace Pong{
-    class Scene;
-    class Render;
-    class Material;
-}
 
-#include "Utils.h"
+
+#include "Core/Utils.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,6 +16,12 @@ namespace Pong{
 #include <map>
 
 #include <cstdarg>
+
+namespace Pong{
+    class Scene;
+    class Render;
+    class Material;
+}
 
 namespace Pong {
 
