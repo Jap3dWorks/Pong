@@ -14,22 +14,22 @@
 #include <iostream>
 #include <vector>
 
+#include "Core/core_vals.h"
 #include "Core/Actor.h"
 #include "Core/Scene.h"
 #include "Core/Shape.h"
-#include "Graphic/Shader.h"
-#include "Graphic/Material.h"
+#include "Shader.h"
+#include "Material.h"
 
 // utility to load Textures
-unsigned int loadTexture(char const *path, const bool &gammaCorrection)
+_P_INLINE unsigned int loadTexture(_P_CONST char *path, _P_CONST bool &gammaCorrection)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
     unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data)
-    {
+    if (data) {
         GLenum internalFormat;
         GLenum dataFormat;
         if (nrComponents == 1)

@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <yvals_core.h>
+#include "Core/core_vals.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -9,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-_INLINE_VAR void cout_matrix(const glm::mat4& matrix)
+_P_INLINE void cout_matrix(_P_CONST glm::mat4& matrix)
 {
     for (int i = 0; i < 4; i++)
     {

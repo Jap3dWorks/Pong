@@ -7,7 +7,7 @@ project(${PROJECT_NAME}
 
 set(CMAKE_CXX_STANDARD 20)
 
-# log levels
+# log levels, TODO: remove DEBUG when release
 add_compile_definitions(
         __LOG_DEBUG__
         __LOG_INFO__
@@ -22,13 +22,10 @@ add_executable(${PROJECT_NAME}
         src/Core/Actor.cpp
         src/Core/Collider.cpp
         src/Core/Level.cpp
-        src/Graphic/Material.cpp
         src/Core/Render.cpp
         src/Core/Scene.cpp
         src/Core/Shape.cpp
         src/Core/Component.cpp
-        src/Core/DataComparers.cpp
-        src/Levels/blending_level.cpp
         )
 
 
@@ -37,7 +34,7 @@ set(LIBRARIES D:/libraries)
 
 # compile and linking glad
 message("Compile and linking glad")
-add_library(glad "${LIBRARIES}/glad/include/glad/glad.h"  "${LIBRARIES}/glad/lib/glad.c")
+add_library(glad ${LIBRARIES}/glad/include/glad/glad.h  ${LIBRARIES}/glad/lib/glad.c)
 target_include_directories(glad PUBLIC ${LIBRARIES}/glad/include)
 set_target_properties(glad PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
@@ -76,4 +73,10 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${source} ${destination}
         DEPENDS ${destination}
         COMMENT "symbolic link resources folder from ${source} => ${destination}"
+)
+
+# -- Test --
+add_executable(
+        Test
+        ./test/test.cpp
 )

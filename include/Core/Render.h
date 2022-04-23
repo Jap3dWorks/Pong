@@ -2,7 +2,7 @@
 #define RENDER_H
 
 #include "Movements.h"
-#include "../Graphic/Shader.h"
+#include "Shader.h"
 
 #include <stb_image.h>
 #include <glad/glad.h>

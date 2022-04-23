@@ -1,26 +1,25 @@
 #include "logger.h"
 #include "sandbox.h"
+#include "Levels/blending_level.h"
 #include <iostream>
+
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#endif
+#include <stb_image.h>
 
 int main()
 {
-    // sandbox text
-    auto vertex = quad_vertex();
+    LOG_DEBUG("Init app")
+    LOG_WARNING("WARNING")
 
-    for (auto v: vertex)
-    {
-        std::cout << v.color.x << std::endl;
-    }
+    BlendingLevel b_lvl;
+    LOG_INFO("Blending level run");
+
+    b_lvl.run();
+
 
     return 0;
-
-//    BlendingLevel b_lvl;
-//    LOG_INFO("Blnding level run");
-//
-//    b_lvl.run();
-//
-//
-//    return 0;
 }
 
 // https://www.khronos.org/opengl/wiki/Built-in_Variable_(GLSL)

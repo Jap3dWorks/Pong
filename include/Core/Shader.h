@@ -3,6 +3,7 @@
 #define SHADER_H
 
 #include <yvals_core.h>
+#include "Core/core_vals.h"
 #include "logger.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -23,7 +24,7 @@ struct ShaderProgramSource
     std::string GeometrySource;
 };
 
-_INLINE_VAR ShaderProgramSource ParseShader(const std::string& FilePath)
+_P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath)
 {
     std::ifstream stream(FilePath);
     std::stringstream ss[2];
@@ -55,7 +56,7 @@ _INLINE_VAR ShaderProgramSource ParseShader(const std::string& FilePath)
     return {ss[0].str(), ss[1].str(), ss[2].str()};
 }
 
-_INLINE_VAR unsigned int CompileShader(unsigned int type, const std::string& source)
+_P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& source)
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();

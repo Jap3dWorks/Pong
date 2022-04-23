@@ -16,8 +16,8 @@
 #include "Core/Actor.h"
 #include "Core/Scene.h"
 #include "Core/Shape.h"
-#include "Graphic/Shader.h"
-#include "Graphic/Material.h"
+#include "Shader.h"
+#include "Material.h"
 
 
 namespace Pong {

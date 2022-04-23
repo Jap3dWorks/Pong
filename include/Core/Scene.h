@@ -6,24 +6,23 @@
 #include <assimp/postprocess.h>
 
 #include "Core/Actor.h"
-#include "Graphic/Material.h"
+#include "Core/Material.h"
 #include "Core/Shape.h"
 #include "Core/Collider.h"
-#include "Graphic/Lights.h"
+#include "Core/Lights.h"
 #include "Core/Render.h"
 
-#include "DataComparers.h"
+#include "Core/DataComparers.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stb_image.h>
 
 #include <vector>
 #include <set>
 #include <map>
 #include <functional>
-
-
 
 namespace Pong {
 

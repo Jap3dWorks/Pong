@@ -2,7 +2,7 @@
 #include "logger.h"
 
 #include <utility>
-#include "Graphic/Material.h"
+#include "Core/Material.h"
 
 namespace Pong {
     Actor::~Actor() {

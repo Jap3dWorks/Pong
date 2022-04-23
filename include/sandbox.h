@@ -6,6 +6,7 @@
 #define PONG_SANDBOX_H
 
 #include "Core/Level.h"
+#include "Core/core_vals.h"
 #include <glm/glm.hpp>
 #include <array>
 #include <string>
@@ -15,15 +16,15 @@
 
 // create batch rendering
 
-constexpr uint32_t max_quads = 1000;
+_P_CONSTEXPR uint32_t max_quads = 1000;
 
 class Color{
 public:
-    static constexpr glm::vec4 white = {1.f, 1.f, 1.f, 1.f};
-    static constexpr glm::vec4 red = {1.f, 0.f, 0.f, 1.f};
-    static constexpr glm::vec4 blue = {0.f, 0.f, 1.f, 1.f};
-    static constexpr glm::vec4 green = {0.f, 1.f, 0.f, 1.f};
-    static constexpr glm::vec4 black = {0.f, 0.f, 0.f, 0.f};
+    _P_STATIC _P_INLINE _P_CONSTEXPR glm::vec4 white = {1.f, 1.f, 1.f, 1.f};
+    _P_STATIC _P_INLINE _P_CONSTEXPR glm::vec4 red = {1.f, 0.f, 0.f, 1.f};
+    _P_STATIC _P_INLINE _P_CONSTEXPR glm::vec4 blue = {0.f, 0.f, 1.f, 1.f};
+    _P_STATIC _P_INLINE _P_CONSTEXPR glm::vec4 green = {0.f, 1.f, 0.f, 1.f};
+    _P_STATIC _P_INLINE _P_CONSTEXPR glm::vec4 black = {0.f, 0.f, 0.f, 0.f};
 };
 
 struct TstVertex
