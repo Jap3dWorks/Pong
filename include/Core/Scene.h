@@ -105,10 +105,9 @@ namespace Pong {
 
         [[nodiscard]] DirectionalLight* get_directional_light() const;
 
-        Shader* create_shader(const std::string& name,
-            const GLchar* vertex_shader,
-            const GLchar* fragment_shader,
-            const GLchar* geometry_shader = nullptr);
+        Shader *create_shader(
+                const std::string &name,
+                const GLchar *shader_path);
 
         [[nodiscard]] Shader* get_shader(const std::string& name) const;
 

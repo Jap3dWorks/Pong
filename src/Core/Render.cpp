@@ -64,10 +64,10 @@ Pong::Render::Render()
 
     // framebuffer shaders
     framebuffer_shader = new Shader(
-            "./Shaders/framebuffer_screen_V.glsl",
-            "./Shaders/framebuffer_screen_F.glsl");
+            "./Shaders/framebuffer_screen.glsl");
 
     LOG_DEBUG("Frame buffer shader")
+
     _create_ubo_view_matrices();
     _create_ubo_lights();
 

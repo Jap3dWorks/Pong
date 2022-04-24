@@ -121,13 +121,11 @@ namespace Pong{
             return nullptr;
     }
 
-    Shader *Scene::create_shader(const std::string &name,
-                                 const GLchar *vertex_shader,
-                                 const GLchar *fragment_shader,
-                                 const GLchar *geometry_shader) {
+    Shader* Scene::create_shader(const std::string &name,
+                                 const GLchar *shader_path) {
         if (shader_map.find(name) == shader_map.end())
         {
-            auto* ptr = new Shader(vertex_shader, fragment_shader, geometry_shader);
+            auto* ptr = new Shader(shader_path);
             shader_map[name] = ptr;
             return ptr;
         }

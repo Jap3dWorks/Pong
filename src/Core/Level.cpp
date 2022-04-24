@@ -232,7 +232,7 @@ namespace Pong
         _scene->assign_shape(cube_shp, cube_01);
 
         Shader *skybox_shd = _scene->create_shader("skybox_shd",
-                                                   "../shaders/reflect_skybox_v.glsl",
+                                                   "../shaders/reflect_skybox.glsl",
                                                    "../shaders/reflect_skybox_f.glsl");
 
         Material *skybox_mat = _scene->create_material<SKyBoxMaterial>(

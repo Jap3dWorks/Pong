@@ -27,15 +27,15 @@ protected:
 
         // grass planes
         auto grass_shd = _scene->create_shader("grass_shd",
-                                               "./Shaders/cutout_V.glsl",
-                                               "./Shaders/cutout_F.glsl");
+                                               "./Shaders/cutout.glsl");
 
         auto grass_mat = _scene->create_material<Pong::Material>(
                 "grass_mat",
                 grass_shd,
                 {_scene->create_texture("grass_tx",
                                         "./Textures/grass.png",
-                                        "texture1")});
+                                        "texture1")
+                });
 
         auto grass_shp = _scene->create_shape<Pong::PlaneShape>("grass_shp");
         auto grass_act_01 = _scene->create_actor<Pong::APlayer>("grass_act_01");
@@ -61,8 +61,7 @@ protected:
 
         // vertex size
         auto vert_shd = _scene->create_shader("vert_shd",
-                                              "./Shaders/point_v.glsl",
-                                              "./Shaders/point_f.glsl");
+                                              "./Shaders/point.glsl");
         auto vert_mat = _scene->create_material<Pong::Material>("vert_mat",
                                                                 vert_shd,
                                                                 {});
@@ -84,8 +83,7 @@ protected:
 
         // skybox
         auto skybox_shd = _scene->create_shader("skybox_shd",
-                                                "./Shaders/reflect_skybox_v.glsl",
-                                                "./Shaders/reflect_skybox_f.glsl");
+                                                "./Shaders/reflect_skybox.glsl");
 
         auto *skybox_mat = _scene->create_material<Pong::SKyBoxMaterial>(
                 "skybox_mat",
@@ -111,8 +109,7 @@ protected:
 
         // a blinn material
         auto blinn_shd = _scene->create_shader("blinn_shd",
-                                               "./Shaders/blinn_V.glsl",
-                                               "./Shaders/blinn_F.glsl");
+                                               "./Shaders/blinn.glsl");
 
         auto blinn_mat = _scene->create_material<Pong::Material>("blinn_mat",
                                                                  blinn_shd,
@@ -138,8 +135,7 @@ protected:
     inline void _create_blending_actors() {
         // semitransparent
         auto blnd_shader = _scene->create_shader("blnd_shader",
-                                                 "./Shaders/blending_v.glsl",
-                                                 "./Shaders/blending_f.glsl");
+                                                 "./Shaders/blending.glsl");
 
         auto bld_mat = _scene->create_material<Pong::Material>(
                 "bld_mat",

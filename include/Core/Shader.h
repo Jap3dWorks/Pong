@@ -13,7 +13,7 @@
 #include <fstream>
 #include <sstream>
 
-enum class ShaderType {
+enum class ShaderType : int {
     NONE = -1, VERTEX = 0, FRAGMENT = 1, GEOMETRY = 2
 };
 
@@ -24,14 +24,12 @@ struct ShaderProgramSource
     std::string GeometrySource;
 };
 
+_P_CONSTEXPR unsigned int shader_types_count = (sizeof(ShaderProgramSource)/sizeof(std::string));
+
 _P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath)
 {
     std::ifstream stream(FilePath);
-    std::stringstream ss[2];
-
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::string geometryCode;
+    std::stringstream ss[shader_types_count];
 
     ShaderType type = ShaderType::NONE;
     std::string line;
@@ -47,13 +45,23 @@ _P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath)
             {
                 type = ShaderType::FRAGMENT;
             }
+            else if (line.find("geometry") != std::string::npos){
+                type = ShaderType::GEOMETRY;
+            }
+
         }
         else
         {
+//            LOG_DEBUG("Save line at " << (int)type << ": " << line)
             ss[(int)type] << line << "\n";
         }
     }
-    return {ss[0].str(), ss[1].str(), ss[2].str()};
+
+    return {
+        ss[0].str(),
+        ss[1].str(),
+        ss[2].str()
+    };
 }
 
 _P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& source)
@@ -74,8 +82,9 @@ public:
     unsigned int ID;
 
     // constructor reads and builds the shader
-    Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
+    Shader(const char* shader_path)
     {
+        LOG_DEBUG(shader_path)
         // retrieve the vertex/fragment source code from filepath
         std::stringstream ss[2];
 
@@ -83,80 +92,13 @@ public:
         std::string fragmentCode;
         std::string geometryCode;
 
-        std::ifstream stream(vertexPath);
-        ShaderType type = ShaderType::NONE;
-        std::string line;
-        while(getline(stream, line))
-        {
-            if (line.find("#shader") != std::string::npos)
-            {
-                if (line.find("vertex") != std::string::npos)
-                {
-                    type = ShaderType::VERTEX;
-                }
-                else if (line.find("fragment") != std::string::npos)
-                {
-                    type = ShaderType::FRAGMENT;
-                }
-            }
-            else
-            {
-                ss[(int)type] << line << "\n";
-            }
-        }
-        vertexCode = ss[0].str();
-        fragmentCode = ss[1].str();
-        geometryCode = ss[2].str();
+        auto parse_shader = ParseShader(shader_path);
 
-//        std::ifstream vShaderFile;
-//        std::ifstream fShaderFile;
-//        std::ifstream gShaderFile;
-//        // ensure ifstream objects can throw excetions:
-//        vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-//        fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-//        gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-//        try
-//        {
-//            // TODO: one file shader
-//            // open files
-//            vShaderFile.open(vertexPath);
-//            fShaderFile.open(fragmentPath);
-//            std::stringstream vShaderStream, fShaderStream;
-//
-//            // read files content into streams
-//            vShaderStream << vShaderFile.rdbuf();
-//            fShaderStream << fShaderFile.rdbuf();
-//
-//            //clase file handlers
-//            vShaderFile.close();
-//            fShaderFile.close();
-//
-//            // convert stream into string
-//            vertexCode = vShaderStream.str();
-//            fragmentCode = fShaderStream.str();
-//
-//            // if geometry shader is present, also load
-//            if (geometryPath != nullptr)
-//            {
-//                gShaderFile.open(geometryPath);
-//                std::stringstream gShaderStream;
-//                gShaderStream << gShaderFile.rdbuf();
-//                gShaderFile.close();
-//                geometryCode = gShaderStream.str();
-//            }
-//
-//        }
-//        catch (std::ifstream::failure e)
-//        {
-//            LOG_ERROR(vertexPath)
-//            LOG_ERROR("ERROR::SHADER::FILE_NOT_SUCCEFULLY_READ")
-//        }
-
-        ShaderProgramSource source = ParseShader(vertexPath);
+        LOG_DEBUG(parse_shader.GeometrySource)
 
         // to c type
-        const char * vShaderCode = vertexCode.c_str();
-        const char * fShaderCode = fragmentCode.c_str();
+        const char * vShaderCode = parse_shader.VertexSource.c_str();
+        const char * fShaderCode = parse_shader.FragmentSource.c_str();
 
         // compile shaders
         unsigned int vertex, fragment;
@@ -173,11 +115,12 @@ public:
         glShaderSource(fragment, 1, &fShaderCode, nullptr);
         glCompileShader(fragment);
         checkCompileErrors(fragment, "VERTEX");
+
         // if geometry shader is given compile
         unsigned int geometry;
-        if (geometryPath != nullptr)
+        if (!parse_shader.GeometrySource.empty())
         {
-            const char* gShaderCode = geometryCode.c_str();
+            const char* gShaderCode = parse_shader.GeometrySource.c_str();
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(geometry, 1, &gShaderCode, nullptr);
             glCompileShader(geometry);
@@ -188,7 +131,7 @@ public:
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
-        if (geometryPath != nullptr)
+        if (!parse_shader.GeometrySource.empty())
         {
             glAttachShader(ID, geometry);
         }
@@ -198,10 +141,11 @@ public:
         // delete shaders once they're linked
         glDeleteShader(vertex);
         glDeleteShader(fragment);
-        if (geometryPath != nullptr)
+        if (!parse_shader.GeometrySource.empty())
         {
             glDeleteShader(geometry);
         }
+        LOG_DEBUG("Shader compiled")
     }
 
     // use/activate the shader
@@ -272,7 +216,7 @@ public:
 
 
 private:
-    void checkCompileErrors(GLuint shader, std::string type)
+    void checkCompileErrors(GLuint shader, const std::string& type)
     {
         GLint success;
         GLchar infoLog[1024];
