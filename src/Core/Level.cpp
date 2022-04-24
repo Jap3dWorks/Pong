@@ -213,8 +213,7 @@ namespace Pong
 
         // build and compile the shader program
         Shader *paint_shd = _scene->create_shader("paint_shd",
-                                                  "../shaders/paint_V.glsl",
-                                                  "../shaders/paint_F.glsl");
+                                                  "../shaders/paint.glsl");
 
         auto *paint_mat = _scene->create_material<Material>(
                 "paint_mat",
@@ -232,8 +231,7 @@ namespace Pong
         _scene->assign_shape(cube_shp, cube_01);
 
         Shader *skybox_shd = _scene->create_shader("skybox_shd",
-                                                   "../shaders/reflect_skybox.glsl",
-                                                   "../shaders/reflect_skybox_f.glsl");
+                                                   "../shaders/reflect_skybox.glsl");
 
         Material *skybox_mat = _scene->create_material<SKyBoxMaterial>(
                 "skybox_mat",

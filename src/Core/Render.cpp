@@ -52,26 +52,19 @@ Pong::Render::Render()
 
     _config_frame_buffers();
     _build_screen_quad();
-    LOG_DEBUG("Framebuffers created")
 
     // return default framebuffer
     // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // glEnable operations
-    LOG_DEBUG("Crash in Render?")
     update_enables();
-    LOG_DEBUG("Crashed")
 
     // framebuffer shaders
     framebuffer_shader = new Shader(
             "./Shaders/framebuffer_screen.glsl");
 
-    LOG_DEBUG("Frame buffer shader")
-
     _create_ubo_view_matrices();
     _create_ubo_lights();
-
-    LOG_DEBUG("Endupdate buffers")
 }
 
 void Pong::Render::update_enables() const {

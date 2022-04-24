@@ -1,4 +1,4 @@
-#vertex shader
+#shader vertex
 #version 450 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -21,7 +21,7 @@ void main(){
 }
 
 
-#vertex fragment
+#shader fragment
 #version 330 core
 out vec4 FragColor;
 in vec2 TexCoords;

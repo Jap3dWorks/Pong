@@ -52,7 +52,6 @@ _P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath)
         }
         else
         {
-//            LOG_DEBUG("Save line at " << (int)type << ": " << line)
             ss[(int)type] << line << "\n";
         }
     }
@@ -84,7 +83,6 @@ public:
     // constructor reads and builds the shader
     Shader(const char* shader_path)
     {
-        LOG_DEBUG(shader_path)
         // retrieve the vertex/fragment source code from filepath
         std::stringstream ss[2];
 
@@ -93,8 +91,6 @@ public:
         std::string geometryCode;
 
         auto parse_shader = ParseShader(shader_path);
-
-        LOG_DEBUG(parse_shader.GeometrySource)
 
         // to c type
         const char * vShaderCode = parse_shader.VertexSource.c_str();
@@ -145,7 +141,6 @@ public:
         {
             glDeleteShader(geometry);
         }
-        LOG_DEBUG("Shader compiled")
     }
 
     // use/activate the shader

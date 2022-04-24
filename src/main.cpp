@@ -10,9 +10,6 @@
 
 int main()
 {
-    LOG_DEBUG("Init app")
-    LOG_WARNING("WARNING")
-
     BlendingLevel b_lvl;
     LOG_INFO("Blending level run");
 
