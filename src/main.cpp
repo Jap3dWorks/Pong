@@ -1,6 +1,7 @@
 #include "logger.h"
 #include "sandbox.h"
 #include "Levels/blending_level.h"
+#include "Levels/shading_level.h"
 #include <iostream>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -8,13 +9,22 @@
 #endif
 #include <stb_image.h>
 
+// https://project-awesome.org/terkelg/awesome-creative-coding#books
+// TODO: Load models
+
 int main()
 {
-    BlendingLevel b_lvl;
-    LOG_INFO("Blending level run");
+    if (false) {
+        BlendingLevel b_lvl;
+        LOG_INFO("Blending level run");
 
-    b_lvl.run();
-
+        b_lvl.run();
+    }
+    else {
+        auto s_lvl = ShadingLevel();
+        LOG_INFO("Shading Level")
+        s_lvl.run();
+    }
 
     return 0;
 }
