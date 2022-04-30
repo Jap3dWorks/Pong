@@ -1,23 +1,22 @@
-#include "../../include/Core/Render.h"
-#include "../../include/logger.h"
+#include "Core/Render.h"
+#include "logger.h"
 
-#include "../../include/Core/Actor.h"
-#include "../../include/Core/Scene.h"
+#include "Core/Actor.h"
+#include "Core/Scene.h"
 #include <iostream>
 
 
 float Pong::Render::DeltaTime = 0;
 
-void Pong::Render::calculate_deltaTime()
-{
+void Pong::Render::calculate_deltaTime() {
     float current_frame = glfwGetTime();
     Pong::Render::DeltaTime = current_frame - _last_frame_time;
     _last_frame_time = current_frame;
 }
+
 Pong::Render* Pong::Render::instance = 0;
 
-Pong::Render::Render()
-{
+Pong::Render::Render() {
     //glfw initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -65,6 +64,7 @@ Pong::Render::Render()
 
     _create_ubo_view_matrices();
     _create_ubo_lights();
+    _create_ubo_frame_data();
 }
 
 void Pong::Render::update_enables() const {
@@ -91,15 +91,13 @@ void Pong::Render::update_enables() const {
     }
 }
 
-void  Pong::Render::_framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void  Pong::Render::_framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
 
-Pong::Render* Pong::Render::getInstance()
-{
+Pong::Render* Pong::Render::getInstance() {
     if (!Render::instance)
     {
         Render::instance = new Render;
@@ -107,8 +105,7 @@ Pong::Render* Pong::Render::getInstance()
     return Render::instance;
 }
 
-GLFWwindow* Pong::Render::getWindow()
-{
+GLFWwindow* Pong::Render::getWindow() {
     return _window;
 }
 
@@ -181,8 +178,7 @@ void Pong::Render::bind_framebuffer(unsigned int in_framebuffer) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Pong::Render::draw_framebuffer()
-{
+void Pong::Render::draw_framebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);
     glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -195,10 +191,11 @@ void Pong::Render::draw_framebuffer()
 
     glfwSwapBuffers(_window);
     glfwPollEvents();
+
+    _frame++;
 }
 
-void Pong::Render::_create_ubo_view_matrices()
-{
+void Pong::Render::_create_ubo_view_matrices() {
     unsigned int ubo_size = (2 * sizeof(glm::mat4)) + sizeof(glm::vec4);
 
     glGenBuffers(1, &_ubo_view);
@@ -206,13 +203,17 @@ void Pong::Render::_create_ubo_view_matrices()
     glBufferData(GL_UNIFORM_BUFFER, ubo_size, nullptr, GL_STATIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     // bind ubo matrices to index 0
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _ubo_view, 0, ubo_size);
+    glBindBufferRange(GL_UNIFORM_BUFFER,
+                      static_cast<int>(UboLayouts::VIEW_MATRICES),
+                      _ubo_view, 0, ubo_size);
 }
+
 void Pong::Render::update_ubo_view(Pong::ACamera *camera) const {
     glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
     // set projection
     glBufferSubData(GL_UNIFORM_BUFFER,
-                    0, sizeof(glm::mat4),
+                    0,
+                    sizeof(glm::mat4),
                     glm::value_ptr(
                             glm::perspective(glm::radians(camera->Zoom),
                                              (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,
@@ -232,8 +233,7 @@ void Pong::Render::update_ubo_view(Pong::ACamera *camera) const {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void Pong::Render::_create_ubo_lights()
-{
+void Pong::Render::_create_ubo_lights() {
     glGenBuffers(1, &_ubo_lights);
     glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
 
@@ -242,7 +242,10 @@ void Pong::Render::_create_ubo_lights()
     unsigned int size_buffer = sizeof(PointLight) + (sizeof(DirectionalLight) * Pong::Scene::POINT_LIGHTS_COUNT);
     glBufferData(GL_UNIFORM_BUFFER,  size_buffer, nullptr, GL_STATIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 1, _ubo_lights, 0, size_buffer);
+    // bind to index 1
+    glBindBufferRange(GL_UNIFORM_BUFFER,
+                      static_cast<int>(UboLayouts::LIGHTS),
+                      _ubo_lights, 0, size_buffer);
 }
 
 void Pong::Render::update_ubo_lights(Scene *scene) const
@@ -266,17 +269,46 @@ void Pong::Render::update_ubo_lights(Scene *scene) const
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-Pong::RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl){
+void Pong::Render::_create_ubo_frame_data() {
+    unsigned int ubo_size = sizeof(decltype(_frame)) + sizeof (decltype(_fps));
+
+    glGenBuffers(1, &_ubo_frame_data);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_frame_data);
+    glBufferData(GL_UNIFORM_BUFFER, ubo_size, nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    // bind ubo matrices to index 0
+    glBindBufferRange(GL_UNIFORM_BUFFER,
+                      static_cast<int>(UboLayouts::FRAME_DATA),
+                      _ubo_frame_data, 0, ubo_size);
+}
+
+void Pong::Render::update_frame_data() const {
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo_frame_data);
+    // set projection
+    glBufferSubData(GL_UNIFORM_BUFFER,
+                    0,
+                    sizeof(decltype(_frame)),
+                    &_frame);
+
+    glBufferSubData(GL_UNIFORM_BUFFER,
+                    sizeof(decltype(_frame)),
+                    sizeof(decltype(_fps)),
+                    &_fps);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+Pong::RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl) {
 return static_cast<Pong::RenderLayer>(
         static_cast<unsigned int>(lrl) | static_cast<unsigned int>(rrl));
 }
 
-Pong::RenderLayer operator&(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl){
+Pong::RenderLayer operator&(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl) {
 return static_cast<Pong::RenderLayer>(
         static_cast<unsigned int>(lrl) & static_cast<unsigned int>(rrl));
 }
 
-bool any(const Pong::RenderLayer& rlay){
+bool any(const Pong::RenderLayer& rlay) {
     return rlay != Pong::RenderLayer::NO_LAYER;
 }
 

@@ -11,6 +11,11 @@ layout (std140, binding = 0) uniform ViewMatrices
 	vec3 viewPos;
 };
 
+layout (std140, binding=2) uniform FrameData
+{
+	uint frame;
+	float fps;
+};
 
 out VS_OUT {
 	vec3 FragPos;
@@ -35,11 +40,15 @@ void main()
 #version 450 core
 layout (location = 0) out vec4 FragColor;
 
-layout (std140, binding = 0) uniform ViewMatrices
-{
+layout (std140, binding = 0) uniform ViewMatrices {
 	mat4 projection;
 	mat4 view;
 	vec3 viewPos;
+};
+
+layout (std140, binding=2) uniform FrameData {
+	uint frame;
+	float fps;
 };
 
 struct Directional{

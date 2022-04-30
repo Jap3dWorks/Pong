@@ -5,6 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "core/core_vals.h"
 #include "Core/Actor.h"
 #include "Core/Material.h"
 #include "Core/Shape.h"
@@ -25,12 +26,10 @@
 #include <functional>
 
 namespace Pong {
-
     void mouse_callback(GLFWwindow*, double, double);
     void scroll_callback(GLFWwindow*, double, double);
 
-    class Scene
-    {
+    class Scene {
     // singleton class
     public:
         static const int POINT_LIGHTS_COUNT = 5;
@@ -54,9 +53,11 @@ namespace Pong {
         ActorCameraDistanceComparer _actor_blending_comparer =
                 ActorCameraDistanceComparer(_camera);
 
+
+
+    private:
         //private methods
         Scene();
-
         void _process_node(aiNode * node,
                            const aiScene *& scene,
                            std::vector<Mesh*>& out_result);
@@ -64,10 +65,6 @@ namespace Pong {
         static Mesh * _process_mesh(const aiMesh *& mesh);
 
     public:
-        virtual ~Scene();
-
-        static Scene* get_instance();
-
         std::map<std::string, Actor*> actor_map;
         std::map<std::string, Material*> material_map;
         std::map<std::string, Collider*> collider_map;
@@ -82,7 +79,6 @@ namespace Pong {
         // blending actors ordered by distance to render camera_ptr
         std::vector<Actor*>blending_actors;
         std::map<Actor*, std::pair<Shape*, Material*>> blending_actor_shape_material_map;
-        void collect_blending_actors();
 
         // I have the problem of a shape in two different materials.
         // shape actors will draw twice all materials in this case.
@@ -90,6 +86,11 @@ namespace Pong {
         std::map<Material*, std::vector<Shape*>> material_shape_map;
         std::map<Shape*, std::vector<Actor*>> shape_actor_map;
 
+    public:
+        virtual ~Scene();
+        static Scene* get_instance();
+
+        void collect_blending_actors();
         void assign_layer(const RenderLayer&, Material*);
 
         void assign_material(Material*, Shape*);
@@ -101,15 +102,15 @@ namespace Pong {
 
         void sort_blending_actors();
 
-        [[nodiscard]] PointLight& get_point_light(int id);
+        _P_NODISCARD PointLight& get_point_light(int id);
 
-        [[nodiscard]] DirectionalLight* get_directional_light() const;
+        _P_NODISCARD DirectionalLight* get_directional_light() const;
 
         Shader *create_shader(
                 const std::string &name,
                 const GLchar *shader_path);
 
-        [[nodiscard]] Shader* get_shader(const std::string& name) const;
+        _P_NODISCARD Shader* get_shader(const std::string& name) const;
 
         // create a material and save it in _materialMap
         template<typename T>
@@ -136,14 +137,14 @@ namespace Pong {
         }
 
         // get a material by its name
-        [[nodiscard]] Material* get_material(const std::string& name) const;
+        _P_NODISCARD Material* get_material(const std::string& name) const;
 
         // create texture
         Texture* create_texture(const std::string& name,
                                 const std::string& path,
                                 std::string texture_type);
 
-        [[nodiscard]] Texture* get_texture(const std::string& name) const;
+        _P_NODISCARD Texture* get_texture(const std::string& name) const;
 
         /**create_texture Sky box overload.*/
         Texture* create_texture(const std::string& name,
@@ -175,7 +176,7 @@ namespace Pong {
         }
 
         // get an actor by its name
-        [[nodiscard]] Actor* get_actor(const std::string& name) const;
+        _P_NODISCARD Actor* get_actor(const std::string& name) const;
 
         // Create a collider, template you must specify the collider type
         template<typename T>
@@ -196,14 +197,13 @@ namespace Pong {
         }
 
         // get a collider by its name
-        [[nodiscard]] Collider* get_collider(const std::string& name) const;
+        _P_NODISCARD Collider* get_collider(const std::string& name) const;
 
         // get camera_ptr ptr
-        [[nodiscard]] ACamera* get_camera() const;
+        _P_NODISCARD ACamera* get_camera() const;
 
         template<typename T, typename... Args>
-        T* create_shape(const std::string& name, Args&&... args)
-        {
+        T* create_shape(const std::string& name, Args&&... args) {
             if (!std::is_base_of<Shape, T>::value)
                 return nullptr;
             if (shape_map.find(name) == shape_map.end())
@@ -218,8 +218,8 @@ namespace Pong {
                 // if shape exists in the map, return ptr to shape
                 return static_cast<T*>(shape_map[name]);
         }
-        [[nodiscard]] Shape* get_shape(const std::string& name) const;
 
+        _P_NODISCARD Shape* get_shape(const std::string& name) const;
         int import_model(const std::string& model_path, Actor *& actor);
 
     };

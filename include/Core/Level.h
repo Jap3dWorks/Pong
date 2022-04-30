@@ -12,13 +12,15 @@
 
 // specific config of a level
 namespace Pong {
-    class AbstractLevel
-    {
+    class AbstractLevel {
+    private:
+
     protected:
         Scene *_scene;
         Render *_render;
         std::vector<ProcessInput> _inputList;
 
+    protected:
         virtual void _configInputs();
 
         virtual void _close_level();  // close level inputs
@@ -40,13 +42,5 @@ namespace Pong {
         virtual void run();
     };
 
-    class TestLevel : public AbstractLevel
-    {
-    protected:
-        void _level_setup() override;
-
-    public:
-        TestLevel() = default;
-    };
 }
 #endif // PONG_LEVEL
