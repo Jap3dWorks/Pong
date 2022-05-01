@@ -13,7 +13,7 @@
 // TODO: Load models
 
 int main(int argc, char** argv) {
-    if (true) {
+    if (false) {
         BlendingLevel b_lvl;
         LOG_INFO("Blending level run");
 

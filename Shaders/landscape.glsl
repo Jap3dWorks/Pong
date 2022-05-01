@@ -11,8 +11,11 @@ layout (std140, binding=0) uniform ViewMatrices {
     vec3 ViewPos;};
 
 layout (std140, binding=2) uniform FrameData {
+    double DeltaTime;
+    double Time;
     uint Frame;
-    float Fps;};
+    float Fps;
+};
 
 out VS_OUT {
     vec3 FragPos;
@@ -36,11 +39,21 @@ layout (std140, binding=0) uniform ViewMatrices {
     vec3 ViewPos;};
 
 layout (std140, binding=2) uniform FrameData {
-    uint iFrame;
-    float Fps;};
+    double DeltaTime;
+    double Time;
+    uint Frame;
+    float Fps;
+};
+
+layout (std140, binding=3) uniform RenderData {
+    uint render_width;
+    uint render_height;
+    float z_near;
+    float z_fat;
+};
 
 #define LOWQUALITY
-#define ZERO (min(iFrame, 0))
+#define ZERO (min(Frame, 0))
 
 layout (location = 0) out vec4 FragColor;
 
@@ -55,12 +68,11 @@ float sdEllipsoidY(in vec3 p, in vec2 r) {
     float k1 = length(p / r.xyx * r.xyx);
     return k0 * (k0 -1.0) / k1;
 }
-float sdEllipsoid(in vec3 p, in vec3 r){
+float sdEllipsoid(in vec3 p, in vec3 r) {
     float k0 = length(p / r);
     float k1 = length(p / (r*r));
     return k0 * (k0 - 1.0) / k1;
 }
-
 
 // Return smoothstep and its derivative
 vec2 smoothstepd(float a, float b, float x){
@@ -251,7 +263,7 @@ float fbm_4(in vec3 x){
     return a;
 }
 
-vec4 fbmd_7(in vec3 x){
+vec4 fbmd_7(in vec3 x) {
     float f = 1.92;
     float s = 0.5;
     float a = 0.0;
@@ -272,7 +284,7 @@ vec4 fbmd_7(in vec3 x){
     return vec4(a, d);
 }
 
-vec4 fbmd_8(in vec3 x){
+vec4 fbmd_8(in vec3 x) {
     float f = 2.0;
     float s = 0.65;
     float a = 0.0;
@@ -331,10 +343,12 @@ vec3 fbmd_9(in vec2 x){
     return vec3(a, d);
 }
 
-
+// global
 const vec3 kSunDir = vec3(-0.624695, 0.468521, -0.624695);
-const float kNaxTreeHeight = 4.8;
+const float kMaxTreeHeight = 4.8;
 const float kMaxHeight = 840.0;
+
+vec2 iResolution = vec2(render_width, render_height);
 
 vec3 fog(in vec3 col, float t)
 {
@@ -345,7 +359,7 @@ vec3 fog(in vec3 col, float t)
 // --clouds--
 vec4 cloudsFbm(in vec3 pos){
     return fbmd_8(pos*0.0015 + vec3(2.0, 1.1, 1.0) +
-                    0.07 * vec3(iTime, 0.5*iTime, -0.15*iTime));
+                    0.07 * vec3(Time, 0.5*Time, -0.15*Time));
 }
 
 vec4 cloudsMap(in vec3 pos, out float nnd){
@@ -392,7 +406,7 @@ vec4 renderClouds(in vec3 ro, in vec3 rd, float tmin,
         vec3 pos = ro + t*rd;
         float nnd;
         vec4 denGra = cloudsMap(pos, nnd);
-        float den = max(0.2, 0.011*t);
+        float den = denGra.x;;
         float dt = max(0.2, 0.011*t);
         if (den > 0.001){
             float kk;
@@ -408,7 +422,7 @@ vec4 renderClouds(in vec3 ro, in vec3 rd, float tmin,
             // lighting
             vec3 lin = vec3(0.0);
             lin += vec3(0.70, 0.80, 1.00) * 1.0 * (0.5 + 0.5*nor.y) * occ;
-            lin += vec3(0.10, 0.40, 0.20) * 1.0 + (0.0 - 0.5*nor.y) * pcc;
+            lin += vec3(0.10, 0.40, 0.20) * 1.0 + (0.0 - 0.5*nor.y) * occ;
             lin += vec3(1.00, 0.95, 0.85) * 3.0 * dif * occ + 0.1;
 
             // color
@@ -534,7 +548,7 @@ vec2 raymarchTerrain(in vec3 ro, in vec3 rd, float tmin, float tmax){
         ot=t;
         odis = dis;
         t += dis*0.8*(1.0-0.75*env.y);
-        if(t>max) break;
+        if(t > tmax) break;
     }
     if(t>tmax) t= -1.0;
     else t = ot + (th-odis)*(t-ot)/(dis-odis);
@@ -566,7 +580,7 @@ float treesMap(in vec3 p, in float rt,out float oHei, out float oMat, out float 
         float width = 0.5 + 0.2*v.x + 0.3*v.y;
 
         if(bb < 0.0) width *= 0.5; else height *= 0.7;
-        vec3 q = vec3(r.x, p.y-vase-height*0.5, r.y);
+        vec3 q = vec3(r.x, p.y-base-height*0.5, r.y);
         float k = sdEllipsoidY(q, vec2(width, 0.5*height));
 
         if (k < d){
@@ -626,12 +640,11 @@ vec3 treesNormal(in vec3 pos, in float t){
         r.xxx * treesMap(pos + r.xxx, t, kk1, kk2, kk3));
 #else
     vec3 n = vec3(0.0);
-    for(int i=ZERO; i<4; i++){
+    for(uint i=ZERO; i<4; i++) {
         vec3 n = vec3(0.0);
-        for(int i=ZERO; i<4; i++){
-            vec3 e = 0.5773*(2.0*vec3((((i+3)>>1)&1), ((i>>1)&1),(i&1))-1.0);
-            n += e*treesMap(pos+0.005*e, t, kk1, kk2, kk3);
-        }
+        vec3 e = 0.5773*(2.0*vec3((((i + 3)>>1)&1),
+            ((i>>1)&1),(i&1))-1.0);
+        n += e*treesMap(pos+0.005*e, t, kk1, kk2, kk3);
     }
     return normalize(n);
 #endif
@@ -639,22 +652,21 @@ vec3 treesNormal(in vec3 pos, in float t){
 
 // sky
 // ---
-vec3 renderSky(in vec3 ro, in vec3 rd){
+vec3 renderSky(in vec3 ro, in vec3 rd) {
     // background sky
-    vec3 col = vec3(0.42, 0.62, 1.1) - rd.y*0.4;
-
+    vec3 col = vec3(0.42, 0.62, 1.1) - rd.y * 0.4;
     // clouds
-    float t = (2500.0-ro.y)/rd.y;
-    if(t>0.0){
-        vec2 uv = (ro + t*rd).xz;
-        float cl = fbm_9(uv*0.00104);
+    float t = (2500.0 - ro.y) / rd.y;
+    if(t > 0.0) {
+        vec2 uv = (ro + t * rd).xz;
+        float cl = fbm_9(uv * 0.00104);
         float dl = smoothstep(-0.2, 0.6, cl);
-        col = mix(col, vec3(1.0), 0.12*dl);
+        col = mix(col, vec3(1.0), 0.12 * dl);
     }
 
     // sun glare
     float sun = clamp(dot(kSunDir, rd), 0.0, 1.0);
-    col += 0.2*vec3(1.0, 0.6, 0.3)*pow(sun, 32.0);
+    col += 0.2 * vec3(1.0, 0.6, 0.3) * pow(sun, 32.0);
 
     return col;
 }
@@ -662,12 +674,12 @@ vec3 renderSky(in vec3 ro, in vec3 rd){
 // main image making function
 // --------------------------
 void mainImage(out vec4 fragColor, in vec2 fragCoord){
-    vec2 o = hash2(vec2(iFrame, 1)) - 0.5;
-    vec2 p = (2.0*(fragCoord+o) - iResolution.xy) / iResolution.y;
+    vec2 o = hash2(vec2(Frame, 1)) - 0.5;
+    vec2 p = (2.0*(fragCoord+o) - iResolution) / iResolution.y;
 
     // setup
     // -----
-    float time = iTime;
+    float time = float(Time);
     vec3 ro = vec3(0.0, 401.5, 6.0);
     vec3 ta = vec3(0.0, 403.5, -90.0 + ro.z);
 
@@ -678,14 +690,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     mat3 ca = setCamera(ro, ta, 0.0);
     vec3 rd = ca * normalize(vec3(p,1.5));
 
-    float resT = 2000.0;
+    float resT = 2000.f;
 
     // sky
     vec3 col = renderSky(ro, rd);
 
     // raycast terrain and tree envelope
     {
-        const float tmax = 2000.0;
+        const float tmax = 2000.f;
         int obj=0;
         vec2 t = raymarchTerrain(ro, rd, 15.0, tmax);
         if(t.x > 0.0){
@@ -749,7 +761,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
                 float bac = clamp(dot(normalize(vec3(-kSunDir.x, 0.0, -kSunDir.z)), nor),
                     0.0, 1.0);
                 float foc = clamp((pos.y/2.0-180.0) / 130.0, 0.0, 1.0);
-                float dom = calmp(0.5 + 0.5*nor.y, 0.0, 1.0);
+                float dom = clamp(0.5 + 0.5*nor.y, 0.0, 1.0);
                 vec3 lin = 1.0*0.2*mix(0.1*vec3(0.1, 0.2, 0.1),
                     vec3(0.7, 0.9, 1.5)*3.0, dom) * foc;
                      lin += 1.0*8.5*vec3(1.0, 0.9, 0.8) * dif;
@@ -760,7 +772,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
             }
             else {
                 vec3 gnor = treesNormal(pos, resT);
-                nor = normalize(gnor, 2.0*tnor);
+                nor = normalize(gnor + 2.0*tnor);
 
                 // -- lighting --
                 vec3 ref = reflect(rd, nor);
@@ -783,11 +795,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
                 float dom = clamp(0.5 + 0.5*nor.y, 0.0, 1.0);
                 float bac = clamp(0.5 + 0.5*dot(normalize(vec3(-kSunDir.x, 0.0, -kSunDir.z)), nor),
                             0.0, 1.0);
-                float fre = clamp(1.0+dot(nor, nd), 0.0, 1.0);
+                float fre = clamp(1.0+dot(nor, rd), 0.0, 1.0);
 
                 // -- lights --
                 vec3 lin = 12.0*vec3(1.2, 1.0, 0.7)*dif*occ*(2.5+1.5*smoothstep(0.0, 120.0, resT));
-                     lin += 0.55*min(0.1*vec3(0.1, 0.2, 0.0), vec3(0.6, 1.0, 1.0), dom*occ);
+                     lin += 0.55*mix(0.1*vec3(0.1, 0.2, 0.0), vec3(0.6, 1.0, 1.0), dom*occ);
                      lin += 0.07*vec3(1.0, 1.0, 0.9)*bac*occ;
                      lin += 1.10*vec3(0.9, 1.0, 0.8)*pow(fre, 5.0)*occ*(1.0-smoothstep(100.0, 200.0, resT));
                 speC = dif*vec3(1.0, 1.1, 1.5)*1.2;
@@ -838,11 +850,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     col *= vec3(1.02, 0.99, 0.9);
     col.z = col.z + 0.1;
 
+//    mat4 oldCam = mat4(
+//        textureLod(iChannel0, vec2(0.5, 0.5) / iResolution.xy, 0.0),
+//        textureLod(iChannel0, vec2(1.5, 0.5) / iResolution.xy, 0.0),
+//        textureLod(iChannel0, vec2(2.5, 0.5) / iResolution.xy, 0.0),
+//        0.0, 0.0, 0.0, 1.0);
+
     mat4 oldCam = mat4(
-        textureLod(iChannel0, vec2(0.5, 0.5) / iResolution.xy, 0.0),
-        textureLod(iChannel0, vec2(1.5, 0.5) / iResolution.xy, 0.0),
-        textureLod(iChannel0, vec2(2.5, 0.5) / iResolution.xy, 0.0),
-        0.0, 0.0, 0.0, 1.0);
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0);
 
     // world space
     vec4 wpos = vec4(ro + rd*resT, 1.0);
@@ -859,8 +877,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
 
     if(rpos.y<1.0 && rpos.x<3.0) {}
     else {
-        vec3 ocol = textureLod(iChannel0, spos, 0.0).xyz;
-        if(iFrame==0) ocol = col;
+//        vec3 ocol = textureLod(iChannel0, spos, 0.0).xyz;
+        vec3 ocol = vec3(0.0);
+        if(Frame==0) ocol = col;
         col = mix(ocol, col, 0.1+0.8*isCloud);
     }
 
@@ -877,8 +896,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
 
 }
 
-void main()
-{
+void main() {
 //      FragColor = vec4(1.0, 1.0, 1.0, 1.0);
     FragColor = vec4((fs_in.FragPos.y + 1) / 2.f, 0.0, 0.2, 1.0);
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    vec2 p = fragCoord/iResolution.xy;
+
+    vec3 col = texture( iChannel0, p ).xyz;
+    //vec3 col = texelFetch( iChannel0, ivec2(fragCoord-0.5), 0 ).xyz;
+
+    col *= 0.5 + 0.5*pow( 16.0*p.x*p.y*(1.0-p.x)*(1.0-p.y), 0.05 );
+
+    fragColor = vec4( col, 1.0 );
 }

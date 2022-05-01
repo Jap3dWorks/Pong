@@ -373,7 +373,8 @@ float cloudsShadowFlat( in vec3 ro, in vec3 rd )
 
 float terrainShadow( in vec3 ro, in vec3 rd, in float mint );
 
-vec4 renderClouds( in vec3 ro, in vec3 rd, float tmin, float tmax, inout float resT, in vec2 px )
+vec4 renderClouds( in vec3 ro, in vec3 rd, float tmin,
+    float tmax, inout float resT, in vec2 px )
 {
     vec4 sum = vec4(0.0);
 
@@ -880,8 +881,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         col = fog(col,resT);
     }
     }
-
-
 
     float isCloud = 0.0;
     //----------------------------------

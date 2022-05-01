@@ -105,8 +105,7 @@ void main() {
 	lighting += dir_color * spec * specular;
 
 //	 point lights
-	for(int i = 0; i < point_count; i++)
-	{
+	for(int i = 0; i < point_count; i++) {
 		lightDir = normalize(point_lights[i].Position.xyz - fs_in.FragPos);
 		diff = max(dot(lightDir, normal), 0.0);
 		vec3 result = point_lights[i].Color.xyz * diff * color;

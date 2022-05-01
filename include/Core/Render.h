@@ -46,9 +46,9 @@ namespace Pong {
     enum class UboLayouts : GLuint {
         VIEW_MATRICES=0,
         LIGHTS=1,
-        RUNTIME_DATA=2  // frame, fps, time, delta_time
+        RUNTIME_DATA=2,  // frame, fps, time, delta_time
+        RENDER_DATA=3,
     };
-
 
     class Render {
     private:
@@ -58,6 +58,13 @@ namespace Pong {
             GLuint frame_counter = 0;
             float fps = 0.f;
         } _runtime_data;
+
+        struct RenderData {
+            uint32_t width=1280;
+            uint32_t height=720;
+            float z_near = 0.1;
+            float z_far = 10000.f;
+        } _render_data;
 
         uint32_t _render_quad_vao = 0;
 
@@ -69,16 +76,12 @@ namespace Pong {
         uint32_t _ubo_view = 0;
         uint32_t _ubo_lights = 0;
         uint32_t _ubo_runtime_data = 0;
+        uint32_t _ubo_render_data = 0;
 
         GLFWwindow* _window;
         _P_STATIC _P_INLINE Render* instance = nullptr;
 
     public:
-        static const unsigned int SCR_WIDTH = 1280;
-        static const unsigned int SCR_HEIGHT = 720;
-        static constexpr float Z_NEAR = 0.1f;
-        static constexpr float Z_FAR = 10000.f;
-
         _P_CONSTEXPR _P_STATIC _P_INLINE GLuint MAX_DIRECTIONAL_LIGHTS = 4;
         _P_CONSTEXPR _P_STATIC _P_INLINE GLuint MAX_POINT_LIGHTS = 32;
 
@@ -131,7 +134,8 @@ namespace Pong {
             // create color attachment texture
             glGenTextures(1, &_texture_color_buffer);
             glBindTexture(GL_TEXTURE_2D, _texture_color_buffer);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT,
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                         (GLint) _render_data.width, (GLint) _render_data.height,
                          0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -144,7 +148,7 @@ namespace Pong {
             glGenRenderbuffers(1, &rbo);
             glBindRenderbuffer(GL_RENDERBUFFER, rbo);
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
-                                  SCR_WIDTH, SCR_HEIGHT);
+                                  (GLint) _render_data.width, (GLint) _render_data.height);
 
             // attach renderbuffer with framebuffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
@@ -214,6 +218,22 @@ namespace Pong {
                               _ubo_runtime_data, 0, size_buffer);
         }
 
+        _P_INLINE void _create_ubo_render_data() {
+            assert(_ubo_render_data == 0);
+
+            uint32_t size_buffer = sizeof(_render_data);
+
+            glGenBuffers(1, &_ubo_render_data);
+            glBindBuffer(GL_UNIFORM_BUFFER, _ubo_render_data);
+            glBufferData(GL_UNIFORM_BUFFER, size_buffer,
+                         nullptr, GL_STATIC_DRAW);
+            glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+            glBindBufferRange(GL_UNIFORM_BUFFER,
+                              static_cast<uint32_t>(UboLayouts::RENDER_DATA),
+                              _ubo_render_data, 0, size_buffer);
+        }
+
         _P_STATIC void _framebuffer_size_callback(GLFWwindow* window,
                                                int width,
                                                int height) {
@@ -231,8 +251,9 @@ namespace Pong {
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
             // glfw window creation
-            _window = glfwCreateWindow(SCR_WIDTH,
-                                       SCR_HEIGHT,
+
+            _window = glfwCreateWindow((int) _render_data.width,
+                                       (int) _render_data.height,
                                        "LearnOpenGL",
                                        nullptr,
                                        nullptr);
@@ -270,6 +291,9 @@ namespace Pong {
             _create_ubo_view_matrices();
             _create_ubo_lights();
             _create_ubo_runtime_data();
+            _create_ubo_render_data();
+
+            update_ubo_render_data();
         }
 
     public:
@@ -310,9 +334,8 @@ namespace Pong {
                             sizeof(glm::mat4),
                             glm::value_ptr(
                                     glm::perspective(glm::radians(camera->Zoom),
-                                                     (float) Pong::Render::SCR_WIDTH / (float) Pong::Render::SCR_HEIGHT,
-                                                     Pong::Render::Z_NEAR,
-                                                     Pong::Render::Z_FAR)));
+                                                     (float)_render_data.width / (float)_render_data.height,
+                                                     _render_data.z_near,_render_data.z_far)));
 
             // set view
             glBufferSubData(GL_UNIFORM_BUFFER,
@@ -378,6 +401,8 @@ namespace Pong {
         }
 
         _P_INLINE void update_ubo_runtime_data() const {
+            assert(_ubo_runtime_data != 0);
+
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_runtime_data);
 
             uint32_t offset_size = 0;
@@ -388,6 +413,15 @@ namespace Pong {
                             &_runtime_data);
 
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        }
+
+        _P_INLINE void update_ubo_render_data() const {
+            assert(_ubo_runtime_data != 0);
+
+            glBufferSubData(GL_UNIFORM_BUFFER,
+                            0,
+                            sizeof(_render_data),
+                            &_render_data);
         }
 
         _P_NODISCARD _P_INLINE auto get_framebuffer() const
@@ -449,9 +483,11 @@ namespace Pong {
         _P_NODISCARD _P_INLINE const auto& get_runtime_Data() const noexcept {
             return _runtime_data;
         }
+
+        _P_NODISCARD _P_INLINE const auto& get_render_data() const noexcept {
+            return _render_data;
+        }
     };
-
-
 }
 
 

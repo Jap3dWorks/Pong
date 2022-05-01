@@ -37,8 +37,9 @@ namespace Pong {
         // point lights pointers
         PointLight point_lights_array[POINT_LIGHTS_COUNT];
 
-        float cam_lastX = (float)Render::SCR_WIDTH / 2.0;
-        float cam_lastY = (float)Render::SCR_HEIGHT / 2.0;
+        float cam_lastX = 0.f;
+        float cam_lastY = 0.f;
+
         bool cam_firstMouse = true;
 
     private:
@@ -52,8 +53,6 @@ namespace Pong {
                 glm::vec3(0.f, 0.f, 5.f));
         ActorCameraDistanceComparer _actor_blending_comparer =
                 ActorCameraDistanceComparer(_camera);
-
-
 
     private:
         //private methods
