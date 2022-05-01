@@ -52,10 +52,12 @@ namespace Pong {
 
     class Render {
     private:
-        // create private struct with this data
-        uint32_t _frame_counter = 0;
-        float _fps = 0.f;
-        double _time = glfwGetTime();
+        struct RuntimeData {
+            double delta_time = 0;
+            double time = glfwGetTime();
+            GLuint frame_counter = 0;
+            float fps = 0.f;
+        } _runtime_data;
 
         uint32_t _render_quad_vao = 0;
 
@@ -68,9 +70,6 @@ namespace Pong {
         uint32_t _ubo_lights = 0;
         uint32_t _ubo_runtime_data = 0;
 
-        // Use for calculate delta time
-        double  _last_frame_time = 0.0;
-
         GLFWwindow* _window;
         _P_STATIC _P_INLINE Render* instance = nullptr;
 
@@ -82,9 +81,6 @@ namespace Pong {
 
         _P_CONSTEXPR _P_STATIC _P_INLINE GLuint MAX_DIRECTIONAL_LIGHTS = 4;
         _P_CONSTEXPR _P_STATIC _P_INLINE GLuint MAX_POINT_LIGHTS = 32;
-
-        // time variables
-        _P_STATIC _P_INLINE double delta_time = 0.0;
 
         RenderLayer first_pass_render_layers[2] =
                 {RenderLayer::BASE,
@@ -179,10 +175,10 @@ namespace Pong {
             assert(_ubo_lights == 0);
 
             GLuint size_buffer =
-                    sizeof(decltype(MAX_DIRECTIONAL_LIGHTS)) +
                     (sizeof(DirectionalLight) * MAX_DIRECTIONAL_LIGHTS) +
-                    sizeof(decltype(MAX_POINT_LIGHTS)) +
-                    (sizeof(PointLight) * MAX_POINT_LIGHTS);
+                    (sizeof(PointLight) * MAX_POINT_LIGHTS) +
+                    sizeof(decltype(MAX_DIRECTIONAL_LIGHTS)) +
+                    sizeof(decltype(MAX_POINT_LIGHTS));
 
             glGenBuffers(1, &_ubo_lights);
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
@@ -203,11 +199,7 @@ namespace Pong {
         _P_INLINE void _create_ubo_runtime_data() {
             assert(_ubo_runtime_data == 0);
 
-            uint32_t size_buffer =
-                    sizeof(decltype(_frame_counter)) +
-                    sizeof(decltype(_fps)) +
-                    sizeof(decltype(_time)) +
-                    sizeof(decltype(delta_time));
+            uint32_t size_buffer = sizeof(_runtime_data);
 
             glGenBuffers(1, &_ubo_runtime_data);
 
@@ -305,9 +297,8 @@ namespace Pong {
             glfwSwapBuffers(_window);
             glfwPollEvents();
 
-            _frame_counter++;
-            update_delta_time();
-            _time = glfwGetTime();
+            _runtime_data.frame_counter++;
+            update_time_data();
         }
 
         _P_INLINE void update_ubo_view(ACamera* camera) const {
@@ -348,7 +339,23 @@ namespace Pong {
 
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_lights);
 
-            // set directional
+            // set directional and point
+            glBufferSubData(GL_UNIFORM_BUFFER,
+                            buffer_offset,
+                            sizeof(DirectionalLight) * MAX_DIRECTIONAL_LIGHTS,
+                            (void*)directional_lights.data());
+
+            buffer_offset += sizeof(DirectionalLight) * MAX_DIRECTIONAL_LIGHTS;
+
+            glBufferSubData(GL_UNIFORM_BUFFER,
+                            buffer_offset,
+                            sizeof(PointLight) * MAX_POINT_LIGHTS,
+                            (void*)point_lights.data());
+
+            buffer_offset += sizeof(PointLight) * MAX_POINT_LIGHTS;
+
+
+            // arrays sizes
             auto directional_lights_count =
                     static_cast<decltype(MAX_DIRECTIONAL_LIGHTS)>
                     (directional_lights.size());
@@ -360,19 +367,6 @@ namespace Pong {
 
             buffer_offset += sizeof(decltype(directional_lights_count));
 
-            DirectionalLight testdirlight[MAX_DIRECTIONAL_LIGHTS];
-            testdirlight[0] = directional_lights[0];
-
-            LOG_INFO("LIGHTS size: " << sizeof(DirectionalLight) * MAX_DIRECTIONAL_LIGHTS)
-
-            glBufferSubData(GL_UNIFORM_BUFFER,
-                            buffer_offset,
-                            sizeof(DirectionalLight) * MAX_DIRECTIONAL_LIGHTS,
-                            (void*)testdirlight);
-
-            buffer_offset += sizeof(DirectionalLight) * MAX_DIRECTIONAL_LIGHTS;
-
-            // point lights
             auto point_lights_count =
                     static_cast<decltype(MAX_POINT_LIGHTS)>(point_lights.size());
 
@@ -381,13 +375,6 @@ namespace Pong {
                             sizeof(decltype(point_lights_count)),
                             (void*)&point_lights_count
                             );
-
-            buffer_offset += sizeof(decltype(point_lights_count));
-
-            glBufferSubData(GL_UNIFORM_BUFFER,
-                            buffer_offset,
-                            sizeof(PointLight) * MAX_POINT_LIGHTS,
-                            (void*)point_lights.data());
         }
 
         _P_INLINE void update_ubo_runtime_data() const {
@@ -395,31 +382,10 @@ namespace Pong {
 
             uint32_t offset_size = 0;
 
-            // set projection
             glBufferSubData(GL_UNIFORM_BUFFER,
                             offset_size,
-                            sizeof(decltype(_frame_counter)),
-                            &_frame_counter);
-
-            offset_size += sizeof(decltype(_frame_counter));
-
-            glBufferSubData(GL_UNIFORM_BUFFER,
-                            offset_size,
-                            sizeof(decltype(_fps)),
-                            &_fps);
-
-            offset_size += sizeof(decltype(_fps));
-
-            glBufferSubData(GL_UNIFORM_BUFFER,
-                            offset_size,
-                            sizeof(decltype(_time)),
-                            &_time);
-
-            offset_size += sizeof(decltype(delta_time));
-            glBufferSubData(GL_UNIFORM_BUFFER,
-                            offset_size,
-                            sizeof(decltype(delta_time)),
-                            &delta_time);
+                            sizeof(_runtime_data),
+                            &_runtime_data);
 
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }
@@ -427,10 +393,10 @@ namespace Pong {
         _P_NODISCARD _P_INLINE auto get_framebuffer() const
             {return _framebuffer;}
 
-        _P_INLINE void update_delta_time() {
+        _P_INLINE void update_time_data() {
             auto current_frame = glfwGetTime();
-            Pong::Render::delta_time = current_frame - _last_frame_time;
-            _last_frame_time = current_frame;
+            _runtime_data.delta_time = current_frame - _runtime_data.time;
+            _runtime_data.time = current_frame;
         }
 
         _P_STATIC _P_INLINE Render* get_instance() {
@@ -470,10 +436,19 @@ namespace Pong {
             }
         }
 
-        _P_INLINE void clear_frame_counter() { _frame_counter=0;}
+        _P_INLINE void clear_frame_count() noexcept { _runtime_data.frame_counter=0;}
 
-        _P_NODISCARD const auto& get_frame() const {
-            return _frame_counter;}
+        _P_NODISCARD const auto& get_frame_count() const noexcept {
+            return _runtime_data.frame_counter;
+        }
+
+        _P_NODISCARD _P_INLINE const auto& get_delta_time() const noexcept {
+            return _runtime_data.delta_time;
+        }
+
+        _P_NODISCARD _P_INLINE const auto& get_runtime_Data() const noexcept {
+            return _runtime_data;
+        }
     };
 
 

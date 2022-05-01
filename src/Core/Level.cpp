@@ -18,7 +18,7 @@ namespace Pong
 
     void AbstractLevel::run() {
         LOG_INFO("Clear frame counter")
-        _render->clear_frame_counter();
+        _render->clear_frame_count();
 
         // --config scene--
         LOG_INFO("Setup level")
@@ -41,7 +41,7 @@ namespace Pong
         // render loop
         while (!glfwWindowShouldClose(_render->get_window())) {
             // pre-frame logic
-//            _render->update_delta_time();
+//            _render->update_time_data();
 
             _update_actors();
 
@@ -50,7 +50,7 @@ namespace Pong
             // inputs
             _close_level();
             for (const auto &item: _inputList)
-                item(Pong::Render::delta_time);
+                item(_render->get_delta_time());
 
             _frame_calc();
 
@@ -180,7 +180,8 @@ namespace Pong
         for (int i = 0; i < _scene->actor_map.size(); i++)
         {
             // try to update only kinetic actors
-            std::next(it, i)->second->update(Pong::Render::delta_time);
+            std::next(it, i)->second->update(
+                    _render->get_delta_time());
         }
     }
 

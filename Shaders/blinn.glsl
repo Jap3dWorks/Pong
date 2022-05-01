@@ -11,10 +11,10 @@ layout (std140, binding = 0) uniform ViewMatrices {
 };
 
 layout (std140, binding=2) uniform FrameData {
-	uint frame;
-	float fps;
-	double time;
 	double delta_time;
+	double time;
+	uint frame_count;
+	float fps;
 };
 
 out VS_OUT {
@@ -25,8 +25,7 @@ out VS_OUT {
 
 uniform mat4 model;
 
-void main()
-{
+void main() {
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
 	vs_out.TexCoords = aTexCoords;
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
@@ -60,18 +59,18 @@ struct Point {
 	vec4 Color;
 };
 
-layout (std140, binding = 1) uniform LightsSourceBlock{
-	uint directional_count;
+layout (std140, binding = 1) uniform LightsSourceBlock {
 	Directional directional[MAX_LIGHTS];
+	Point point_lights[MAX_LIGHTS];
+	uint directional_count;
 	uint point_count;
-	Point lights[MAX_LIGHTS];
 };
 
 layout (std140, binding=2) uniform FrameData {
-	uint frame;
-	float fps;
-	double time;
 	double delta_time;
+	double time;
+	uint frame_count;
+	float fps;
 };
 
 in VS_OUT{
@@ -85,22 +84,18 @@ uniform vec3 surfaceColor;
 uniform float glow;
 uniform float specular;
 
-void main()
-{
+void main() {
 	vec3 color = surfaceColor;
-//	vec3 dir_color = vec3(directional[0].color); // acumulate directionals
-	vec3 dir_color = vec3(0.7, 0.7, 0.5); // acumulate directionals
+	vec3 dir_color = vec3(directional[0].color); // acumulate directionals
 	vec3 normal = normalize(fs_in.Normal);
 
 	vec3 ambient = 0.1 * color + vec3(directional[0].ambient);
-//	vec3 ambient = 0.1 * color + vec3(0.2, 0.2, 0.6);
 
 	vec3 lighting = ambient;
 	vec3 viewDir = normalize(vec3(viewPos) - fs_in.FragPos);
 
 	// calculate directional
-//	vec3 lightDir = -normalize(vec3(directional[0].direction));
-	vec3 lightDir = -normalize(vec3(-0.1, -0.9, 0.0));
+	vec3 lightDir = -normalize(vec3(directional[0].direction));
 	float diff = max(dot(lightDir, normal), 0.0);
 	lighting += dir_color * diff * color;
 
@@ -109,18 +104,17 @@ void main()
 	float spec = pow(max(dot(normal, halfDir), 0.0), glow);
 	lighting += dir_color * spec * specular;
 
-	// point lights
-	//	for(int i = 0; i < 5; i++)
-	//	{
-	//		lightDir = normalize(lights[i].Position - fs_in.FragPos);
-	//		diff = max(dot(lightDir, normal), 0.0);
-	//		vec3 result = lights[i].Color * diff * color;
-	//
-	//		float distance = length(fs_in.FragPos - lights[i].Position);
-	//
-	//		lighting += result * 1.0 / (distance * distance);
-	//	}
+//	 point lights
+	for(int i = 0; i < point_count; i++)
+	{
+		lightDir = normalize(point_lights[i].Position.xyz - fs_in.FragPos);
+		diff = max(dot(lightDir, normal), 0.0);
+		vec3 result = point_lights[i].Color.xyz * diff * color;
+
+		float distance = length(fs_in.FragPos - point_lights[i].Position.xyz);
+
+		lighting += result * 1.0 / (distance * distance);
+	}
 
 	FragColor = vec4(lighting, 1.0);
-	//	FragColor = vec4(directional.color, 1.0);
 }

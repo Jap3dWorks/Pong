@@ -12,14 +12,14 @@
 // https://project-awesome.org/terkelg/awesome-creative-coding#books
 // TODO: Load models
 
-int main()
-{
+int main(int argc, char** argv) {
     if (true) {
         BlendingLevel b_lvl;
         LOG_INFO("Blending level run");
 
         b_lvl.run();
     }
+
     else {
         auto s_lvl = ShadingLevel();
         LOG_INFO("Shading Level")
