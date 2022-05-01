@@ -29,7 +29,6 @@ add_executable(${PROJECT_NAME}
         src/Core/Actor.cpp
         src/Core/Collider.cpp
         src/Core/Level.cpp
-        src/Core/Render.cpp
         src/Core/Scene.cpp
         src/Core/Shape.cpp
         src/Core/Component.cpp

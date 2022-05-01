@@ -858,7 +858,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     vec2 rpos = spos * iResolution.xy;
 
     if(rpos.y<1.0 && rpos.x<3.0) {}
-    else{
+    else {
         vec3 ocol = textureLod(iChannel0, spos, 0.0).xyz;
         if(iFrame==0) ocol = col;
         col = mix(ocol, col, 0.1+0.8*isCloud);
@@ -866,14 +866,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
 
     // -----------------
 
-    if (fragCoord.y<1.0 && fragCoord.x<3.0)
-    {
+    if (fragCoord.y<1.0 && fragCoord.x<3.0) {
         if(abs(fragCoord.x -2.5)<0.5) fragColor = vec4(ca[2], -dot(ca[2], ro));
         if(abs(fragCoord.x -1.5)<0.5) fragColor = vec4(ca[1], -dot(ca[1], ro));
         if(abs(fragColor.x -0.5)<0.5) fragColor = vec4(ca[0], -dot(ca[0], ro));
     }
-    else
-    {
+    else  {
         fragColor = vec4(col, 1.0);
     }
 

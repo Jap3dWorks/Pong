@@ -14,7 +14,7 @@
 
 int main()
 {
-    if (false) {
+    if (true) {
         BlendingLevel b_lvl;
         LOG_INFO("Blending level run");
 

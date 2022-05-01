@@ -6,7 +6,7 @@
 namespace Pong
 {
     AbstractLevel::AbstractLevel() {
-        _render = Pong::Render::getInstance();
+        _render = Pong::Render::get_instance();
         _scene = Pong::Scene::get_instance();
     }
 
@@ -18,7 +18,7 @@ namespace Pong
 
     void AbstractLevel::run() {
         LOG_INFO("Clear frame counter")
-        _render->clear_frame();
+        _render->clear_frame_counter();
 
         // --config scene--
         LOG_INFO("Setup level")
@@ -39,9 +39,9 @@ namespace Pong
         _components_start_level();
 
         // render loop
-        while (!glfwWindowShouldClose(_render->getWindow())) {
+        while (!glfwWindowShouldClose(_render->get_window())) {
             // pre-frame logic
-            _render->calculate_deltaTime();
+//            _render->update_delta_time();
 
             _update_actors();
 
@@ -49,16 +49,14 @@ namespace Pong
 
             // inputs
             _close_level();
-            for (auto const &i: _inputList)
-                i(Pong::Render::DeltaTime);
+            for (const auto &item: _inputList)
+                item(Pong::Render::delta_time);
 
             _frame_calc();
 
             Pong::Render::bind_framebuffer(_render->get_framebuffer());
-//            Pong::Render::bind_framebuffer(0);
             _frame_draw();
-//            glfwSwapBuffers(_render->getWindow());
-//            glfwPollEvents();
+
             _render->draw_framebuffer();
         }
         LOG_DEBUG("Exit lvl");
@@ -67,16 +65,16 @@ namespace Pong
     void AbstractLevel::_close_level()
     {
         // close level inputs
-        if (glfwGetKey(_render->getWindow(),
+        if (glfwGetKey(_render->get_window(),
                 GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(_render->getWindow(), true);
+            glfwSetWindowShouldClose(_render->get_window(), true);
         }
     }
 
     void AbstractLevel::_configInputs() {
         // camera_ptr inputs
-        Render* render = Render::getInstance();
+        Render* render = Render::get_instance();
         std::map<int, Pong::Movements> camMap =
         {
             {GLFW_KEY_W, Pong::Movements::FORWARD},
@@ -89,7 +87,7 @@ namespace Pong
         _inputList.emplace_back(
                 _scene->get_camera(),
             camMap,
-            render->getWindow());
+                render->get_window());
     }
 
     void AbstractLevel::_frame_collisions() {
@@ -119,14 +117,16 @@ namespace Pong
         }
     }
 
-    void AbstractLevel::_frame_calc(){}
+    void AbstractLevel::_frame_calc() {}
 
     void AbstractLevel::_frame_draw() {
         _render->update_ubo_view(_scene->get_camera());
-        _render->update_ubo_lights(_scene);
-        _render->update_frame_data();
+        _render->update_ubo_lights(
+                {*_scene->get_directional_light()}
+                );
+        _render->update_ubo_runtime_data();
 
-        for (auto layer: _render->first_pass_renderlayers){
+        for (auto layer: _render->first_pass_render_layers){
             for (auto material: _scene->renderlayer_material_map[layer]){
                 material->use();
                 material->update_shader(_render, _scene);
@@ -180,7 +180,7 @@ namespace Pong
         for (int i = 0; i < _scene->actor_map.size(); i++)
         {
             // try to update only kinetic actors
-            std::next(it, i)->second->update(Pong::Render::DeltaTime);
+            std::next(it, i)->second->update(Pong::Render::delta_time);
         }
     }
 

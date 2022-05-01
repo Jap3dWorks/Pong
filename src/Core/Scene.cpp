@@ -11,10 +11,10 @@ namespace Pong{
     Scene::Scene()
     {
         // start Render
-        Render* render = Render::getInstance();
+        Render* render = Render::get_instance();
         // create callbacks
-        glfwSetCursorPosCallback(render->getWindow(), Pong::mouse_callback);
-        glfwSetScrollCallback(render->getWindow(), scroll_callback);
+        glfwSetCursorPosCallback(render->get_window(), Pong::mouse_callback);
+        glfwSetScrollCallback(render->get_window(), scroll_callback);
     }
 
     Scene::~Scene()

@@ -127,9 +127,12 @@ protected:
 
         // --lighting--
         Pong::DirectionalLight *directional_light = _scene->get_directional_light();
-        directional_light->direction = glm::normalize(glm::vec4{0.3f, -1.f, -0.5f, 1.f});
-        directional_light->color = glm::vec4{0.8f, 0.8f, 0.3f, 1.f};
-        directional_light->ambient = glm::vec4{0.22f, 0.3f, 0.4f, 1.f};
+        directional_light->direction =
+                glm::normalize(glm::vec4{0.3f, -1.f, -0.5f, 1.f});
+        directional_light->color =
+                glm::vec4{0.8f, 0.8f, 0.3f, 1.f};
+        directional_light->ambient =
+                glm::vec4{0.22f, 0.22f, 0.7f, 1.f};
     }
 
     inline void _create_blending_actors() {

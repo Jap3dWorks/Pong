@@ -34,7 +34,7 @@ namespace Pong {
         }
 
 
-        void operator()(float deltaTime) const
+        void operator()(double deltaTime) const
         {
             for (auto const& it: _glfw_keys)
             {
