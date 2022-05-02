@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 SET(PROJECT_NAME Pong)
 
+set(LIBRARIES D:/libraries)
+
 project(${PROJECT_NAME}
         VERSION 0.0.1
         )
@@ -21,7 +23,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
 endif()
 
-
 include_directories("./include")
 
 add_executable(${PROJECT_NAME}
@@ -34,10 +35,7 @@ add_executable(${PROJECT_NAME}
         src/Core/Component.cpp
         )
 
-
 # --External Libraries--
-set(LIBRARIES D:/libraries)
-
 message("Include glfw")
 include_directories(${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/include)
 message("Link glfw3")
@@ -85,8 +83,22 @@ add_custom_command(
         COMMENT "symbolic link resources folder from ${source} => ${destination}"
 )
 
+# ----------
 # -- Test --
+# ----------
 add_executable(
         Test
         ./test/test.cpp
 )
+
+# -------------
+# -- gl_test --
+# -------------
+project(GL_TEST
+        VERSION 0.1)
+
+add_executable(${PROJECT_NAME} ./test/gl_test.cpp)
+target_link_libraries(
+        ${PROJECT_NAME} PRIVATE general ${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/lib-vc2019/glfw3.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE glad)
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBRARIES}/assimp/lib/assimp-vc140-mt.lib)

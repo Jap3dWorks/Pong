@@ -34,12 +34,12 @@ namespace Pong {
         }
 
 
-        void operator()(double deltaTime) const
+        void operator()(double delta_time) const
         {
             for (auto const& it: _glfw_keys)
             {
                 if (glfwGetKey(_window, it.first) == GLFW_PRESS)
-                    _move_element->process_keyboard(it.second, deltaTime);
+                    _move_element->process_keyboard(it.second, delta_time);
             }
         }
     };

@@ -22,7 +22,7 @@ namespace Pong {
         material->get_shader()->setMat4("model", _transform);
     }
 
-    void Actor::process_keyboard(Movements movement, float deltaTime) {}
+    void Actor::process_keyboard(Movements movement, const double& delta_time) {}
 
     void Actor::add_collider(Collider* coll)
     {
@@ -88,7 +88,7 @@ namespace Pong {
 
     // --Player--
     // ----------
-    void APlayer::process_keyboard(Movements move_direction, float delta_time) {
+    void APlayer::process_keyboard(Movements move_direction, const double& delta_time) {
         float f_speed = _base_speed * delta_time;
 
         if (move_direction == Pong::Movements::UP) {
@@ -124,7 +124,7 @@ namespace Pong {
         return glm::lookAt(Position, Position + Front, Up);
     }
 
-    void ACamera::process_keyboard(Pong::Movements direction, float delta_time) {
+    void ACamera::process_keyboard(Pong::Movements direction, const double& delta_time) {
         float velocity = MovementSpeed * delta_time;
         if (direction == Pong::Movements::FORWARD)
             Position += Front * velocity;

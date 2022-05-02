@@ -43,7 +43,7 @@ namespace Pong {
 
         virtual ~Actor();
 
-        virtual void process_keyboard(Movements movement, float deltaTime);
+        virtual void process_keyboard(Movements movement, const double& delta_time);
 
         virtual void draw(const Render *render, const Scene *scene, Material *material) const;
 
@@ -135,7 +135,7 @@ namespace Pong {
 
         void update(float delta_time) override;
 
-        void process_keyboard(Movements move_direction, float delta_time) override;
+        void process_keyboard(Movements move_direction, const double& delta_time) override;
     };
 
     // --ABALL class--
@@ -219,7 +219,7 @@ namespace Pong {
         [[nodiscard]] glm::mat4 get_view_matrix() const;
 
         // keyboard input
-        void process_keyboard(Pong::Movements direction, float delta_time) override;
+        void process_keyboard(Pong::Movements direction, const double& delta_time) override;
 
         // processes input received from a mouse input system.
         void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constraintPitch = true) {

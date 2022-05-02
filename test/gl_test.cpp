@@ -1,11 +1,26 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "logger.h"
+
+#include <assimp/>
+
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #include "Core/Shader.h"
+#include "logger.h"
+#include "Core/Lights.h"
+#include "Core/Actor.h"
+#include "Core/core_vals.h"
+#include "Core/Level.h"
+#include "Core/Render.h"
+#include "Core/Texture.h"
+#include "Core/Shape.h"
+#include "Core/Scene.h"
+#include "Core/Collider.h"
+#include "Core/Component.h"
+#include "Core/DataComparers.h"
 
 #include <iostream>
 
@@ -19,8 +34,7 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-int main()
-{
+int main(int argc, char** argv) {
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -31,7 +45,6 @@ int main()
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);

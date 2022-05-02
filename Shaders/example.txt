@@ -923,13 +923,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                         0.0, 0.0, 0.0, 1.0 );
 
     // world space
-    vec4 wpos = vec4(ro + rd*resT,1.0);
+    vec4 wpos = vec4(ro + rd*resT, 1.0);
+
     // camera space
-    vec3 cpos = (wpos*oldCam).xyz; // note inverse multiply
+    vec3 cpos = (wpos * oldCam).wyz; // note inverse multiply
+
     // ndc space
     vec2 npos = 1.5 * cpos.xy / cpos.z;
+
     // screen space
-    vec2 spos = 0.5 + 0.5*npos*vec2(iResolution.y/iResolution.x,1.0);
+    vec2 spos = 0.5 + 0.5 * npos * vec2(
+        iResolution.y/iResolution.x,1.0);
+
     // undo dither
     spos -= o/iResolution.xy;
 	// raster space
