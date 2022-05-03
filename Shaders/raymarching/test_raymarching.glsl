@@ -23,8 +23,11 @@ out VS_OUT {
     vec2 TexCoords;
 } vs_out;
 
+out mat3 view_matrix;
+
 void main() {
     vs_out.FragPos = vec3(aPos.x, aPos.y, aPos.z);
+    view_matrix = inverse(mat3(View));
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.f);
 }
 
@@ -42,6 +45,7 @@ layout (std140, binding=3) uniform RenderData {
     uint RenderHeight;
     float ZNear;
     float ZFat;
+    float aspect;
 };
 
 layout (location=0) out vec4 FragColor;
@@ -52,14 +56,17 @@ in VS_OUT{
     vec2 TexCoords;
 }vs_in;
 
+in mat3 view_matrix;
 
 float distance_from_sphere(in vec3 point, in vec3 center, float radius) {
     return length(point - center) - radius;
 }
 
 float map_the_world(in vec3 point) {
+    float displacement = sin(5.0 * point.x) * sin(5.0 * point.y) * sin(5.0 * point.z) * 0.25;
     float sphere_0 = distance_from_sphere(point, vec3(0.0), 1.0);
-    return sphere_0;
+
+    return sphere_0 + displacement;
 }
 
 vec3 calculate_normal(in vec3 p) {
@@ -89,8 +96,10 @@ vec3 ray_march(in vec3 r_origin, in vec3 r_direction) {
          if (distance_to_closest < MINIMUM_HIT_DISTANCE) {
              vec3 normal = calculate_normal(current_position);
 
-//             return vec3(1.0, 1.0, 1.0);
-             return normal * 0.5 + 0.5;
+             vec3 light_position = vec3(2.0, -5.0, 3.0);
+             vec3 direction_to_light = normalize(current_position - light_position);
+             float diffuse_intensity = max(0.0, dot(normal, direction_to_light));
+             return vec3(1.0, 0.0, 0.0) * diffuse_intensity;
          }
 
         if (total_distance_traveled > MAXIMUM_TRACE_DISTANCE) {
@@ -104,26 +113,13 @@ vec3 ray_march(in vec3 r_origin, in vec3 r_direction) {
 }
 
 void main() {
-//    vec2 uv = vUV.st * 2.0 - 1.0;
+    vec3 r_origin = ViewPos.xyz;
 
-    vec3 camera_position = vec3(ViewPos.xy, ViewPos.z);
+    vec3 r_direction = view_matrix * vec3(vs_in.FragPos.x,
+                vs_in.FragPos.y / aspect,
+                -1.0);
 
-    vec3 r_origin = camera_position;
-//    vec3 r_origin = vec3(0.0, 0.0, -5.0);
-    float aspect = float(RenderHeight) / float(RenderWidth);
-
-    vec3 r_direction = vec3(vs_in.FragPos.x,
-                            vs_in.FragPos.y * aspect,
-                            1.0);
-
-//    vec3 r_origin =
-//    vec4 r_direction = View * vec4(vs_in.FragPos.x,
-//                                vs_in.FragPos.y * aspect,
-//                                1.0, 1.0);
-
-//    vec3 r_direction = vs_in.FragPos;
-
-    vec3 shader_color = ray_march(r_origin, r_direction.xyz);
+    vec3 shader_color = ray_march(r_origin, r_direction);
 
     FragColor = vec4(shader_color, 1.0);
 

@@ -64,6 +64,7 @@ namespace Pong {
             uint32_t height=720;
             float z_near = 0.1;
             float z_far = 10000.f;
+            float aspect = float(width) / float(height);
         } _render_data;
 
         uint32_t _render_quad_vao = 0;

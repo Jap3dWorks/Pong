@@ -1,7 +1,7 @@
 #include "logger.h"
 //#include "sandbox.h"
 #include "Levels/blending_level.h"
-#include "Levels/shading_level.h"
+#include "Levels/paint_with_shaders_level.h"
 #include <iostream>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     }
 
     else {
-        auto s_lvl = ShadingLevel();
+        auto s_lvl = PaintWithShades();
         LOG_INFO("Shading Level")
         s_lvl.run();
     }

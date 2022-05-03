@@ -23,8 +23,11 @@ out VS_OUT {
     vec2 TexCoords;
 } vs_out;
 
+out mat3 view_matrix;
+
 void main() {
     vs_out.FragPos = vec3(aPos.x, aPos.y, aPos.z);
+    view_matrix = ineverse(mat3(View));
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.f);
 }
 
@@ -56,6 +59,7 @@ layout (std140, binding=3) uniform RenderData {
     uint render_height;
     float z_near;
     float z_fat;
+    float aspect;
 };
 
 layout (location = 0) out vec4 FragColor;
@@ -65,6 +69,8 @@ in VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
 } fs_in;
+
+in mat3 view_matrix;
 
 float sdEllipsoidY(in vec3 p, in vec2 r) {
     float k0 = length(p / r.xyx);
@@ -924,6 +930,8 @@ void main_image(out vec4 frag_color, in vec2 frag_coord){
 
 void main() {
     FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+
+
     main_image(FragColor, ((fs_in.FragPos.xy + 1)/2.0) * render_width);
 
 //    FragColor = vec4((fs_in.FragPos.y + 1) / 2.f, 0.0, 0.2, 1.0);

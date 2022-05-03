@@ -2,8 +2,8 @@
 // Created by Jordi on 4/24/2022.
 //
 
-#ifndef PONG_SHADING_LEVEL_H
-#define PONG_SHADING_LEVEL_H
+#ifndef PONG_PAINT_WITH_SHADERS_LEVEL_H
+#define PONG_PAINT_WITH_SHADERS_LEVEL_H
 
 #include "Core/core_vals.h"
 #include "Core/Level.h"
@@ -16,7 +16,7 @@
 #include <vector>
 
 // TODO: quad level for shader testing
-class ShadingLevel : public Pong::AbstractLevel {
+class PaintWithShades : public Pong::AbstractLevel {
 protected:
     void _level_setup() override {
         AbstractLevel::_level_setup();
@@ -24,7 +24,7 @@ protected:
         // add a camera quad
         auto draw_shader = _scene->create_shader(
                 "draw_shd",
-                "../Shaders/raymarching/test_raymarching.glsl");
+                "../Shaders/raymarching/palm.glsl");
 
         auto draw_material =
                 _scene->create_material<Pong::Material>(
@@ -42,7 +42,7 @@ protected:
 //                                   0,0,1,0,
 //                                   0,0,0,1});
 
-        _scene->get_camera()->Position = glm::vec3(0.0, 0.0, -5.0);
+        _scene->get_camera()->Position = glm::vec3(0.0, 0.0, 5.0);
 //        _scene->get_camera()->set_transform({1,0,0,0,
 //                                             0,1,0,0,
 //                                             0,0,1,0,
@@ -52,4 +52,4 @@ protected:
     }
 };
 
-#endif //PONG_SHADING_LEVEL_H
+#endif //PONG_PAINT_WITH_SHADERS_LEVEL_H
