@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
+
+cmake_path(GET CMAKE_SOURCE_DIR PARENT_PATH parentPath)
+set(LIBRARIES ${parentPath}/libraries)
+if(NOT EXISTS ${LIBRARIES})
+    error("Libraries path %s{LIBRARIES} doesn't exists!")
+endif()
+
 SET(PROJECT_NAME Pong)
-
-set(LIBRARIES D:/libraries)
-
 project(${PROJECT_NAME}
         VERSION 0.0.1
         )
@@ -11,7 +15,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 message("Add Default log definitions")
 add_compile_definitions(
-#        __LOG_DEBUG__
         __LOG_INFO__
         __LOG_WARNING__
         __LOG_ERROR__

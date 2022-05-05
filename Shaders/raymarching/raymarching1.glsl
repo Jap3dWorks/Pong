@@ -31,39 +31,8 @@ void main() {
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.f);
 }
 
-
 #shader fragment
 #version 450
 
-layout (std140, binding=0) uniform ViewMatrices {
-    mat4 Projection;
-    mat4 View;
-    vec3 ViewPos;};
 
-layout (std140, binding=3) uniform RenderData {
-    uint RenderWidth;
-    uint RenderHeight;
-    float ZNear;
-    float ZFat;
-    float aspect;
-};
 
-layout (location=0) out vec4 FragColor;
-
-in VS_OUT{
-    vec3 FragPos;
-    vec3 Normal;
-    vec2 TexCoords;
-}vs_in;
-
-// https://www.shadertoy.com/view/7lVXRt
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-
-}
-
-void main() {
-
-    mainImage(FragColor, gl_FragCoord.xy);
-
-}

@@ -24,7 +24,7 @@ protected:
         // add a camera quad
         auto draw_shader = _scene->create_shader(
                 "draw_shd",
-                "../Shaders/raymarching/palm.glsl");
+                "../Shaders/raymarching/death_star.glsl");
 
         auto draw_material =
                 _scene->create_material<Pong::Material>(
