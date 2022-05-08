@@ -1,5 +1,5 @@
-#include "Core/Level.h"
-#include "logger.h"
+#include "Pong/Core/level.h"
+#include "Pong/logger.h"
 
 #include <vector>
 
@@ -20,7 +20,7 @@ namespace Pong
         LOG_INFO("Clear frame counter")
         _render->clear_frame_count();
 
-        // --config scene--
+        // --config Scene--
         LOG_INFO("Setup level")
         _level_setup();
         LOG_INFO("Collect blending actors.")
@@ -38,7 +38,7 @@ namespace Pong
         // implement here
         _components_start_level();
 
-        // render loop
+        // Render loop
         while (!glfwWindowShouldClose(_render->get_window())) {
             // pre-frame logic
 //            _render->update_time_data();
@@ -135,7 +135,7 @@ namespace Pong
                     shape->bind_VAO();
                     for (auto actor: _scene->shape_actor_map[shape])
                     {
-                        // Draw by actor
+                        // Draw by Actor
                         if (actor->get_visibility())
                         {
                             actor->draw(_render, _scene, material);

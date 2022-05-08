@@ -10,12 +10,12 @@
 #include "Core/core_vals.h"
 #include "Core/Material.h"
 #include "Core/Lights.h"
-#include "logger.h"
-#include "DefaultMaterials.h"
+#include "Pong/logger.h"
+#include "Pong/default_materials.h"
 #include "Levels/blending_level.h"
 #include <vector>
 
-// TODO: quad level for shader testing
+// TODO: quad level for Shader testing
 class PaintWithShades : public Pong::AbstractLevel {
 protected:
     void _level_setup() override {
@@ -24,7 +24,7 @@ protected:
         // add a camera quad
         auto draw_shader = _scene->create_shader(
                 "draw_shd",
-                "../Shaders/raymarching/death_star.glsl");
+                "../Shaders/raymarching/primitives.glsl");
 
         auto draw_material =
                 _scene->create_material<Pong::Material>(

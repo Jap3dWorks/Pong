@@ -9,9 +9,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Core/Shader.h"
-#include "logger.h"
+#include "Pong/logger.h"
 #include "Core/Lights.h"
-#include "Core/Actor.h"
+#include "Core/actor.h"
 #include "Core/core_vals.h"
 #include "Core/Level.h"
 #include "Core/Render.h"
@@ -65,9 +65,9 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    // build and compile our shader program
+    // build and compile our Shader program
     // ------------------------------------
-    LOG_DEBUG("Build and compile shader program")
+    LOG_DEBUG("Build and compile Shader program")
     Shader ourShader("./Shaders/5.1.transform.glsl");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -165,7 +165,7 @@ int main(int argc, char** argv) {
     ourShader.setInt("texture2", 1);
 
 
-    // render loop
+    // Render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
         // -----
         processInput(window);
 
-        // render
+        // Render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -194,7 +194,7 @@ int main(int argc, char** argv) {
         unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-        // render container
+        // Render container
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

@@ -1,8 +1,8 @@
-#include "Core/Actor.h"
-#include "logger.h"
+#include "Pong/Core/actor.h"
+#include "Pong/logger.h"
 
 #include <utility>
-#include "Core/Material.h"
+#include "Pong/Core/material.h"
 
 namespace Pong {
     Actor::~Actor() {
@@ -17,7 +17,7 @@ namespace Pong {
 
     void Actor::draw(const Render *render, const Scene *scene, Material *material) const
     {
-        // draw if is visible and has a shape
+        // draw if is visible and has a Shape
 //        material->set_param("model", _transform);
         material->get_shader()->setMat4("model", _transform);
     }
@@ -35,11 +35,11 @@ namespace Pong {
         if (!std::is_base_of<Component, T>::value)
             return;
 
-        // create new component if not has input
+        // create new Component if not has input
         if (!component)
             component = new T;
 
-        // A derivate component class
+        // A derivate Component class
         component->addActor(this);
         _components.push_back(static_cast<Component *>(component));
     }

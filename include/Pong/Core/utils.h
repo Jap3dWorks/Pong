@@ -2,7 +2,7 @@
 #define UTILS_H
 
 #include <yvals_core.h>
-#include "Core/core_vals.h"
+#include "Pong/Core/core_vals.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

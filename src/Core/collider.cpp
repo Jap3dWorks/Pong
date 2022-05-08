@@ -1,5 +1,10 @@
-#include "../../include/Core/Collider.h"
-#include "../../include/logger.h"
+
+#include "Pong/Core/collider.h"
+#include "Pong/logger.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <limits>
 #include <algorithm>
@@ -63,8 +68,8 @@ namespace Pong {
         // transform buffers
         glm::vec3 buff[2][8];
         for (int i = 0; i < 8; i++) {
-            buff[0][i] = cA->actor->get_transform() * glm::vec4(cA->OBB_buffer[i], 1);
-            buff[1][i] = cB->actor->get_transform() * glm::vec4(cB->OBB_buffer[i], 1);
+            buff[0][i] = cA->Actor->get_transform() * glm::vec4(cA->OBB_buffer[i], 1);
+            buff[1][i] = cB->Actor->get_transform() * glm::vec4(cB->OBB_buffer[i], 1);
         }
 
         // SAT collision
@@ -113,7 +118,7 @@ namespace Pong {
         // transform buffer
         glm::vec3 buff[8];
         for (int i = 0; i < 8; i++) {
-            buff[i] = cb->actor->get_transform() * glm::vec4(cb->OBB_buffer[i], 1);
+            buff[i] = cb->Actor->get_transform() * glm::vec4(cb->OBB_buffer[i], 1);
         }
 
         float collision_distance = std::numeric_limits<float>::max();
@@ -129,7 +134,7 @@ namespace Pong {
                 buff[BoxCollider::FACES[i][1]] - pnt));
 
             // dot with plane normal should be lower than radius for collision
-            glm::vec3 sph_translate = glm::vec3(cs->actor->get_transform()[3]);
+            glm::vec3 sph_translate = glm::vec3(cs->Actor->get_transform()[3]);
             glm::vec3 sVec = sph_translate - pnt;
             float dot_val = glm::dot(norm, sVec);
             float dist_coll = dot_val - cs->getRadius();
@@ -165,8 +170,8 @@ namespace Pong {
     // sphere sphere
     bool checkCollision(const SphereCollider* scA, const SphereCollider* scB)
     {
-        glm::vec3 pnA = scA->actor->get_transform()[3];
-        glm::vec3 pnB = scB->actor->get_transform()[3];
+        glm::vec3 pnA = scA->Actor->get_transform()[3];
+        glm::vec3 pnB = scB->Actor->get_transform()[3];
 
         glm::vec3 AvB = pnB - pnA;
 
@@ -199,7 +204,7 @@ namespace Pong {
     }
     Collider::~Collider()
     {
-        // Remove component ptrs
+        // Remove Component ptrs
 //        for (const auto &c : component_list)
 //        {
 //            delete c;
@@ -215,7 +220,7 @@ namespace Pong {
     }
 
 
-    // --box collider--
+    // --box Collider--
     // ----------------
     const int BoxCollider::FACES[6][4] = { { 0,1,2,3 },
                                             {4,5,6,7},
@@ -384,7 +389,7 @@ namespace Pong {
         return check_ray;
     }
 
-    // --sphere collider--
+    // --sphere Collider--
     // -------------------
     bool SphereCollider::ray_cast(const RayCast ray, std::vector<RayCastData> &ray_data) const
     {
@@ -459,7 +464,7 @@ namespace Pong {
         return startCollision<SphereCollider>(this, other);
     }
 
-    // --Plane collider--
+    // --Plane Collider--
 
 
     // --ray cast funtions --

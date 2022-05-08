@@ -5,15 +5,15 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "core/core_vals.h"
-#include "Core/Actor.h"
-#include "Core/Material.h"
-#include "Core/Shape.h"
-#include "Core/Collider.h"
-#include "Core/Lights.h"
-#include "Core/Render.h"
+#include "Pong/Core/core_vals.h"
+#include "Pong/Core/actor.h"
+#include "Pong/Core/material.h"
+#include "Pong/Core/shape.h"
+#include "Pong/Core/collider.h"
+#include "Pong/Core/lights.h"
+#include "Pong/Core/render.h"
 
-#include "Core/DataComparers.h"
+#include "Pong/Core/data_comparers.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -75,12 +75,12 @@ namespace Pong {
         std::vector<Shape*> shape_order;
         std::vector<Actor*> actor_order;
 
-        // blending actors ordered by distance to render camera_ptr
+        // blending actors ordered by distance to Render camera_ptr
         std::vector<Actor*>blending_actors;
         std::map<Actor*, std::pair<Shape*, Material*>> blending_actor_shape_material_map;
 
-        // I have the problem of a shape in two different materials.
-        // shape actors will draw twice all materials in this case.
+        // I have the problem of a Shape in two different materials.
+        // Shape actors will draw twice all materials in this case.
         std::map<RenderLayer, std::vector<Material*>> renderlayer_material_map;
         std::map<Material*, std::vector<Shape*>> material_shape_map;
         std::map<Shape*, std::vector<Actor*>> shape_actor_map;
@@ -174,10 +174,10 @@ namespace Pong {
             }
         }
 
-        // get an actor by its name
+        // get an Actor by its name
         _P_NODISCARD Actor* get_actor(const std::string& name) const;
 
-        // Create a collider, template you must specify the collider type
+        // Create a Collider, template you must specify the Collider type
         template<typename T>
         T* create_collider(const std::string& name)
         {
@@ -186,7 +186,7 @@ namespace Pong {
             }
             if (collider_map.find(name) == collider_map.end())
             {
-                T* c_ptr = new T(name);  // create collider ptr
+                T* c_ptr = new T(name);  // create Collider ptr
                 collider_map[name] = static_cast<Collider*>(c_ptr);
                 return c_ptr;
             }
@@ -195,7 +195,7 @@ namespace Pong {
             }
         }
 
-        // get a collider by its name
+        // get a Collider by its name
         _P_NODISCARD Collider* get_collider(const std::string& name) const;
 
         // get camera_ptr ptr
@@ -208,13 +208,13 @@ namespace Pong {
             if (shape_map.find(name) == shape_map.end())
             {
                 T* s_ptr = new T(name, std::forward<Args>(args)...);
-                // store shape pointer in internal level data
+                // store Shape pointer in internal level data
                 shape_map[name] = static_cast<Shape*>(s_ptr);
                 shape_order.push_back(s_ptr);
                 return s_ptr;
             }
             else
-                // if shape exists in the map, return ptr to shape
+                // if Shape exists in the map, return ptr to Shape
                 return static_cast<T*>(shape_map[name]);
         }
 

@@ -1,8 +1,8 @@
 #ifndef PONG_MATERIAL_H
 #define PONG_MATERIAL_H
 
-#include "Core/Shader.h"
-#include "Core/core_vals.h"
+#include "Pong/Core/shader.h"
+#include "Pong/Core/core_vals.h"
 #include <stb_image.h>
 
 #include <iostream>
@@ -101,7 +101,7 @@ namespace Pong {
             if (_is_setup)
                 return;
 
-            // configure shader for the material
+            // configure Shader for the material
             for (int i = 0; i < _textures.size(); i++) {
                 // assign an id to each texture slot
                 _shader->setInt(_textures[i]->get_texture_type(), i);
@@ -134,7 +134,7 @@ namespace Pong {
         // stared Parameters that not vary each frame,
         // it can be a roughness value.
         void update_params() {
-            // set shader parametters
+            // set Shader parametters
             for (auto &p : _float_params) // floats
             {
                 _shader->setFloat(p.first, p.second);
@@ -197,13 +197,13 @@ namespace Pong {
         { return _name; }
 
         virtual void use() {
-            // bind shader
+            // bind Shader
             _shader->use();
 
             // bing Textures texture
             for (unsigned int i =0; i < _textures.size(); i++)
             {
-                // Active texture shader slot
+                // Active texture Shader slot
                 glActiveTexture(GL_TEXTURE0 + i);
                 // bind texture ID
                 // e.g  GL_TEXTURE_2D or GL_TEXTURE_CUBE_MAP

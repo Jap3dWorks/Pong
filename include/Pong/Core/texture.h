@@ -14,15 +14,15 @@
 #include <iostream>
 #include <vector>
 
-#include "Core/core_vals.h"
-#include "Core/Actor.h"
-#include "Core/Scene.h"
-#include "Core/Shape.h"
-#include "Shader.h"
-#include "Material.h"
+#include "Pong/Core/core_vals.h"
+#include "Pong/Core/actor.h"
+#include "Pong/Core/scene.h"
+#include "Pong/Core/shape.h"
+#include "Pong/Core/shader.h"
+#include "Pong/Core/material.h"
 
 // utility to load Textures
-_P_INLINE unsigned int loadTexture(_P_CONST char *path, _P_CONST bool &gammaCorrection)
+_P_INLINE unsigned int load_texture(_P_CONST char *path, _P_CONST bool &gammaCorrection)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);

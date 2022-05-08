@@ -3,13 +3,13 @@
 
 namespace Pong {
 	/**
-		The idea of this class is the posibility of program movements or actions for an actor.
-		this actor maybe should loose the inputs control.  
+		The idea of this class is the posibility of program Movements or actions for an Actor.
+		this Actor maybe should loose the inputs control.
 	*/
 	class Action
 	{
 	public:
-		bool active = true;  // component to know if the action has finished
+		bool active = true;  // Component to know if the action has finished
 		
 		virtual void derived() = 0;
 

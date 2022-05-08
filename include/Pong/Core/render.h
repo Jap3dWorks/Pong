@@ -1,11 +1,11 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include "Core/core_vals.h"
-#include "Core/Movements.h"
-#include "Core/Shader.h"
-#include "Core/Actor.h"
-#include "Core/Lights.h"
+#include "Pong/Core/core_vals.h"
+#include "Pong/Core/movements.h"
+#include "Pong/Core/shader.h"
+#include "Pong/Core/actor.h"
+#include "Pong/Core/lights.h"
 
 #include <cstdint>
 #include <stb_image.h>
@@ -102,7 +102,7 @@ namespace Pong {
         unsigned char gl_enables_config = 7;
 
     private:
-        //Draw render buffers in this screen quad
+        //Draw Render buffers in this screen quad
         _P_INLINE void _build_screen_quad() {
             float quad_vertex[] = {
                     -1.0f, 1.0f, 0.0f, 1.0f,
@@ -144,7 +144,7 @@ namespace Pong {
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                    GL_TEXTURE_2D, _texture_color_buffer, 0);
 
-            // render buffer object
+            // Render buffer object
             unsigned int rbo;
             glGenRenderbuffers(1, &rbo);
             glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -164,7 +164,9 @@ namespace Pong {
         _P_INLINE void _create_ubo_view_matrices() {
             assert(_ubo_view == 0);
 
-            unsigned int ubo_size = (2 * sizeof(glm::mat4)) + sizeof(glm::vec4);
+            unsigned int ubo_size = (2 * sizeof(glm::mat4)) +
+                                     sizeof(glm::vec4) +
+                                     sizeof(float);
 
             glGenBuffers(1, &_ubo_view);
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
@@ -298,7 +300,7 @@ namespace Pong {
         }
 
     public:
-        /**Binds framebuffer, in this buffer the scene is prerendered.*/
+        /**Binds framebuffer, in this buffer the Scene is prerendered.*/
         _P_STATIC _P_INLINE void bind_framebuffer(unsigned int in_framebuffer=0) {
             glBindFramebuffer(GL_FRAMEBUFFER, in_framebuffer);
             glEnable(GL_DEPTH_TEST);
@@ -329,24 +331,40 @@ namespace Pong {
         _P_INLINE void update_ubo_view(ACamera* camera) const {
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
 
+            uint8_t buffer_offset = 0;
+            float fov = glm::radians(camera->Zoom);
+
             // set projection
             glBufferSubData(GL_UNIFORM_BUFFER,
-                            0,
+                            buffer_offset,
                             sizeof(glm::mat4),
                             glm::value_ptr(
-                                    glm::perspective(glm::radians(camera->Zoom),
+                                    glm::perspective(fov,
                                                      (float)_render_data.width / (float)_render_data.height,
                                                      _render_data.z_near,_render_data.z_far)));
+            buffer_offset += sizeof(glm::mat4);
 
             // set view
             glBufferSubData(GL_UNIFORM_BUFFER,
-                            sizeof(glm::mat4), sizeof(glm::mat4),
+                            buffer_offset,
+                            sizeof(glm::mat4),
                             glm::value_ptr(camera->get_view_matrix()));
+            buffer_offset += sizeof(glm::mat4);
 
             // view pos
             glBufferSubData(GL_UNIFORM_BUFFER,
-                            sizeof(glm::mat4) * 2, sizeof(glm::vec4),
+                            buffer_offset,
+                            sizeof(glm::vec4),
                             glm::value_ptr(camera->Position));
+
+            buffer_offset += sizeof(glm::vec4);
+
+            // Fov (Zoom)
+            glBufferSubData(GL_UNIFORM_BUFFER,
+                            buffer_offset,
+                            sizeof(float),
+                            (void*)&fov
+                            );
 
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }

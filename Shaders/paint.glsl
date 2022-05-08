@@ -20,7 +20,7 @@ uniform mat4 model;
 void main()
 {
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
-	gl_Position = projection * view * model * vec4(aPos, 1.0);  // if this line is not in this pos, shader fails :(
+	gl_Position = projection * view * model * vec4(aPos, 1.0);  // if this line is not in this pos, Shader fails :(
 	vec3 view_normal = mat3(view) * normalize(normalMatrix * aNormal);
 	TexCoords = vec2(view_normal) / 2 + 0.5;
 }

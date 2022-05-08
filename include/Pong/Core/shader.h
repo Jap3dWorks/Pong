@@ -3,8 +3,8 @@
 #define SHADER_H
 
 #include <yvals_core.h>
-#include "Core/core_vals.h"
-#include "logger.h"
+#include "Pong/Core/core_vals.h"
+#include "Pong/logger.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -26,8 +26,7 @@ struct ShaderProgramSource
 
 _P_CONSTEXPR unsigned int shader_types_count = (sizeof(ShaderProgramSource)/sizeof(std::string));
 
-_P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath)
-{
+_P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath) {
     std::ifstream stream(FilePath);
     std::stringstream ss[shader_types_count];
 
@@ -35,7 +34,7 @@ _P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath)
     std::string line;
     while(getline(stream, line))
     {
-        if (line.find("#shader") != std::string::npos)
+        if (line.find("#Shader") != std::string::npos)
         {
             if (line.find("vertex") != std::string::npos)
             {
@@ -63,8 +62,7 @@ _P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath)
     };
 }
 
-_P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& source)
-{
+_P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& source) {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
     glShaderSource(id, 1, &src, nullptr);
@@ -80,8 +78,8 @@ class Shader
 public:
     unsigned int ID;
 
-    // constructor reads and builds the shader
-    Shader(const char* shader_path)
+    // constructor reads and builds the Shader
+    _P_EXPLICIT Shader(const char* shader_path)
     {
         // retrieve the vertex/fragment source code from filepath
         std::stringstream ss[2];
@@ -101,21 +99,20 @@ public:
         int success;
         char infoLog[512];
 
-        // vertex shader
+        // vertex Shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, nullptr);
         glCompileShader(vertex);
         checkCompileErrors(vertex, "VERTEX");
-        // fragment shader
+        // fragment Shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, nullptr);
         glCompileShader(fragment);
         checkCompileErrors(fragment, "VERTEX");
 
-        // if geometry shader is given compile
+        // if geometry Shader is given compile
         unsigned int geometry;
-        if (!parse_shader.GeometrySource.empty())
-        {
+        if (!parse_shader.GeometrySource.empty()) {
             const char* gShaderCode = parse_shader.GeometrySource.c_str();
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(geometry, 1, &gShaderCode, nullptr);
@@ -123,7 +120,7 @@ public:
             checkCompileErrors(geometry, "GEOMETRY");
         }
 
-        // shader program
+        // Shader program
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
@@ -143,7 +140,7 @@ public:
         }
     }
 
-    // use/activate the shader
+    // use/activate the Shader
     void use() const {
         glUseProgram(ID);
     }

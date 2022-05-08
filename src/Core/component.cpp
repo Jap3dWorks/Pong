@@ -1,10 +1,10 @@
-#include "Core/Component.h"
+#include "Pong/Core/component.h"
 #include <time.h>
 
 namespace Pong {
     void BallCollisionComponent::at_collision(Collider *owner, Collider *other)
     {
-        // Get ball actor
+        // Get ball Actor
         auto* ball = static_cast<ABall*>(owner->actor);
         auto* sphere_coll = static_cast<SphereCollider*>(owner);
 

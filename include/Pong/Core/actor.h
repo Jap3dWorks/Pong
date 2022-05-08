@@ -9,8 +9,8 @@ namespace Pong
     class Material;
 }
 
-#include "Movements.h"
-#include "Collider.h"
+#include "Pong/Core/movements.h"
+#include "Pong/Core/collider.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -204,10 +204,10 @@ namespace Pong {
                 float upX, float upY, float upZ,
                 float yaw = YAW,
                 float pitch = PITCH) : Front(glm::vec3(0.f, 0.f, -1.f)),
-                                      MovementSpeed(SPEED),
-                                      MouseSensitivity(SENSITIVITY),
-                                      Zoom(ZOOM),
-                                      Actor(std::move(name)) {
+                                       MovementSpeed(SPEED),
+                                       MouseSensitivity(SENSITIVITY),
+                                       Zoom(ZOOM),
+                                       Actor(std::move(name)) {
             Position = glm::vec3(posX, posY, posZ);
             WorldUp = glm::vec3(upX, upY, upZ);
             Yaw = yaw;

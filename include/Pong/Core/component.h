@@ -1,15 +1,15 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "Actor.h"
-#include "Collider.h"
-#include "../logger.h"
+#include "Pong/Core/actor.h"
+#include "Pong/Core/collider.h"
+#include "Pong/logger.h"
 
 #include <iostream>
 
 namespace Pong {
     /**
-        Component class, an actor has a list of compponents, each component
+        Component class, an Actor has a list of compponents, each Component
         can contain a custom script you only have to inherit from Component.
     */
     class Component
@@ -24,7 +24,7 @@ namespace Pong {
     // collision components
     class CollisionComponent: public Component {
     public:
-        virtual ~CollisionComponent() { LOG_DEBUG("Collision component destructor"); }
+        virtual ~CollisionComponent() { LOG_DEBUG("Collision Component destructor"); }
 
         virtual void at_collision(Collider *owner, Collider *other) = 0;
     };
@@ -48,11 +48,11 @@ namespace Pong {
         }
     };
 
-    // actor components
+    // Actor components
     class ActorComponent : public Component {
     public:
         virtual ~ActorComponent() {
-            LOG_DEBUG("Actor component destructor");
+            LOG_DEBUG("Actor Component destructor");
         }
 
         virtual void at_init(Actor*& owner) = 0;

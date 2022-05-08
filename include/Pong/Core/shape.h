@@ -1,9 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-
-
-#include "Core/Utils.h"
+#include "Pong/Core/utils.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -375,7 +373,7 @@ namespace Pong {
         void set_VAO() override;
     };
 
-    // Sky box shape
+    // Sky box Shape
     class SkyBoxShape : public Shape {
     private:
         void _build_sky_box();

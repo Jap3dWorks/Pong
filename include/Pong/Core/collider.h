@@ -9,9 +9,10 @@ namespace Pong
     class Collider;
 }
 
-#include "Actor.h"
-#include "Shape.h"
-#include "Component.h"
+#include "Pong/Core/actor.h"
+#include "Pong/Core/shape.h"
+#include "Pong/Core/component.h"
+#include "Pong/Core/core_vals.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -49,17 +50,16 @@ namespace Pong {
         glm::vec3 point;
         glm::vec3 normal;
         int face_id;
-        Collider* collider;  // const collider
+        Collider* collider;  // const Collider
     };
 
-    class RayCast
-    {
+    class RayCast {
         //float _max_size;
     public:
         glm::vec3 direction;
         glm::vec3 position;
 
-        RayCast(glm::vec3 direction = glm::vec3(0, 0, -1), glm::vec3 position = glm::vec3(0, 0, 0)) :
+        explicit RayCast(glm::vec3 direction = glm::vec3(0, 0, -1), glm::vec3 position = glm::vec3(0, 0, 0)) :
             direction(direction), position(position) {}
 
         /**
@@ -75,14 +75,14 @@ namespace Pong {
 
     bool compare_raycast_data(const RayCastData &a, const RayCastData &b, const glm::vec3 &point);
 
-    // abstract collider class
+    // abstract Collider class
     class Collider
     {
     public:
-        // check collider funtions
+        // check Collider funtions
         friend bool checkCollision(const BoxCollider*, const BoxCollider*);
         friend bool checkCollision(const BoxCollider*, const PlaneCollider*);
-        friend bool checkCollision(const PlaneCollider*, const BoxCollider*);
+        friend bool checkCollision(const PlaneCollider*, const BoxCollider*) {}
         friend bool checkCollision(const BoxCollider*, const MeshCollider*);
         friend bool checkCollision(const MeshCollider*, const BoxCollider*);
         friend bool checkCollision(const BoxCollider*, const SphereCollider*);
@@ -107,14 +107,14 @@ namespace Pong {
 
         const CollisionData* get_collision_data() const { return _collision_data; }
 
-        // component list, at collision all components are excecuted
+        // Component list, at collision all components are excecuted
         std::list<CollisionComponent*> component_list;
         std::list<CollisionComponent*> get_components() { return component_list; }
 
         Actor* actor;
 
         // --methods--
-        std::string getName() const { return _name; }
+        _P_NODISCARD std::string getName() const { return _name; }
 
         virtual bool collide(BoxCollider* other) = 0;
         virtual bool collide(SphereCollider* other) = 0;
@@ -133,7 +133,7 @@ namespace Pong {
         Actor* getActor();
 
         /**
-        Stores CollisionComponent object in collider data.*/
+        Stores CollisionComponent object in Collider data.*/
         void add_component(CollisionComponent* component);
     };
 
@@ -151,9 +151,9 @@ namespace Pong {
 
     public:
         /* constructor
-        @param width collider width
-        @param height collider height
-        @param depth collider depth*/
+        @param width Collider width
+        @param height Collider height
+        @param depth Collider depth*/
         BoxCollider(std::string name, float width = 1.f, float height = 1.f, float depth = 1.f);
 
         bool collide(BoxCollider* other) override;
@@ -199,7 +199,7 @@ namespace Pong {
         glm::vec3* getAABB() const override;
     };
 
-    // infinity area collider
+    // infinity area Collider
     class PlaneCollider : public Collider
     {
     private:
@@ -222,7 +222,7 @@ namespace Pong {
     {
     private:
         unsigned int _VAO;
-        // shape
+        // Shape
         Shape* _shape = nullptr;
 
     public:

@@ -7,11 +7,11 @@
 
 #include <string>
 #include <vector>
-#include "Core/Material.h"
-#include "Core/Shader.h"
-#include "Core/Texture.h"
-#include "Core/Render.h"
-#include "Core/Scene.h"
+#include "Pong/Core/material.h"
+#include "Pong/Core/shader.h"
+#include "Pong/Core/texture.h"
+#include "Pong/Core/render.h"
+#include "Pong/Core/scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,7 +20,7 @@
 #include <stb_image.h>
 
 namespace Pong {
-/**Overrides update_shader from Material class*/
+/**Overrides update_shader from material class*/
     class SKyBoxMaterial : public Material {
     public:
         SKyBoxMaterial(std::string name, Shader *shader, std::vector<Texture *> textures) :

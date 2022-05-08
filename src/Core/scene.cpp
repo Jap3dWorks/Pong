@@ -1,8 +1,8 @@
-#include "Core/Scene.h"
+#include "Pong/Core/scene.h"
 
 #include <utility>
-#include "logger.h"
-#include "DefaultMaterials.h"
+#include "Pong/logger.h"
+#include "Pong/default_materials.h"
 
 
 namespace Pong{
@@ -19,7 +19,7 @@ namespace Pong{
 
     Scene::~Scene()
     {
-        LOG_DEBUG("Call scene destructor");
+        LOG_DEBUG("Call Scene destructor");
         delete _directionalLight;
 
         delete _camera;
@@ -206,7 +206,7 @@ namespace Pong{
 
     // import model methods
     /**Import model from a file like fbx or obj, the shapes that compose the model,
-      Will be added to the scene.
+      Will be added to the Scene.
       Returns: Number of shapes imported.*/
     int Scene::import_model(const std::string& model_path, Actor *& actor)
     {

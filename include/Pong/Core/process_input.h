@@ -1,8 +1,8 @@
 #ifndef PROCESS_INPUT_H
 #define PROCESS_INPUT_H
 
-#include "Movements.h"
-#include "Actor.h"
+#include "Pong/Core/movements.h"
+#include "Pong/Core/actor.h"
 
 #include <iostream>
 #include <GLFW/glfw3.h>
@@ -25,9 +25,9 @@ namespace Pong {
         Constructor receives a pointer of template class, also a map with the relations
         (Key, Movements::_anyMove_)
         @param move_element: object pointer, this object should override process_keyboard method.
-        @param glfw_keys(std::map): relations between keys and movements type.*/
+        @param glfw_keys(std::map): relations between keys and Movements type.*/
         ProcessInput(Actor* move_element, std::map<int, Movements> glfw_keys,
-            GLFWwindow* window) :_glfw_keys(std::move(glfw_keys)), _window(window)
+                     GLFWwindow* window) :_glfw_keys(std::move(glfw_keys)), _window(window)
         {
             // typeid
             _move_element = move_element;

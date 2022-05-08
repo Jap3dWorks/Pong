@@ -30,12 +30,12 @@ include_directories("./include")
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/Core/Actor.cpp
-        src/Core/Collider.cpp
-        src/Core/Level.cpp
-        src/Core/Scene.cpp
-        src/Core/Shape.cpp
-        src/Core/Component.cpp
+        src/Core/actor.cpp
+        src/Core/collider.cpp
+        src/Core/level.cpp
+        src/Core/scene.cpp
+        src/Core/shape.cpp
+        src/Core/component.cpp
         )
 
 # --External Libraries--

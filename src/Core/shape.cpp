@@ -1,5 +1,5 @@
-#include "../../include/Core/Shape.h"
-#include "../../include/logger.h"
+#include "Pong/Core/shape.h"
+#include "Pong/logger.h"
 #include <assimp/Importer.hpp>
 
 namespace Pong {
@@ -989,7 +989,7 @@ namespace Pong {
     }
 
 
-    // Sky box shape
+    // Sky box Shape
     // -------------
     SkyBoxShape::SkyBoxShape(std::string name) : Shape(std::move(name)) {
         _build_sky_box();

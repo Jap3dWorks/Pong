@@ -5,8 +5,8 @@
 #ifndef PONG_SANDBOX_H
 #define PONG_SANDBOX_H
 
-#include "Core/Level.h"
-#include "Core/core_vals.h"
+#include "Pong/Core/level.h"
+#include "Pong/Core/core_vals.h"
 #include <glm/glm.hpp>
 #include <array>
 #include <string>
@@ -141,7 +141,7 @@ unsigned int CompileShaderD(unsigned int type, const std::string& source)
         glGetShaderInfoLog(id, length, &length, message);
         std::cout << "Failed to compile " <<
             (type==GL_VERTEX_SHADER ? "vertex" : "fragment") <<
-            " shader!\n";
+            " Shader!\n";
 
         std::cout << message << std::endl;
         glDeleteShader(id);
@@ -182,7 +182,7 @@ ShaderProgramSource ParseShadert(const std::string& file_path)
 
     while (getline(stream, line))
     {
-        if (line.find("#shader") != std::string::npos)
+        if (line.find("#Shader") != std::string::npos)
         {
             if (line.find("vertex") != std::string::npos)
                 // set mode to vertex

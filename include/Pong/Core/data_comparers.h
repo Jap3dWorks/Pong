@@ -5,8 +5,9 @@
 #ifndef PONG_DATACOMPARERS_H
 #define PONG_DATACOMPARERS_H
 
-#include "../logger.h"
-#include "Actor.h"
+#include "Pong/Core/actor.h"
+#include "Pong/Core/core_vals.h"
+#include "Pong/logger.h"
 
 namespace Pong {
     template<typename T>
@@ -52,7 +53,7 @@ namespace Pong {
 
         explicit ActorCameraDistanceComparer(const ACamera *camera) : camera_ptr(camera) {}
 
-        [[nodiscard]] inline float get_distance(const glm::mat4 &mat_a) const {
+         _P_NODISCARD inline float get_distance(const glm::mat4 &mat_a) const {
             return glm::length<3, float>(glm::vec3(mat_a[3]) - camera_ptr->Position);
         }
 
@@ -64,7 +65,6 @@ namespace Pong {
             bool result = get_distance(act_a->get_transform()) < get_distance(act_b->get_transform());
             return result;
         }
-
     };
 }
 #endif //PONG_DATACOMPARERS_H

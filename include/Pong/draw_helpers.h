@@ -13,11 +13,11 @@
 #include <iostream>
 #include <vector>
 
-#include "Core/Actor.h"
-#include "Core/Scene.h"
-#include "Core/Shape.h"
-#include "Shader.h"
-#include "Material.h"
+#include "Pong/Core/actor.h"
+#include "Pong/Core/scene.h"
+#include "Pong/Core/shape.h"
+#include "Pong/Core/shader.h"
+#include "Pong/Core/material.h"
 
 
 namespace Pong {
@@ -25,7 +25,7 @@ namespace Pong {
     {
         Scene* scene = Scene::get_instance();
 
-        // point actor name
+        // point Actor name
         std::string pnt_nme = "point_";
         int number = 0;
         while (true)
@@ -42,16 +42,15 @@ namespace Pong {
             }
         }
 
-        // get shader
+        // get Shader
         Shader* point_shd = scene->create_shader(
                 "point_shd",
-                "unlit_v.glsl",
-                "unlit_f.glsl");
+                "unlit.glsl");
 
-        Material* point_mat = scene->create_material<Material>("point_mat", point_shd,
-                                                               std::vector<Pong::Texture *>());
+        auto point_mat = scene->create_material<Material>("point_mat", point_shd,
+                                                          std::vector<Pong::Texture *>());
 
-        // point actor
+        // point Actor
         auto* a_point = scene->create_actor<AKinetic>(pnt_nme);
         auto* s_point = scene->create_shape<IcosphereShape>("point_shp");
         a_point->set_transform(glm::translate(glm::mat4(1), point));

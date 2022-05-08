@@ -5,8 +5,8 @@
 #ifndef PONG_TEST_LEVEL_H
 #define PONG_TEST_LEVEL_H
 #include "Core/Level.h"
-#include "DefaultMaterials.h"
-#include "logger.h"
+#include "Pong/default_materials.h"
+#include "Pong/logger.h"
 
 class TestLevel : public Pong::AbstractLevel {
 protected:
@@ -15,7 +15,7 @@ protected:
         Pong::ACamera *camera = _scene->get_camera();
         camera->Position = glm::vec3(0, 0, 9);
 
-        // build and compile the shader program
+        // build and compile the Shader program
         Shader *paint_shd = _scene->create_shader("paint_shd",
                                                   "../shaders/paint.glsl");
 

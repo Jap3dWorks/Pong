@@ -9,8 +9,8 @@
 #include "Core/core_vals.h"
 #include "Core/Material.h"
 #include "Core/Lights.h"
-#include "logger.h"
-#include "DefaultMaterials.h"
+#include "Pong/logger.h"
+#include "Pong/default_materials.h"
 #include "Levels/blending_level.h"
 
 class BlendingLevel : public Pong::AbstractLevel {
