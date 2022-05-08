@@ -68,8 +68,8 @@ namespace Pong {
         // transform buffers
         glm::vec3 buff[2][8];
         for (int i = 0; i < 8; i++) {
-            buff[0][i] = cA->Actor->get_transform() * glm::vec4(cA->OBB_buffer[i], 1);
-            buff[1][i] = cB->Actor->get_transform() * glm::vec4(cB->OBB_buffer[i], 1);
+            buff[0][i] = cA->actor->get_transform() * glm::vec4(cA->OBB_buffer[i], 1);
+            buff[1][i] = cB->actor->get_transform() * glm::vec4(cB->OBB_buffer[i], 1);
         }
 
         // SAT collision
@@ -118,7 +118,7 @@ namespace Pong {
         // transform buffer
         glm::vec3 buff[8];
         for (int i = 0; i < 8; i++) {
-            buff[i] = cb->Actor->get_transform() * glm::vec4(cb->OBB_buffer[i], 1);
+            buff[i] = cb->actor->get_transform() * glm::vec4(cb->OBB_buffer[i], 1);
         }
 
         float collision_distance = std::numeric_limits<float>::max();
@@ -134,7 +134,7 @@ namespace Pong {
                 buff[BoxCollider::FACES[i][1]] - pnt));
 
             // dot with plane normal should be lower than radius for collision
-            glm::vec3 sph_translate = glm::vec3(cs->Actor->get_transform()[3]);
+            glm::vec3 sph_translate = glm::vec3(cs->actor->get_transform()[3]);
             glm::vec3 sVec = sph_translate - pnt;
             float dot_val = glm::dot(norm, sVec);
             float dist_coll = dot_val - cs->getRadius();
@@ -170,13 +170,13 @@ namespace Pong {
     // sphere sphere
     bool checkCollision(const SphereCollider* scA, const SphereCollider* scB)
     {
-        glm::vec3 pnA = scA->Actor->get_transform()[3];
-        glm::vec3 pnB = scB->Actor->get_transform()[3];
+        glm::vec3 pnA = scA->actor->get_transform()[3];
+        glm::vec3 pnB = scB->actor->get_transform()[3];
 
-        glm::vec3 AvB = pnB - pnA;
+        glm::vec3 vector_ab = pnB - pnA;
 
         float coll_distance = scA->getRadius() + scB->getRadius();
-        if (coll_distance >= AvB.length())
+        if (coll_distance >= vector_ab.length())
             return true;
 
         return false;

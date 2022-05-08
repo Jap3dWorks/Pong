@@ -13,6 +13,7 @@
 #define _P_CONSTEXPR _CONSTEXPR20
 #define _P_CONST const
 #define _P_EXPLICIT explicit
+#define _P_EXTERN extern
 
 #ifdef _HAS_CXX20
     #include <numbers>

@@ -8,7 +8,9 @@ layout (location = 2) in vec2 aTexCoords;
 layout (std140, binding=0) uniform ViewMatrices {
     mat4 Projection;
     mat4 View;
-    vec3 ViewPos;};
+    vec3 ViewPos;
+    float FOV;
+};
 
 layout (std140, binding=2) uniform FrameData {
     double DeltaTime;
@@ -49,6 +51,7 @@ layout (std140, binding=0) uniform ViewMatrices {
     mat4 Projection;
     mat4 View;
     vec3 ViewPos;
+    float FOV;
 };
 
 layout (std140, binding=2) uniform FrameData {
@@ -77,7 +80,6 @@ in VS_OUT{
 in mat3 view_matrix;
 
 float fTime = float(Time);
-float z_camera = -2.0; // TODO: sync with Scene camera.
 
 float sdCutSphere(
     in vec3 point, in vec3 center, in float radius, in float height
@@ -170,22 +172,16 @@ vec3 ray_march(in vec3 ro, in vec3 rd, float tmax) {
     return col;
 }
 
-vec3 mainImage(in vec2 fragCoord) {
-
-    vec3 ro = ViewPos + vec3(0.0, 0.0, 1.0);
-    vec3 rd = view_matrix * normalize(vec3(fragCoord, -2.0));
-
-    return ray_march(ro, rd, 150.f);
-    }
-
-
 void main() {
+//    float z_camera = -abs(cos(0.786/2.0) / sin(0.786/2.0));
+    float z_camera = -abs(cos(FOV/2.0) / sin(FOV/2.0));
+//    FragColor = vec4(z_camera);
+//    return;
 
     vec3 r_origin = ViewPos + vec3(0.0, 0.0, 1.0);
     vec3 r_direction = view_matrix * normalize(
-        vec3(fragCoord, z_camera));
+        vec3(vs_in.FragPos.x, vs_in.FragPos.y / Aspect, z_camera)
+    );
 
-    FragColor = vec4(mainImage(
-        vec2(vs_in.FragPos.x, vs_in.FragPos.y / Aspect)
-        ), 1.0);
+    FragColor = vec4(ray_march(r_origin, r_direction,  159.f), 1.0);
 }

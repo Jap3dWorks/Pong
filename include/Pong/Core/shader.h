@@ -34,8 +34,7 @@ _P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath) {
     std::string line;
     while(getline(stream, line))
     {
-        if (line.find("#Shader") != std::string::npos)
-        {
+        if (line.find("#shader") != std::string::npos) {
             if (line.find("vertex") != std::string::npos)
             {
                 type = ShaderType::VERTEX;
@@ -47,7 +46,6 @@ _P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath) {
             else if (line.find("geometry") != std::string::npos){
                 type = ShaderType::GEOMETRY;
             }
-
         }
         else
         {

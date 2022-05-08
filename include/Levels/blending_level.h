@@ -4,11 +4,11 @@
 #ifndef PONG_BLENDING_LEVEL_H
 #define PONG_BLENDING_LEVEL_H
 
-#include "Core/core_vals.h"
-#include "Core/Level.h"
-#include "Core/core_vals.h"
-#include "Core/Material.h"
-#include "Core/Lights.h"
+#include "Pong/Core/core_vals.h"
+#include "Pong/Core/level.h"
+#include "Pong/Core/core_vals.h"
+#include "Pong/Core/material.h"
+#include "Pong/Core/lights.h"
 #include "Pong/logger.h"
 #include "Pong/default_materials.h"
 #include "Levels/blending_level.h"

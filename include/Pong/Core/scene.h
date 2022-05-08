@@ -116,8 +116,7 @@ namespace Pong {
         T *create_material(const std::string &name,
                            Shader *shader,
                            const std::vector<Texture *> &textures,
-                           const RenderLayer &render_layer = RenderLayer::BASE)
-        {
+                           const RenderLayer &render_layer = RenderLayer::BASE) {
             if (!std::is_base_of<Material, T>::value)
                 return nullptr;
 

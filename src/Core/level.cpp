@@ -10,8 +10,7 @@ namespace Pong
         _scene = Pong::Scene::get_instance();
     }
 
-    AbstractLevel::~AbstractLevel()
-    {
+    AbstractLevel::~AbstractLevel() {
         delete _scene;
         delete _render;
     }

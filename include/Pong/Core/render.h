@@ -55,7 +55,7 @@ namespace Pong {
         struct RuntimeData {
             double delta_time = 0;
             double time = glfwGetTime();
-            GLuint frame_counter = 0;
+            uint32_t frame_counter = 0;
             float fps = 0.f;
         } _runtime_data;
 
@@ -333,6 +333,7 @@ namespace Pong {
 
             uint8_t buffer_offset = 0;
             float fov = glm::radians(camera->Zoom);
+            LOG_DEBUG("FOV: " << fov)
 
             // set projection
             glBufferSubData(GL_UNIFORM_BUFFER,
@@ -356,15 +357,13 @@ namespace Pong {
                             buffer_offset,
                             sizeof(glm::vec4),
                             glm::value_ptr(camera->Position));
-
             buffer_offset += sizeof(glm::vec4);
 
             // Fov (Zoom)
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,
                             sizeof(float),
-                            (void*)&fov
-                            );
+                            &fov);
 
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }

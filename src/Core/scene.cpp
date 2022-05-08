@@ -8,8 +8,7 @@
 namespace Pong{
     Scene* Scene::instance = nullptr;
 
-    Scene::Scene()
-    {
+    Scene::Scene() {
         // start Render
         Render* render = Render::get_instance();
         // create callbacks
@@ -17,8 +16,7 @@ namespace Pong{
         glfwSetScrollCallback(render->get_window(), scroll_callback);
     }
 
-    Scene::~Scene()
-    {
+    Scene::~Scene() {
         LOG_DEBUG("Call Scene destructor");
         delete _directionalLight;
 
@@ -61,8 +59,7 @@ namespace Pong{
         }
     }
 
-    Scene* Scene::get_instance()
-    {
+    Scene* Scene::get_instance() {
         if (!instance)
         {
             instance = new Scene;
@@ -70,8 +67,7 @@ namespace Pong{
         return instance;
     }
 
-    PointLight& Scene::get_point_light(int id)
-    {
+    PointLight& Scene::get_point_light(int id) {
         if (id < POINT_LIGHTS_COUNT)
             return point_lights_array[id];
         else
