@@ -119,7 +119,7 @@ namespace Pong
     void AbstractLevel::_frame_calc() {}
 
     void AbstractLevel::_frame_draw() {
-        _render->update_ubo_view(_scene->get_camera());
+        _render->update_ubo_camera(_scene->get_camera());
         _render->update_ubo_lights(
                 {*_scene->get_directional_light()}
                 );

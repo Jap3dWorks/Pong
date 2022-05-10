@@ -161,7 +161,7 @@ namespace Pong {
 
         // uniform buffer, stores projection matrix and view matrix
         /**uniform buffer view matrices is bind in binding point 0*/
-        _P_INLINE void _create_ubo_view_matrices() {
+        _P_INLINE void _create_ubo_camera() {
             assert(_ubo_view == 0);
 
             unsigned int ubo_size = (2 * sizeof(glm::mat4)) +
@@ -291,7 +291,7 @@ namespace Pong {
             framebuffer_shader = std::make_unique<Shader>(
                     Shader("./Shaders/framebuffer_screen.glsl"));
 
-            _create_ubo_view_matrices();
+            _create_ubo_camera();
             _create_ubo_lights();
             _create_ubo_runtime_data();
             _create_ubo_render_data();
@@ -328,12 +328,11 @@ namespace Pong {
             update_time_data();
         }
 
-        _P_INLINE void update_ubo_view(ACamera* camera) const {
+        _P_INLINE void update_ubo_camera(ACamera* camera) const {
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
 
-            uint8_t buffer_offset = 0;
+            uint32_t buffer_offset = 0;
             float fov = glm::radians(camera->Zoom);
-            LOG_DEBUG("FOV: " << fov)
 
             // set projection
             glBufferSubData(GL_UNIFORM_BUFFER,
@@ -353,10 +352,12 @@ namespace Pong {
             buffer_offset += sizeof(glm::mat4);
 
             // view pos
+            // TODO: Use camera Position as vec4.
+            auto camera_position = glm::vec4(camera->Position, 1.0);
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,
                             sizeof(glm::vec4),
-                            glm::value_ptr(camera->Position));
+                            glm::value_ptr(camera_position));
             buffer_offset += sizeof(glm::vec4);
 
             // Fov (Zoom)

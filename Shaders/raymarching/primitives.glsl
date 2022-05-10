@@ -5,7 +5,7 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
 
-layout (std140, binding=0) uniform ViewMatrices {
+layout (std140, binding=0) uniform CameraData {
     mat4 Projection;
     mat4 View;
     vec3 ViewPos;
@@ -26,6 +26,7 @@ out VS_OUT {
 } vs_out;
 
 out mat3 view_matrix;
+// TODO: calc camera z_ray_value
 
 void main() {
     vs_out.FragPos = vec3(aPos.x, aPos.y, aPos.z);
@@ -47,7 +48,7 @@ void main() {
 #define AA 3
 #endif
 
-layout (std140, binding=0) uniform ViewMatrices {
+layout (std140, binding=0) uniform CameraData {
     mat4 Projection;
     mat4 View;
     vec3 ViewPos;
@@ -173,10 +174,7 @@ vec3 ray_march(in vec3 ro, in vec3 rd, float tmax) {
 }
 
 void main() {
-//    float z_camera = -abs(cos(0.786/2.0) / sin(0.786/2.0));
     float z_camera = -abs(cos(FOV/2.0) / sin(FOV/2.0));
-//    FragColor = vec4(z_camera);
-//    return;
 
     vec3 r_origin = ViewPos + vec3(0.0, 0.0, 1.0);
     vec3 r_direction = view_matrix * normalize(
