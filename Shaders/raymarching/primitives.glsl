@@ -41,12 +41,13 @@ void main() {
 #shader fragment
 #version 450
 
-#define RAYMARCH_STEPS 256
 #define HW_PERFORMANCE
+#define RAYMARCH_STEPS 256
 #define SHADOW_RAY_MAX 80.f
 #define MAX_SHADOW_STEPS 64
 #define RAY_MAX 150.f
 #define RAY_MIN 0.0001f
+#define FILTERING_KERNEL_SIZE_FACTOR 0.0009
 
 #ifdef HW_PERFORMANCE
 #define AA 1
@@ -133,11 +134,14 @@ float sdCapsule(in vec3 p, in vec3 a, in vec3 b, in float r) {
 }
 
 float checkersGrabBox(in vec2 p, in vec2 dpdx, in vec2 dpdy) {
+//    float col_val = pow(mod(floor(p.x), 2) - mod(floor(p.y), 2), 2);
+//    return col_val;
+
     // filter kernel
     vec2 w = abs(dpdx) + abs(dpdy) + 0.001;
-    // analytical integral
-    // vec2 s = sign(fract(p*0.5) - 0.5);
+    // analytical integral (box_filter)
     vec2 i = 2.0*(
+    // xor pattern
     abs(fract((p - 0.5*w) * 0.5) - 0.5) - abs(fract((p + 0.5 * w) * 0.5) - 0.5)
                   ) / w;
 
@@ -154,24 +158,26 @@ vec2 map(in vec3 pos) {
     float d;
     vec2 temp = res;
 
-    res = vec2(sdCutSphere(pos - vec3(5.0, 2.0, -3.0), ra, -1.0), 1.0);
-    temp = vec2(sdDeathStar(pos - vec3(-3, -1, -3.5) , ra, rb, 2), 2.0);
+    res = vec2(sdCutSphere(pos - vec3(5.0, 5.0, -3.0), ra, -1.0), 1.0);
+    temp = vec2(sdDeathStar(pos - vec3(-3, 3, -3.5) , ra, rb, 2), 2.0);
     if (temp.x < res.x) {res = temp;}
 
-    temp = vec2(sdCapsule(pos, vec3(-1.0, 3.5, -7.0), vec3(2.0, -3.5, -9.0), 2.0), 3.0);
+    temp = vec2(sdCapsule(pos, vec3(-1.0, 6.5, -7.0), vec3(2.0, 0.5, -9.0), 2.0), 3.0);
     if (temp.x < res.x) {res = temp;}
 
     return res;
 }
 
-float calcSoftShadow(in vec3 ro, in vec3 rd, float tmin,
-                    float tmax, const float k) {
+float calc_soft_shadow(in vec3 ro, in vec3 rd, float tmin, float tmax) {
     float res = 1.0;
     float t = tmin;
+
     for(int i=0; i<MAX_SHADOW_STEPS; i++) {
         float h = map(ro + rd*t).x;
-        res = min(res, k*h/t);
-        t += clamp(h, 0.003, 0.10);
+        float s = clamp(8.0*h/t, 0.0, 1.0);
+        res = min(res, s*s*(3.0-2.0*s));
+
+        t += clamp(h, 0.02, 0.2);
         if(res<tmin || t>tmax) break;
     }
     return clamp(res, 0.0, 1.0);
@@ -201,15 +207,39 @@ float calcAO(in vec3 pos, in vec3 nor) {
     return clamp(1.0 - 3.0 * occ, 0.0, 1.0) * (0.5+0.5*nor.y);
 }
 
+float rtPlane(in vec3 ro, in vec3 rd, in vec3 po, in vec3 pn) {
+    vec3 pnn = normalize(pn);
+    vec3 rdn = normalize(rd);
+
+    // dot(po-ro, pn) / dot(rd, pn) = t
+    // dot(rd, pn) == 0 no colisiona
+    // t < 0 no colisiona
+
+    float d = dot(rd, pn);
+    if (d == 0) {
+        return RAY_MAX;
+    }
+
+    float t = dot(po-ro, pn) / d;
+
+    return (t>=0) ? t : RAY_MAX;
+}
+
 vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
     vec2 res = vec2(RAY_MAX, -2.0);
 
     // raytrace floor plane
-    float tp1  = (0.0 - ro.y) / rd.y;
-    if (tp1 > 0.0) {
-//        tmax = min(tmax, tp1);
+    float tp1 = rtPlane(ro, rd, vec3(0, -0.01, 0), vec3(0,1,0));
+
+    if (tp1 < RAY_MAX) {
         res = vec2(tp1, 0.0);
     }
+
+//    float tp1  = (0.0 - ro.y) / rd.y;
+//    if (tp1 > 0.0) {
+//        tmax = min(tmax, tp1);
+//        res = vec2(tp1, 0.0);
+//    }
 
     // Raymarch geometries
     float t = 0.0;
@@ -218,7 +248,7 @@ vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
         p = ro + t*rd;
         vec2 h = map(p);
         if (abs(h.x)<tmin) {
-            res = vec2(t, h.y);
+            res = (res.x < t) ? res : vec2(t, h.y);
             break;
         }
         else if (t>tmax) {
@@ -234,37 +264,86 @@ vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
 vec3 render(in vec3 ro, in vec3 rd, in vec3 ddx_rd, in vec3 ddy_rd) {
     // background
     vec3 col = vec3(0.7, 0.7, 0.9) - max(rd.y, 0.0)*0.3;
-
     vec2 res = raycast(ro, rd, RAY_MAX, RAY_MIN);
 
     // hit something
     if (res.x < RAY_MAX) {
         vec3 pos = ro + rd*res.x;
-        vec3 nor = (res.y==0) ? vec3(0.0, 1.0, 0.0) : calcNormal(pos);
+        vec3 nor = (res.y==0.0) ? vec3(0.0, 1.0, 0.0) : calcNormal(pos);
         vec3 ref = reflect(rd, nor);
 
-        vec3 lig = vec3(0.57703);  // TODO: lights from scene
-        float dif = clamp(dot(nor, lig), 0.0, 1.0);
+//        vec3 lig = vec3(0.57703);  // TODO: lights from scene
+//        float dif = clamp(dot(nor, lig), 0.0, 1.0);
 
-        col = sin(vec3(0.2, 0.5, .9)*res.y);
-        if (res.y==0) {
+//        col = sin(vec3(0.1, 0.4, .8)*res.y);
+        col = 0.2 + 0.2 * sin(res.y*2.0 + vec3(0.0, 1.0, 2.0));
+        float ks = 1.0;
+
+        if (res.y==0.0) {
             // floor
-            vec3 dpdx = ro.y * (rd/rd.y - ddx_rd/ddx_rd.y);
-            vec3 dpdy = ro.y * (rd/rd.y + ddy_rd/ddy_rd.y);
+            // Filtering footprints increase its sizes in
+            // relation of distance (res.x) and camera aperture z_camera_ray
+            vec3 dpdx = res.x * cam_dt.z_camera_ray * (rd/rd.y - ddx_rd/ddx_rd.y) * FILTERING_KERNEL_SIZE_FACTOR;
+            vec3 dpdy = res.x * cam_dt.z_camera_ray * (rd/rd.y + ddy_rd/ddy_rd.y) * FILTERING_KERNEL_SIZE_FACTOR;
 
-            float f = checkersGrabBox(3.0*pos.xz, 3.0*dpdx.xz, 3.0*dpdy.xz);
+//            float f = checkersGrabBox(pos.xz / 2.0, dpdx.xz / 2.0, dpdy.xz/2.0);
+            float f = checkersGrabBox(pos.xz,
+                        dpdx.xz,
+                        dpdy.xz);
+
             col = 0.15 + f * vec3(0.05);
-//            ks = 0.4;
         }
 
-        if (dif>0.001) {
-            dif *= calcSoftShadow(
-                ro + rd*res.x + nor*0.01, lig, 0.01, SHADOW_RAY_MAX, 32.0
-            );
+        // lighting
+        float occ = calcAO(pos, nor);
+        vec3 lin = vec3(0.0);
+
+        // sun
+        {
+            vec3 lig = normalize(vec3(0.5, 0.4, 0.6));
+            vec3 hal = normalize(lig-rd);
+            float dif = clamp(dot(nor, lig), 0.0, 1.0);
+
+            dif *= calc_soft_shadow(pos, lig, 0.02, SHADOW_RAY_MAX);
+
+//            float spe = pow(clamp(dot(nor, hal), 0.0, 1.0), 16);  // sun specular
+//            spe *= dif;
+//            spe *= 0.04 + 0.96*pow(clamp(1.0-dot(hal, lig), 0.0, 1.0), 5.0);
+            lin += col * 2.20 * dif * vec3(1.30, 1.0, 0.7);
+//            lin += 5.00 * spe * vec3(1.3, 1.0, 0.7) * ks;
         }
 
-        float amb = 0.5 + 0.5*dot(nor, vec3(0.0, 1.0, 0.0));
-        col = col + amb + vec3(0.8, 0.7, 0.5)*dif;
+        // sky
+//        {
+//            float dif  = sqrt(clamp(0.5 + 0.5 * nor.y, 0.0, 1.0));
+//            dif *= occ;
+//            float spe  = smoothstep(-0.2, 0.2, ref.y);
+//            spe *= dif;
+//            spe *= 0.04 + 0.96 * pow (clamp(1.0 + dot(nor, rd), 0.0, 1.0), 5.0);
+//            spe *= calc_soft_shadow(pos, ref, 0.02, SHADOW_RAY_MAX);  // oclude other geometries
+//            lin += col * 0.06 * dif * vec3(0.4, 0.6, 1.15);
+//            lin += 2.0 * spe * vec3(0.40, 0.60, 1.3) * ks;
+//        }
+
+        // Back
+//        {
+//            float dif = clamp(dot(nor, normalize(vec3(0.5, 0.0, 0.6))), 0.0, 1.0) *
+//                clamp(1.0 - pos.y, 0.0, 1.0);
+//            dif *= occ;
+//            lin += col * 0.55 * dif * vec3(0.25, 0.25, 0.25);
+//        }
+
+        // sss
+//        {
+//            float dif = pow(clamp(1.0 + dot(nor, rd), 0.0, 1.0), 2.0);
+//            dif *= occ;
+//            lin += col * 0.25 * dif * vec3(1.0, 1.0, 1.0);
+//        }
+
+        col = lin;
+        // fog
+        col = mix(col, vec3(0.7, 0.7, 0.9), 1.0 - (exp(-0.000001*res.x*res.x*res.x)));
+
     }
 
     return clamp(col, 0.0, 1.0);
@@ -277,26 +356,33 @@ void main() {
     vec3 r_origin = ViewPos + vec3(0.0, 0.0, 1.0);
 
     float y_incr = 2 / (RenderHeight * Aspect);
+    vec2 aspect_coords = vec2(vs_in.FragPos.x, vs_in.FragPos.y / Aspect);
+    float diff_increment = 2 / RenderWidth;
 
     // filtering rays
-    vec3 ddx_rd = cam_dt.view_matrix * normalize(
-        vec3(vs_in.FragPos.x + 2 / RenderWidth,
+    vec3 rdx = cam_dt.view_matrix * normalize(
+        vec3(diff_increment + aspect_coords.x,
             vs_in.FragPos.y / Aspect,
             cam_dt.z_camera_ray
         ));
 
-    vec3 ddy_rd = cam_dt.view_matrix * normalize(
-        vec3(vs_in.FragPos.x,
-        (vs_in.FragPos.y + 2 / RenderHeight) / Aspect,
+    vec3 rdy = cam_dt.view_matrix * normalize(
+        vec3(aspect_coords.x,
+        diff_increment + aspect_coords.y,
         cam_dt.z_camera_ray
-        ));
+        )
+    );
 
     // Camera Rays
     vec3 r_direction = cam_dt.view_matrix * normalize(
-        vec3(vs_in.FragPos.x,
-        vs_in.FragPos.y / Aspect,
+        vec3(aspect_coords,
         cam_dt.z_camera_ray)
     );
 
-    FragColor = vec4(render(r_origin, r_direction, ddx_rd, ddy_rd), 1.0);
+    vec3 col = render(r_origin, r_direction, rdx, rdy);
+
+    // gamma
+    col = pow(col, vec3(0.4545));
+
+    FragColor = vec4(col, 1.0);
 }
