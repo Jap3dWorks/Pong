@@ -41,7 +41,7 @@ protected:
 //                                   0,0,1,0,
 //                                   0,0,0,1});
 
-        _scene->get_camera()->Position = glm::vec3(0.0, 0.0, 5.0);
+        _scene->get_camera()->Position = glm::vec3(0.0, 5.0, 5.0);
 //        _scene->get_camera()->set_transform({1,0,0,0,
 //                                             0,1,0,0,
 //                                             0,0,1,0,

@@ -257,7 +257,7 @@ namespace Pong {
 
             _window = glfwCreateWindow((int) _render_data.width,
                                        (int) _render_data.height,
-                                       "LearnOpenGL",
+                                       "PongGL",
                                        nullptr,
                                        nullptr);
 
