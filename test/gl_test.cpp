@@ -67,12 +67,12 @@ int main(int argc, char** argv) {
 
     // build and compile our Shader program
     // ------------------------------------
-    LOG_DEBUG("Build and compile Shader program")
+    LOG_DEBUG("Build and compile Shader program");
     Shader ourShader("./Shaders/5.1.transform.glsl");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    LOG_DEBUG("set up vertex data buffers")
+    LOG_DEBUG("set up vertex data buffers");
     float vertices[] = {
             // positions          // texture coords
             0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
     unsigned int texture1, texture2;
     // texture 1
     // ---------
-    LOG_DEBUG("Create Textures")
+    LOG_DEBUG("Create Textures");
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
     // set the texture wrapping parameters
@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    LOG_DEBUG("Create textures")
+    LOG_DEBUG("Create textures");
     data = stbi_load("./Textures/awesomeface.png", &width, &height, &nrChannels, 0);
     if (data)
     {

@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
     else {
         auto s_lvl = PaintWithShades();
-        LOG_INFO("Shading Level")
+        LOG_INFO("Shading Level");
         s_lvl.run();
     }
 

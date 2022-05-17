@@ -128,7 +128,7 @@ namespace Pong {
         }
 
         _P_INLINE void _config_frame_buffers() {
-            LOG_DEBUG("Config framebuffer")
+            LOG_DEBUG("Config framebuffer");
             glGenFramebuffers(1, &_framebuffer);
             glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
@@ -471,20 +471,20 @@ namespace Pong {
         _P_INLINE void update_enables() const {
             // configure global opengl state
             if (gl_enables_config & 1){
-                LOG_DEBUG("Active GL_DEPTH_TEST.")
+                LOG_DEBUG("Active GL_DEPTH_TEST.");
                 glEnable(GL_DEPTH_TEST);
             }
             if(gl_enables_config & 2) {
-                LOG_DEBUG("Active GL_BLEND, GL_ONE_MINUS_SRC_ALPHA.")
+                LOG_DEBUG("Active GL_BLEND, GL_ONE_MINUS_SRC_ALPHA.");
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }
             if (gl_enables_config & 4) {
-                LOG_DEBUG("Active GL_CULL_FACE.")
+                LOG_DEBUG("Active GL_CULL_FACE.");
                 glEnable(GL_CULL_FACE);
             }
             if (gl_enables_config & 8) {
-                LOG_DEBUG("Active GL_PROGRAM_POINT_SIZE.")
+                LOG_DEBUG("Active GL_PROGRAM_POINT_SIZE.");
                 glEnable(GL_PROGRAM_POINT_SIZE);
             }
         }

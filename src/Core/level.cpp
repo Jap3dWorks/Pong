@@ -16,16 +16,16 @@ namespace Pong
     }
 
     void AbstractLevel::run() {
-        LOG_INFO("Clear frame counter")
+        LOG_INFO("Clear frame counter");
         _render->clear_frame_count();
 
         // --config Scene--
-        LOG_INFO("Setup level")
+        LOG_INFO("Setup level");
         _level_setup();
-        LOG_INFO("Collect blending actors.")
+        LOG_INFO("Collect blending actors.");
         // blending actors are drawn by distance to camera_ptr.
         _scene->collect_blending_actors();
-        LOG_INFO("Sort materials, shapes and actors")
+        LOG_INFO("Sort materials, shapes and actors");
         _scene->sort_materials();
         _scene->sort_shapes_maps();
         _scene->sort_actor_maps();

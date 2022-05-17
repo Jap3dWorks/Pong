@@ -75,7 +75,7 @@ namespace Pong {
 
                     stbi_image_free(data);
                 } else{
-                    LOG_ERROR("Skybox texture failed to load at path: " << faces[i])
+                    LOG_ERROR("Skybox texture failed to load at path: " << faces[i]);
                     stbi_image_free(data);
                 }
             }

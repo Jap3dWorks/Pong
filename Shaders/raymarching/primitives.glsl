@@ -1,5 +1,7 @@
 #shader vertex
 #version 450
+#ifndef PRIMITIVES_VS_GLSL
+#define PRIMITIVES_VS_GLSL
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -37,9 +39,13 @@ void main() {
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.f);
 }
 
+#endif // PRIMITIVES_VS
+
 
 #shader fragment
 #version 450
+#ifndef PRIMITIVES_FS_GLSL
+#define PRIMITIVES_FS_GLSL
 
 #define PI 3.141592653589793f
 
@@ -311,12 +317,12 @@ vec2 map(in vec3 pos) {
 
     // --------------------
     // temp = vec2(sd, 5.0);
-//    temp = vec2(sd_torus(pos, 1.0, 0.2), 5.0);
+    // temp = vec2(sd_torus(pos, 1.0, 0.2), 5.0);
     temp = vec2(
         op_smooth_union(
             sd_torus(op_transform(pos - vec3(-1.0, 3.0, -4.0), vec3(1.0, 0.0, 0.0), float(Time*0.5)), 1.0, 0.2),
-            sd_torus(op_transform(pos - vec3(1.0, 3.0, -4.0), vec3(1.0, 0.0, 0.0), PI*0.5+float(Time*0.5)), 1.0, 0.2),
-            (1.05 + sin(float(Time))) * 1.2)
+            sd_torus(op_transform(pos - vec3(0.5+sin(float(Time)), 3.0, -4.0), vec3(1.0, 0.0, 0.0), PI*0.5+float(Time*0.5)), 1.0, 0.2),
+            (1.05 + sin(float(Time) * 0.21)) * 1.2)
         , 5.0);
 
     if(temp.x < res.x) {res = temp;}
@@ -357,7 +363,7 @@ vec3 calcNormal(in vec3 pos) {
                      e.xxx*map(pos + e.xxx*eps).x);
 }
 
-/*0-> AO, 1-> No AO*/
+/*0 -> AO, 1 -> No AO*/
 float calcAO(in vec3 pos, in vec3 nor) {
     float occ = 0.0;
     float sca = 1.0;
@@ -538,3 +544,5 @@ void main() {
 
     FragColor = vec4(col, 1.0);
 }
+
+#endif // PRIMITIVES_FS
