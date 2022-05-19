@@ -16,4 +16,4 @@ float checkers_grab_box(in vec2 point, in vec2 dpdx, in vec2 dpdy) {
     return 0.5 - 0.5 * i.x * i.y;
 }
 
-#endif CHECKER_GLSL
+#endif // CHECKER_GLSL

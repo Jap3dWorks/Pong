@@ -113,178 +113,17 @@ in CAM_DT {
 float fTime = float(Time);
 
 
-// Utils
-// -----
-vec4 inverse(in vec4 quaternion) {
-    return vec4(-quaternion.xyz, quaternion.w) / sqrt(quaternion.x*quaternion.x +
-                                                      quaternion.y*quaternion.y +
-                                                      quaternion.z*quaternion.z +
-                                                      quaternion.w*quaternion.w);;
-}
-
-vec4 quat_from_axis_angle(in vec3 axis, in float radians) {
-    vec4 qr;
-    float half_angle = radians * 0.5;
-    qr.x = axis.x * sin(half_angle);
-    qr.y = axis.y * sin(half_angle);
-    qr.z = axis.z * sin(half_angle);
-    qr.w = cos(half_angle);
-    return qr;
-}
-
-
-// Operations
-// ----------------
-float op_union(float distance1, float distance2) {
-    return min(distance1, distance2);
-}
-
-float op_subtraction(float distance1, float distance2) {
-    return max(-distance1, distance2);
-}
-
-float op_intersection(float distance1, float distance2) {
-    return max(distance1, distance2);
-}
-
-float op_smooth_union(float distance1, float distance2, float k) {
-    float h = clamp(0.5 + 0.5 * (distance2 - distance1)/k, 0.0, 1.0);
-    return mix(distance2, distance1, h) - k*h*(1.0 - h);
-}
-
-float op_smooth_subtraction(float distance1, float distance2, float k) {
-    float h = clamp(0.5 - 0.5*(distance2 + distance1)/k, 0.0, 1.0);
-    return mix(distance2, -distance1, h) + k*h*(1.0-h);
-}
-
-float op_smooth_intersection(float distance1,float distance2, float k) {
-    float h = clamp(0.5 - 0.5*(distance2 - distance1)/k, 0.0, 1.0);
-    return mix(distance2, distance1, h) + k*h*(1.0-h);
-}
-
-float op_round(in float distance, in float radius) {
-    return distance - radius;
-}
-
-// Transforms
-// ----------
-vec3 op_transform(in vec3 point, in vec4 transform) {
-    return point + 2.0 * cross(transform.xyz, cross(transform.xyz, point) + transform.w * point);
-}
-
-vec3 op_transform(in vec3 point, in vec3 transform) {
-    return point - transform;
-}
-
-vec3 op_transform(in vec3 point, in mat3 transform) {
-    return transform * point;
-}
-
-vec3 op_transform(in vec3 point, in mat4 transform) {
-    return (transform * vec4(point, 1.0)).xyz;
-}
-
-vec3 op_transform(in vec3 point, in vec3 axis, in float angle) {
-    vec4 q = quat_from_axis_angle(axis, angle);
-    return op_transform(point, q);
-}
-
-// shapes
-// ------
-/**All Shapes are centered in point (0.0, 0.0, 0.0).*/
-
-float sdCutSphere(
-    in vec3 point, in float radius, in float height
-) {
-    float w = sqrt(radius*radius - height*height);
-
-    vec3 v_distance = point;
-    vec2 q = vec2(length(v_distance.xz), v_distance.y);
-
-    float s = max((height - radius)*q.x*q.x + w*w*(height + radius - 2.0*q.y),
-                    height*q.x - w*q.y);
-
-    return (s<0.0) ? length(q) - radius :
-                        (q.x<w) ? height - q.y : length(q-vec2(w, height));
-}
-
-float sdDeathStar(in vec3 point, in float ra,
-                  float rb, in float d) {
-    float a = (ra*ra - rb*rb + d*d) / (2.0*d);
-    float b = sqrt(max(ra*ra-a*a, 0.0));
-
-    vec3 v_distance = point;
-    vec2 p = vec2(v_distance.x, length(v_distance.yz));
-
-    if (p.x*b - p.y*a > d*max(b-p.y, 0.0)) {
-        return length(p-vec2(a, b));
-    }
-    else {
-        return max((length(p)-ra), -(length(p-vec2(d, 0))-rb));
-    }
-}
-
-float sdCapsule(in vec3 p, in vec3 a, in vec3 b, in float r) {
-
-    vec3 pa = p - a, ba = b - a;
-    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-    return length(pa - ba * h) - r;
-}
-
-float sd_octahedron(in vec3 point, in float size) {
-    point = abs(point);
-    float m = point.x + point.y + + point.z - size;
-    vec3 q;
-
-    if (3.0 * point.x < m) q=point.xyz;
-    else if (3.0 * point.y < m) q=point.yzx;
-    else if (3.0 * point.z < m) q=point.zxy;
-
-    else return m * 0.57735027;
-
-    float k = clamp(0.5*(q.z - q.y + size), 0.0, size);
-    return length(vec3(q.x, q.y-size+k, q.z-k));
-}
-
-float rt_plane(in vec3 ro, in vec3 rd, in vec3 po, in vec3 pn) {
-    vec3 pnn = normalize(pn);
-    vec3 rdn = normalize(rd);
-
-    // dot(po-ro, pn) / dot(rd, pn) = t
-    // dot(rd, pn) == 0 no colisiona
-    // t < 0 no colisiona
-
-    float d = dot(rd, pn);
-    if (d == 0) {
-        return RAY_MAX;
-    }
-
-    float t = dot(po-ro, pn) / d;
-
-    return (t>=0) ? t : RAY_MAX;
-}
-
-float sd_torus(in vec3 point, in float radius, in float thickness) {
-    vec2 q = vec2(length(point.xz) - radius, point.y);
-    return length(q) - thickness;
-}
-
-// Textures
-// --------
-float checkersGrabBox(in vec2 p, in vec2 dpdx, in vec2 dpdy) {
-    //    float col_val = pow(mod(floor(p.x), 2) - mod(floor(p.y), 2), 2);
-    //    return col_val;
-
-    // filter kernel
-    vec2 w = abs(dpdx) + abs(dpdy) + 0.001;
-    // analytical integral (box_filter)
-    vec2 i = 2.0*(
-    // xor pattern
-    abs(fract((p - 0.5*w) * 0.5) - 0.5) - abs(fract((p + 0.5 * w) * 0.5) - 0.5)
-    ) / w;
-
-    return 0.5 - 0.5 * i.x * i.y;
-}
+#include "operations/quaternion.glsl"
+#include "operations/boolean.glsl"
+#include "operations/transform.glsl"
+#include "shapes/cut_sphere.glsl"
+#include "shapes/death_star.glsl"
+#include "shapes/capsule.glsl"
+#include "shapes/octahedron.glsl"
+#include "shapes/plane.glsl"
+#include "shapes/torus.glsl"
+#include "textures/checker.glsl"
+#include "render/render.glsl"
 
 // Map
 // ---
@@ -298,15 +137,15 @@ vec2 map(in vec3 pos) {
     float d;
     vec2 temp = res;
 
-    res = vec2(sdCutSphere(
+    res = vec2(sd_cut_sphere(
         op_transform(pos - vec3(6.0, 5.0, -3.0), vec3(1.0, 0.0, 0.0), PI/2.0), ra, -1.0),
         1.0);
     res.x = op_round(res.x, .05);
-    temp = vec2(sdDeathStar(pos - vec3(-6.0, 5.0, -3.0) , ra, rb, 2), 2.0);
+    temp = vec2(sd_death_star(pos - vec3(-6.0, 5.0, -3.0) , ra, rb, 2), 2.0);
     temp.x = op_round(temp.x, 0.025);
     if (temp.x < res.x) {res = temp;}
 
-    temp = vec2(sdCapsule(pos, vec3(-1.0, 6.5, -7.0), vec3(2.0, 0.5, -9.0), 2.0), 3.0);
+    temp = vec2(sd_capsule(pos, vec3(-1.0, 6.5, -7.0), vec3(2.0, 0.5, -9.0), 2.0), 3.0);
     if (temp.x < res.x) {res = temp;}
 
     temp = vec2(sd_octahedron(
@@ -330,54 +169,6 @@ vec2 map(in vec3 pos) {
     return res;
 }
 
-// Render
-// ------
-float calc_soft_shadow(in vec3 ro, in vec3 rd, in float tmin, in float tmax) {
-    float res = 1.f;
-    float ph = 1e20;
-
-    for (float t=tmin + SHADOW_BIAS; t<tmax;) {
-        float h = map(ro + rd*t).x;
-        if (h.x < tmin){
-            return 0.0;
-        }
-
-        float y = h * h / (2.0*ph);
-        float d = sqrt(h*h - y*y);
-        res = min(res, SHADOW_PENUMBRA_FACTOR * d/max(0.0, t-y));
-        ph = h;
-        t += h;
-    }
-
-    return res;
-//    return clamp(res, 0.0, 1.0);
-}
-
-vec3 calcNormal(in vec3 pos) {
-    // Generic normal calculation
-    vec2 e = vec2(1.0, -1.0)*0.5773;
-    const float eps = 0.0005;
-    return normalize(e.xyy*map(pos + e.xyy*eps).x +
-                     e.yyx*map(pos + e.yyx*eps).x +
-                     e.yxy*map(pos + e.yxy*eps).x +
-                     e.xxx*map(pos + e.xxx*eps).x);
-}
-
-/*0 -> AO, 1 -> No AO*/
-float calcAO(in vec3 pos, in vec3 nor) {
-    float occ = 0.0;
-    float sca = 1.0;
-
-    for (int i=0; i<5; i++) {
-        float h = 0.05 + 0.45 * float(i);
-        float d = map(pos + h*nor).x;
-        occ += (h-d) * sca;
-        sca *= 0.20;
-        if (occ > 0.35) break;
-    }
-    return clamp(1.0 - occ * 3.0, 0.0, 1.0);
-}
-
 vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
     vec2 res = vec2(RAY_MAX, -2.0);
 
@@ -387,12 +178,6 @@ vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
     if (tp1 < RAY_MAX) {
         res = vec2(tp1, 0.0);
     }
-
-//    float tp1  = (0.0 - ro.y) / rd.y;
-//    if (tp1 > 0.0) {
-//        tmax = min(tmax, tp1);
-//        res = vec2(tp1, 0.0);
-//    }
 
     // Raymarch geometries
     float t = 0.0;
@@ -422,7 +207,7 @@ vec3 render(in vec3 ro, in vec3 rd, in vec3 ddx_rd, in vec3 ddy_rd) {
     // hit something
     if (res.x < RAY_MAX) {
         vec3 pos = ro + rd*res.x;
-        vec3 nor = (res.y==0.0) ? vec3(0.0, 1.0, 0.0) : calcNormal(pos);
+        vec3 nor = (res.y==0.0) ? vec3(0.0, 1.0, 0.0) : calc_normal(pos);
         vec3 ref = reflect(rd, nor);
 
         col = 0.2 + 0.2 * sin(res.y*2.0 + vec3(0.0, 1.0, 2.0));
@@ -435,7 +220,7 @@ vec3 render(in vec3 ro, in vec3 rd, in vec3 ddx_rd, in vec3 ddy_rd) {
             vec3 dpdx = res.x * cam_dt.z_camera_ray * (rd/rd.y - ddx_rd/ddx_rd.y) * FILTERING_KERNEL_SIZE_FACTOR;
             vec3 dpdy = res.x * cam_dt.z_camera_ray * (rd/rd.y + ddy_rd/ddy_rd.y) * FILTERING_KERNEL_SIZE_FACTOR;
 
-            float f = checkersGrabBox(pos.xz,
+            float f = checkers_grab_box(pos.xz,
                         dpdx.xz,
                         dpdy.xz);
 
@@ -444,7 +229,7 @@ vec3 render(in vec3 ro, in vec3 rd, in vec3 ddx_rd, in vec3 ddy_rd) {
         }
 
         // lighting
-        float occ = calcAO(pos, nor);
+        float occ = calc_ao(pos, nor);
         vec3 lin = vec3(0.0);
 
         // sun
