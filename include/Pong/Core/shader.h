@@ -5,59 +5,48 @@
 #include <yvals_core.h>
 #include "Pong/Core/core_vals.h"
 #include "Pong/logger.h"
+#include "Pong/Core/shader_parser.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
 
-enum class ShaderType : int {
-    NONE = -1, VERTEX = 0, FRAGMENT = 1, GEOMETRY = 2
-};
-
-struct ShaderProgramSource
-{
-    std::string VertexSource;
-    std::string FragmentSource;
-    std::string GeometrySource;
-};
-
 _P_CONSTEXPR unsigned int shader_types_count = (sizeof(ShaderProgramSource)/sizeof(std::string));
 
-_P_INLINE ShaderProgramSource ParseShader(_P_CONST std::string& FilePath) {
-    std::ifstream stream(FilePath);
-    std::stringstream ss[shader_types_count];
+_P_INLINE auto parse_shader(_P_CONST char* file_path) {
+    return shaders_from_file(file_path);
 
-    ShaderType type = ShaderType::NONE;
-    std::string line;
-    while(getline(stream, line))
-    {
-        if (line.find("#shader") != std::string::npos) {
-            if (line.find("vertex") != std::string::npos)
-            {
-                type = ShaderType::VERTEX;
-            }
-            else if (line.find("fragment") != std::string::npos)
-            {
-                type = ShaderType::FRAGMENT;
-            }
-            else if (line.find("geometry") != std::string::npos){
-                type = ShaderType::GEOMETRY;
-            }
-        }
-        else
-        {
-            ss[(int)type] << line << "\n";
-        }
-    }
-
-    return {
-        ss[0].str(),
-        ss[1].str(),
-        ss[2].str()
-    };
+//    std::ifstream stream(file_path);
+//
+//    std::stringstream ss[shader_types_count];
+//
+//    ShaderType type = ShaderType::NONE;
+//    std::string line;
+//    while(getline(stream, line)) {
+//        if (line.find("#shader") != std::string::npos) {
+//            if (line.find("vertex") != std::string::npos) {
+//                type = ShaderType::VERTEX;
+//            }
+//            else if (line.find("fragment") != std::string::npos) {
+//                type = ShaderType::FRAGMENT;
+//            }
+//            else if (line.find("geometry") != std::string::npos) {
+//                type = ShaderType::GEOMETRY;
+//            }
+//        }
+//        else
+//        {
+//            ss[(int)type] << line << "\n";
+//        }
+//    }
+//
+//    return {
+//        ss[0].str(),
+//        ss[1].str(),
+//        ss[2].str()
+//    };
 }
 
 _P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& source) {
@@ -80,62 +69,86 @@ public:
     _P_EXPLICIT Shader(const char* shader_path)
     {
         // retrieve the vertex/fragment source code from filepath
-        std::stringstream ss[2];
-
-        std::string vertexCode;
-        std::string fragmentCode;
-        std::string geometryCode;
-
-        auto parse_shader = ParseShader(shader_path);
+        auto parse_shader = shaders_from_file(shader_path);
 
         // to c type
-        const char * vShaderCode = parse_shader.VertexSource.c_str();
-        const char * fShaderCode = parse_shader.FragmentSource.c_str();
+        const char * vShaderCode = parse_shader[ShaderType::VERTEX].get_data().c_str();
+        const char * fShaderCode = parse_shader[ShaderType::FRAGMENT].get_data().c_str();
 
         // compile shaders
-        unsigned int vertex, fragment;
-        int success;
-        char infoLog[512];
+        uint32_t vertex, fragment,
+                tess_control, tess_evaluation,
+                geometry, compute = 0;
 
         // vertex Shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, nullptr);
         glCompileShader(vertex);
-        checkCompileErrors(vertex, "VERTEX");
+        _check_compile_errors(vertex, "VERTEX");
+
         // fragment Shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, nullptr);
         glCompileShader(fragment);
-        checkCompileErrors(fragment, "VERTEX");
-
-        // if geometry Shader is given compile
-        unsigned int geometry;
-        if (!parse_shader.GeometrySource.empty()) {
-            const char* gShaderCode = parse_shader.GeometrySource.c_str();
-            geometry = glCreateShader(GL_GEOMETRY_SHADER);
-            glShaderSource(geometry, 1, &gShaderCode, nullptr);
-            glCompileShader(geometry);
-            checkCompileErrors(geometry, "GEOMETRY");
-        }
+        _check_compile_errors(fragment, "FRAGMENT");
 
         // Shader program
         ID = glCreateProgram();
+
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
-        if (!parse_shader.GeometrySource.empty())
-        {
-            glAttachShader(ID, geometry);
-        }
-        glLinkProgram(ID);
-        // print link errors if any
-        checkCompileErrors(ID, "PROGRAM");
-        // delete shaders once they're linked
+
         glDeleteShader(vertex);
         glDeleteShader(fragment);
-        if (!parse_shader.GeometrySource.empty())
-        {
+
+        if (parse_shader.contains(ShaderType::TESS_CONTROL)) {
+            const char *shader_code = parse_shader[
+                    ShaderType::TESS_CONTROL].get_data().c_str();
+            tess_control = glCreateShader(GL_TESS_CONTROL_SHADER);
+            glShaderSource(tess_control, 1, &shader_code, nullptr);
+            glCompileShader(tess_control);
+            _check_compile_errors(tess_control, "TESS_CONTROL");
+            glAttachShader(ID, tess_control);
+            glDeleteShader(tess_control);
+        }
+
+        if (parse_shader.contains(ShaderType::TESS_EVALUATION)) {
+            const char *shader_code = parse_shader[
+                    ShaderType::TESS_EVALUATION].get_data().c_str();
+            tess_evaluation = glCreateShader(GL_TESS_EVALUATION_SHADER);
+            glShaderSource(tess_evaluation, 1, &shader_code, nullptr);
+            glCompileShader(tess_evaluation);
+            _check_compile_errors(tess_evaluation, "TESS_EVALUATION");
+            glAttachShader(ID, tess_evaluation);
+            glDeleteShader(tess_evaluation);
+        }
+
+        if (parse_shader.contains(ShaderType::GEOMETRY)) {
+            const char* shader_code = parse_shader[
+                    ShaderType::GEOMETRY].get_data().c_str();
+            geometry = glCreateShader(GL_GEOMETRY_SHADER);
+            glShaderSource(geometry, 1, &shader_code, nullptr);
+            glCompileShader(geometry);
+            _check_compile_errors(geometry, "GEOMETRY");
+            glAttachShader(ID, geometry);
             glDeleteShader(geometry);
         }
+
+        if (parse_shader.contains(ShaderType::COMPUTE)) {
+            const char* shader_code = parse_shader[
+                    ShaderType::COMPUTE].get_data().c_str();
+            compute = glCreateShader(GL_COMPUTE_SHADER);
+            glShaderSource(compute, 1, &shader_code, nullptr);
+            glCompileShader(compute);
+            _check_compile_errors(compute, "COMPUTE");
+            glAttachShader(ID, compute);
+            glDeleteShader(compute);
+        }
+
+        glLinkProgram(ID);
+        // print link errors if any
+        _check_compile_errors(ID, "PROGRAM");
+        // delete shaders once they're linked
     }
 
     // use/activate the Shader
@@ -144,70 +157,63 @@ public:
     }
 
     // utility uniform functions
-    void setBool(const std::string &name, bool value) const
-    {
+    void set_bool(const std::string &name, bool value) const {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
 
-    void setInt(const std::string &name, int value) const
-    {
+    void set_int(const std::string &name, int value) const {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void setFloat(const std::string &name, float value) const
-    {
+    void set_float(const std::string &name, float value) const {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void setVec2(const std::string &name, const glm::vec2 &value) const
-    {
+    void set_vec2(const std::string &name, const glm::vec2 &value) const {
         glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
 
-    void setVec2(const std::string &name, float x, float y) const
-    {
+    void set_vec2(const std::string &name, float x, float y) const {
         glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
     }
 
-    void setVec3(const std::string &name,const glm::vec3 &value) const
+    void set_vec3(const std::string &name, const glm::vec3 &value) const
     {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
 
-    void setVec3(const std::string &name, float x, float y, float z) const
+    void set_vec3(const std::string &name, float x, float y, float z) const
     {
         glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
     }
 
-    void setVec4(const std::string &name, const glm::vec4 &value) const
+    void set_vec4(const std::string &name, const glm::vec4 &value) const
     {
         glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
 
-    void setVec4(const std::string &name, float x, float y, float z, float w) const
+    void set_vec4(const std::string &name, float x, float y, float z, float w) const
     {
         glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
     }
 
-    void setMat2(const std::string &name, const glm::mat2 &mat) const
+    void set_mat2(const std::string &name, const glm::mat2 &mat) const
     {
         glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    void setMat3(const std::string &name, const glm::mat3 &mat) const
+    void set_mat3(const std::string &name, const glm::mat3 &mat) const
     {
         glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    void setMat4(const std::string &name, const glm::mat4 &mat) const
-    {
+    void set_mat4(const std::string &name, const glm::mat4 &mat) const {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
 
 private:
-    void checkCompileErrors(GLuint shader, const std::string& type)
-    {
+    _P_STATIC void _check_compile_errors(GLuint shader, const std::string& type) {
         GLint success;
         GLchar infoLog[1024];
         if (type != "PROGRAM")

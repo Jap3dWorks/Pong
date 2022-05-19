@@ -104,7 +104,7 @@ namespace Pong {
             // configure Shader for the material
             for (int i = 0; i < _textures.size(); i++) {
                 // assign an id to each texture slot
-                _shader->setInt(_textures[i]->get_texture_type(), i);
+                _shader->set_int(_textures[i]->get_texture_type(), i);
             }
 
             _is_setup = true;
@@ -137,19 +137,19 @@ namespace Pong {
             // set Shader parametters
             for (auto &p : _float_params) // floats
             {
-                _shader->setFloat(p.first, p.second);
+                _shader->set_float(p.first, p.second);
             }
             for (auto &p : _int_params) // ints
             {
-                _shader->setInt(p.first, p.second);
+                _shader->set_int(p.first, p.second);
             }
             for (auto &p : _vec3_params) // vec3
             {
-                _shader->setVec3(p.first, p.second);
+                _shader->set_vec3(p.first, p.second);
             }
             for (auto &p : _mat4_params) //mat4
             {
-                _shader->setMat4(p.first, p.second);
+                _shader->set_mat4(p.first, p.second);
             }
         }
 

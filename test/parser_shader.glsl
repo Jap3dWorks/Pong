@@ -1,5 +1,21 @@
+#shader vertex
 #version 450
 
-#include "./test/include_shader.glsl"
+#include "primitives/capsule.glsl"
 
-void main() {}
+void main() {
+    // vertex shader
+    include_this();
+}
+
+#shader fragment
+#include "noises/voronoi.glsl"
+
+void main() {
+    // fragment shader
+}
+
+#shader geometry
+void main() {
+    // geometry shader
+}

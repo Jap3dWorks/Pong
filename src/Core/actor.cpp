@@ -19,7 +19,7 @@ namespace Pong {
     {
         // draw if is visible and has a Shape
 //        material->set_param("model", _transform);
-        material->get_shader()->setMat4("model", _transform);
+        material->get_shader()->set_mat4("model", _transform);
     }
 
     void Actor::process_keyboard(Movements movement, const double& delta_time) {}
@@ -48,7 +48,7 @@ namespace Pong {
     // -------
     void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
     {
-        material->get_shader()->setMat4("model", _transform);
+        material->get_shader()->set_mat4("model", _transform);
     }
 
     // --AKinetic--

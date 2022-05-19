@@ -29,7 +29,7 @@ namespace Pong {
         void update_shader(Render *render, Scene *scene) override {
             update_params();
             // Do not use ubo view for cube maps, because a cube map only should rotate.
-            _shader->setMat4("view", glm::mat4(glm::mat3(
+            _shader->set_mat4("view", glm::mat4(glm::mat3(
                     scene->get_camera()->get_view_matrix())));
         }
     };

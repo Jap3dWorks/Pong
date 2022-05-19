@@ -2,7 +2,7 @@
 #define BEND_GLSL
 
 /*
- * Bend raymarching point,
+ * Bend raymarching_shaders point,
  * use returned point to calculate a primitive sdf
 */
 vec3 op_cheap_bend(in vec3 point) {

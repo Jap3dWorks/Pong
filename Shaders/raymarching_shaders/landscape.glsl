@@ -115,7 +115,7 @@ vec2 hash2(vec2 p) {
     return fract(n * fract(k * n));
 }
 
-// noises and its derivatives
+// textures and its derivatives
 vec4 noised(in vec3 x) {
     vec3 p = floor(x);
     vec3 w = fract(x);

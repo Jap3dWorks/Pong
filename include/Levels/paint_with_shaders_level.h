@@ -23,7 +23,7 @@ protected:
         // add a camera quad
         auto draw_shader = _scene->create_shader(
                 "draw_shd",
-                "../Shaders/raymarching/primitives.glsl");
+                "../Shaders/raymarching_shaders/primitives_scene.glsl");
 
         auto draw_material =
                 _scene->create_material<Pong::Material>(

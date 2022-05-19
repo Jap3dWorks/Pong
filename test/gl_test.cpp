@@ -1,26 +1,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <assimp/>
-
+//#include <assimp/>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Core/Shader.h"
+#include "Pong/Core/shader.h"
 #include "Pong/logger.h"
-#include "Core/Lights.h"
-#include "Core/actor.h"
-#include "Core/core_vals.h"
-#include "Core/Level.h"
-#include "Core/Render.h"
-#include "Core/Texture.h"
-#include "Core/Shape.h"
-#include "Core/Scene.h"
-#include "Core/Collider.h"
-#include "Core/Component.h"
-#include "Core/DataComparers.h"
+#include "Pong/Core/shape.h"
 
 #include <iostream>
 
@@ -161,8 +150,8 @@ int main(int argc, char** argv) {
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     ourShader.use();
-    ourShader.setInt("texture1", 0);
-    ourShader.setInt("texture2", 1);
+    ourShader.set_int("texture1", 0);
+    ourShader.set_int("texture2", 1);
 
 
     // Render loop

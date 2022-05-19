@@ -2,7 +2,7 @@
 #define TWIST_GLSL
 
 /*
- * Twist raymarching point,
+ * Twist raymarching_shaders point,
  * Use returned point to calculate a primitive sdf
 */
 vec3 op_twist(in vec3 point) {
