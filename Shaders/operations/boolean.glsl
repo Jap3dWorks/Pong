@@ -28,9 +28,7 @@ float op_smooth_intersection(float distance1,float distance2, float k) {
     return mix(distance2, distance1, h) + k*h*(1.0-h);
 }
 
-float op_round(in float distance, in float radius) {
-    return distance - radius;
-}
+
 
 
 #endif // BOOLEAN_GLSL

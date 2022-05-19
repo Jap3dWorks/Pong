@@ -1,7 +1,4 @@
 #shader vertex
-#version 450
-#ifndef PRIMITIVES_VS_GLSL
-#define PRIMITIVES_VS_GLSL
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -39,13 +36,8 @@ void main() {
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.f);
 }
 
-#endif // PRIMITIVES_VS
-
 
 #shader fragment
-#version 450
-#ifndef PRIMITIVES_FS_GLSL
-#define PRIMITIVES_FS_GLSL
 
 #define PI 3.141592653589793f
 
@@ -124,6 +116,7 @@ float fTime = float(Time);
 #include "shapes/torus.glsl"
 #include "textures/checker.glsl"
 #include "render/render.glsl"
+#include "operations/round.glsl"
 
 // Map
 // ---
@@ -149,8 +142,9 @@ vec2 map(in vec3 pos) {
     if (temp.x < res.x) {res = temp;}
 
     temp = vec2(sd_octahedron(
-        op_transform(pos - vec3(0.0, 15.0 + sin(float(Time)) * 0.75, -8.0), vec3(0.0, 1.0, 0.0), float(Time) * 0.2)
-        , 6.0), 4.0);
+        op_transform(pos - vec3(0.0, 15.0 + sin(float(Time)) * 0.75, -8.0),
+        vec3(0.0, 1.0, 0.0),
+        float(Time) * 0.2), 6.0), 4.0);
     temp.x = op_round(temp.x, .25);
     if (temp.x < res.x) {res = temp;}
 
@@ -329,5 +323,3 @@ void main() {
 
     FragColor = vec4(col, 1.0);
 }
-
-#endif // PRIMITIVES_FS
