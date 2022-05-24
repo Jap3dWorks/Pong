@@ -4,7 +4,6 @@ Raymarching
 
 https://digitalfreepen.com/2017/06/23/fast-mostly-consistent.html
 https://iquilezles.org/articles/distfunctions/
-https://digitalfreepen.com/2017/06/23/fast-mostly-consistent.html
 https://iquilezles.org/articles/checkerfiltering/
 https://iquilezles.org/articles/filtering/
 https://iquilezles.org/articles/rtintro/

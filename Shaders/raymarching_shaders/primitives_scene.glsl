@@ -46,6 +46,7 @@ void main() {
 #define RAYMARCH_STEPS 256
 #define RAY_MAX 150.f
 #define RAY_MIN 0.001f
+#define STEP_FACTOR 0.75
 
 #define MAX_SHADOW_STEPS 64
 #define SHADOW_RAY_MAX 80.f
@@ -117,6 +118,8 @@ float fTime = float(Time);
 #include "textures/checker.glsl"
 #include "render/render.glsl"
 #include "operations/round.glsl"
+#include "deform/displacement.glsl"
+#include "shapes/sphere.glsl"
 
 // Map
 // ---
@@ -157,8 +160,14 @@ vec2 map(in vec3 pos) {
             sd_torus(op_transform(pos - vec3(0.5+sin(float(Time)), 3.0, -4.0), vec3(1.0, 0.0, 0.0), PI*0.5+float(Time*0.5)), 1.0, 0.2),
             (1.05 + sin(float(Time) * 0.21)) * 1.2)
         , 5.0);
-
     if(temp.x < res.x) {res = temp;}
+
+    temp = vec2(
+        op_sin_displace(
+            sd_sphere(pos - vec3(sin(fTime*0.2)*5.0, 0.0, 0.0), 2.0),
+            pos, vec3(1.0), vec3(10.0), 0.15), 6.0);
+
+    if (temp.x < res.x) {res=temp;}
 
     return res;
 }
@@ -179,14 +188,17 @@ vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
     for (uint i=0; i<RAYMARCH_STEPS; i++) {
         p = ro + t*rd;
         vec2 h = map(p);
-        if (abs(h.x)<tmin) {
+        if (h.x < tmin) {
             res = (res.x < t) ? res : vec2(t, h.y);
             break;
         }
         else if (t>tmax) {
             break;
         }
-        t += h.x;
+//        t += h.x * clamp(STEP_FACTOR * h.x, STEP_FACTOR, 1.0);
+//        t += h.x * clamp(0.95 * i, STEP_FACTOR, 1.0);
+        t += h.x * STEP_FACTOR;
+//        t += h.x;
     }
 
     return res;
