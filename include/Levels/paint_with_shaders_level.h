@@ -23,7 +23,7 @@ protected:
         // add a camera quad
         auto draw_shader = _scene->create_shader(
                 "draw_shd",
-                "../Shaders/raymarching_shaders/primitives_scene.glsl");
+                "../Shaders/raymarching_shaders/voronoi_scene.glsl");
 
         auto draw_material =
                 _scene->create_material<Pong::Material>(

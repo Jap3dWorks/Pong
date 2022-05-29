@@ -197,8 +197,12 @@ vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
         }
 //        t += h.x * clamp(STEP_FACTOR * h.x, STEP_FACTOR, 1.0);
 //        t += h.x * clamp(0.95 * i, STEP_FACTOR, 1.0);
+        #if STEP_FACTOR == 1
+        t += h.x;
+        #else
         t += h.x * STEP_FACTOR;
-//        t += h.x;
+        #endif
+
     }
 
     return res;
