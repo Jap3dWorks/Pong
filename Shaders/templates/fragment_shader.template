@@ -1,0 +1,38 @@
+#version 450
+
+layout (std140, binding=0) uniform CameraData {
+    mat4 Projection;
+    mat4 View;
+    vec3 ViewPos;
+    float FOV;
+};
+
+layout (std140, binding=2) uniform FrameData {
+    double DeltaTime;
+    double Time;
+    uint Frame;
+    float Fps;
+};
+
+layout (std140, binding=3) uniform RenderData {
+    uint RenderWidth;
+    uint RenderHeight;
+    float ZNear;
+    float ZFat;
+    float Aspect;
+};
+
+layout (location=0) out vec4 FragColor;
+
+in VS_OUT{
+    vec3 FragPos;
+    vec3 Normal;
+    vec2 TexCoords;
+}vs_in;
+
+in CAM_DT {
+    mat3 view_matrix;
+    float z_camera_ray;
+} cam_dt;
+
+{{ fragment_shader }}

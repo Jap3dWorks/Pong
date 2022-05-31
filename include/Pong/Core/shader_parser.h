@@ -155,6 +155,9 @@ public:
 
 };
 
+
+
+
 struct TypeShaderHash {
     std::size_t operator()(const ShaderType& _value) const noexcept {
         return std::hash<BasicShaderType>{}(static_cast<BasicShaderType>(_value));
@@ -172,5 +175,7 @@ _P_INLINE ShaderMap shaders_from_file(const char* file_path) {
     }
     return result;
 }
+
+
 
 #endif //GL_TEST_SHADER_PARSER_H

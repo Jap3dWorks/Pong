@@ -56,3 +56,8 @@ Mates
 Derivadas
 ---------
 https://fisicaymates.com/derivadas/
+
+===============
+Text operations
+===============
+https://github.com/jinja2cpp/Jinja2Cpp
