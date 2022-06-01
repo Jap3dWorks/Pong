@@ -91,6 +91,8 @@ endif()
 # ----------
 # -- Test --
 # ----------
+project(TEST
+        VERSION 0.1)
 add_executable(
         Test
         ./test/test.cpp

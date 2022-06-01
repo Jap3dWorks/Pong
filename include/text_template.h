@@ -5,7 +5,6 @@
 #ifndef GL_TEST_TEXT_TEMPLATE_H
 #define GL_TEST_TEXT_TEMPLATE_H
 
-#include "Pong/Core/core_vals.h"
 #include <iostream>
 #include <string>
 #include <regex>
@@ -14,8 +13,7 @@
 #include <format>
 
 
-
-// Very simple text parser with jinja2 syntax.
+// Very simple text parser using jinja2 syntax.
 // https://jinja.palletsprojects.com/en/3.1.x/templates/
 
 class TemplateValue {
@@ -26,8 +24,8 @@ private:
 
 public:
     TemplateValue()=default;
-    _P_EXPLICIT TemplateValue(const std::string& value): _value(value) {}
-    _P_EXPLICIT TemplateValue(std::string&& value): _value(std::move(value)) {}
+    explicit TemplateValue(const std::string& value): _value(value) {}
+    TemplateValue(std::string&& value): _value(std::move(value)) {}
 
     ~TemplateValue()=default;
 
@@ -39,7 +37,7 @@ public:
         return _value == other._value;
     }
 
-     _P_NODISCARD const std::string& to_string() const {
+     [[nodiscard]] const std::string& to_string() const {
         return _value;
     }
 
@@ -60,27 +58,27 @@ class TextTemplate {
 private:
     std::string _template;
     FormatValues _data;
-    std::string _variable_patt{"{{ {} }}"};
+    std::string _variable_patt{R"(\{{ {} \}})"};
 
 private:
 
-    std::string _resolve(const std::string& key, const FormatValues& data) {
-        if ("[]" in key) {
-            std::string result;
-            FormatValues subdata;
-            for (auto& section: sections){
-                subdata = subdata[section];
-            }
-            return subdata.to_string;
-        }
-        else {
-            return data.to_string();
-        }
-    }
+//    std::string _resolve(const std::string& key, const FormatValues& data) {
+//        if ("[]" in key) {
+//            std::string result;
+//            FormatValues subdata;
+//            for (auto& section: sections){
+//                subdata = subdata[section];
+//            }
+//            return subdata.to_string;
+//        }
+//        else {
+//            return data.to_string();
+//        }
+//    }
 
 public:
 
-    _P_EXPLICIT TextTemplate(std::string text_template) :
+    explicit TextTemplate(std::string text_template) :
     _template(std::move(text_template)) {}
 
     void set_template_data(const FormatValues& data) {
@@ -91,13 +89,16 @@ public:
         _template = text_template;
     }
 
+    [[nodiscard]] inline std::string format_var(const std::string &var_name) {
+        return std::vformat(_variable_patt, std::make_format_args(var_name));
+    }
+
     std::string render() {
         std::string result = _template;
         for (auto &patt_val: _data) {
             result = std::regex_replace(
                     result,
-                    std::regex(std::vformat(_variable_patt, std::make_format_args(patt_val.first))),
-
+                    std::regex(format_var(patt_val.first)),
                     patt_val.second.to_string());
         }
 
