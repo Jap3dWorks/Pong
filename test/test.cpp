@@ -20,8 +20,6 @@ int main() {
 
     LOG_INFO(text_template.format_var("pepe"));
 
-    std::regex _include_pattern {R"(#include\s+[<"]([^<>"]+)[>"])"};
-
     LOG_INFO(text_template.render());
 
     return 0;

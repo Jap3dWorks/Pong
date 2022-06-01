@@ -58,11 +58,40 @@ class TextTemplate {
 private:
     std::string _template;
     FormatValues _data;
-    std::string _variable_patt{R"(\{{ {} \}})"};
+    std::string _variable_patt_format{R"(\{{ {} \}})"};
+
+    std::regex _bracket_patt{R"(\{ (\w+)\[\"(\w+)\"\]) \})"};
+    std::regex _var_patt{R"(\{ (\w+) \})"};
 
 private:
 
-//    std::string _resolve(const std::string& key, const FormatValues& data) {
+    std::string _resolve(const std::string& key, FormatValues& data) {
+        std::smatch base_match;
+        std::string result = key;
+        while (true) {
+            if (std::regex_search(result, base_match, _bracket_patt)) {
+                // replace match by
+                // TODO: replace result with new data
+                // key[base_match.position(), base_match.end()]
+                data[base_match[1]][base_match[2]].to_string();
+//            _resolve()
+            }
+
+            else if (std::regex_search(result, base_match, _var_patt)) {
+                // replace result with new data
+
+                data[base_match[1]].to_string();
+            }
+
+            else {
+                break;
+            }
+        }
+
+
+        return result;
+
+
 //        if ("[]" in key) {
 //            std::string result;
 //            FormatValues subdata;
@@ -74,7 +103,7 @@ private:
 //        else {
 //            return data.to_string();
 //        }
-//    }
+    }
 
 public:
 
