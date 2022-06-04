@@ -8,19 +8,30 @@
 #include <regex>
 
 
+//template<typename T>
+std::string replace(const std::smatch& t) {
+    return "adios";
+}
+
 int main() {
+    auto _string = std::string(R"({ pepe } { pepe["hola"]["que"]["pasa"] }  )");
 
-    auto replace_text = std::string("hola { name }, que tal?");
-    auto text_template = TextTemplate(replace_text);
+    auto tmp = TextTemplate(_string);
 
-    text_template.set_template_data(
-            {
-                    {"name", {"Paco"}}
-            });
+    FormatValues val = {
+            {"pepe", {"paco",
+                  {{"hola", {"winchirl",
+                         {{"que", {"jeje",
+                               {{"pasa", {"aquirl!", {}}}
+                               }}
+                         }}
+                  }}}
+                }
+            }
+    };
 
-    LOG_INFO(text_template.format_var("pepe"));
-
-    LOG_INFO(text_template.render());
+    tmp.set_template_data(val);
+    LOG_INFO(tmp.render());
 
     return 0;
 
