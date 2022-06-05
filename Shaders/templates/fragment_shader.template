@@ -35,4 +35,4 @@ in CAM_DT {
     float z_camera_ray;
 } cam_dt;
 
-{{ fragment_shader }}
+{{ code }}

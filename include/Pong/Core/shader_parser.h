@@ -13,6 +13,7 @@
 #include <sstream>
 #include "Pong/Core/core_vals.h"
 #include "Pong/logger.h"
+#include "text_template.h"
 #include <cassert>
 #include <map>
 #include <unordered_map>
@@ -29,8 +30,18 @@ enum class ShaderType: BasicShaderType {
 
 };
 
+template<>
+struct std::hash <ShaderType> {
+    std::size_t operator()(const ShaderType& _value) const noexcept {
+        return std::hash<BasicShaderType>()(static_cast<BasicShaderType>(_value));
+    }
+};
+
 namespace {
     using NameShaderMap = _P_CONST std::unordered_map<std::string, ShaderType>;
+    using ShaderTemplateMap = _P_CONST std::unordered_map<ShaderType, std::string>;
+    using TemplateVariableMap = _P_CONST std::unordered_map<std::string, std::string>;
+
     // Do not use global variables
     _P_INLINE NameShaderMap& get_name_shader_map() {
         _P_STATIC NameShaderMap _shader_types = {
@@ -43,6 +54,25 @@ namespace {
         };
         return _shader_types;
     }
+
+    _P_INLINE ShaderTemplateMap& get_shader_template_map() {
+        _P_STATIC ShaderTemplateMap _shader_template {
+                {ShaderType::NONE, "default_shader.template"},
+                {ShaderType::VERTEX, "vertex_shader.template"},
+                {ShaderType::TESS_CONTROL, "tess_control.template"},
+                {ShaderType::TESS_EVALUATION, "tess_evaluation.template"},
+                {ShaderType::FRAGMENT, "fragment_shader.template"},
+                {ShaderType::GEOMETRY, "geometry_shader.template"},
+                {ShaderType::COMPUTE, "compute_shader.template"}
+        };
+        return _shader_template;
+    }
+
+//    _P_INLINE TemplateVariableMap& get_template_variable_map() {
+//        _P_STATIC TemplateVariableMap _template_variable_map {
+//                {"vertex_shader.template", }
+//        }
+//    }
 
 }
 
@@ -64,9 +94,10 @@ private:
 public:
     _P_INLINE _P_STATIC _P_CONST char* glsl_version{"450"};
     _P_INLINE _P_STATIC _P_CONST char* shaders_path{"./Shaders/"};
+    _P_INLINE _P_STATIC _P_CONST char* templates_dir{"./Shaders/templates"};
 
 private:
-    void _get_file_data(std::stringstream& out_result, std::ifstream& input_stream) {
+    void _P_INLINE _get_file_data(std::stringstream& out_result, std::ifstream& input_stream) {
         std::string line;
         std::smatch base_match;
         auto last_pos = input_stream.tellg();
@@ -92,38 +123,57 @@ private:
             last_pos = input_stream.tellg();
         }
     }
+    void _P_INLINE _get_file_data(std::stringstream& out_result,
+                                  const char* file_path) {
+        try {
+            auto input_stream = std::ifstream(
+                    std::string(shaders_path) + file_path);
+            _get_file_data(out_result, input_stream);
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("Error reading file: " << file_path);
+            LOG_ERROR(e.what());
+        }
 
-    void _get_file_data(std::stringstream& out_result, const char* file_path) {
-        auto input_stream = std::ifstream(
-                std::string(shaders_path) + file_path);
-        assert(input_stream.good());
-        _get_file_data(out_result, input_stream);
     }
 
-    _P_NODISCARD _P_INLINE std::stringstream _initialize_string_stream() {
+    _P_NODISCARD static _P_INLINE std::stringstream _initialize_string_stream() {
         std::stringstream ss_data;
-        ss_data << "#version " << glsl_version << "\n";
         return ss_data;
+    }
+
+    static std::string _P_INLINE _render_template(
+            ShaderType shader_type, const std::string& shader_code) {
+        auto _template = get_shader_template_map().at(shader_type);
+        try {
+            return TextTemplate(
+                    (std::stringstream() <<
+                    std::ifstream(std::string(templates_dir) + "/" + _template).rdbuf()
+                    ).str(),
+                    {
+                            {"code", {shader_code, {}}},
+
+                    }
+                    ).render();
+        } catch(const std::exception& e) {
+            LOG_ERROR(e.what());
+            return "";
+        }
     }
 
 public:
     ShaderParser()=default;
 
     ShaderParser(const ShaderParser& other):
-    _data(other._data), _shader_type(other._shader_type) {
-
-    }
+    _data(other._data), _shader_type(other._shader_type) {}
 
     ShaderParser(ShaderParser && other) noexcept :
-    _data(std::move(other._data)), _shader_type(other._shader_type) {
-
-    }
+    _data(std::move(other._data)), _shader_type(other._shader_type) {}
 
     _P_EXPLICIT ShaderParser(std::ifstream& file_stream) {
-        auto t_data = _initialize_string_stream();
-        _get_file_data(t_data, file_stream);
-        _data = t_data.str();
+        set_data(file_stream);
     }
+
     ~ShaderParser()=default;
 
     ShaderParser& operator=(const ShaderParser& other) {
@@ -137,6 +187,13 @@ public:
     }
 
 public:
+    void _P_INLINE set_data(std::ifstream& file_stream) {
+        auto t_data = _initialize_string_stream();
+        _get_file_data(t_data, file_stream);
+
+        _data = _render_template(_shader_type, t_data.str());
+    }
+
     _P_NODISCARD _P_CONST std::string& get_data() _P_CONST noexcept {
         return _data;
     }
@@ -156,15 +213,7 @@ public:
 };
 
 
-
-
-struct TypeShaderHash {
-    std::size_t operator()(const ShaderType& _value) const noexcept {
-        return std::hash<BasicShaderType>{}(static_cast<BasicShaderType>(_value));
-    }
-};
-
-using ShaderMap = std::unordered_map<ShaderType, ShaderParser, TypeShaderHash>;
+using ShaderMap = std::unordered_map<ShaderType, ShaderParser>;
 
 _P_INLINE ShaderMap shaders_from_file(const char* file_path) {
     auto result = ShaderMap();
