@@ -1,29 +1,4 @@
 #shader vertex
-#version 450 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
-
-layout (std140, binding = 0) uniform ViewMatrices {
-	mat4 projection;
-	mat4 view;
-	vec4 viewPos;
-};
-
-layout (std140, binding=2) uniform FrameData {
-	double delta_time;
-	double time;
-	uint frame_count;
-	float fps;
-};
-
-out VS_OUT {
-	vec3 FragPos;
-	vec3 Normal;
-	vec2 TexCoords;
-}vs_out;
-
-uniform mat4 model;
 
 void main() {
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
@@ -36,51 +11,8 @@ void main() {
 
 
 #shader fragment
-#version 450 core
-
-#define MAX_LIGHTS 256
-
-layout (location = 0) out vec4 FragColor;
-
-layout (std140, binding = 0) uniform ViewMatrices {
-	mat4 projection;
-	mat4 view;
-	vec4 viewPos;
-};
-
-struct Directional {
-	vec4 direction;
-	vec4 color;
-	vec4 ambient;
-};
-
-struct Point {
-	vec4 Position;
-	vec4 Color;
-};
-
-layout (std140, binding = 1) uniform LightsSourceBlock {
-	Directional directional[MAX_LIGHTS];
-	Point point_lights[MAX_LIGHTS];
-	uint directional_count;
-	uint point_count;
-};
-
-layout (std140, binding=2) uniform FrameData {
-	double delta_time;
-	double time;
-	uint frame_count;
-	float fps;
-};
-
-in VS_OUT{
-	vec3 FragPos;
-	vec3 Normal;
-	vec2 TexCoords;
-}fs_in;
 
 uniform vec3 surfaceColor;
-
 uniform float glow;
 uniform float specular;
 

@@ -1,42 +1,18 @@
 #shader vertex
-#version 450 core
-layout (location=0) in vec3 aPos;
-layout (location=1) in vec2 aTexCoords;
-layout (location=2) in vec3 aNormal;
-
-layout (std140, binding = 0) uniform ViewMatrices
-{
-	mat4 projection;
-	mat4 view;
-	vec3 viewPos;
-};
-
-
-out vec2 TexCoords;
-out vec3 WorldPos;
-out vec3 Normal;
-
-uniform mat4 model;
 
 void main()
 {
-	TexCoords = aTexCoords;
-	WorldPos = vec3(model * vec4(aPos, 1.f));
+	vs_out.TexCoords = aTexCoords;
+	vs_out.WorldPos = vec3(model * vec4(aPos, 1.f));
 
-	Normal = mat3(model) * Normal;
+	vs_out.Normal = mat3(model) * Normal;
 
-	gl_Position = projection * view * vec4(WorldPos, 1.f);
+	gl_Position = Projection * View * vec4(vs_out.WorldPos, 1.f);
 
 }
 
 
 #shader fragment
-#version 330 core
-
-out vec4 FragColor;
-in vec2 TexCoords;
-in vec3 WorldPos;
-in vec3 Normal;
 
 // material parameters
 uniform sampler2D albedoMap;
@@ -55,14 +31,14 @@ const float PI = 3.14159265359;
 
 vec3 getNormalFromMap()
 {
-	vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 -1.0;
+	vec3 tangentNormal = texture(normalMap, vs_in.TexCoords).xyz * 2.0 -1.0;
 
-	vec3 Q1 = dFdx(WorldPos);
-	vec3 Q2 = dFdy(WorldPos);
-	vec2 st1 = dFdx(TexCoords);
-	vec2 st2 = dFdy(TexCoords);
+	vec3 Q1 = dFdx(vs_in.WorldPos);
+	vec3 Q2 = dFdy(vs_in.WorldPos);
+	vec2 st1 = dFdx(vs_in.TexCoords);
+	vec2 st2 = dFdy(vs_in.TexCoords);
 
-	vec3 N = normalize(Normal);
+	vec3 N = normalize(vs_in.Normal);
 	vec3 T = normalize(Q1 * st2.t - Q2*st1.t);
 	vec3 B = -normalize(cross(N, T));
 	mat3 TBN = mat3(T, B, N);
@@ -113,13 +89,13 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 
 void main()
 {
-	vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
-	float metallic = texture(metallicMap, TexCoords).r;
-	float roughness = texture(roughnessMap, TexCoords).r;
-	float ao = texture(aoMap, TexCoords).r;
+	vec3 albedo = pow(texture(albedoMap, vs_in.TexCoords).rgb, vec3(2.2));
+	float metallic = texture(metallicMap, vs_in.TexCoords).r;
+	float roughness = texture(roughnessMap, vs_in.TexCoords).r;
+	float ao = texture(aoMap, vs_in.TexCoords).r;
 
 	vec3 N = getNormalFromMap();
-	vec3 V = normalize(camPos - WorldPos);
+	vec3 V = normalize(camPos - vs_in.WorldPos);
 
 	// calculate reflectance
 	vec3 F0 = vec3(0.04);
@@ -130,9 +106,9 @@ void main()
 	for (int i = 0; i<5; ++i)
 	{
 		// calculate per_light radiance
-		vec3 L = normalize(pointLightPositions[i] - WorldPos);
+		vec3 L = normalize(pointLightPositions[i] - vs_in.WorldPos);
 		vec3 H = normalize(V + L);
-		float distances = length(pointLightPositions[i] - WorldPos);
+		float distances = length(pointLightPositions[i] - vs_in.WorldPos);
 		float attenuation = 1.0 / (distances * distances);
 		vec3 radiance = pointLightColors[i] * attenuation;
 

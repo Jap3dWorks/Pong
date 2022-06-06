@@ -193,8 +193,14 @@ public:
 public:
     void _P_INLINE set_data(std::ifstream& file_stream) {
         auto t_data = _initialize_string_stream();
+
         _get_file_data(t_data, file_stream);
 
+        // shader type -> template -> includes
+
+        // TODO: First resolve template,
+        //  this way template can include #includes
+        // I think it is better use include system for bound data
         _data = _render_template(_shader_type, t_data.str());
     }
 
@@ -222,7 +228,7 @@ using ShaderMap = std::unordered_map<ShaderType, ShaderParser>;
 _P_INLINE ShaderMap shaders_from_file(const char* file_path) {
     auto result = ShaderMap();
     auto shader_stream = std::ifstream(file_path);
-    while(shader_stream){
+    while(shader_stream) {
         auto shader_parser = ShaderParser(shader_stream);
         result[shader_parser.get_type()] = std::move(shader_parser);
     }

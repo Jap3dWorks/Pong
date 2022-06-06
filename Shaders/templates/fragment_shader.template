@@ -1,33 +1,16 @@
 #version 450
+{{ defines }}
 
-layout (std140, binding=0) uniform CameraData {
-    mat4 Projection;
-    mat4 View;
-    vec3 ViewPos;
-    float FOV;
-};
-
-layout (std140, binding=2) uniform FrameData {
-    double DeltaTime;
-    double Time;
-    uint Frame;
-    float Fps;
-};
-
-layout (std140, binding=3) uniform RenderData {
-    uint RenderWidth;
-    uint RenderHeight;
-    float ZNear;
-    float ZFat;
-    float Aspect;
-};
-
-layout (location=0) out vec4 FragColor;
+#include "core/bind_camera.glsl"
+#include "core/bind_lights.glsl"
+#include "core/bind_frame_data.glsl"
+#include "core/bind_render_data.glsl"
 
 in VS_OUT{
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
+    vec3 WorldPos;
 }vs_in;
 
 in CAM_DT {
@@ -36,5 +19,7 @@ in CAM_DT {
 } cam_dt;
 
 in vec2 TexCoords;
+
+layout (location=0) out vec4 FragColor;
 
 {{ code }}

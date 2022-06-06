@@ -1,29 +1,4 @@
 #shader vertex
-#version 450 core
-
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
-
-layout (std140, binding=0) uniform ViewMatrices {
-    mat4 Projection;
-    mat4 View;
-    vec3 ViewPos;};
-
-layout (std140, binding=2) uniform FrameData {
-    double DeltaTime;
-    double Time;
-    uint Frame;
-    float Fps;
-};
-
-out VS_OUT {
-    vec3 FragPos;
-    vec3 Normal;
-    vec2 TexCoords;
-} vs_out;
-
-out mat3 view_matrix;
 
 void main() {
     vs_out.FragPos = vec3(aPos.x, aPos.y, aPos.z);
@@ -33,7 +8,6 @@ void main() {
 
 
 #shader fragment
-#version 450 core
 
 #define LOWQUALITY
 #define RENDER_SKY
@@ -42,35 +16,6 @@ void main() {
 #define ZERO (min(Frame, 0))
 
 // https://iquilezles.org/articles/fbm/
-layout (std140, binding=0) uniform ViewMatrices {
-    mat4 Projection;
-    mat4 View;
-    vec3 ViewPos;};
-
-layout (std140, binding=2) uniform FrameData {
-    double DeltaTime;
-    double Time;
-    uint Frame;
-    float Fps;
-};
-
-layout (std140, binding=3) uniform RenderData {
-    uint render_width;
-    uint render_height;
-    float z_near;
-    float z_fat;
-    float aspect;
-};
-
-layout (location = 0) out vec4 FragColor;
-
-in VS_OUT {
-    vec3 FragPos;
-    vec3 Normal;
-    vec2 TexCoords;
-} fs_in;
-
-in mat3 view_matrix;
 
 float sdEllipsoidY(in vec3 p, in vec2 r) {
     float k0 = length(p / r.xyx);
