@@ -29,6 +29,7 @@ out CAM_DT {
     float z_camera_ray;
 } cam_dt;
 
+out vec2 TexCoords;
 
 {{ code }}
 

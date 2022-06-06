@@ -143,22 +143,26 @@ private:
     }
 
     static std::string _P_INLINE _render_template(
-            ShaderType shader_type, const std::string& shader_code) {
+            ShaderType shader_type,
+            const std::string& shader_code) {
         auto _template = get_shader_template_map().at(shader_type);
+        std::stringstream string_stream;
         try {
-            return TextTemplate(
-                    (std::stringstream() <<
-                    std::ifstream(std::string(templates_dir) + "/" + _template).rdbuf()
-                    ).str(),
-                    {
-                            {"code", {shader_code, {}}},
+            string_stream << std::ifstream(
+                    std::string(templates_dir) + "/" + _template
+                    ).rdbuf();
 
-                    }
-                    ).render();
         } catch(const std::exception& e) {
             LOG_ERROR(e.what());
             return "";
         }
+
+        return TextTemplate(string_stream.str(),
+            {
+                {"code", {shader_code, {}}},
+
+            }
+        ).render();
     }
 
 public:
