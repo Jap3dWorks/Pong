@@ -92,54 +92,58 @@ private:
     std::regex _shader_pattern {R"(#shader\s+(\w+))"};
 
 public:
-    _P_INLINE _P_STATIC _P_CONST char* glsl_version{"450"};
     _P_INLINE _P_STATIC _P_CONST char* shaders_path{"./Shaders/"};
     _P_INLINE _P_STATIC _P_CONST char* templates_dir{"./Shaders/templates"};
 
 private:
-    void _P_INLINE _get_file_data(std::stringstream& out_result, std::ifstream& input_stream) {
+    auto _P_INLINE _get_shader_code(std::ifstream &input_stream) -> std::stringstream {
         std::string line;
         std::smatch base_match;
+        auto result = std::stringstream();
         auto last_pos = input_stream.tellg();
 
         while (std::getline(input_stream, line)) {
-            if (std::regex_search(line, base_match, _include_pattern)) {
-                _get_file_data(out_result, base_match[1].str().c_str());
-            }
-            else if(std::regex_search(line, base_match, _version_pattern)) {
-            }
-            else if (std::regex_search(line, base_match, _shader_pattern)) {
-                if (_shader_type==ShaderType::NONE) {
-                    _shader_type = get_name_shader_map().at(base_match[1].str());
-                }
+            if (std::regex_search(line, base_match, _shader_pattern)) {
+                if (_shader_type == ShaderType::NONE) {
+                    _shader_type = get_name_shader_map().at(base_match[1].str());}
                 else {
-                    input_stream.seekg(last_pos);
-                    break;
-                }
+                    input_stream.seekg(last_pos);}
             }
             else {
-                out_result << line << "\n";
+                result << line << "\n";
             }
+
             last_pos = input_stream.tellg();
         }
-    }
-    void _P_INLINE _get_file_data(std::stringstream& out_result,
-                                  const char* file_path) {
-        try {
-            auto input_stream = std::ifstream(
-                    std::string(shaders_path) + file_path);
-            _get_file_data(out_result, input_stream);
-        }
-        catch (const std::exception& e) {
-            LOG_ERROR("Error reading file: " << file_path);
-            LOG_ERROR(e.what());
-        }
 
+        return result;
     }
 
-    _P_NODISCARD static _P_INLINE std::stringstream _initialize_string_stream() {
-        std::stringstream ss_data;
-        return ss_data;
+    auto _P_INLINE _resolve_shader_code(std::string shader_code) -> std::string {
+        std::string line;
+        std::smatch base_match;
+
+        auto start = shader_code.cbegin();
+        auto end = shader_code.cend();
+
+        while(std::regex_search(start, end, base_match, _include_pattern)) {
+            auto _path = base_match[1].str();
+            start = base_match.prefix().first;
+
+            shader_code.replace(
+                    start,
+                    base_match.suffix().first,
+                    _get_file_string(shaders_path + _path)
+            );
+            end = shader_code.cend();
+        }
+
+        return shader_code;
+    }
+
+    auto _P_INLINE _get_file_string(const std::string& file_path) -> std::string {
+        auto shader_file = std::ifstream(file_path);
+        return (std::stringstream() << shader_file.rdbuf()).str();
     }
 
     static std::string _P_INLINE _render_template(
@@ -174,34 +178,39 @@ public:
     ShaderParser(ShaderParser && other) noexcept :
     _data(std::move(other._data)), _shader_type(other._shader_type) {}
 
-    _P_EXPLICIT ShaderParser(std::ifstream& file_stream) {
-        set_data(file_stream);
+    _P_EXPLICIT ShaderParser(std::ifstream &file_stream) {
+        assert(set_data(file_stream));
     }
 
     ~ShaderParser()=default;
 
-    ShaderParser& operator=(const ShaderParser& other) {
+    ShaderParser &operator=(const ShaderParser &other) {
         _data = other._data;
         return *this;
     }
 
-    ShaderParser& operator=(ShaderParser&& other)  noexcept {
+    ShaderParser &operator=(ShaderParser &&other) noexcept {
         _data = std::move(other._data);
         return *this;
     }
 
 public:
-    void _P_INLINE set_data(std::ifstream& file_stream) {
-        auto t_data = _initialize_string_stream();
+    bool _P_INLINE set_data(std::ifstream &file_stream) {
+        _shader_type = ShaderType::NONE;
 
-        _get_file_data(t_data, file_stream);
+        auto shader_code = _get_shader_code(file_stream);
 
-        // shader type -> template -> includes
+        if (_shader_type == ShaderType::NONE) {
+            LOG_ERROR("SHADER type not found!");
+            return false;
+        }
 
-        // TODO: First resolve template,
-        //  this way template can include #includes
-        // I think it is better use include system for bound data
-        _data = _render_template(_shader_type, t_data.str());
+        _data = _resolve_shader_code(
+                _render_template(_shader_type,
+                                 shader_code.str())
+        );
+
+        return true;
     }
 
     _P_NODISCARD _P_CONST std::string& get_data() _P_CONST noexcept {
