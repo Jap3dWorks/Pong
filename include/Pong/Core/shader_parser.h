@@ -105,9 +105,12 @@ private:
         while (std::getline(input_stream, line)) {
             if (std::regex_search(line, base_match, _shader_pattern)) {
                 if (_shader_type == ShaderType::NONE) {
-                    _shader_type = get_name_shader_map().at(base_match[1].str());}
-                else {
-                    input_stream.seekg(last_pos);}
+                    _shader_type = get_name_shader_map().at(base_match[1].str());
+                } else {
+                    input_stream.seekg(last_pos);
+                    break;
+                }
+
             }
             else {
                 result << line << "\n";
@@ -124,18 +127,22 @@ private:
         std::smatch base_match;
 
         auto start = shader_code.cbegin();
-        auto end = shader_code.cend();
+        uint32_t offset = 0;
 
-        while(std::regex_search(start, end, base_match, _include_pattern)) {
+        while(std::regex_search(start, shader_code.cend(), base_match, _include_pattern)) {
             auto _path = base_match[1].str();
-            start = base_match.prefix().first;
+            offset += base_match.position();
 
+            auto _replace = _get_file_string(shaders_path + _path);
+
+            // TODO here fix replace
             shader_code.replace(
-                    start,
-                    base_match.suffix().first,
-                    _get_file_string(shaders_path + _path)
+                    offset,
+                    offset + base_match[0].length(),
+                    _replace
             );
-            end = shader_code.cend();
+            start += offset;
+//            end = shader_code.cend();
         }
 
         return shader_code;
@@ -143,7 +150,10 @@ private:
 
     auto _P_INLINE _get_file_string(const std::string& file_path) -> std::string {
         auto shader_file = std::ifstream(file_path);
-        return (std::stringstream() << shader_file.rdbuf()).str();
+        auto string_stream = std::stringstream();
+        string_stream << shader_file.rdbuf();
+
+        return string_stream.str();
     }
 
     static std::string _P_INLINE _render_template(
