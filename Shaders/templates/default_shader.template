@@ -1,9 +1,9 @@
 #version 450
 {{ defines }}
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
+#include "core/bind_vertex_data.glsl"
+
+uniform mat4 model;
 
 #include "core/bind_camera.glsl"
 #include "core/bind_frame_data.glsl"
@@ -13,6 +13,7 @@ out VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
+    vec3 WorldPos;
 } vs_out;
 
 out CAM_DT {

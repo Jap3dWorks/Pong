@@ -1,10 +1,6 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include "Pong/Core/core_vals.h"
 #include "Pong/Core/actor.h"
 #include "Pong/Core/material.h"
@@ -57,11 +53,7 @@ namespace Pong {
     private:
         //private methods
         Scene();
-        void _process_node(aiNode * node,
-                           const aiScene *& scene,
-                           std::vector<Mesh*>& out_result);
 
-        static Mesh * _process_mesh(const aiMesh *& mesh);
 
     public:
         std::map<std::string, Actor*> actor_map;
@@ -218,7 +210,6 @@ namespace Pong {
         }
 
         _P_NODISCARD Shape* get_shape(const std::string& name) const;
-        int import_model(const std::string& model_path, Actor *& actor);
 
     };
 }

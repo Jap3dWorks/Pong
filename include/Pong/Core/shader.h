@@ -5,7 +5,7 @@
 #include <yvals_core.h>
 #include "Pong/Core/core_vals.h"
 #include "Pong/logger.h"
-#include "Pong/Core/shader_parser.h"
+#include "Pong/utils/shader_parser.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <iostream>

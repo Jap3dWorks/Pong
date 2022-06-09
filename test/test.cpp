@@ -2,12 +2,12 @@
 // Created by Jordi on 4/23/2022.
 //
 #include <iostream>
-#include "text_template.h"
+#include "utils/text_template.h"
 #include "Pong/logger.h"
 #include <string>
 #include <regex>
 #include <fstream>
-#include "Pong/Core/shader_parser.h"
+#include "Pong/utils/shader_parser.h"
 
 //template<typename T>
 std::string replace(const std::smatch& t) {
