@@ -126,23 +126,22 @@ private:
         std::string line;
         std::smatch base_match;
 
-        auto start = shader_code.cbegin();
         uint32_t offset = 0;
 
-        while(std::regex_search(start, shader_code.cend(), base_match, _include_pattern)) {
+        while (std::regex_search(shader_code.cbegin() + offset,
+                                 shader_code.cend(),
+                                 base_match,
+                                 _include_pattern)) {
             auto _path = base_match[1].str();
             offset += base_match.position();
 
             auto _replace = _get_file_string(shaders_path + _path);
 
-            // TODO here fix replace
             shader_code.replace(
                     offset,
-                    offset + base_match[0].length(),
+                    base_match.length(),
                     _replace
             );
-            start += offset;
-//            end = shader_code.cend();
         }
 
         return shader_code;
@@ -150,6 +149,9 @@ private:
 
     auto _P_INLINE _get_file_string(const std::string& file_path) -> std::string {
         auto shader_file = std::ifstream(file_path);
+
+        assert(shader_file.good());
+
         auto string_stream = std::stringstream();
         string_stream << shader_file.rdbuf();
 
@@ -158,25 +160,25 @@ private:
 
     static std::string _P_INLINE _render_template(
             ShaderType shader_type,
-            const std::string& shader_code) {
-        auto _template = get_shader_template_map().at(shader_type);
-        std::stringstream string_stream;
-        try {
-            string_stream << std::ifstream(
-                    std::string(templates_dir) + "/" + _template
-                    ).rdbuf();
+            const std::string &shader_code,
+            const std::string &defines = "") {
+        auto _template_file = get_shader_template_map().at(shader_type);
 
-        } catch(const std::exception& e) {
-            LOG_ERROR(e.what());
-            return "";
-        }
+        auto template_file = std::ifstream(
+                std::string(templates_dir) + "/" + _template_file
+                );
+
+        assert(template_file.good());
+
+        std::stringstream string_stream;
+        string_stream << template_file.rdbuf();
 
         return TextTemplate(string_stream.str(),
-            {
-                {"code", {shader_code, {}}},
-
-            }
-        ).render();
+                        {
+                            {"code", {shader_code, {}}},
+                            {"defines", {defines,     {}}}
+                        }
+            ).render();
     }
 
 public:
@@ -247,6 +249,9 @@ using ShaderMap = std::unordered_map<ShaderType, ShaderParser>;
 _P_INLINE ShaderMap shaders_from_file(const char* file_path) {
     auto result = ShaderMap();
     auto shader_stream = std::ifstream(file_path);
+
+    assert(shader_stream.good());
+
     while(shader_stream) {
         auto shader_parser = ShaderParser(shader_stream);
         result[shader_parser.get_type()] = std::move(shader_parser);

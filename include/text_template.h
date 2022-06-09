@@ -97,16 +97,14 @@ std::string inline regex_replace(std::string _string,
 
     std::uint32_t offset = 0;
     auto itr = _string.cbegin();
-    auto end = _string.cend();
 
-    while(std::regex_search(itr, end, match, _regex, _flags)) {
+    while(std::regex_search(itr, _string.cend(), match, _regex, _flags)) {
         offset += match.position();
         auto replace_str = lambda(match);
         _string.replace(offset, match.length(), replace_str);
         offset += replace_str.length();
 
         itr = _string.cbegin() + offset;
-        end = _string.cend();
     }
 
     return _string;

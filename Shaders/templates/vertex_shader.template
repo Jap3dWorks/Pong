@@ -1,9 +1,7 @@
 #version 450
 {{ defines }}
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
+#include "core/bind_vertex_data.glsl"
 
 uniform mat4 model;
 
@@ -21,7 +19,7 @@ out VS_OUT {
 out CAM_DT {
     mat3 view_matrix;
     float z_camera_ray;
-} cam_dt
+} cam_dt;
 
 {{ code }}
 

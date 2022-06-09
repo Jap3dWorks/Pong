@@ -15,26 +15,9 @@ vec2 _voronoi_hash2(in ivec2 p) {
 
 }
 
-
-//float voronoi(in vec2 x) {
-//    ivec2 p = floor(x);
-//    vec2 f = fract(x);
-//
-//    float res = 8.0;
-//    for(int j=-1; j<=1; j++) {
-//        for (int i=-1; i<=1; i++) {
-//            ivec2 b = ivec2(i, j);
-//            vec2 r = vec2(float(b.x), float(b.y)) - f + _voronoi_hash2(p + b);
-//            float d = dot(r, r);
-//            res = min(res, d);
-//        }
-//    }
-//
-//    return sqrt(res);
-//}
-
 /*
-* #param: w: smoothness*/
+* #param: w: smoothness
+*/
 vec4 smooth_voronoi(in vec2 point, in float w, in float evolution) {
     vec2 n = floor(point);
     vec2 f = fract(point);

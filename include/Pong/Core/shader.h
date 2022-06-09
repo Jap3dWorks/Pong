@@ -13,42 +13,6 @@
 #include <fstream>
 #include <sstream>
 
-_P_CONSTEXPR unsigned int shader_types_count = (sizeof(ShaderProgramSource)/sizeof(std::string));
-
-_P_INLINE auto parse_shader(_P_CONST char* file_path) {
-    return shaders_from_file(file_path);
-
-//    std::ifstream stream(file_path);
-//
-//    std::stringstream ss[shader_types_count];
-//
-//    ShaderType type = ShaderType::NONE;
-//    std::string line;
-//    while(getline(stream, line)) {
-//        if (line.find("#shader") != std::string::npos) {
-//            if (line.find("vertex") != std::string::npos) {
-//                type = ShaderType::VERTEX;
-//            }
-//            else if (line.find("fragment") != std::string::npos) {
-//                type = ShaderType::FRAGMENT;
-//            }
-//            else if (line.find("geometry") != std::string::npos) {
-//                type = ShaderType::GEOMETRY;
-//            }
-//        }
-//        else
-//        {
-//            ss[(int)type] << line << "\n";
-//        }
-//    }
-//
-//    return {
-//        ss[0].str(),
-//        ss[1].str(),
-//        ss[2].str()
-//    };
-}
-
 _P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& source) {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
@@ -78,7 +42,7 @@ public:
         // compile shaders
         uint32_t vertex, fragment,
                 tess_control, tess_evaluation,
-                geometry, compute = 0;
+                geometry, compute;
 
         // vertex Shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -216,8 +180,7 @@ private:
     _P_STATIC void _check_compile_errors(GLuint shader, const std::string& type) {
         GLint success;
         GLchar infoLog[1024];
-        if (type != "PROGRAM")
-        {
+        if (type != "PROGRAM") {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success)
             {
