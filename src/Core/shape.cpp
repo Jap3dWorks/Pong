@@ -1,4 +1,5 @@
 #include "Pong/Core/shape.h"
+#include "Pong/Core/shape_primitives.h"
 #include "Pong/logger.h"
 #include <assimp/Importer.hpp>
 
@@ -6,7 +7,7 @@ namespace Pong {
 
     // --Shape--
     // ---------
-    Shape::Shape(std::string name) : name(std::move(name)) {}
+    Shape::Shape(std::string name) : _name(std::move(name)) {}
 
     const float* Shape::get_interleaved_vertices() const
     { return interleaved_vertices.data(); }
@@ -15,7 +16,7 @@ namespace Pong {
     {return (unsigned int)interleaved_vertices.size() * sizeof(float);}
 
     unsigned int Shape::get_interleaved_vertex_count() const
-    { return get_vertex_count(); }
+    { return vertex_count(); }
 
     void Shape::build_interleaved_vertices()
     {
@@ -38,122 +39,14 @@ namespace Pong {
         }
     }
 
-    void Shape::set_VAO()
-    {
-        int vRow = 0, nRow = 0, tRow = 0;
-        if (get_vertex_count())
-            vRow = 3;
-        if (get_normal_count())
-            nRow = 3;
-        if (get_texture_coords_count())
-            tRow = 2;
-
-        interleavedStride = (vRow + nRow + tRow) * 4;
-
-        unsigned int VBO, EBO;
-        // reset vertex array
-        glGenVertexArrays(1, &VAO_id);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO_id);
-
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER,
-                     get_interleaved_vertex_size(),
-                     interleaved_vertices.data(),
-                     GL_STATIC_DRAW);
-
-        // EBO object
-        if (!indices.empty()) {
-            glGenBuffers(1, &EBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                         get_index_size(),
-                         indices.data(),
-                         GL_STATIC_DRAW);
-        }
-
-
-        int rowSize = (vRow + nRow + tRow) * sizeof(float);
-        int floatSize = sizeof(float);
-        int offset = 0;
-        int attrId = 0;
-
-        // vertex positions attribute
-        glEnableVertexAttribArray(attrId);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, interleavedStride,
-                              (void*)(offset * sizeof(float)));
-        offset += vRow;
-        attrId++;
-
-        if (nRow) {
-            // normal attribute
-            glEnableVertexAttribArray(attrId);
-            glVertexAttribPointer(attrId, nRow, GL_FLOAT, GL_FALSE, rowSize,
-                (void*)(offset * sizeof(float)));
-            offset += nRow;
-            attrId++;
-        }
-
-        // uvs attribute
-        if (tRow) {
-            glEnableVertexAttribArray(attrId);
-            glVertexAttribPointer(attrId, tRow, GL_FLOAT, GL_FALSE, rowSize,
-                (void*)(offset * sizeof(float)));
-        }
-        // detach vertex array
-        glBindVertexArray(0);
-    }
-
     void Shape::draw(const Render *render, const Scene *scene, Pong::Material *material) const
     {
         if(!indices.empty()){
             glDrawElements(draw_primitive, indices.size(), GL_UNSIGNED_INT, nullptr);
         }
         else {
-            glDrawArrays(draw_primitive, 0, get_vertex_count());
+            glDrawArrays(draw_primitive, 0, vertex_count());
         }
-    }
-
-    void Shape::_compute_face_normal_(const glm::vec3 &vtx0,
-                                      const glm::vec3 &vtx1,
-                                      const glm::vec3 &vtx2,
-                                      glm::vec3 &out_normal) {
-        const float EPSILON = 0.000001f;
-
-        out_normal[0] = out_normal[1] = out_normal[2] = 0.f;
-
-        // edges v0-v1 v0-v2
-        glm::vec3 edge1 = vtx1 - vtx0;
-        glm::vec3 edge2 = vtx2 - vtx0;
-
-        // cross product
-        out_normal = glm::cross(edge1, edge2);
-
-        glm::normalize(out_normal);
-    }
-
-    bool Shape::_is_on_line_segment(const float *a, const float *b, const float *c)
-    {
-        const float EPSILON = 0.0001f;
-
-        // cross product must be 0 if c is on the line
-        float cross = ((b[0] - a[0]) * (c[1] - a[1])) - ((b[1] - a[1]) * (c[0] - a[0]));
-        if (cross > EPSILON || cross < -EPSILON)
-            return false;
-
-        // must be within a-b
-        for (int i = 0; i < 2; i++)
-        {
-            if ((c[i] > a[i] && c[i] > b[i]) || (c[i] < a[i] && c[i] < b[i]))
-                return false;
-        }
-        return true;
-    }
-
-    void Shape::bind_VAO()
-    {
-        glBindVertexArray(VAO_id);
     }
 
 
@@ -922,11 +815,11 @@ namespace Pong {
     void Mesh::set_VAO() {
         unsigned int VBO, EBO;
 
-        glGenVertexArrays(1, &VAO_id);
+        glGenVertexArrays(1, &_VAO_id);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
 
-        glBindVertexArray(VAO_id);
+        glBindVertexArray(_VAO_id);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
         glBufferData(GL_ARRAY_BUFFER,
@@ -1060,7 +953,7 @@ namespace Pong {
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 
         } else {
-            glDrawArrays(GL_TRIANGLES, 0, get_vertex_count());
+            glDrawArrays(GL_TRIANGLES, 0, vertex_count());
         }
         glDepthFunc(GL_LESS);
 

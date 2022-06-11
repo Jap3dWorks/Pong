@@ -2,6 +2,8 @@
 #define SHAPE_H
 
 #include "Pong/Core/utils.h"
+#include "Pong/Core/primitive_component.h"
+#include "Pong/Core/core_vals.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,6 +24,8 @@ namespace Pong{
 }
 
 namespace Pong {
+    using VertexVector = std::vector<Vertex>;
+    using TriangleVector = std::vector<Triangle>;
 
     // Exceptions
     class MeshException : public std::exception {
@@ -30,69 +34,35 @@ namespace Pong {
                 std::exception(error){}
     };
 
-
-    // data structures
-    struct Vertex
-    {
-        //TODO: All _shapes class should use Vertex struct
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 tex_coords;
-        glm::vec3 tangent;
-        glm::vec3 bitangent;
-    };
-
+    //TODO: All _shapes class should use Vertex struct
 
     // _shapes classes
     class Shape {
+
+    protected:
+        /**Vertex array buffer id*/
+        uint32_t _VAO_id = 0;
+        std::string _name;
+        VertexVector _vertex;
+        TriangleVector _indices;
+
+        std::vector<float> vertices;
+        std::vector<float> normals;
+        std::vector<float> texture_coords;
+
+        std::vector<uint32_t> indices;
+
+        std::vector<uint32_t> line_indices;
+        std::vector<float> interleaved_vertices;
+
+        int interleavedStride = 32;  // (pos + normal + txtcoords) * 4
+
     public:
-        unsigned int order{10};
-
-        unsigned int draw_primitive = GL_TRIANGLES;
-
-        explicit Shape(std::string name);
-        virtual ~Shape() = default;
-
-        [[nodiscard]] std::string get_name() const { return name; }
-        void set_name(std::string new_name) {name = std::move(new_name);}
-
-        [[nodiscard]] unsigned int get_vertex_count() const { return (unsigned int)vertices.size() / 3; }
-        [[nodiscard]] unsigned int get_normal_count() const { return (unsigned int)normals.size() / 3; }
-        [[nodiscard]] unsigned int get_texture_coords_count() const { return (unsigned int)texture_coords.size() / 2; }
-        [[nodiscard]] unsigned int get_index_count() const { return indices.size(); }
-        [[nodiscard]] unsigned int get_line_index_count() const { return (unsigned int)line_indices.size(); }
-        [[nodiscard]] unsigned int get_triangle_count() const { return get_index_count() / 3; }
-
-        [[nodiscard]] unsigned int get_vertex_size() const { return (unsigned int)vertices.size() * sizeof(float); }
-        [[nodiscard]] unsigned int get_normal_size() const { return (unsigned int)normals.size() * sizeof(float); }
-        [[nodiscard]] unsigned int get_texture_coords_size() const {
-            return (unsigned int)texture_coords.size() * sizeof(float); }
-        [[nodiscard]] unsigned int get_index_size() const {
-            return (unsigned int)indices.size() * sizeof(unsigned int); }
-        [[nodiscard]] unsigned int get_line_index_size() const {
-            return (unsigned int)line_indices.size() * sizeof(unsigned int); }
-
-        [[nodiscard]] const float* get_vertices() const { return vertices.data(); }
-        [[nodiscard]] const float* get_normals() const { return normals.data(); }
-        [[nodiscard]] const float* get_texture_coords() const { return texture_coords.data(); }
-        [[nodiscard]] const unsigned int* get_indices() const { return indices.data(); }
-        [[nodiscard]] const unsigned int* get_line_indices() const { return line_indices.data(); }
-
-        [[nodiscard]] const float * get_interleaved_vertices() const;
-        [[nodiscard]] unsigned int get_interleaved_vertex_size() const;
-        [[nodiscard]] unsigned int get_interleaved_vertex_count() const;
-
-        [[nodiscard]] unsigned int get_VAO() const { return VAO_id; }
-
-        virtual void set_VAO();
-
-        virtual void bind_VAO();
-
-        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const;
+        uint32_t order{10};
+        uint32_t draw_primitive = GL_TRIANGLES;
 
     private:
-        inline void _add_vertices_(const float& x, const float& y, const float& z)
-        {
+        inline void _add_vertices_(const float& x, const float& y, const float& z) {
             vertices.push_back(x);
             vertices.push_back(y);
             vertices.push_back(z);
@@ -106,30 +76,28 @@ namespace Pong {
 
         }
 
-        inline void _add_tex_coords_(const float &u, const float &v)
-        {
+        inline void _add_tex_coords_(const float &u, const float &v) {
             texture_coords.push_back(u);
             texture_coords.push_back(v);
         }
 
         static inline void _compute_face_normal_(const glm::vec3& vtx0, const glm::vec3& vtx1,
-                                          const glm::vec3& vtx2, glm::vec3& out_normal);
+                                          const glm::vec3& vtx2, glm::vec3& out_normal) {
+            const float EPSILON = 0.000001f;
+
+            out_normal[0] = out_normal[1] = out_normal[2] = 0.f;
+
+            // edges v0-v1 v0-v2
+            glm::vec3 edge1 = vtx1 - vtx0;
+            glm::vec3 edge2 = vtx2 - vtx0;
+
+            // cross product
+            out_normal = glm::cross(edge1, edge2);
+
+            glm::normalize(out_normal);
+        }
 
     protected:
-        /**Vertex array buffer id*/
-        unsigned int VAO_id = 0;
-
-        std::string name;
-        std::vector<float> vertices;
-        std::vector<float> normals;
-        std::vector<float> texture_coords;
-        std::vector<unsigned int> indices;
-
-        std::vector<unsigned int> line_indices;
-        std::vector<float> interleaved_vertices;
-
-        int interleavedStride = 32;  // (pos + normal + txtcoords) * 4
-
         // --geometry creation methods--
         // -----------------------------
         void build_interleaved_vertices();
@@ -147,10 +115,6 @@ namespace Pong {
             _add_tex_coords_(u, v);
         }
         inline void add_tex_coords(float &&u, float &&v)
-        {
-            _add_tex_coords_(u, v);
-        }
-        inline void add_tex_coords(const float &u, float &&v)
         {
             _add_tex_coords_(u, v);
         }
@@ -246,122 +210,130 @@ namespace Pong {
         }
 
         /**determine a point c is on the segment a-b*/
-        static bool _is_on_line_segment(const float *a, const float *b, const float *c);
+        static bool _is_on_line_segment(const float *a, const float *b, const float *c) {
+            const float EPSILON = 0.0001f;
 
-    };
+            // cross product must be 0 if c is on the line
+            float cross = ((b[0] - a[0]) * (c[1] - a[1])) - ((b[1] - a[1]) * (c[0] - a[0]));
+            if (cross > EPSILON || cross < -EPSILON)
+                return false;
 
-    // Icosphere
-    // DOCUMENTATION: http://www.songho.ca/opengl/gl_sphere.html
-    class IcosphereShape : public Shape
-    {
+            // must be within a-b
+            for (int i = 0; i < 2; i++)
+            {
+                if ((c[i] > a[i] && c[i] > b[i]) || (c[i] < a[i] && c[i] < b[i]))
+                    return false;
+            }
+            return true;
+        }
+
     public:
-        explicit IcosphereShape(std::string name, float radius=1.f, int subdivision=2, bool smooth=true);
+        explicit Shape(std::string name);
+        virtual ~Shape() = default;
 
-        ~IcosphereShape() override;
+        _P_NODISCARD std::string get_name() const { return _name; }
+        void set_name(std::string new_name) { _name = std::move(new_name);}
 
-        void set_radius(float r);
+        _P_NODISCARD uint32_t vertex_count() const { return vertices.size() / 3; }
+        _P_NODISCARD uint32_t normal_count() const { return (unsigned int)normals.size() / 3; }
+        _P_NODISCARD uint32_t texture_coords_count() const { return (unsigned int)texture_coords.size() / 2; }
+        _P_NODISCARD uint32_t get_index_count() const { return indices.size(); }
+        _P_NODISCARD uint32_t get_line_index_count() const { return (unsigned int)line_indices.size(); }
+        _P_NODISCARD uint32_t get_triangle_count() const { return get_index_count() / 3; }
 
-    private:
-        // --members--
-        // -----------
-        float _radius;
-        int _subdivision;
-        bool _smooth;
+        _P_NODISCARD uint32_t get_vertex_size() const { return (unsigned int)vertices.size() * sizeof(float); }
+        _P_NODISCARD uint32_t get_normal_size() const { return (unsigned int)normals.size() * sizeof(float); }
+        _P_NODISCARD uint32_t get_texture_coords_size() const {
+            return (unsigned int)texture_coords.size() * sizeof(float); }
+        _P_NODISCARD uint32_t get_index_size() const {
+            return (unsigned int)indices.size() * sizeof(unsigned int); }
+        _P_NODISCARD uint32_t get_line_index_size() const {
+            return (unsigned int)line_indices.size() * sizeof(unsigned int); }
 
-        const float S_STEP = 186 / 2048.f; // horizontal texture step
-        const float T_STEP = 322 / 1024.f; // vertical texture step
+        _P_NODISCARD const float* get_vertices() const { return vertices.data(); }
+        _P_NODISCARD const float* get_normals() const { return normals.data(); }
+        _P_NODISCARD const float* get_texture_coords() const { return texture_coords.data(); }
+        _P_NODISCARD const unsigned int* get_indices() const { return indices.data(); }
+        _P_NODISCARD const unsigned int* get_line_indices() const { return line_indices.data(); }
 
-        // map <uvCoords, index>
-        std::map<std::pair<float, float>, unsigned int> _shared_indices;
+        _P_NODISCARD const float * get_interleaved_vertices() const;
+        _P_NODISCARD unsigned int get_interleaved_vertex_size() const;
+        _P_NODISCARD unsigned int get_interleaved_vertex_count() const;
 
-        // --methods--
-        // -----------
-        /**
-            Build a smooth icosahedron, the basic icosahedron has 12 vertices, posterior subdivision
-            are builded from this basic geometry, pushing new vertices using the radius length.*/
-        void _build_vertices_smooth();
+        _P_NODISCARD unsigned int get_VAO() const { return _VAO_id; }
 
-        /**Build a faceted icosahedron, no shared vertices*/
-        void _build_vertices_flat();
+        virtual void set_VAO() {
+            int vRow = 0, nRow = 0, tRow = 0;
+            if (vertex_count())
+                vRow = 3;
+            if (normal_count())
+                nRow = 3;
+            if (texture_coords_count())
+                tRow = 2;
 
-        /**Helper function to init an icosahedron
-          data in flat and smooth versions. Also clears prev arrays.*/
-        inline std::vector<glm::vec3> _prepare_icosphere_data();
+            interleavedStride = (vRow + nRow + tRow) * 4;
 
-        void _build_icosphere();
+            unsigned int VBO, EBO;
+            // reset vertex array
+            glGenVertexArrays(1, &_VAO_id);
+            glGenBuffers(1, &VBO);
 
-        /**
-            Compute the 12 basic vertices of an icosahedron*/
-        std::vector<glm::vec3> _computeIcosahedronVertices() const;
+            glBindVertexArray(_VAO_id);
 
-        /**
-            subdivide the icosahedron vertices with smooth results*/
-        void _subdivide_vertices_smooth();
-        void _subdivide_vertices_flat();
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER,
+                         get_interleaved_vertex_size(),
+                         interleaved_vertices.data(),
+                         GL_STATIC_DRAW);
 
-        template<typename T>
-        inline void _compute_half_vertex(const float *v1, const float *v2, float& length, T& nv)
-        {
-            glm::vec3 rVec = glm::normalize(
-                    glm::vec3(v1[0],v1[1],v1[2]) + glm::vec3(v2[0],v2[1],v2[2])
-            ) * length;
+            // EBO object
+            if (!indices.empty()) {
+                glGenBuffers(1, &EBO);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                             get_index_size(),
+                             indices.data(),
+                             GL_STATIC_DRAW);
+            }
 
-            nv[0] = rVec.x;
-            nv[1] = rVec.y;
-            nv[2] = rVec.z;
+
+            int rowSize = (vRow + nRow + tRow) * sizeof(float);
+            int floatSize = sizeof(float);
+            int offset = 0;
+            int attrId = 0;
+
+            // vertex positions attribute
+            glEnableVertexAttribArray(attrId);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, interleavedStride,
+                                  (void*)(offset * sizeof(float)));
+            offset += vRow;
+            attrId++;
+
+            if (nRow) {
+                // normal attribute
+                glEnableVertexAttribArray(attrId);
+                glVertexAttribPointer(attrId, nRow, GL_FLOAT, GL_FALSE, rowSize,
+                                      (void*)(offset * sizeof(float)));
+                offset += nRow;
+                attrId++;
+            }
+
+            // uvs attribute
+            if (tRow) {
+                glEnableVertexAttribArray(attrId);
+                glVertexAttribPointer(attrId, tRow, GL_FLOAT, GL_FALSE, rowSize,
+                                      (void*)(offset * sizeof(float)));
+            }
+            // detach vertex array
+            glBindVertexArray(0);
+        }
+
+        virtual void bind_VAO() {
+            glBindVertexArray(_VAO_id);
         }
 
 
-        static inline void _compute_half_tex_coords(const float *t1, const float *t2, float *nt);
-        static inline void _compute_half_tex_coords(const float *t1, const float *t2, glm::vec2& nt);
-
-        static void _compute_vertex_normal(const float *v, float *n);
-
-        /**
-            add vertex to arrays*/
-        unsigned int _add_subvertex_attribs(const float *v, const float *n, const float *t);
-
-        inline void _add_sub_line_indices(unsigned int i1,
-                                          unsigned int i2,
-                                          unsigned int i3,
-                                          unsigned int i4,
-                                          unsigned int i5,
-                                          unsigned int i6);
-
-        // --------------------
-        // --static functions--
-        // --------------------
-        static bool _is_shared_texture_coord(const float *t);
-
-    };
-
-    // TODO: cube subdivisions
-    class CubeShape : public Shape
-    {
-    private:
-        float _width;
-        float _height;
-        float _depth;
-
-        void _buildCubeVerticesHard();
-        [[nodiscard]] std::vector<glm::vec3> _computeCubeVertices() const;
-
-    public:
-        explicit CubeShape(std::string name, float height=1.f, float width=1.f, float depth=1.f);
-        ~CubeShape() override;
-    };
-
-    class PlaneShape: public Shape
-    {
-    private:
-        float _width;
-        float _height;
-
-        void _build_plane();
-        [[nodiscard]] std::vector<glm::vec3> _computePlaneVertices() const;
-
-    public:
-        explicit PlaneShape(const std::string& name, float height=1.f, float width=1.f);
+        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const;
     };
 
     // Mesh
@@ -373,15 +345,7 @@ namespace Pong {
         void set_VAO() override;
     };
 
-    // Sky box Shape
-    class SkyBoxShape : public Shape {
-    private:
-        void _build_sky_box();
 
-    public:
-        void draw(const Render *render, const Scene *scene, Pong::Material *material) const override;
-        explicit SkyBoxShape(std::string name);
-    };
 }
 
 #endif // SHAPE_H
