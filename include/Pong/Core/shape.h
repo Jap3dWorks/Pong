@@ -24,8 +24,16 @@ namespace Pong{
 }
 
 namespace Pong {
+
+    enum class VertexAttrId : uint32_t {
+        POSITION=0,
+        NORMAL=1,
+        TEX_COORDS=2
+    };
+
     using VertexVector = std::vector<Vertex>;
     using TriangleVector = std::vector<Triangle>;
+    using IndexVector = std::vector<uint32_t>;
 
     // Exceptions
     class MeshException : public std::exception {
@@ -41,48 +49,24 @@ namespace Pong {
 
     protected:
         /**Vertex array buffer id*/
-        uint32_t _VAO_id = 0;
+        uint32_t _VAO_id_ = 0;
         std::string _name;
-        VertexVector _vertex;
-        TriangleVector _indices;
-
-        std::vector<float> vertices;
-        std::vector<float> normals;
-        std::vector<float> texture_coords;
-
-        std::vector<uint32_t> indices;
+        VertexVector _vertices;
+        IndexVector _indices;
 
         std::vector<uint32_t> line_indices;
         std::vector<float> interleaved_vertices;
-
-        int interleavedStride = 32;  // (pos + normal + txtcoords) * 4
 
     public:
         uint32_t order{10};
         uint32_t draw_primitive = GL_TRIANGLES;
 
-    private:
-        inline void _add_vertices_(const float& x, const float& y, const float& z) {
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
-        }
 
-        inline void _add_normals_(const float& x, const float& y, const float& z) {
-
-            normals.push_back(x);
-            normals.push_back(y);
-            normals.push_back(z);
-
-        }
-
-        inline void _add_tex_coords_(const float &u, const float &v) {
-            texture_coords.push_back(u);
-            texture_coords.push_back(v);
-        }
-
-        static inline void _compute_face_normal_(const glm::vec3& vtx0, const glm::vec3& vtx1,
-                                          const glm::vec3& vtx2, glm::vec3& out_normal) {
+    protected:
+        // --geometry creation methods--
+        // -----------------------------
+        static inline void compute_face_normal(const glm::vec3& vtx0, const glm::vec3& vtx1,
+                                               const glm::vec3& vtx2, glm::vec3& out_normal) {
             const float EPSILON = 0.000001f;
 
             out_normal[0] = out_normal[1] = out_normal[2] = 0.f;
@@ -97,112 +81,23 @@ namespace Pong {
             glm::normalize(out_normal);
         }
 
-    protected:
-        // --geometry creation methods--
-        // -----------------------------
-        void build_interleaved_vertices();
+        inline void add_vertex(const Vertex& vertex) {
+            _vertices.push_back(vertex);
+        }
 
         template<typename I, typename J, typename K>
         inline void add_indices(I&& i, J&& j, K&& k)
         {
-            indices.push_back(std::forward<I>(i));
-            indices.push_back(std::forward<J>(j));
-            indices.push_back(std::forward<K>(k));
+            _indices.push_back(std::forward<I>(i));
+            _indices.push_back(std::forward<J>(j));
+            _indices.push_back(std::forward<K>(k));
         }
 
-        inline void add_tex_coords(const float &u, const float &v)
-        {
-            _add_tex_coords_(u, v);
-        }
-        inline void add_tex_coords(float &&u, float &&v)
-        {
-            _add_tex_coords_(u, v);
-        }
-        inline void add_tex_coords(float &&u, const float &v)
-        {
-            _add_tex_coords_(u, v);
-        }
-
-        inline void add_tex_coords(float * & uv)
-        {
-            _add_tex_coords_(uv[0], uv[1]);
-        }
-
-        template<typename T>
-        inline void add_tex_coords(T&& t)
-        {
-            _add_tex_coords_(t[0], t[1]);
-        }
-
-        template<typename A, typename... Args>
-        void add_tex_coords(A&& t, Args&&... args)
-        {
-            add_tex_coords(std::forward<A>(t));
-            add_tex_coords(std::forward<Args>(args)...);
-        }
-
-        // add_vertices overloads
-        // ----------------------
-        inline void add_vertices(const float& x, const float& y, const float& z)
-        {
-            _add_vertices_(x, y, z);
-        }
-        inline void add_vertices(float&& x, float&& y, float&& z)
-        {
-            _add_vertices_(x, y, z);
-        }
-
-        inline void add_vertices(float * & vtx){
-            _add_vertices_(vtx[0], vtx[1],  vtx[2]);
-        }
-
-        template<typename T>
-        inline void add_vertices(T&& vtx)
-        {
-            _add_vertices_(vtx.x, vtx.y, vtx.z);
-        }
-
-        template<typename A, typename... Args>
-        inline void add_vertices(A &&vtx, Args&&... args)
-        {
-            add_vertices(std::forward<A>(vtx));
-            add_vertices(std::forward<Args>(args)...);
-        }
-
-        // add normals overloads
-        // ---------------------
-        inline void add_normals(const float& x, const float& y, const float& z)
-        {
-            _add_normals_(x, y, z);
-        }
-        inline void add_normals(float&& x, float&& y, float&& z)
-        {
-            _add_normals_(x, y, z);
-        }
-
-        inline void add_normals(float * & normal)
-        {
-            _add_normals_(normal[0], normal[1], normal[2]);
-        }
-
-        template<typename T>
-        inline void add_normals(T &&normal) {
-            _add_normals_(normal.x,
-                          normal.y,
-                          normal.z);
-        }
-
-        template<typename A, typename... Args>
-        inline void add_normals(A&& normal, Args&&... args)
-        {
-            add_normals(std::forward<A>(normal));
-            add_normals(std::forward<Args>(args)...);
-        }
 
         template<typename T, typename U, typename V>
         static inline void compute_face_normal(T &&vtx0, U &&vtx1,
                                                V &&vtx2, glm::vec3 &out_normal) {
-            Shape::_compute_face_normal_(
+            Shape::compute_face_normal(
                     glm::vec3(vtx0[0], vtx0[1], vtx0[2]),
                     glm::vec3(vtx1[0], vtx1[1], vtx1[2]),
                     glm::vec3(vtx2[0], vtx2[1], vtx2[2]),
@@ -228,121 +123,116 @@ namespace Pong {
         }
 
     public:
-        explicit Shape(std::string name);
+        _P_EXPLICIT Shape(const std::string &name): _name(name) {}
+
+        _P_EXPLICIT Shape(std::string &&name): _name(std::move(name)) {}
+
+        Shape(const std::string &name, const VertexVector &vertices) :
+                _name(name), _vertices(vertices) {
+        }
+
+        Shape(std::string &&name, VertexVector &&vertices) :
+                _name(std::move(name)), _vertices(std::move(vertices)) {
+        }
+
         virtual ~Shape() = default;
 
         _P_NODISCARD std::string get_name() const { return _name; }
         void set_name(std::string new_name) { _name = std::move(new_name);}
 
-        _P_NODISCARD uint32_t vertex_count() const { return vertices.size() / 3; }
-        _P_NODISCARD uint32_t normal_count() const { return (unsigned int)normals.size() / 3; }
-        _P_NODISCARD uint32_t texture_coords_count() const { return (unsigned int)texture_coords.size() / 2; }
-        _P_NODISCARD uint32_t get_index_count() const { return indices.size(); }
-        _P_NODISCARD uint32_t get_line_index_count() const { return (unsigned int)line_indices.size(); }
-        _P_NODISCARD uint32_t get_triangle_count() const { return get_index_count() / 3; }
-
-        _P_NODISCARD uint32_t get_vertex_size() const { return (unsigned int)vertices.size() * sizeof(float); }
-        _P_NODISCARD uint32_t get_normal_size() const { return (unsigned int)normals.size() * sizeof(float); }
-        _P_NODISCARD uint32_t get_texture_coords_size() const {
-            return (unsigned int)texture_coords.size() * sizeof(float); }
-        _P_NODISCARD uint32_t get_index_size() const {
-            return (unsigned int)indices.size() * sizeof(unsigned int); }
-        _P_NODISCARD uint32_t get_line_index_size() const {
-            return (unsigned int)line_indices.size() * sizeof(unsigned int); }
-
-        _P_NODISCARD const float* get_vertices() const { return vertices.data(); }
-        _P_NODISCARD const float* get_normals() const { return normals.data(); }
-        _P_NODISCARD const float* get_texture_coords() const { return texture_coords.data(); }
-        _P_NODISCARD const unsigned int* get_indices() const { return indices.data(); }
+        _P_NODISCARD uint32_t vertex_count() const { return _vertices.size(); }
+        _P_NODISCARD uint32_t index_count() const { return _indices.size(); }
+            
+        _P_NODISCARD VertexVector& get_vertices() {
+            return _vertices;
+        }
+        
+        _P_NODISCARD IndexVector& get_indices() {
+            return _indices;
+        }
+            
         _P_NODISCARD const unsigned int* get_line_indices() const { return line_indices.data(); }
 
-        _P_NODISCARD const float * get_interleaved_vertices() const;
-        _P_NODISCARD unsigned int get_interleaved_vertex_size() const;
-        _P_NODISCARD unsigned int get_interleaved_vertex_count() const;
-
-        _P_NODISCARD unsigned int get_VAO() const { return _VAO_id; }
+        _P_NODISCARD unsigned int get_VAO() const { return _VAO_id_; }
 
         virtual void set_VAO() {
-            int vRow = 0, nRow = 0, tRow = 0;
-            if (vertex_count())
-                vRow = 3;
-            if (normal_count())
-                nRow = 3;
-            if (texture_coords_count())
-                tRow = 2;
+            // TODO: dynamic shapes
+            uint32_t VBO, EBO;
 
-            interleavedStride = (vRow + nRow + tRow) * 4;
-
-            unsigned int VBO, EBO;
-            // reset vertex array
-            glGenVertexArrays(1, &_VAO_id);
+            glGenVertexArrays(1,&_VAO_id_);
             glGenBuffers(1, &VBO);
 
-            glBindVertexArray(_VAO_id);
+            glBindVertexArray(_VAO_id_);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER,
-                         get_interleaved_vertex_size(),
-                         interleaved_vertices.data(),
-                         GL_STATIC_DRAW);
+                         _vertices.size() * sizeof(decltype(_vertices)::value_type),
+                         _vertices.data(),
+                         GL_STATIC_DRAW
+                         );
 
-            // EBO object
-            if (!indices.empty()) {
-                glGenBuffers(1, &EBO);
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                             get_index_size(),
-                             indices.data(),
-                             GL_STATIC_DRAW);
-            }
+            glGenBuffers(1, &EBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                         _indices.size() * sizeof(decltype(_indices)::value_type),
+                         _indices.data(),
+                         GL_STATIC_DRAW
+                         );
 
+            glEnableVertexAttribArray((uint32_t)VertexAttrId::POSITION);
+            glVertexAttribPointer((uint32_t)VertexAttrId::POSITION,
+                                  sizeof(Vertex::position),
+                                  GL_FLOAT, GL_FALSE,
+                                  sizeof(Vertex),
+                                  (void*)offsetof(Vertex, position)
+                                  );
 
-            int rowSize = (vRow + nRow + tRow) * sizeof(float);
-            int floatSize = sizeof(float);
-            int offset = 0;
-            int attrId = 0;
+            glEnableVertexAttribArray((uint32_t)VertexAttrId::NORMAL);
+            glVertexAttribPointer((uint32_t)VertexAttrId::NORMAL,
+                                  sizeof(Vertex::normal),
+                                  GL_FLOAT, GL_FALSE,
+                                  sizeof(Vertex),
+                                  (void*)offsetof(Vertex, normal)
+                                  );
 
-            // vertex positions attribute
-            glEnableVertexAttribArray(attrId);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, interleavedStride,
-                                  (void*)(offset * sizeof(float)));
-            offset += vRow;
-            attrId++;
+            glEnableVertexAttribArray((uint32_t)VertexAttrId::TEX_COORDS);
+            glVertexAttribPointer((uint32_t)VertexAttrId::TEX_COORDS,
+                                  sizeof(Vertex::tex_coords),
+                                  GL_FLOAT, GL_FALSE,
+                                  sizeof(Vertex),
+                                  (void*)offsetof(Vertex, tex_coords)
+            );
 
-            if (nRow) {
-                // normal attribute
-                glEnableVertexAttribArray(attrId);
-                glVertexAttribPointer(attrId, nRow, GL_FLOAT, GL_FALSE, rowSize,
-                                      (void*)(offset * sizeof(float)));
-                offset += nRow;
-                attrId++;
-            }
-
-            // uvs attribute
-            if (tRow) {
-                glEnableVertexAttribArray(attrId);
-                glVertexAttribPointer(attrId, tRow, GL_FLOAT, GL_FALSE, rowSize,
-                                      (void*)(offset * sizeof(float)));
-            }
-            // detach vertex array
             glBindVertexArray(0);
+
         }
 
         virtual void bind_VAO() {
-            glBindVertexArray(_VAO_id);
+            glBindVertexArray(_VAO_id_);
         }
 
-
-        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const;
+        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const {
+            if(!_indices.empty()){
+                glDrawElements(draw_primitive, _indices.size(), GL_UNSIGNED_INT, nullptr);
+            }
+            else {
+                glDrawArrays(draw_primitive, 0, vertex_count());
+            }
+        }
     };
 
     // Mesh
     class Mesh : public Shape{
     public:
-        std::vector<Vertex> vertices;
         // constructor
-        Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices);
+        Mesh(std::string name, VertexVector vertices, IndexVector indices):
+            Shape(std::move(name), std::move(vertices)) {
+            indices = std::move(indices);
+            Mesh::set_VAO();
+        }
+
         void set_VAO() override;
+
     };
 
 

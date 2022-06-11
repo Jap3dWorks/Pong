@@ -62,7 +62,7 @@ namespace Pong {
             vertices.push_back(vertex);
         }
 
-        // vertex indices
+        // vertex _indices
         for (unsigned int i = 0; i < mesh.mNumFaces; i++) {
             aiFace face = mesh.mFaces[i];
             for (unsigned int j = 0; j < face.mNumIndices; j++) {

@@ -48,7 +48,7 @@ public:
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, nullptr);
         glCompileShader(vertex);
-        _check_compile_errors(vertex, "VERTEX");
+        _check_compile_errors(vertex, "POSITION");
 
         // fragment Shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
