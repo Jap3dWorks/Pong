@@ -24,7 +24,7 @@ protected:
         // add a camera quad
         auto draw_shader = _scene->create_shader(
                 "draw_shd",
-                "../Shaders/raymarching_shaders/primitives_scene.glsl");
+                "./Shaders/raymarching_shaders/primitives_scene.glsl");
 
         auto draw_material =
                 _scene->create_material<Pong::Material>(
@@ -37,16 +37,9 @@ protected:
 
         auto draw_actor = _scene->create_actor<Pong::APlayer>("Draw Actor");
 
-//        draw_actor->set_transform({1,0,0,0,
-//                                   0,1,0,0,
-//                                   0,0,1,0,
-//                                   0,0,0,1});
 
         _scene->get_camera()->Position = glm::vec3(0.0, 5.0, 5.0);
-//        _scene->get_camera()->set_transform({1,0,0,0,
-//                                             0,1,0,0,
-//                                             0,0,1,0,
-//                                             0,0,-5,1});
+
         _scene->assign_material(draw_material, draw_shape);
         _scene->assign_shape(draw_shape, draw_actor);
     }

@@ -1,7 +1,7 @@
 #shader vertex
 void vertex_main()
 {
-    gl_Position = projection * view * model * vec4(aPos, 1);
+    gl_Position = Projection * View * model * vec4(aPos, 1);
 }
 
 
