@@ -1,6 +1,6 @@
 #shader vertex
 
-void main()
+void vertex_main()
 {
 	vs_out.TexCoords = aTexCoords;
 	vs_out.WorldPos = vec3(model * vec4(aPos, 1.f));

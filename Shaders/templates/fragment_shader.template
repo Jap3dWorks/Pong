@@ -18,8 +18,6 @@ in CAM_DT {
     float z_camera_ray;
 } cam_dt;
 
-in vec2 TexCoords;
-
 layout (location=0) out vec4 FragColor;
 
 {{ code }}

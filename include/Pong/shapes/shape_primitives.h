@@ -5,7 +5,9 @@
 #ifndef GL_TEST_SHAPE_PRIMITIVES_H
 #define GL_TEST_SHAPE_PRIMITIVES_H
 
-#include "Pong/Core/shape.h"
+#include "Pong/core/shape.h"
+#include "Pong/core/core_vals.h"
+
 #include <iostream>
 #include <string>
 
@@ -95,36 +97,6 @@ namespace Pong {
 //        static bool _is_shared_texture_coord(const float *t);
 //
 //    };
-
-// TODO: cube subdivisions
-    class CubeShape : public Shape {
-    private:
-        float _width;
-        float _height;
-        float _depth;
-
-        void _buildCubeVerticesHard();
-
-        [[nodiscard]] std::vector<glm::vec3> _computeCubeVertices() const;
-
-    public:
-        explicit CubeShape(std::string name, float height = 1.f, float width = 1.f, float depth = 1.f);
-
-        ~CubeShape() override;
-    };
-
-    class PlaneShape : public Shape {
-    private:
-        float _width;
-        float _height;
-
-        void _build_plane();
-
-        [[nodiscard]] std::vector<glm::vec3> _computePlaneVertices() const;
-
-    public:
-        explicit PlaneShape(const std::string &name, float height = 1.f, float width = 1.f);
-    };
 
     // Sky box Shape
     class SkyBoxShape : public Shape {

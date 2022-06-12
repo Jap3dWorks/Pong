@@ -1,6 +1,6 @@
 #include "Pong/logger.h"
-//#include "sandbox.h"
 #include "Levels/blending_level.h"
+#include "Levels/test_level.h"
 #include "Levels/paint_with_shaders_level.h"
 #include <iostream>
 
@@ -14,7 +14,8 @@
 
 int main(int argc, char** argv) {
     if (false) {
-        BlendingLevel b_lvl;
+//        BlendingLevel b_lvl;
+        TestLevel1 b_lvl;
         LOG_INFO("Blending level run");
 
         b_lvl.run();

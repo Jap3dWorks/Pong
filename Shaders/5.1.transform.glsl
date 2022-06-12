@@ -1,7 +1,7 @@
 #shader vertex
-void main()
+void vertex_main()
 {
-	TexCoords = aTexCoords;
+	vs_out.TexCoords = aTexCoords;
 	gl_Position = projection * view * model * vec4(aPos, 1);
 }
 
@@ -13,8 +13,8 @@ uniform sampler2D texture2;
 void main()
 {
 	// linearly interpolate between both textures (80% container, 20% awesomeface)
-	FragColor = mix(texture(texture1, TexCoords),
-			texture(texture2, TexCoords), 0.2);
+	FragColor = mix(texture(texture1, vs_in.TexCoords),
+			texture(texture2, vs_in.TexCoords), 0.2);
 }
 
 

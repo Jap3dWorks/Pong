@@ -7,7 +7,8 @@
 #include <string>
 #include <regex>
 #include <fstream>
-#include "Pong/utils/shader_parser.h"
+#include "utils/shader_parser.h"
+#include "Pong/core/primitive_component.h"
 
 //template<typename T>
 std::string replace(const std::smatch& t) {
@@ -36,7 +37,8 @@ void _test_text_template() {
 }
 
 void _test_shader_parser() {
-    auto result = shaders_from_file("./Shaders/raymarching_shaders/voronoi_scene.glsl");
+    auto result = shaders_from_file(
+            "./Shaders/raymarching_shaders/primitives_scene.glsl");
 
     for (auto& shdr: result) {
         LOG_INFO(shdr.second.get_data());
@@ -45,9 +47,15 @@ void _test_shader_parser() {
 
 }
 
+void _test_sizes() {
+    LOG_INFO("Position size " << sizeof(Pong::Vertex::position));
+    LOG_INFO("OFFSET texcoords " << offsetof(Pong::Vertex, tex_coords));
+}
+
 int main() {
 //    _test_text_template();
-    _test_shader_parser();
+//    _test_shader_parser();
+    _test_sizes();
 
     return 0;
 

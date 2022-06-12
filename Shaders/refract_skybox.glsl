@@ -1,8 +1,8 @@
 #shader vertex
 
-void main()
+void vertex_main()
 {
-    TexCoords = aPos;
+    vs_in.TexCoords = aPos;
     vec4 pos = Projection * View * vec4(aPos, 1.0);
     gl_Position = pos.xyww;
 }

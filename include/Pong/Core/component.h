@@ -1,8 +1,8 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "Pong/Core/actor.h"
-#include "Pong/Core/collider.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/collider.h"
 #include "Pong/logger.h"
 
 #include <iostream>

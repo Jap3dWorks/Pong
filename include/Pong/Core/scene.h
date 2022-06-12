@@ -1,15 +1,15 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "Pong/Core/core_vals.h"
-#include "Pong/Core/actor.h"
-#include "Pong/Core/material.h"
-#include "Pong/Core/shape.h"
-#include "Pong/Core/collider.h"
-#include "Pong/Core/lights.h"
-#include "Pong/Core/render.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/material.h"
+#include "Pong/core/shape.h"
+#include "Pong/core/collider.h"
+#include "Pong/core/lights.h"
+#include "Pong/core/render.h"
 
-#include "Pong/Core/data_comparers.h"
+#include "Pong/core/data_comparers.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

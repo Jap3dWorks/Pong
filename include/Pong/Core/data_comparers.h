@@ -5,8 +5,8 @@
 #ifndef PONG_DATACOMPARERS_H
 #define PONG_DATACOMPARERS_H
 
-#include "Pong/Core/actor.h"
-#include "Pong/Core/core_vals.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/core_vals.h"
 #include "Pong/logger.h"
 
 namespace Pong {

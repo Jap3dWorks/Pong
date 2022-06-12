@@ -1,7 +1,6 @@
 #shader vertex
-void main()
+void vertex_main()
 {
-    TexCoords = aTexCoords;
     gl_Position = projection * view * model * vec4(aPos, 1);
 }
 
@@ -12,7 +11,7 @@ uniform sampler2D texture1;
 
 void main()
 {
-    vec4 texColor = texture(texture1, TexCoords);
+    vec4 texColor = texture(texture1, vs_in.TexCoords);
     if(texColor.a < 0.1)
     {
         discard;

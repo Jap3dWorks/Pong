@@ -1,6 +1,6 @@
 #shader vertex
 
-void main() {
+void vertex_main() {
     vs_out.FragPos = vec3(aPos.x, aPos.y, aPos.z);
     view_matrix = ineverse(mat3(View));
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.f);

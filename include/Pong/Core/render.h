@@ -1,11 +1,11 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include "Pong/Core/core_vals.h"
-#include "Pong/Core/movements.h"
-#include "Pong/Core/shader.h"
-#include "Pong/Core/actor.h"
-#include "Pong/Core/lights.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/movements.h"
+#include "Pong/core/shader.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/lights.h"
 
 #include <cstdint>
 #include <stb_image.h>
@@ -120,8 +120,10 @@ namespace Pong {
             glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertex), &quad_vertex, GL_STATIC_DRAW);
             glEnableVertexAttribArray(0);
+
             glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                                   (void*)nullptr);
+
             glEnableVertexAttribArray(2);  // 2 == Text coords
             glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                                   (void*)(2 * sizeof(float)));

@@ -1,8 +1,8 @@
 #shader vertex
 
-void main()
+void vertex_main()
 {
-	TexCoords = aTexCoords;
+	vs_out.TexCoords = aTexCoords;
 	gl_Position = vec4(aPos, 1.0);
 }
 
@@ -16,8 +16,8 @@ uniform float exposure;
 
 void main() {
 	const float gamma = 2.2;
-	vec3 hdrColor = texture(scene, TexCoords).rgb;
-	vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
+	vec3 hdrColor = texture(scene, vs_in.TexCoords).rgb;
+	vec3 bloomColor = texture(bloomBlur, vs_in.TexCoords).rgb;
 	if(bloom)
 	hdrColor += bloomColor;
 

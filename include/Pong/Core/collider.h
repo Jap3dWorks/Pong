@@ -9,10 +9,10 @@ namespace Pong
     class Collider;
 }
 
-#include "Pong/Core/actor.h"
-#include "Pong/Core/shape.h"
-#include "Pong/Core/component.h"
-#include "Pong/Core/core_vals.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/shape.h"
+#include "Pong/core/component.h"
+#include "Pong/core/core_vals.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

@@ -1,6 +1,6 @@
 #shader vertex
 
-void main() {
+void vertex_main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     gl_PointSize = 100 / gl_Position.w;
 }

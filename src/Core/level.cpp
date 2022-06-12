@@ -1,4 +1,4 @@
-#include "Pong/Core/level.h"
+#include "Pong/core/level.h"
 #include "Pong/logger.h"
 
 #include <vector>
@@ -167,7 +167,6 @@ namespace Pong
 
         if (_render->gl_enables_config & 4){
             glEnable(GL_CULL_FACE);}
-
 
     }
 

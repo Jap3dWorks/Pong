@@ -1,7 +1,6 @@
 #shader vertex
-void main ()
+void vertex_main ()
 {
-    TexCoords = aTexCoords;
     gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
 }
 
@@ -11,6 +10,8 @@ uniform sampler2D screenTexture;
 
 void main()
 {
-    vec3 col = texture(screenTexture, TexCoords).rgb;
+    vec3 col = texture(screenTexture, vs_in.TexCoords).rgb;
     FragColor = vec4(col, 1.0);
+//    FragColor = vec4(vs_in.TexCoords.x, vs_in.TexCoords.y, 0.0, 1.0);
+
 }

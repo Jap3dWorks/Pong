@@ -21,6 +21,18 @@ out CAM_DT {
     float z_camera_ray;
 } cam_dt;
 
+void vertex_main();
+
 {{ code }}
 
+void main() {
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    vs_out.Normal = normalize(normalMatrix * aNormal);
 
+    vs_out.TexCoords=aTexCoords;
+    vs_out.WorldPos = vec3(model * vec4(aPos, 1.f));
+
+    vertex_main();
+
+    vs_out.FragPos = vec3(gl_Position);
+    }

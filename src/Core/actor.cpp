@@ -1,8 +1,8 @@
-#include "Pong/Core/actor.h"
+#include "Pong/core/actor.h"
 #include "Pong/logger.h"
 
 #include <utility>
-#include "Pong/Core/material.h"
+#include "Pong/core/material.h"
 
 namespace Pong {
     Actor::~Actor() {

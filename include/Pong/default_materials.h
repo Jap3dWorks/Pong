@@ -7,11 +7,11 @@
 
 #include <string>
 #include <vector>
-#include "Pong/Core/material.h"
-#include "Pong/Core/shader.h"
-#include "Pong/Core/texture.h"
-#include "Pong/Core/render.h"
-#include "Pong/Core/scene.h"
+#include "Pong/core/material.h"
+#include "Pong/core/shader.h"
+#include "Pong/core/texture.h"
+#include "Pong/core/render.h"
+#include "Pong/core/scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

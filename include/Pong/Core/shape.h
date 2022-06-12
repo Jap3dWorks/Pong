@@ -1,9 +1,9 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "Pong/Core/utils.h"
-#include "Pong/Core/primitive_component.h"
-#include "Pong/Core/core_vals.h"
+#include "Pong/core/utils.h"
+#include "Pong/core/primitive_component.h"
+#include "Pong/core/core_vals.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -55,7 +55,7 @@ namespace Pong {
         IndexVector _indices;
 
         std::vector<uint32_t> line_indices;
-        std::vector<float> interleaved_vertices;
+//        std::vector<float> interleaved_vertices;
 
     public:
         uint32_t order{10};
@@ -161,17 +161,17 @@ namespace Pong {
 
             glGenVertexArrays(1,&_VAO_id_);
             glGenBuffers(1, &VBO);
+            glGenBuffers(1, &EBO);
 
             glBindVertexArray(_VAO_id_);
-
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
             glBufferData(GL_ARRAY_BUFFER,
                          _vertices.size() * sizeof(decltype(_vertices)::value_type),
                          _vertices.data(),
                          GL_STATIC_DRAW
                          );
 
-            glGenBuffers(1, &EBO);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                          _indices.size() * sizeof(decltype(_indices)::value_type),
@@ -181,7 +181,7 @@ namespace Pong {
 
             glEnableVertexAttribArray((uint32_t)VertexAttrId::POSITION);
             glVertexAttribPointer((uint32_t)VertexAttrId::POSITION,
-                                  sizeof(Vertex::position),
+                                  sizeof(Vertex::position) / sizeof(float),
                                   GL_FLOAT, GL_FALSE,
                                   sizeof(Vertex),
                                   (void*)offsetof(Vertex, position)
@@ -189,7 +189,7 @@ namespace Pong {
 
             glEnableVertexAttribArray((uint32_t)VertexAttrId::NORMAL);
             glVertexAttribPointer((uint32_t)VertexAttrId::NORMAL,
-                                  sizeof(Vertex::normal),
+                                  sizeof(Vertex::normal) / sizeof(float),
                                   GL_FLOAT, GL_FALSE,
                                   sizeof(Vertex),
                                   (void*)offsetof(Vertex, normal)
@@ -197,7 +197,7 @@ namespace Pong {
 
             glEnableVertexAttribArray((uint32_t)VertexAttrId::TEX_COORDS);
             glVertexAttribPointer((uint32_t)VertexAttrId::TEX_COORDS,
-                                  sizeof(Vertex::tex_coords),
+                                  sizeof(Vertex::tex_coords) / sizeof(float),
                                   GL_FLOAT, GL_FALSE,
                                   sizeof(Vertex),
                                   (void*)offsetof(Vertex, tex_coords)

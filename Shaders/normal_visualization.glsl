@@ -1,6 +1,6 @@
 #shader vertex
 
-void main() {
+void vertex_main() {
     mat3 normal_matrix = mat3(transpose(inverse(view * model)));
     vs_out.normal = vec3(vec4(normal_matrix * aNormalm, 0.0));
     gl_Position = projection * view * vec4(aPos, 1.0);

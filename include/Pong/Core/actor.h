@@ -9,8 +9,8 @@ namespace Pong
     class Material;
 }
 
-#include "Pong/Core/movements.h"
-#include "Pong/Core/collider.h"
+#include "Pong/core/movements.h"
+#include "Pong/core/collider.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

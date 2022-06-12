@@ -1,8 +1,8 @@
 #ifndef PROCESS_INPUT_H
 #define PROCESS_INPUT_H
 
-#include "Pong/Core/movements.h"
-#include "Pong/Core/actor.h"
+#include "Pong/core/movements.h"
+#include "Pong/core/actor.h"
 
 #include <iostream>
 #include <GLFW/glfw3.h>

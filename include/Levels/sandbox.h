@@ -5,8 +5,8 @@
 #ifndef PONG_SANDBOX_H
 #define PONG_SANDBOX_H
 
-#include "Pong/Core/level.h"
-#include "Pong/Core/core_vals.h"
+#include "Pong/core/level.h"
+#include "Pong/core/core_vals.h"
 #include <glm/glm.hpp>
 #include <array>
 #include <string>

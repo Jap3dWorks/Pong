@@ -1,5 +1,5 @@
 #shader vertex
-void main() {
+void vertex_main() {
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
 	vs_out.TexCoords = aTexCoords;
 

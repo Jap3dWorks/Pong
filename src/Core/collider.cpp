@@ -1,5 +1,5 @@
 
-#include "Pong/Core/collider.h"
+#include "Pong/core/collider.h"
 #include "Pong/logger.h"
 
 #include <glm/glm.hpp>

@@ -1,6 +1,6 @@
 #shader vertex
 
-void main() {
+void vertex_main() {
     cam_dt.z_camera_ray = -abs(cos(FOV/2.0) / sin(FOV/2.0));
     vs_out.FragPos = vec3(aPos.x, aPos.y, aPos.z);
     cam_dt.view_matrix = inverse(mat3(View));

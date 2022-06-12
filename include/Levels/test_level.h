@@ -4,69 +4,46 @@
 
 #ifndef PONG_TEST_LEVEL_H
 #define PONG_TEST_LEVEL_H
-#include "Core/Level.h"
+#include "Pong/core/Level.h"
 #include "Pong/default_materials.h"
 #include "Pong/logger.h"
+#include "Pong/shapes/cube_shape.h"
 
-class TestLevel : public Pong::AbstractLevel {
+class TestLevel1 : public Pong::AbstractLevel {
 protected:
     void _level_setup() override {
+        AbstractLevel::_level_setup();
+
         // get camera_ptr
-        Pong::ACamera *camera = _scene->get_camera();
-        camera->Position = glm::vec3(0, 0, 9);
+        auto a_camera = _scene->get_camera();
+        a_camera->Position = glm::vec3(0, 0, 10);
 
-        // build and compile the Shader program
-        Shader *paint_shd = _scene->create_shader("paint_shd",
-                                                  "../shaders/paint.glsl");
+        // a cube
+        auto grass_shd = _scene->create_shader(
+                "cube_shd",
+                "./Shaders/basic.glsl");
 
-        auto *paint_mat = _scene->create_material<Pong::Material>(
-                "paint_mat",
-                paint_shd,
-                {_scene->create_texture("paint_tex",
-                                        "../Textures/waterColor.jpg",
-                                        "texture1")});
+        auto cube_mat = _scene->create_material<Pong::Material>(
+                "cube_mat",
+                grass_shd,
+                {});
 
-        auto *cube_01 = _scene->create_actor<Pong::APlayer>("icosphere_01");
-        auto *cube_shp = _scene->create_shape<Pong::IcosphereShape>(
-                "icosphere_shp",
-                1,
-                2);
-        _scene->assign_material(paint_mat, cube_shp);
-        _scene->assign_shape(cube_shp, cube_01);
+        auto cube_shp = _scene->create_shape<Pong::PlaneShape>("cube_shp");
+        auto cube_act_01 = _scene->create_actor<Pong::APlayer>("cube_act_01");
 
-        Shader *skybox_shd = _scene->create_shader("skybox_shd",
-                                                   "../shaders/reflect_skybox.glsl");
+        cube_act_01->set_transform(
+                glm::mat4(1.f, 0.f,  0.f, 0.f,
+                          0.f, 1.f,  0.f, 0.f,
+                          0.f, 0.f,  1.f, 0.f,
+                          0.f, 0.f, -5.f, 1.f)
+        );
 
-        Pong::Material *skybox_mat = _scene->create_material<Pong::SKyBoxMaterial>(
-                "skybox_mat",
-                skybox_shd,
-                {_scene->create_texture("skybox_tex",
-                                        "skybox",
-                                        "../Textures/skybox_right.jpg", "../Textures/skybox_left.jpg",
-                                        "../Textures/skybox_top.jpg", "../Textures/skybox_bottom.jpg",
-                                        "../Textures/skybox_front.jpg", "../Textures/skybox_back.jpg")},
-                Pong::RenderLayer::SKY_BOX);
+        _scene->assign_material(cube_mat,
+                                cube_shp);
 
-        // Sky box should be drawn last.
-        skybox_mat->order = 900;
-        // hack z_skybox to sort at the end of the map.
-        auto* skybox_shp = _scene->create_shape<Pong::SkyBoxShape>("skybox_shp");
-        auto* skybox_act = _scene->create_actor<Pong::ASkyBox>("skybox_act");
-        _scene->assign_material(skybox_mat,
-                                _scene->create_shape<Pong::SkyBoxShape>("skybox_shp"));
-        _scene->assign_shape(skybox_shp, skybox_act);
-
-        skybox_act->set_visibility(true);
-
-        // --lighting--
-        Pong::DirectionalLight *directional_light = _scene->get_directional_light();
-        directional_light->ambient = glm::vec4{0.1f, 0.1f, 0.05f, 1.f};
-        directional_light->color = glm::vec4{0.8f, 0.8f, 0.3f, 1.f};
-        directional_light->direction = glm::normalize(glm::vec4{0.3f, -1.f, -0.5f, 1.f});
+        _scene->assign_shape(cube_shp,
+                             cube_act_01);
     }
-
-//public:
-//    TestLevel() = default;
 };
 
 #endif //PONG_TEST_LEVEL_H

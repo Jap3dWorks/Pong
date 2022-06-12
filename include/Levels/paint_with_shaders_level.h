@@ -5,13 +5,14 @@
 #ifndef PONG_PAINT_WITH_SHADERS_LEVEL_H
 #define PONG_PAINT_WITH_SHADERS_LEVEL_H
 
-#include "Pong/Core/core_vals.h"
-#include "Pong/Core/level.h"
-#include "Pong/Core/material.h"
-#include "Pong/Core/lights.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/level.h"
+#include "Pong/core/material.h"
+#include "Pong/core/lights.h"
 #include "Pong/logger.h"
 #include "Pong/default_materials.h"
 #include "Levels/blending_level.h"
+#include "Pong/shapes/plane_shape.h"
 #include <vector>
 
 // TODO: quad level for Shader testing
@@ -23,7 +24,7 @@ protected:
         // add a camera quad
         auto draw_shader = _scene->create_shader(
                 "draw_shd",
-                "../Shaders/raymarching_shaders/voronoi_scene.glsl");
+                "../Shaders/raymarching_shaders/primitives_scene.glsl");
 
         auto draw_material =
                 _scene->create_material<Pong::Material>(

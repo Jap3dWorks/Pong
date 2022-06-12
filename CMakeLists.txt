@@ -30,12 +30,12 @@ include_directories("./include")
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/Core/actor.cpp
-        src/Core/collider.cpp
-        src/Core/level.cpp
-        src/Core/scene.cpp
-        src/Core/shape.cpp
-        src/Core/component.cpp
+        src/core/actor.cpp
+        src/core/collider.cpp
+        src/core/level.cpp
+        src/core/scene.cpp
+        src/core/shape.cpp
+        src/core/component.cpp
         )
 
 # --External Libraries--
@@ -93,10 +93,18 @@ endif()
 # ----------
 project(TEST
         VERSION 0.1)
+
 add_executable(
-        Test
+        TEST
         ./test/test.cpp
 )
+
+#include_directories(${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/include)
+#target_link_libraries(
+#        TEST PRIVATE general ${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/lib-vc2019/glfw3.lib
+#)
+
+
 
 # -------------
 # -- gl_test --

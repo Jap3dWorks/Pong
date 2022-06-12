@@ -1,4 +1,4 @@
-#include "Pong/Core/scene.h"
+#include "Pong/core/scene.h"
 
 #include <utility>
 #include "Pong/logger.h"

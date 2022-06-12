@@ -1,6 +1,6 @@
 #shader vertex
 
-void main() {
+void vertex_main() {
     cam_dt.z_camera_ray = -abs(cos(FOV/2.0) / sin(FOV/2.0));
     vs_out.FragPos = vec3(aPos.x, aPos.y, aPos.z);
     cam_dt.view_matrix = inverse(mat3(View));
@@ -133,11 +133,11 @@ vec2 raycast(in vec3 ro, in vec3 rd, float tmax, float tmin) {
         }
 //        t += h.x * clamp(STEP_FACTOR * h.x, STEP_FACTOR, 1.0);
 //        t += h.x * clamp(0.95 * i, STEP_FACTOR, 1.0);
-        #if STEP_FACTOR == 1
-        t += h.x;
-        #else
-        t += h.x * STEP_FACTOR;
-        #endif
+//        #if (STEP_FACTOR == 1.0)
+//            t += h.x;
+//        #else
+          t += h.x * STEP_FACTOR;
+//        #endif
 
     }
 

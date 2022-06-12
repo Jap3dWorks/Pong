@@ -3,9 +3,9 @@
 #define SHADER_H
 
 #include <yvals_core.h>
-#include "Pong/Core/core_vals.h"
+#include "Pong/core/core_vals.h"
 #include "Pong/logger.h"
-#include "Pong/utils/shader_parser.h"
+#include "utils/shader_parser.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <iostream>

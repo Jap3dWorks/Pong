@@ -14,12 +14,12 @@
 #include <iostream>
 #include <vector>
 
-#include "Pong/Core/core_vals.h"
-#include "Pong/Core/actor.h"
-#include "Pong/Core/scene.h"
-#include "Pong/Core/shape.h"
-#include "Pong/Core/shader.h"
-#include "Pong/Core/material.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/scene.h"
+#include "Pong/core/shape.h"
+#include "Pong/core/shader.h"
+#include "Pong/core/material.h"
 
 // utility to load Textures
 _P_INLINE unsigned int load_texture(_P_CONST char *path, _P_CONST bool &gammaCorrection)

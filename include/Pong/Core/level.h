@@ -3,11 +3,11 @@
 
 #include "movements.h"
 
-#include "Pong/Core/scene.h"
-#include "Pong/Core/shape.h"
-#include "Pong/Core/actor.h"
-#include "Pong/Core/render.h"
-#include "Pong/Core/process_input.h"
+#include "Pong/core/scene.h"
+#include "Pong/core/shape.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/render.h"
+#include "Pong/core/process_input.h"
 #include <ctime>
 
 // specific config of a level

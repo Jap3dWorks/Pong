@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "Pong/Core/actor.h"
+#include "Pong/core/actor.h"
 #include <vector>
 
 

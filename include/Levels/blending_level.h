@@ -4,14 +4,16 @@
 #ifndef PONG_BLENDING_LEVEL_H
 #define PONG_BLENDING_LEVEL_H
 
-#include "Pong/Core/core_vals.h"
-#include "Pong/Core/level.h"
-#include "Pong/Core/core_vals.h"
-#include "Pong/Core/material.h"
-#include "Pong/Core/lights.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/level.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/material.h"
+#include "Pong/core/lights.h"
 #include "Pong/logger.h"
+#include "Pong/shapes/shape_primitives.h"
 #include "Pong/default_materials.h"
 #include "Levels/blending_level.h"
+#include "Pong/shapes/plane_shape.h"
 
 class BlendingLevel : public Pong::AbstractLevel {
 protected:
@@ -59,27 +61,27 @@ protected:
         // blending
         _create_blending_actors();
 
-        // vertex size
-        auto vert_shd = _scene->create_shader("vert_shd",
-                                              "./Shaders/point.glsl");
-        auto vert_mat = _scene->create_material<Pong::Material>("vert_mat",
-                                                                vert_shd,
-                                                                {});
-        auto vert_shp = _scene->create_shape<Pong::IcosphereShape>("vert_shp", 2.0);
-        vert_shp->draw_primitive = GL_POINTS;
-        LOG_DEBUG("Change vert_shp to GL_POINTS primitive " << GL_POINTS);
-        auto vert2_shp = _scene->create_shape<Pong::IcosphereShape>("vert2_shp", 2.0);
-        vert2_shp->draw_primitive = GL_LINE_STRIP;
-        LOG_DEBUG("Change vert2_shp to GL_LINE_STRIP primitive " << GL_LINE_STRIP);
-
-        LOG_DEBUG("GL_TRIANGLES id " << GL_TRIANGLES);
-
-        auto vert_act = _scene->create_actor<Pong::Actor>("vert_act");
-        _scene->assign_material(vert_mat, vert_shp);
-        _scene->assign_material(vert_mat, vert2_shp);
-        _scene->assign_shape(vert_shp, vert_act);
-        _scene->assign_shape(vert2_shp, vert_act);
-        vert_act->set_transform(glm::translate(vert_act->get_transform(), glm::vec3(4, 0, 0)));
+//        // vertex size
+//        auto vert_shd = _scene->create_shader("vert_shd",
+//                                              "./Shaders/point.glsl");
+//        auto vert_mat = _scene->create_material<Pong::Material>("vert_mat",
+//                                                                vert_shd,
+//                                                                {});
+//        auto vert_shp = _scene->create_shape<Pong::IcosphereShape>("vert_shp", 2.0);
+//        vert_shp->draw_primitive = GL_POINTS;
+//        LOG_DEBUG("Change vert_shp to GL_POINTS primitive " << GL_POINTS);
+//        auto vert2_shp = _scene->create_shape<Pong::IcosphereShape>("vert2_shp", 2.0);
+//        vert2_shp->draw_primitive = GL_LINE_STRIP;
+//        LOG_DEBUG("Change vert2_shp to GL_LINE_STRIP primitive " << GL_LINE_STRIP);
+//
+//        LOG_DEBUG("GL_TRIANGLES id " << GL_TRIANGLES);
+//
+//        auto vert_act = _scene->create_actor<Pong::Actor>("vert_act");
+//        _scene->assign_material(vert_mat, vert_shp);
+//        _scene->assign_material(vert_mat, vert2_shp);
+//        _scene->assign_shape(vert_shp, vert_act);
+//        _scene->assign_shape(vert2_shp, vert_act);
+//        vert_act->set_transform(glm::translate(vert_act->get_transform(), glm::vec3(4, 0, 0)));
 
         // skybox
         auto skybox_shd = _scene->create_shader("skybox_shd",
@@ -119,9 +121,9 @@ protected:
         blinn_mat->set_param("glow", 16.f);
         blinn_mat->set_param("specular", .8f);
 
-        auto blinn_shp = _scene->create_shape<Pong::IcosphereShape>("blinn_shp");
-        _scene->assign_material(blinn_mat, blinn_shp);
-        _scene->assign_shape(blinn_shp, vert_act);
+//        auto blinn_shp = _scene->create_shape<Pong::IcosphereShape>("blinn_shp");
+//        _scene->assign_material(blinn_mat, blinn_shp);
+//        _scene->assign_shape(blinn_shp, vert_act);
 
         // TODO: https://learnopengl.com/Advanced-OpenGL/Instancing
 
