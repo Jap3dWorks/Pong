@@ -5,6 +5,8 @@
 #ifndef GL_TEST_RAYTRACER_H
 #define GL_TEST_RAYTRACER_H
 
+#include "Pong/core/primitive_component.h"
+
 class Raytracer
 {
 

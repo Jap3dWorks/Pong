@@ -9,7 +9,6 @@
 #include "Pong/core/actor.h"
 #include <vector>
 
-
 // https://learnopengl.com/Model-Loading/Mesh
 
 namespace Pong {

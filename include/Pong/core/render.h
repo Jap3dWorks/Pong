@@ -6,6 +6,7 @@
 #include "Pong/core/shader.h"
 #include "Pong/core/actor.h"
 #include "Pong/core/lights.h"
+#include "Pong/core/graphic_flags.h"
 
 #include <cstdint>
 #include <stb_image.h>
@@ -16,19 +17,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 
+
 #define MAX_UINT_8 255
 
 // TODO: PBR materials
 // TODO: postprocessing
 
 namespace Pong {
-    enum class RenderLayer: uint32_t {
-        NO_LAYER=0,
-        BASE=1,
-        SKY_BOX=2,
-        BLENDING=4
-    };
-
     _P_INLINE RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl) {
         return static_cast<Pong::RenderLayer>(
                 static_cast<uint32_t>(lrl) | static_cast<uint32_t>(rrl));
@@ -42,13 +37,6 @@ namespace Pong {
     _P_INLINE bool any(const Pong::RenderLayer& rlay) {
         return rlay != Pong::RenderLayer::NO_LAYER;
     }
-
-    enum class UboLayouts : GLuint {
-        VIEW_MATRICES=0,
-        LIGHTS=1,
-        RUNTIME_DATA=2,  // frame, fps, time, delta_time
-        RENDER_DATA=3,
-    };
 
     class Render {
     private:
@@ -491,7 +479,8 @@ namespace Pong {
             }
         }
 
-        _P_INLINE void clear_frame_count() noexcept { _runtime_data.frame_counter=0;}
+        _P_INLINE void clear_frame_count() noexcept {
+            _runtime_data.frame_counter=0;}
 
         _P_NODISCARD const auto& get_frame_count() const noexcept {
             return _runtime_data.frame_counter;

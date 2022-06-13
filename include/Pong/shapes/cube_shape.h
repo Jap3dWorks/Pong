@@ -126,10 +126,15 @@ namespace Pong {
         }
 
     public:
-        explicit CubeShape(std::string name, float height = 1.f, float width = 1.f, float depth = 1.f) :
-                _width(width), _height(height), _depth(depth), Shape(std::move(name)) {
+        explicit CubeShape(std::string name,
+                           float height = 1.f,
+                           float width = 1.f,
+                           float depth = 1.f) :
+                _width(width),
+                _height(height),
+                _depth(depth),
+                Shape(std::move(name)) {
             _buildCubeVerticesHard();
-
             // set vertex buffers
             set_VAO();
         }

@@ -4,6 +4,7 @@
 #include "Pong/core/utils.h"
 #include "Pong/core/primitive_component.h"
 #include "Pong/core/core_vals.h"
+#include "Pong/core/graphic_flags.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,13 +25,6 @@ namespace Pong{
 }
 
 namespace Pong {
-
-    enum class VertexAttrId : uint32_t {
-        POSITION=0,
-        NORMAL=1,
-        TEX_COORDS=2
-    };
-
     using VertexVector = std::vector<Vertex>;
     using TriangleVector = std::vector<Triangle>;
     using IndexVector = std::vector<uint32_t>;
@@ -196,11 +190,11 @@ namespace Pong {
                                   );
 
             glEnableVertexAttribArray((uint32_t)VertexAttrId::TEX_COORDS);
-            glVertexAttribPointer((uint32_t)VertexAttrId::TEX_COORDS,
+            glVertexAttribPointer((uint32_t) VertexAttrId::TEX_COORDS,
                                   sizeof(Vertex::tex_coords) / sizeof(float),
                                   GL_FLOAT, GL_FALSE,
                                   sizeof(Vertex),
-                                  (void*)offsetof(Vertex, tex_coords)
+                                  (void *) offsetof(Vertex, tex_coords)
             );
 
             glBindVertexArray(0);
@@ -212,7 +206,7 @@ namespace Pong {
         }
 
         virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const {
-            if(!_indices.empty()){
+            if (!_indices.empty()){
                 glDrawElements(draw_primitive, _indices.size(), GL_UNSIGNED_INT, nullptr);
             }
             else {

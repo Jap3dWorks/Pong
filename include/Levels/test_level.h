@@ -24,8 +24,10 @@ protected:
                 grass_shd,
                 {});
 
-        auto cube_shp = _scene->create_shape<Pong::CubeShape>("cube_shp", 2.0, 2.0, 2.0);
-        auto cube_act_01 = _scene->create_actor<Pong::APlayer>("cube_act_01");
+        auto cube_shp = _scene->create_shape<Pong::CubeShape>(
+                "cube_shp", 2.0, 2.0, 2.0);
+        auto cube_act_01 = _scene->create_actor<Pong::APlayer>(
+                "cube_act_01");
 
         _scene->assign_material(cube_mat,
                                 cube_shp);
@@ -35,7 +37,6 @@ protected:
 
         // get camera_ptr
         _scene->get_camera()->Position = glm::vec3(0, 0, 5.0);
-
     }
 };
 
