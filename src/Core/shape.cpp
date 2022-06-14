@@ -32,29 +32,7 @@ namespace Pong {
 
     // --Icosphere--
     // -------------
-//    void IcosphereShape::_build_icosphere()
-//    {
-//        if (_smooth) _build_vertices_smooth();
-//
-//        else _build_vertices_flat();
-//
-//        // set vertex buffers
-//        Shape::set_VAO();
-//    }
-//
-//    IcosphereShape::IcosphereShape(std::string name, float radius, int subdivision, bool smooth):
-//        _radius(radius), _subdivision(subdivision), _smooth(smooth), Shape(std::move(name))
-//    {
-//        _build_icosphere();
-//    }
-//
-//    void IcosphereShape::set_radius(float r)
-//    {
-//        _radius = r;
-//        _build_icosphere();
-//
-//    }
-//
+
 //    inline std::vector<glm::vec3> IcosphereShape::_prepare_icosphere_data()
 //    {
 //        vertices.clear();
@@ -148,122 +126,7 @@ namespace Pong {
 //
 //        build_interleaved_vertices();
 //    }
-//
-//    void IcosphereShape::_build_vertices_smooth()
-//    {
-//
-//        // compute de basic 12 vertices of a icosaedron
-//        // vertices with different texcoords cannot be shared.
-//        auto tmpVert = _prepare_icosphere_data();
-//
-//        // smooth icosahedron has 14 non-shared vertices
-//        // and 8 shared vertices total 22 vertices.
-//        for (int i = 0; i < 5; i++)                        // v0, v1, v2, v3, v4 top
-//        {
-//            add_vertices(tmpVert[0]);
-//            add_normals(0.f, 0.f, 1.f);
-//            add_tex_coords(S_STEP + (S_STEP * (i * 2)), 0.f);
-//        }
-//
-//        for (int i = 0; i < 5; i++)                       // v5, v6, v7, v8, v9 bottom
-//        {
-//            add_vertices(tmpVert[11]);
-//            add_normals(0.f, 0.f, -1.f);
-//            add_tex_coords(S_STEP * 2 + (S_STEP * (i * 2)), T_STEP * 3);
-//        }
-//
-//        for (int i = 0; i < 2; i++) {                     // v10 right, v11 left
-//            add_vertices(tmpVert[1]);
-//            add_normals(glm::normalize(tmpVert[1]));
-//            add_tex_coords(S_STEP * i * 10, T_STEP);
-//        }
-//
-//        for (int i = 0; i < 2; i++) {                     // v12 right, v13 left
-//            add_vertices(tmpVert[6]);
-//            add_normals(glm::normalize(tmpVert[6]));
-//            add_tex_coords(S_STEP + (S_STEP * i * 10), T_STEP * 2);
-//        }
-//
-//        // 8 shared vertices
-//        for (int i = 0; i < 4; i++)                       // v14, v15, v16, v17 shared
-//        {
-//            add_vertices(tmpVert[i + 2]);
-//            add_normals(glm::normalize(tmpVert[i + 2]));
-//            add_tex_coords(S_STEP * ((i + 1) * 2), T_STEP);
-//            _shared_indices[std::make_pair(S_STEP * ((i + 1) * 2), T_STEP)] = texture_coords.size() / 2 - 1;
-//        }
-//
-//        for (int i = 0; i < 4; i++)
-//        {
-//            add_vertices(tmpVert[i + 7]);                     // v18, v19, v20, v21 shared
-//            add_normals(glm::normalize(tmpVert[i + 7]));
-//            add_tex_coords(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2);
-//            _shared_indices[std::make_pair(S_STEP * 3 + (S_STEP * i * 2), T_STEP * 2)] = texture_coords.size() / 2 - 1;
-//        }
-//
-//        // build triangles index list (20 triangles)
-//        add_indices(0, 10, 14);     // 1st row
-//        add_indices(1, 14, 15);
-//        add_indices(2, 15, 16);
-//        add_indices(3, 16, 17);
-//        add_indices(4, 17, 11);
-//        add_indices(10, 12, 14);    // 2nd row
-//        add_indices(12, 18, 14);
-//        add_indices(14, 18, 15);
-//        add_indices(18, 19, 15);
-//        add_indices(15, 19, 16);
-//        add_indices(19, 20, 16);
-//        add_indices(16, 20, 17);
-//        add_indices(20, 21, 17);
-//        add_indices(17, 21, 11);
-//        add_indices(21, 13, 11);
-//        add_indices(5, 18, 12);  // 3rd row
-//        add_indices(6, 19, 18);
-//        add_indices(7, 20, 19);
-//        add_indices(8, 21, 20);
-//        add_indices(9, 13, 21);
-//
-//        // add edge lines of icosahedron
-//        line_indices.push_back(0);   line_indices.push_back(10); // 00 - 10
-//        line_indices.push_back(1);   line_indices.push_back(14); // 01 - 14
-//        line_indices.push_back(2);   line_indices.push_back(15); // 02 - 15
-//        line_indices.push_back(3);   line_indices.push_back(16); // 03 - 16
-//        line_indices.push_back(4);   line_indices.push_back(17); // 04 - 17
-//        line_indices.push_back(10);  line_indices.push_back(14); // 10 - 14
-//        line_indices.push_back(14);  line_indices.push_back(15); // 14 - 15
-//        line_indices.push_back(15);  line_indices.push_back(16); // 15 - 16
-//        line_indices.push_back(16);  line_indices.push_back(17); // 10 - 14
-//        line_indices.push_back(17);  line_indices.push_back(11); // 17 - 11
-//        line_indices.push_back(10);  line_indices.push_back(12); // 10 - 12
-//        line_indices.push_back(12);  line_indices.push_back(14); // 12 - 14
-//        line_indices.push_back(14);  line_indices.push_back(18); // 14 - 18
-//        line_indices.push_back(18);  line_indices.push_back(15); // 18 - 15
-//        line_indices.push_back(15);  line_indices.push_back(19); // 15 - 19
-//        line_indices.push_back(19);  line_indices.push_back(16); // 19 - 16
-//        line_indices.push_back(16);  line_indices.push_back(20); // 16 - 20
-//        line_indices.push_back(20);  line_indices.push_back(17); // 20 - 17
-//        line_indices.push_back(17);  line_indices.push_back(21); // 17 - 21
-//        line_indices.push_back(21);  line_indices.push_back(11); // 21 - 11
-//        line_indices.push_back(12);  line_indices.push_back(18); // 12 - 18
-//        line_indices.push_back(18);  line_indices.push_back(19); // 18 - 19
-//        line_indices.push_back(19);  line_indices.push_back(20); // 19 - 20
-//        line_indices.push_back(20);  line_indices.push_back(21); // 20 - 21
-//        line_indices.push_back(21);  line_indices.push_back(13); // 21 - 13
-//        line_indices.push_back(5);   line_indices.push_back(12); // 05 - 12
-//        line_indices.push_back(6);   line_indices.push_back(18); // 06 - 18
-//        line_indices.push_back(7);   line_indices.push_back(19); // 07 - 19
-//        line_indices.push_back(8);   line_indices.push_back(20); // 08 - 20
-//        line_indices.push_back(9);   line_indices.push_back(21); // 09 - 21
-//
-//        // subdivide icosahedron
-//        _subdivide_vertices_smooth();
-//
-//
-//        // gen interleaved vertex array, buffer open gl will use.
-//        build_interleaved_vertices();
-//
-//    }
-//
+
 //    void IcosphereShape::_subdivide_vertices_smooth()
 //    {
 //        std::vector<unsigned int> tmpIndices;
@@ -410,24 +273,6 @@ namespace Pong {
 //        }
 //    }
 //
-//    void IcosphereShape::_add_sub_line_indices(unsigned int i1, unsigned int i2, unsigned int i3,
-//                                               unsigned int i4, unsigned int i5, unsigned int i6)
-//    {
-//        line_indices.push_back(i1);      // i1 - i2
-//        line_indices.push_back(i2);
-//        line_indices.push_back(i2);      // i2 - i6
-//        line_indices.push_back(i6);
-//        line_indices.push_back(i2);      // i2 - i3
-//        line_indices.push_back(i3);
-//        line_indices.push_back(i2);      // i2 - i4
-//        line_indices.push_back(i4);
-//        line_indices.push_back(i6);      // i6 - i4
-//        line_indices.push_back(i4);
-//        line_indices.push_back(i3);      // i3 - i4
-//        line_indices.push_back(i4);
-//        line_indices.push_back(i4);      // i4 - i5
-//        line_indices.push_back(i5);
-//    }
 //
 //
 //    unsigned int IcosphereShape::_add_subvertex_attribs(const float *v, const float *n, const float *t)
@@ -559,70 +404,9 @@ namespace Pong {
 //
 //        return true;
 //    }
-//
-//    IcosphereShape::~IcosphereShape() = default;
 
 
     // Sky box Shape
     // -------------
-    SkyBoxShape::SkyBoxShape(std::string name) : Shape(std::move(name)) {
-        _build_sky_box();
-
-    }
-
-    void SkyBoxShape::_build_sky_box() {
-        _vertices.clear();
-//        normals.clear();
-//        texture_coords.clear();
-        _indices.clear();
-//        interleaved_vertices.clear();
-
-        _vertices = {
-                // positions
-                {{-1.0f, 1.0f,  -1.0f}},
-                {{-1.0f, -1.0f, -1.0f}},
-                {{1.0f,  -1.0f, -1.0f}},
-                {{1.0f,  -1.0f, -1.0f}},
-                {{1.0f,  1.0f,  -1.0f}},
-                {{-1.0f, 1.0f,  -1.0f}},
-
-                {{-1.0f, -1.0f, 1.0f}},
-                {{-1.0f, -1.0f, -1.0f}},
-                {{-1.0f, 1.0f,  -1.0f}},
-                {{-1.0f, 1.0f,  -1.0f}},
-                {{-1.0f, 1.0f,  1.0f}},
-                {{-1.0f, -1.0f, 1.0f}},
-
-                {{1.0f,  -1.0f, -1.0f}},
-                {{1.0f,  -1.0f, 1.0f}},
-                {{1.0f,  1.0f,  1.0f}},
-                {{1.0f,  1.0f,  1.0f}},
-                {{1.0f,  1.0f,  -1.0f}},
-                {{1.0f,  -1.0f, -1.0f}},
-
-                {{-1.0f, -1.0f, 1.0f}},
-                {{-1.0f, 1.0f,  1.0f}},
-                {{1.0f,  1.0f,  1.0f}},
-                {{1.0f,  1.0f,  1.0f}},
-                {{1.0f,  -1.0f, 1.0f}},
-                {{-1.0f, -1.0f, 1.0f}},
-
-                {{-1.0f, 1.0f,  -1.0f}},
-                {{1.0f,  1.0f,  -1.0f}},
-                {{1.0f,  1.0f,  1.0f}},
-                {{1.0f,  1.0f,  1.0f}},
-                {{-1.0f, 1.0f,  1.0f}},
-                {{-1.0f, 1.0f,  -1.0f}},
-
-                {{-1.0f, -1.0f, -1.0f}},
-                {{-1.0f, -1.0f, 1.0f}},
-                {{1.0f,  -1.0f, -1.0f}},
-                {{1.0f,  -1.0f, -1.0f}},
-                {{-1.0f, -1.0f, 1.0f}},
-                {{1.0f,  -1.0f, 1.0f}}
-        };
-
-        Shape::set_VAO();
-    }
 
 }

@@ -99,6 +99,7 @@ namespace Pong {
         }
 
         /**determine a point c is on the segment a-b*/
+        // TODO: use glm
         static bool _is_on_line_segment(const float *a, const float *b, const float *c) {
             const float EPSILON = 0.0001f;
 
@@ -112,6 +113,29 @@ namespace Pong {
             {
                 if ((c[i] > a[i] && c[i] > b[i]) || (c[i] < a[i] && c[i] < b[i]))
                     return false;
+            }
+            return true;
+        }
+
+        static bool _is_on_line_segment(const glm::vec2 &a,
+                                        const glm::vec2 &b,
+                                        const glm::vec2 &c) {
+            const float EPSILON = 0.0001f;
+
+            // cross product must be 0 if c is on the line
+//            float cross = glm::cross(a-c, b-c);
+            float cross = ((b[0] - a[0]) * (c[1] - a[1])) - ((b[1] - a[1]) * (c[0] - a[0]));
+            if (cross > EPSILON || cross < -EPSILON)
+                return false;
+
+            // must be within a-b
+            for (int i = 0; i < 2; i++) {
+                auto len = glm::length((a-c));
+                auto line = glm::normalize(a - b);
+
+                if (abs(glm::dot(a-c, line)) > len) {
+                    return false;
+                }
             }
             return true;
         }
@@ -131,17 +155,17 @@ namespace Pong {
 
         virtual ~Shape() = default;
 
-        _P_NODISCARD std::string get_name() const { return _name; }
+        _P_NODISCARD _P_INLINE std::string get_name() const { return _name; }
         void set_name(std::string new_name) { _name = std::move(new_name);}
 
-        _P_NODISCARD uint32_t vertex_count() const { return _vertices.size(); }
-        _P_NODISCARD uint32_t index_count() const { return _indices.size(); }
+        _P_NODISCARD _P_INLINE uint32_t vertex_count() const { return _vertices.size(); }
+        _P_NODISCARD _P_INLINE uint32_t index_count() const { return _indices.size(); }
             
-        _P_NODISCARD VertexVector& get_vertices() {
+        _P_NODISCARD _P_INLINE VertexVector& get_vertices() {
             return _vertices;
         }
         
-        _P_NODISCARD IndexVector& get_indices() {
+        _P_NODISCARD _P_INLINE IndexVector& get_indices() {
             return _indices;
         }
             

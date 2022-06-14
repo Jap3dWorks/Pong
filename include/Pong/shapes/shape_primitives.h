@@ -98,27 +98,7 @@ namespace Pong {
 //
 //    };
 
-    // Sky box Shape
-    class SkyBoxShape : public Shape {
-    private:
-        void _build_sky_box();
 
-    public:
-        void draw(const Render *render,
-                  const Scene *scene,
-                  Pong::Material *material) const override {
-            glDepthFunc(GL_LEQUAL);
-
-            if(!_indices.empty()){
-                glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, nullptr);
-            } else {
-                glDrawArrays(GL_TRIANGLES, 0, vertex_count());
-            }
-            glDepthFunc(GL_LESS);
-        }
-
-        explicit SkyBoxShape(std::string name);
-    };
 }
 
 
