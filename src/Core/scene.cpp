@@ -107,7 +107,7 @@ namespace Pong{
     }
 
 
-    Shape* Scene::get_shape(const std::string& name) const
+    GraphicShape* Scene::get_shape(const std::string& name) const
     {
         if (shape_map.find(name) != shape_map.end())
         {
@@ -152,12 +152,11 @@ namespace Pong{
 
     // --Textures--
     Texture* Scene::create_texture(const std::string& name,
-                                   const std::string& path,
-                                   std::string texture_type)
+                                   const std::string& path)
     {
         if (textures_map.find(name) == textures_map.end())
         {
-            auto* t_ptr = new Texture(name, path, std::move(texture_type));
+            auto* t_ptr = new Texture(name, path);
             textures_map[name] = t_ptr;
 
             return textures_map[name];
@@ -169,7 +168,6 @@ namespace Pong{
     }
 
     Texture* Scene::create_texture(const std::string& name,
-                                   const std::string& texture_type,
                                    const std::string& right,
                                    const std::string& left,
                                    const std::string& top,
@@ -179,7 +177,7 @@ namespace Pong{
         if (textures_map.find(name) == textures_map.end())
         {
             auto* sb_ptr = new SkyBox(
-                    name, texture_type,
+                    name,
                     right, left, top,
                     bottom,front, back);
 
@@ -210,11 +208,11 @@ namespace Pong{
         renderlayer_material_map[rlay].push_back(material);
     }
 
-    void Scene::assign_material(Material * material, Shape * shape) {
+    void Scene::assign_material(Material * material, GraphicShape * shape) {
         material_shape_map[material].push_back(shape);
     }
 
-    void Scene::assign_shape(Shape * shape, Actor * actor) {
+    void Scene::assign_shape(GraphicShape * shape, Actor * actor) {
         shape_actor_map[shape].push_back(actor);
     }
 
@@ -233,11 +231,11 @@ namespace Pong{
     void Scene::sort_shapes_maps() {
         std::sort(shape_order.begin(),
                 shape_order.end(),
-                OrderComparer<Shape *>());
+                OrderComparer<GraphicShape *>());
         for (auto &pair: material_shape_map) {
             std::sort(pair.second.begin(),
                     pair.second.end(),
-                    OrderComparer<Shape *>());}
+                    OrderComparer<GraphicShape *>());}
     }
 
     void Scene::sort_actor_maps() {

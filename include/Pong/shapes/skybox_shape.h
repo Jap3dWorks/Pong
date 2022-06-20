@@ -4,18 +4,17 @@
 
 #ifndef GL_TEST_SKYBOX_SHAPE_H
 #define GL_TEST_SKYBOX_SHAPE_H
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
+#include "Pong/core/edit_shape.h"
 
 namespace Pong {
-
-    // Sky box Shape
-    class SkyBoxShape : public Shape {
+    class SkyBoxMesh : public EditMesh {
     private:
         void _build_sky_box() {
-            _vertices.clear();
-            _indices.clear();
+            _mesh->vertices.clear();
+            _mesh->indices.clear();
 
-            _vertices = {
+            _mesh->vertices = {
                     // positions
                     {{-1.0f, 1.0f,  -1.0f}},
                     {{-1.0f, -1.0f, -1.0f}},
@@ -59,27 +58,28 @@ namespace Pong {
                     {{-1.0f, -1.0f, 1.0f}},
                     {{1.0f,  -1.0f, 1.0f}}
             };
-
-            Shape::set_VAO();
         }
 
+    public:
+        explicit SkyBoxMesh() {
+            _build_sky_box();
+        }
+    };
+
+    class GraphicBoxMesh : GraphicMesh {
     public:
         void draw(const Render *render,
                   const Scene *scene,
                   Pong::Material *material) const override {
             glDepthFunc(GL_LEQUAL);
 
-            if(!_indices.empty()){
-                glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, nullptr);
+            if (!_mesh->indices.empty()) {
+                glDrawElements(GL_TRIANGLES, _mesh->indices.size(),
+                               GL_UNSIGNED_INT, nullptr);
             } else {
-                glDrawArrays(GL_TRIANGLES, 0, vertex_count());
+                glDrawArrays(GL_TRIANGLES, 0, _mesh->vertices.size());
             }
             glDepthFunc(GL_LESS);
-        }
-
-        explicit SkyBoxShape(std::string name) :
-                Shape(std::move(name)) {
-            _build_sky_box();
         }
     };
 

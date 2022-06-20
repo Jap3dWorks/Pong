@@ -35,6 +35,11 @@ namespace Pong {
         glm::vec3 direction;
     };
 
+    struct Mesh {
+        std::vector<Vertex> vertices;
+        std::vector<uint32_t> indices;
+    };
+
 }
 
 #endif //GL_TEST_PRIMITIVE_COMPONENT_H

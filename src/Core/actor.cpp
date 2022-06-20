@@ -17,7 +17,7 @@ namespace Pong {
 
     void Actor::draw(const Render *render, const Scene *scene, Material *material) const
     {
-        // draw if is visible and has a Shape
+        // draw if is visible and has a GraphicShape
 //        material->set_param("model", _transform);
         material->get_shader()->set_mat4("model", _transform);
     }

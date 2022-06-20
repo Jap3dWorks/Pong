@@ -10,21 +10,21 @@
 #include "Pong/logger.h"
 
 namespace Pong {
-    template<typename T>
-    struct NameComparer {
-    public:
-        bool operator()(const T& first, const T& second) const {
-            return first.get_name() < second.get_name();
-        }
-    };
-
-    template<typename T>
-    struct NameComparer<T*> {
-    public:
-        bool operator()(const T* first, const T* second) const {
-            return first->get_name() < second->get_name();
-        }
-    };
+//    template<typename T>
+//    struct NameComparer {
+//    public:
+//        bool operator()(const T& first, const T& second) const {
+//            return first.get_name() < second.get_name();
+//        }
+//    };
+//
+//    template<typename T>
+//    struct NameComparer<T*> {
+//    public:
+//        bool operator()(const T* first, const T* second) const {
+//            return first->get_name() < second->get_name();
+//        }
+//    };
 
     template<typename T>
     struct OrderComparer {

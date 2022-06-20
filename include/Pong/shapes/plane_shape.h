@@ -7,11 +7,11 @@
 
 #include <iostream>
 #include <string>
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 #include "Pong/core/core_vals.h"
 
 namespace Pong {
-    class PlaneShape : public Shape {
+    class PlaneShape : public GraphicShape {
     private:
         float _width;
         float _height;
@@ -46,9 +46,9 @@ namespace Pong {
 
     public:
         explicit PlaneShape(const std::string &name, float height = 1.f, float width = 1.f) :
-                _width(width), _height(height), Shape(name) {
+                _width(width), _height(height), GraphicShape(name) {
             _build_plane();
-            Shape::set_VAO();
+            GraphicShape::set_VAO();
         }
     };
 }

@@ -43,8 +43,6 @@ void _test_shader_parser() {
     for (auto& shdr: result) {
         LOG_INFO(shdr.second.get_data());
     }
-
-
 }
 
 void _test_sizes() {
@@ -52,10 +50,19 @@ void _test_sizes() {
     LOG_INFO("OFFSET texcoords " << offsetof(Pong::Vertex, tex_coords));
 }
 
+enum class TextureWrap : int32_t {
+    REPEAT = 0,
+    CLAMP_TO_EDGE = 1,
+    MIRRORED_REPEAT = 2
+};
+void test_enum_type() {
+    std::underlying_type<TextureWrap>::type{10};
+}
+
 int main() {
 //    _test_text_template();
 //    _test_shader_parser();
-    _test_sizes();
+//    _test_sizes();
 
     std::pair<float, float> h;
 

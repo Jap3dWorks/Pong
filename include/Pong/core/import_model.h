@@ -5,6 +5,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "Pong/core/primitive_component.h"
 
 #include "Pong/core/actor.h"
 #include <vector>
@@ -17,11 +18,14 @@ namespace Pong {
      * Will be added to the Scene.
      * Returns: Number of shapes imported.
      * */
+
     using MeshVector = std::vector<Mesh>;
 
     static inline auto _process_mesh(const aiMesh &mesh) -> Mesh {
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
+
+        Mesh r_mesh;
 
         for (unsigned int i = 0; i < mesh.mNumVertices; i++) {
             Vertex vertex{};
@@ -47,34 +51,34 @@ namespace Pong {
             } else vertex.tex_coords = glm::vec2(0.f);
 
             // tangent
-            vector.x = mesh.mTangents[i].x;
-            vector.y = mesh.mTangents[i].y;
-            vector.z = mesh.mTangents[i].z;
-            vertex.tangent = vector;
+//            vector.x = _mesh.mTangents[i].x;
+//            vector.y = _mesh.mTangents[i].y;
+//            vector.z = _mesh.mTangents[i].z;
+//            vertex.tangent = vector;
 
             // bitangent
-            vector.x = mesh.mBitangents[i].x;
-            vector.y = mesh.mBitangents[i].y;
-            vector.z = mesh.mBitangents[i].z;
-            vertex.bitangent = vector;
+//            vector.x = _mesh.mBitangents[i].x;
+//            vector.y = _mesh.mBitangents[i].y;
+//            vector.z = _mesh.mBitangents[i].z;
+//            vertex.bitangent = vector;
 
-            vertices.push_back(vertex);
+            r_mesh.vertices.push_back(vertex);
         }
 
         // vertex _indices
         for (unsigned int i = 0; i < mesh.mNumFaces; i++) {
             aiFace face = mesh.mFaces[i];
             for (unsigned int j = 0; j < face.mNumIndices; j++) {
-                indices.push_back(face.mIndices[j]);
+                r_mesh.indices.push_back(face.mIndices[j]);
             }
         }
 
-        return {mesh.mName.C_Str(), vertices, indices};
+        return r_mesh;
     }
 
     inline void _process_node(aiNode *node,
-                              const aiScene *&scene,
-                              MeshVector &out_result) {
+                       const aiScene *&scene,
+                       MeshVector &out_result) {
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             const aiMesh *ai_mesh = scene->mMeshes[node->mMeshes[i]];
             out_result.push_back(_process_mesh(*ai_mesh));
@@ -86,7 +90,7 @@ namespace Pong {
     }
 
 
-    inline auto import_model(const std::string &model_path, Actor *&actor) -> MeshVector {
+    inline auto import_model(const std::string &model_path) -> MeshVector {
 
         // read file
         Assimp::Importer importer;
@@ -106,7 +110,7 @@ namespace Pong {
 
         std::string file_name = model_path.substr(model_path.find_last_of('/') + 1);
 
-        std::vector<Mesh> result;
+        MeshVector result;
         _process_node(ai_scene->mRootNode, ai_scene, result);
 
 //        for(auto shape: result)
@@ -117,10 +121,7 @@ namespace Pong {
 //        }
 
         return result;
-
     }
-
-
 }
 
 

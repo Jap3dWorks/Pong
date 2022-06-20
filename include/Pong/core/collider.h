@@ -10,7 +10,7 @@ namespace Pong
 }
 
 #include "Pong/core/actor.h"
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 #include "Pong/core/component.h"
 #include "Pong/core/core_vals.h"
 
@@ -222,11 +222,11 @@ namespace Pong {
     {
     private:
         unsigned int _VAO;
-        // Shape
-        Shape* _shape = nullptr;
+        // GraphicShape
+        GraphicShape* _shape = nullptr;
 
     public:
-        MeshCollider(std::string name, Shape* _shape): Collider(name) {}
+        MeshCollider(std::string name, GraphicShape* _shape): Collider(name) {}
         virtual ~MeshCollider(); // {delete[] _buffer}
 
     };

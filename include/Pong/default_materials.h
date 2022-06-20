@@ -23,8 +23,8 @@ namespace Pong {
 /**Overrides update_shader from material class*/
     class SKyBoxMaterial : public Material {
     public:
-        SKyBoxMaterial(std::string name, Shader *shader, std::vector<Texture *> textures) :
-                Material(std::move(name), shader, std::move(textures)) {}
+        SKyBoxMaterial(const std::string& name, Shader *shader, const TextureUniformVector &textures) :
+                Material(name, shader, textures) {}
 
         void update_shader(Render *render, Scene *scene) override {
             update_params();
@@ -41,10 +41,10 @@ namespace Pong {
     protected:
 
     public:
-        SkyBox(std::string name, std::string texture_type,
+        SkyBox(std::string name,
                const std::string &right, const std::string &left, const std::string &top,
                const std::string &bottom, const std::string &front, const std::string &back) :
-                Texture(std::move(name), std::move(texture_type))
+                Texture(std::move(name))
                 {
             _cubemap_textures.push_back(right);
             _cubemap_textures.push_back(left);

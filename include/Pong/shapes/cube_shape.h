@@ -7,12 +7,12 @@
 
 #include <iostream>
 #include <string>
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 #include "Pong/core/core_vals.h"
 
 // TODO: cube subdivisions
 namespace Pong {
-    class CubeShape : public Shape {
+    class CubeShape : public GraphicShape {
     private:
         float _width;
         float _height;
@@ -133,7 +133,7 @@ namespace Pong {
                 _width(width),
                 _height(height),
                 _depth(depth),
-                Shape(std::move(name)) {
+                GraphicShape(std::move(name)) {
             _buildCubeVerticesHard();
             // set vertex buffers
             set_VAO();

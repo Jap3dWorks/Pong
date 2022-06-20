@@ -34,7 +34,6 @@ add_executable(${PROJECT_NAME}
         src/core/collider.cpp
         src/core/level.cpp
         src/core/scene.cpp
-        src/core/shape.cpp
         src/core/component.cpp
         )
 

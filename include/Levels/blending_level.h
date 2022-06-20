@@ -8,6 +8,7 @@
 #include "Pong/core/level.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/material.h"
+#include "Pong/core/texture.h"
 #include "Pong/core/lights.h"
 #include "Pong/logger.h"
 #include "Pong/shapes/shape_primitives.h"
@@ -34,14 +35,20 @@ protected:
         auto grass_mat = _scene->create_material<Pong::Material>(
                 "grass_mat",
                 grass_shd,
-                {_scene->create_texture("grass_tx",
-                                        "./Textures/grass.png",
-                                        "texture1")
+                {
+                    {
+                        "texture1",
+                        _scene->create_texture("grass_tx",
+                                               "./Textures/grass.png")
+                    }
                 });
 
-        auto grass_shp = _scene->create_shape<Pong::PlaneShape>("grass_shp");
-        auto grass_act_01 = _scene->create_actor<Pong::APlayer>("grass_act_01");
-        auto grass_act_02 = _scene->create_actor<Pong::APlayer>("grass_act_02");
+        auto grass_shp = _scene->create_shape<
+                Pong::PlaneShape>("grass_shp");
+        auto grass_act_01 = _scene->create_actor<
+                Pong::APlayer>("grass_act_01");
+        auto grass_act_02 = _scene->create_actor<
+                Pong::APlayer>("grass_act_02");
 
         grass_act_01->set_transform(glm::rotate(grass_act_01->get_transform(),
                                                 (float)_P_PI,
@@ -54,9 +61,10 @@ protected:
         _scene->assign_shape(grass_shp, grass_act_01);
         _scene->assign_shape(grass_shp, grass_act_02);
 
-        glBindTexture(GL_TEXTURE_2D, _scene->get_texture("grass_tx")->get_id());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        _scene->get_texture("grass_tx")->set_wrap(
+                TextureWrap::CLAMP_TO_EDGE,
+                TextureWrap::CLAMP_TO_EDGE
+        );
 
         // blending
         _create_blending_actors();
@@ -145,9 +153,11 @@ protected:
         auto bld_mat = _scene->create_material<Pong::Material>(
                 "bld_mat",
                 blnd_shader,
-                {_scene->create_texture("bld_tex",
-                                        "./Textures/blending_transparent_window.png",
-                                        "texture1")},
+                {{"texture1",
+                  _scene->create_texture("bld_tex", "./Textures/blending_transparent_window.png",
+                  )}
+                },
+
                 Pong::RenderLayer::BLENDING);
 
         auto bld_shp = _scene->create_shape<Pong::PlaneShape>(

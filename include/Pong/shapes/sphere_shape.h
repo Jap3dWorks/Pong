@@ -5,7 +5,7 @@
 #ifndef GL_TEST_SPHERE_SHAPE_H
 #define GL_TEST_SPHERE_SHAPE_H
 
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 #include "Pong/core/primitive_component.h"
 #include "Pong/logger.h"
 
@@ -24,7 +24,7 @@ namespace Pong {
             GlmCompare<glm::vec2>
             >;
 
-    class IcosphereShape : public Shape {
+    class IcosphereShape : public GraphicShape {
     public:
         explicit IcosphereShape(std::string name,
                                 float radius = 1.f,
@@ -33,7 +33,7 @@ namespace Pong {
                 _radius(radius),
                 _subdivision(subdivision),
                 _smooth(smooth),
-                Shape(std::move(name)) {
+                GraphicShape(std::move(name)) {
             _build_icosphere();
         }
 
@@ -50,6 +50,8 @@ namespace Pong {
         float _radius;
         int _subdivision;
         bool _smooth;
+        std::vector<uint32_t> line_indices;
+
 
         const float S_STEP = 186 / 2048.f; // horizontal texture step
         const float T_STEP = 322 / 1024.f; // vertical texture step
@@ -174,17 +176,153 @@ namespace Pong {
     }
 
         /**Build a faceted icosahedron, no shared vertices*/
-        void _build_vertices_flat();
+        void _build_vertices_flat() {
+            auto temp_vertex = _prepare_icosphere_data();
+
+            Vertex v0{}, v1{}, v2{}, v3{}, v4{}, v11{};
+
+//            glm::vec3 *v0, *v1, *v2, *v3, *v4, *v11;
+            glm::vec3 normal;
+//            glm::vec2 t0, t1, t2, t3, t4, t11;
+            unsigned int index = 0;
+
+            v0.position = temp_vertex[0];
+            v11.position = temp_vertex[11];
+            for(int i = 1; i<=5; ++i)
+            {
+                v1.position = temp_vertex[i];
+                if(i<5){
+                    v2.position = temp_vertex[i + 1];
+                }
+                else{
+                    v2.position = temp_vertex[1];
+                }
+
+                v3.position = temp_vertex[i+5];
+                if((i + 5) < 10){
+                    v4.position = temp_vertex[i + 6];
+                }
+                else{
+                    v4.position = temp_vertex[6];
+                }
+
+                // texture coords
+                v0.tex_coords = {(2.f * i - 1.f) * S_STEP, 0};
+                v1.tex_coords = {(2.f * i -2.f) * S_STEP,  T_STEP};
+                v2.tex_coords = {(2.f * i - 0.f) * S_STEP, T_STEP};
+                v3.tex_coords = {(2.f * i - 1.f) * S_STEP, T_STEP * 2};
+                v4.tex_coords = {(2.f * i + 1.f) * S_STEP, T_STEP * 2};
+                v11.tex_coords = {2.f * i * S_STEP,  T_STEP * 3};
+
+                // triangles
+                v0.normal = compute_face_normal(
+                        v0.position, v1.position, v2.position);
+                v1.normal = v0.normal;
+                v2.normal = v0.normal;
+                add_vertex(v0);
+                add_vertex(v1);
+                add_vertex(v2);
+                add_indices(index, index + 1, index + 2);
+
+                v1.normal = v3.normal = v2.normal =
+                        compute_face_normal(v1.position, v3.position, v2.position);
+                add_vertex(v1);
+                add_vertex(v3);
+                add_vertex(v2);
+                add_indices(index + 3, index + 4, index + 5);
+
+                v2.normal = v3.normal = v4.normal =
+                        compute_face_normal(v2.position, v3.position, v4.position);
+                add_vertex(v2);
+                add_vertex(v3);
+                add_vertex(v4);
+                add_indices(index + 6, index + 7, index + 8);
+
+                v3.normal = v11.normal = v4.normal =
+                        compute_face_normal(v3.position, v11.position, v4.position);
+                add_vertex(v3);
+                add_vertex(v11);
+                add_vertex(v4);
+                add_indices(index + 9, index + 10, index + 11);
+
+                // edge lines
+                line_indices.push_back(index);  //
+                line_indices.push_back(index + 1);
+                line_indices.push_back(index + 3); //
+                line_indices.push_back(index + 4);
+                line_indices.push_back(index + 3); //
+                line_indices.push_back(index + 5);
+                line_indices.push_back(index + 4); //
+                line_indices.push_back(index + 5);
+                line_indices.push_back(index + 9); //
+                line_indices.push_back(index + 10);
+                line_indices.push_back(index + 9); //
+                line_indices.push_back(index + 11);
+
+                index += 12;
+            }
+
+            _subdivide_vertices_flat();
+        }
 
         /**Helper function to init an icosahedron
           data in flat and smooth versions. Also clears prev arrays.*/
-        inline std::vector<glm::vec3> _prepare_icosphere_data();
+        inline std::vector<glm::vec3> _prepare_icosphere_data()
+        {
+            _vertices.clear();
+            _indices.clear();
 
-        void _build_icosphere();
+            return _computeIcosahedronVertices();
+        }
+
+        void _build_icosphere() {
+            if (_smooth) _build_vertices_smooth();
+
+            else _build_vertices_flat();
+
+            // set vertex buffers
+            GraphicShape::set_VAO();
+        }
 
         /**
-            Compute the 12 basic vertices of an icosahedron*/
-        std::vector<glm::vec3> _computeIcosahedronVertices() const;
+        * Compute the 12 basic vertices of an icosahedron
+        */
+        _P_NODISCARD std::vector<glm::vec3> _computeIcosahedronVertices() const {
+            const float PI = 3.1415926f;
+            const float H_ANGLE = PI / 180 * 72;    // angle for each col
+            const float V_ANGLE = atanf(1.f / 2);   // elevation angle
+
+            std::vector<glm::vec3> vertices(12);    // 12 vertices
+            int i1, i2;                             // _indices
+            float z, xy;
+            // each row starts form a diferent angle, radians
+            float hAngle1 = -PI / 2 - H_ANGLE / 2;  // -126 deg
+            float hAngle2 = -PI / 2;                // -90 deg
+
+            // top vertex
+            vertices[0] = glm::vec3(0, 0, _radius);
+
+            // 5 verts per row
+            for (int i = 1; i <= 5; i++) {
+                i1 = i;
+                i2 = (i + 5); // 5 verts offset 3th row
+
+                z = _radius * sin(V_ANGLE);         // elevation
+                xy = _radius * cos(V_ANGLE);
+
+                vertices[i1] = glm::vec3(xy * cosf(hAngle1), xy * sinf(hAngle1), z);  // x
+                vertices[i2] = glm::vec3(xy * cosf(hAngle2), xy * sinf(hAngle2), -z);
+
+                // next horizontal angles
+                hAngle1 += H_ANGLE;
+                hAngle2 += H_ANGLE;
+            }
+
+            // bottom vertex
+            vertices[11] = glm::vec3(0, 0, -_radius);
+
+            return vertices;
+        }
 
         /**
             subdivide the icosahedron vertices with smooth results*/
@@ -252,12 +390,6 @@ namespace Pong {
                     _add_sub_line_indices(i1, newI1, i2, newI2, i3, newI3);
                 }
             }
-        }
-
-        glm::vec3 _P_INLINE compute_face_normal(const glm::vec3 &v1,
-                                                const glm::vec3 &v2,
-                                                const glm::vec3 &v3) {
-            return glm::normalize(glm::cross(v2 - v1, v3 - v1));
         }
 
         void _subdivide_vertices_flat() {
@@ -433,7 +565,7 @@ namespace Pong {
 
             int count = (int) (sizeof(segments) / sizeof(segments[0]));
             for (int i = 0, j = 1; i < count; i += 2, j += 2) {
-                if (Shape::_is_on_line_segment(segments[i], segments[j], t))
+                if (GraphicShape::is_on_line_segment(segments[i], segments[j], t))
                     return false;  // not shared
             }
             return true;

@@ -4,7 +4,7 @@
 #include "movements.h"
 
 #include "Pong/core/scene.h"
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 #include "Pong/core/actor.h"
 #include "Pong/core/render.h"
 #include "Pong/core/process_input.h"

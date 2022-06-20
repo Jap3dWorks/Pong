@@ -189,7 +189,7 @@ namespace Pong {
         return checkCollision(scA, pcB);
     }
 
-    // sphere mesh
+    // sphere _mesh
     bool checkCollision(const SphereCollider* scA, const MeshCollider* mcB) { return false; }
     bool checkCollision(const MeshCollider* mcA, const SphereCollider* scB)
     {

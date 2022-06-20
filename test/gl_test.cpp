@@ -9,7 +9,7 @@
 
 #include "Pong/core/shader.h"
 #include "Pong/logger.h"
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 
 #include <iostream>
 

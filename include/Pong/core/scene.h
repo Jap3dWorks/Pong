@@ -4,7 +4,7 @@
 #include "Pong/core/core_vals.h"
 #include "Pong/core/actor.h"
 #include "Pong/core/material.h"
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 #include "Pong/core/collider.h"
 #include "Pong/core/lights.h"
 #include "Pong/core/render.h"
@@ -59,23 +59,23 @@ namespace Pong {
         std::map<std::string, Actor*> actor_map;
         std::map<std::string, Material*> material_map;
         std::map<std::string, Collider*> collider_map;
-        std::map<std::string, Shape*> shape_map;
+        std::map<std::string, GraphicShape*> shape_map;
         std::map<std::string, Shader*> shader_map;
         std::map<std::string, Texture*> textures_map;
 
         std::vector<Material*> material_order;
-        std::vector<Shape*> shape_order;
+        std::vector<GraphicShape*> shape_order;
         std::vector<Actor*> actor_order;
 
         // blending actors ordered by distance to Render camera_ptr
         std::vector<Actor*>blending_actors;
-        std::map<Actor*, std::pair<Shape*, Material*>> blending_actor_shape_material_map;
+        std::map<Actor*, std::pair<GraphicShape*, Material*>> blending_actor_shape_material_map;
 
-        // I have the problem of a Shape in two different materials.
-        // Shape actors will draw twice all materials in this case.
+        // I have the problem of a GraphicShape in two different materials.
+        // GraphicShape actors will draw twice all materials in this case.
         std::map<RenderLayer, std::vector<Material*>> renderlayer_material_map;
-        std::map<Material*, std::vector<Shape*>> material_shape_map;
-        std::map<Shape*, std::vector<Actor*>> shape_actor_map;
+        std::map<Material*, std::vector<GraphicShape*>> material_shape_map;
+        std::map<GraphicShape*, std::vector<Actor*>> shape_actor_map;
 
     public:
         virtual ~Scene();
@@ -84,8 +84,8 @@ namespace Pong {
         void collect_blending_actors();
         void assign_layer(const RenderLayer&, Material*);
 
-        void assign_material(Material*, Shape*);
-        void assign_shape(Shape*, Actor*);
+        void assign_material(Material*, GraphicShape*);
+        void assign_shape(GraphicShape*, Actor*);
 
         void sort_materials();
         void sort_shapes_maps();
@@ -107,7 +107,7 @@ namespace Pong {
         template<typename T>
         T *create_material(const std::string &name,
                            Shader *shader,
-                           const std::vector<Texture *> &textures,
+                           const TextureUniformVector &textures,
                            const RenderLayer &render_layer = RenderLayer::BASE) {
             if (!std::is_base_of<Material, T>::value)
                 return nullptr;
@@ -131,14 +131,12 @@ namespace Pong {
 
         // create texture
         Texture* create_texture(const std::string& name,
-                                const std::string& path,
-                                std::string texture_type);
+                                const std::string& path);
 
         _P_NODISCARD Texture* get_texture(const std::string& name) const;
 
         /**create_texture Sky box overload.*/
         Texture* create_texture(const std::string& name,
-                                const std::string& texture_type,
                                 const std::string& right,
                                 const std::string& left,
                                 const std::string& top,
@@ -194,23 +192,24 @@ namespace Pong {
 
         template<typename T, typename... Args>
         T* create_shape(const std::string& name, Args&&... args) {
-            if (!std::is_base_of<Shape, T>::value)
+            if (!std::is_base_of<GraphicShape, T>::value)
                 return nullptr;
             if (shape_map.find(name) == shape_map.end())
             {
                 T* s_ptr = new T(name, std::forward<Args>(args)...);
-                // store Shape pointer in internal level data
-                shape_map[name] = static_cast<Shape*>(s_ptr);
+                // store GraphicShape pointer in internal level data
+                shape_map[name] = static_cast<GraphicShape*>(s_ptr);
                 shape_order.push_back(s_ptr);
                 return s_ptr;
             }
             else
-                // if Shape exists in the map, return ptr to Shape
+                // if GraphicShape exists in the map, return ptr to GraphicShape
                 return static_cast<T*>(shape_map[name]);
         }
 
-        _P_NODISCARD Shape* get_shape(const std::string& name) const;
+        _P_NODISCARD GraphicShape* get_shape(const std::string& name) const;
 
+        Texture *create_texture(const std::string &name, const std::string &path);
     };
 }
 #endif // !SCENE_H

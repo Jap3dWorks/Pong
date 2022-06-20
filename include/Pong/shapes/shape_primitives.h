@@ -5,7 +5,7 @@
 #ifndef GL_TEST_SHAPE_PRIMITIVES_H
 #define GL_TEST_SHAPE_PRIMITIVES_H
 
-#include "Pong/core/shape.h"
+#include "Pong/core/graphic_shape.h"
 #include "Pong/core/core_vals.h"
 
 #include <iostream>
@@ -15,7 +15,7 @@
 // Icosphere
 // DOCUMENTATION: http://www.songho.ca/opengl/gl_sphere.html
 namespace Pong {
-//    class IcosphereShape : public Shape {
+//    class IcosphereShape : public GraphicShape {
 //    public:
 //        explicit IcosphereShape(std::string name, float radius = 1.f, int subdivision = 2, bool smooth = true);
 //
