@@ -15,13 +15,16 @@ namespace Pong {
 
     class EditMesh : public EditShape {
     protected:
-        Mesh* _mesh=nullptr;
+        using super = EditMesh;
+        Mesh *_mesh = nullptr;
 
     public:
         EditMesh() = default;
 
         _P_EXPLICIT EditMesh(Mesh* mesh): _mesh(mesh) {}
+        virtual ~EditMesh() = default;
 
+    public:
         _P_STATIC glm::vec3 _P_INLINE compute_face_normal(const glm::vec3 &v1,
                                                           const glm::vec3 &v2,
                                                           const glm::vec3 &v3) {
@@ -33,7 +36,7 @@ namespace Pong {
         }
 
         template<typename I, typename J, typename K>
-        inline void add_indices(I&& i, J&& j, K&& k) {
+        inline void add_indices(I &&i, J &&j, K &&k) {
             _mesh->indices.push_back(std::forward<I>(i));
             _mesh->indices.push_back(std::forward<J>(j));
             _mesh->indices.push_back(std::forward<K>(k));
@@ -72,6 +75,17 @@ namespace Pong {
         _P_NODISCARD _P_INLINE Mesh *get_mesh() const { return _mesh; }
         void _P_INLINE set_mesh(Mesh *mesh) {
             _mesh = mesh;
+        }
+
+        _P_INLINE void clear() {
+            if (_mesh) {
+                _mesh->vertices.clear();
+                _mesh->indices.clear();
+            }
+        }
+
+        _P_INLINE virtual void build() {
+            clear();
         }
 
     };

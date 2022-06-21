@@ -6,6 +6,7 @@
 #define GL_TEST_SPHERE_SHAPE_H
 
 #include "Pong/core/graphic_shape.h"
+#include "Pong/core/edit_shape.h"
 #include "Pong/core/primitive_component.h"
 #include "Pong/logger.h"
 
@@ -24,7 +25,7 @@ namespace Pong {
             GlmCompare<glm::vec2>
             >;
 
-    class IcosphereShape : public GraphicShape {
+    class IcosphereShape : public EditMesh {
     public:
         explicit IcosphereShape(std::string name,
                                 float radius = 1.f,
@@ -33,7 +34,7 @@ namespace Pong {
                 _radius(radius),
                 _subdivision(subdivision),
                 _smooth(smooth),
-                GraphicShape(std::move(name)) {
+                EditMesh(std::move(name)) {
             _build_icosphere();
         }
 

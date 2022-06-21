@@ -61,3 +61,10 @@ https://fisicaymates.com/derivadas/
 Text operations
 ===============
 https://github.com/jinja2cpp/Jinja2Cpp
+
+
+===
+C++
+===
+https://isocpp.org/wiki/faq/strange-inheritance#calling-virtuals-from-ctors
+https://www.fluentcpp.com/2017/12/26/emulate-super-base/#:~:text=And%20C%2B%2B%20doesn't%20have,make%20such%20a%20keyword%20ambiguous.

@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
+#include <array>
 
 namespace Pong {
     struct Vertex {
@@ -40,6 +42,11 @@ namespace Pong {
         std::vector<uint32_t> indices;
     };
 
+    template<size_t V, size_t I>
+    struct StaticMesh {
+        Vertex vertices[V];
+        uint32_t indices[I];
+    };
 }
 
 #endif //GL_TEST_PRIMITIVE_COMPONENT_H

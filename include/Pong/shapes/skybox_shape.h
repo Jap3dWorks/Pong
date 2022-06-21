@@ -4,15 +4,21 @@
 
 #ifndef GL_TEST_SKYBOX_SHAPE_H
 #define GL_TEST_SKYBOX_SHAPE_H
+
 #include "Pong/core/graphic_shape.h"
 #include "Pong/core/edit_shape.h"
+#include "Pong/core/primitive_component.h"
 
 namespace Pong {
+
     class SkyBoxMesh : public EditMesh {
-    private:
-        void _build_sky_box() {
-            _mesh->vertices.clear();
-            _mesh->indices.clear();
+    public:
+        explicit SkyBoxMesh(Mesh * _mesh):
+        EditMesh(_mesh) {}
+
+    public:
+        void build() override {
+            super::build();
 
             _mesh->vertices = {
                     // positions
@@ -58,11 +64,8 @@ namespace Pong {
                     {{-1.0f, -1.0f, 1.0f}},
                     {{1.0f,  -1.0f, 1.0f}}
             };
-        }
 
-    public:
-        explicit SkyBoxMesh() {
-            _build_sky_box();
+            // TODO: build indices
         }
     };
 
@@ -82,7 +85,6 @@ namespace Pong {
             glDepthFunc(GL_LESS);
         }
     };
-
 }
 
-#endif //GL_TEST_SKYBOX_SHAPE_H
+#endif // GL_TEST_SKYBOX_SHAPE_H

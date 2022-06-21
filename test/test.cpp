@@ -9,6 +9,7 @@
 #include <fstream>
 #include "utils/shader_parser.h"
 #include "Pong/core/primitive_component.h"
+#include <array>
 
 //template<typename T>
 std::string replace(const std::smatch& t) {
@@ -59,12 +60,49 @@ void test_enum_type() {
     std::underlying_type<TextureWrap>::type{10};
 }
 
+
+class P {
+private:
+    std::string _resource{};
+public:
+    P(){ LOG_INFO("Constructor"); }
+    P(const P& other) { LOG_INFO("Copy Constructor"); }
+    P(P&& other) noexcept { LOG_INFO("Move Constructor"); }
+};
+#if false
+P pass_val(P val) {
+    LOG_INFO("Pass By rVal");
+    return val;
+}
+#else
+[[maybe_unused]] P pass_val(P&& val) {
+    LOG_INFO("Pass By lval");
+    return val;
+}
+
+P pass_val(const P& val) {
+    LOG_INFO("Pass By const ref val");
+    return val;
+}
+#endif
+
+void test_value() {
+    auto v0 = P();
+    LOG_INFO("---");
+    auto v2 = pass_val(v0);
+    LOG_INFO("---");
+    auto v3 = pass_val(std::move(v0));
+    LOG_INFO("---");
+    auto v4 = pass_val({});
+}
+
+
 int main() {
 //    _test_text_template();
 //    _test_shader_parser();
 //    _test_sizes();
 
-    std::pair<float, float> h;
+    test_value();
 
 
     return 0;

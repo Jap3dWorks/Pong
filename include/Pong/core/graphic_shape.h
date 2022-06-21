@@ -36,11 +36,19 @@ namespace Pong {
                 std::exception(error){}
     };
 
-    //TODO: All _shapes class should use Vertex struct
     // TODO: separate model clas from controllers
 
     // _shapes classes
     class GraphicShape {
+        // _mesh draw in other class
+        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const = 0;
+
+    };
+
+    // GraphicMesh
+    class GraphicMesh : public GraphicShape {
+    protected:
+        using super = GraphicMesh;
 
     protected:
         /**Vertex array buffer id*/
@@ -50,16 +58,17 @@ namespace Pong {
 
     public:
         uint32_t order{10};  // TODO: move to other place
+
         uint32_t draw_primitive = GL_TRIANGLES;
 
     public:
-        GraphicShape() = default;
+        GraphicMesh() = default;
 
-        _P_EXPLICIT GraphicShape(Mesh* mesh) :
-                _mesh(mesh) {
+        _P_EXPLICIT GraphicMesh(Mesh* mesh) :
+        _mesh(mesh) {
         }
 
-        virtual ~GraphicShape() = default;
+        virtual ~GraphicMesh() = default;
 
         _P_NODISCARD unsigned int get_VAO() const { return _vao_id; }
 
@@ -84,14 +93,14 @@ namespace Pong {
                          _mesh->vertices.size() * sizeof(decltype(_mesh->vertices)::value_type),
                          _mesh->vertices.data(),
                          GL_STATIC_DRAW
-                         );
+            );
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                          _mesh->indices.size() * sizeof(decltype(_mesh->indices)::value_type),
                          _mesh->indices.data(),
                          GL_STATIC_DRAW
-                         );
+            );
 
             glEnableVertexAttribArray((uint32_t)VertexAttrId::POSITION);
             glVertexAttribPointer((uint32_t)VertexAttrId::POSITION,
@@ -99,7 +108,7 @@ namespace Pong {
                                   GL_FLOAT, GL_FALSE,
                                   sizeof(Vertex),
                                   (void*)offsetof(Vertex, position)
-                                  );
+            );
 
             glEnableVertexAttribArray((uint32_t)VertexAttrId::NORMAL);
             glVertexAttribPointer((uint32_t)VertexAttrId::NORMAL,
@@ -107,7 +116,7 @@ namespace Pong {
                                   GL_FLOAT, GL_FALSE,
                                   sizeof(Vertex),
                                   (void*)offsetof(Vertex, normal)
-                                  );
+            );
 
             glEnableVertexAttribArray((uint32_t)VertexAttrId::TEX_COORDS);
             glVertexAttribPointer((uint32_t) VertexAttrId::TEX_COORDS,
@@ -126,23 +135,13 @@ namespace Pong {
         }
 
         // _mesh draw in other class
-        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const {
+        void draw(const Render *render, const Scene *scene, Pong::Material *material) const override {
             if (!_mesh->indices.empty()){
                 glDrawElements(draw_primitive, _mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
             }
             else {
                 glDrawArrays(draw_primitive, 0, _mesh->vertices.size());
             }
-        }
-    };
-
-    // GraphicMesh
-    class GraphicMesh : public GraphicShape {
-    public:
-        // constructor
-        _P_EXPLICIT GraphicMesh(Mesh* mesh) :
-                GraphicShape(mesh) {
-            GraphicMesh::set_VAO();
         }
     };
 }

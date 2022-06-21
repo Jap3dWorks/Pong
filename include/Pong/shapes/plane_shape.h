@@ -8,47 +8,49 @@
 #include <iostream>
 #include <string>
 #include "Pong/core/graphic_shape.h"
+#include "Pong/core/edit_shape.h"
 #include "Pong/core/core_vals.h"
 
 namespace Pong {
-    class PlaneShape : public GraphicShape {
+
+    struct PlaneSize{
+        float width;
+        float height;
+    };
+
+    class PlaneShape : public EditMesh {
     private:
-        float _width;
-        float _height;
+        PlaneSize _sizes{1.f, 1.f};
 
-        void _build_plane() {
+        _P_NODISCARD _P_INLINE std::vector<glm::vec3> _computePlaneVertices() const {
+            return {glm::vec3(_sizes.width / 2.f, _sizes.height / 2.f, 0.f),
+                    glm::vec3(-_sizes.width / 2.f, _sizes.height / 2.f, 0.f),
+                    glm::vec3(-_sizes.width / 2.f, -_sizes.height / 2.f, 0.f),
+                    glm::vec3(_sizes.width / 2.f, -_sizes.height / 2.f, 0.f)};
+        }
+
+    public:
+        explicit PlaneShape(Mesh *mesh, PlaneSize sizes) :
+                EditMesh(mesh), _sizes(sizes) {
+        }
+
+    public:
+        void build() override {
+            EditMesh::build();
             std::vector<glm::vec3> tmpVert = _computePlaneVertices();
-
-            // clear prev arrays
-            _vertices.clear();
-            _indices.clear();
 
             for (unsigned int i = 0; i < 4; i++) {
                 add_vertex(
                         {tmpVert[i],
                          {0.f, 0.f, 1.f},
-                         (glm::vec2(0.5f, 0.5f) + (glm::vec2(tmpVert[i]) / glm::vec2(_width, _height)))}
+                         (glm::vec2(0.5f, 0.5f) + (glm::vec2(tmpVert[i]) /
+                                                   glm::vec2(_sizes.width, _sizes.height)))}
                 );
             }
 
             // triangle index
             add_indices(0, 1, 3);
             add_indices(1, 2, 3);
-        }
-
-
-        _P_NODISCARD _P_INLINE std::vector<glm::vec3> _computePlaneVertices() const {
-            return {glm::vec3(_width / 2.f, _height / 2.f, 0.f),
-                    glm::vec3(-_width / 2.f, _height / 2.f, 0.f),
-                    glm::vec3(-_width / 2.f, -_height / 2.f, 0.f),
-                    glm::vec3(_width / 2.f, -_height / 2.f, 0.f)};
-        }
-
-    public:
-        explicit PlaneShape(const std::string &name, float height = 1.f, float width = 1.f) :
-                _width(width), _height(height), GraphicShape(name) {
-            _build_plane();
-            GraphicShape::set_VAO();
         }
     };
 }

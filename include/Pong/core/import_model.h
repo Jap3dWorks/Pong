@@ -124,6 +124,4 @@ namespace Pong {
     }
 }
 
-
-
 #endif //GL_TEST_IMPORT_MODEL_H
