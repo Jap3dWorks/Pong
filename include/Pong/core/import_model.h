@@ -18,7 +18,6 @@ namespace Pong {
      * Will be added to the Scene.
      * Returns: Number of shapes imported.
      * */
-
     using MeshVector = std::vector<Mesh>;
 
     static inline auto _process_mesh(const aiMesh &mesh) -> Mesh {

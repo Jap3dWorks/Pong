@@ -16,55 +16,56 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stb_image.h>
 
+#include <cassert>
+#include <iostream>
 #include <vector>
 #include <set>
 #include <map>
 #include <functional>
 
 namespace Pong {
+    // TODO: move mouse callbacks
     void mouse_callback(GLFWwindow*, double, double);
     void scroll_callback(GLFWwindow*, double, double);
 
     class Scene {
     // singleton class
     public:
-        static const int POINT_LIGHTS_COUNT = 5;
-
-        // point lights pointers
-        PointLight point_lights_array[POINT_LIGHTS_COUNT];
-
+        // TODO: last frame data in a struct
         float cam_lastX = 0.f;
         float cam_lastY = 0.f;
-
         bool cam_firstMouse = true;
 
     private:
         static Scene* instance;  // singleton static
 
+        std::vector<PointLight> _point_lights;
         // directional light
-        DirectionalLight* _directionalLight = new DirectionalLight;
+        std::vector<DirectionalLight> _directional_lights{{}};
 
         // camera_ptr pointer
-        ACamera* _camera = new ACamera("default_cam",
-                glm::vec3(0.f, 0.f, 5.f));
+        std::unique_ptr<ACamera> _camera = std::make_unique<ACamera>(
+                "default_cam",
+                glm::vec3(0.f, 0.f, 5.f)
+        );
+
         ActorCameraDistanceComparer _actor_blending_comparer =
-                ActorCameraDistanceComparer(_camera);
+                ActorCameraDistanceComparer(_camera.get());
 
     private:
         //private methods
         Scene();
 
-
     public:
         std::map<std::string, Actor*> actor_map;
         std::map<std::string, Material*> material_map;
         std::map<std::string, Collider*> collider_map;
-        std::map<std::string, GraphicShape*> shape_map;
+        std::map<std::string, std::unique_ptr<GraphicShape>> shape_map;
         std::map<std::string, Shader*> shader_map;
         std::map<std::string, Texture*> textures_map;
 
         std::vector<Material*> material_order;
-        std::vector<GraphicShape*> shape_order;
+//        std::vector<GraphicShape*> shape_order;  // TODO: use another method for shp order.
         std::vector<Actor*> actor_order;
 
         // blending actors ordered by distance to Render camera_ptr
@@ -93,9 +94,13 @@ namespace Pong {
 
         void sort_blending_actors();
 
-        _P_NODISCARD PointLight& get_point_light(int id);
+        _P_NODISCARD std::vector<PointLight>& get_point_lights() {
+            return _point_lights;
+        }
 
-        _P_NODISCARD DirectionalLight* get_directional_light() const;
+        _P_NODISCARD std::vector<DirectionalLight>& get_directional_lights() {
+            return _directional_lights;
+        }
 
         Shader *create_shader(
                 const std::string &name,
@@ -145,8 +150,7 @@ namespace Pong {
                                 const std::string& back);
 
         template<typename T>
-        T* create_actor(const std::string& name)
-        {
+        T* create_actor(const std::string& name) {
             if (!std::is_base_of<Actor, T>::value)
                 return nullptr;
 
@@ -168,8 +172,7 @@ namespace Pong {
 
         // Create a Collider, template you must specify the Collider type
         template<typename T>
-        T* create_collider(const std::string& name)
-        {
+        T* create_collider(const std::string& name) {
             if (!std::is_base_of<Collider, T>::value) {
                 return nullptr;
             }
@@ -188,26 +191,36 @@ namespace Pong {
         _P_NODISCARD Collider* get_collider(const std::string& name) const;
 
         // get camera_ptr ptr
-        _P_NODISCARD ACamera* get_camera() const;
+        _P_NODISCARD ACamera* get_camera() const
+        {return _camera.get();}
 
         template<typename T, typename... Args>
         T* create_shape(const std::string& name, Args&&... args) {
-            if (!std::is_base_of<GraphicShape, T>::value)
-                return nullptr;
+            assert(std::is_base_of<GraphicShape, T>::value);
+
             if (shape_map.find(name) == shape_map.end())
             {
-                T* s_ptr = new T(name, std::forward<Args>(args)...);
-                // store GraphicShape pointer in internal level data
-                shape_map[name] = static_cast<GraphicShape*>(s_ptr);
-                shape_order.push_back(s_ptr);
-                return s_ptr;
+                auto ptr = new T(std::forward<Args>(args)...);
+                shape_map[name] = std::unique_ptr<GraphicShape>(
+                        static_cast<GraphicShape*>(ptr)
+                        );
             }
-            else
+
+            return static_cast<T*>(shape_map[name].get());
+
+//            else
                 // if GraphicShape exists in the map, return ptr to GraphicShape
-                return static_cast<T*>(shape_map[name]);
+//                return shape_map[name].get();
         }
 
-        _P_NODISCARD GraphicShape* get_shape(const std::string& name) const;
+        _P_NODISCARD GraphicShape* get_shape(const std::string& name) const {
+            if (shape_map.find(name) != shape_map.end())
+            {
+                return shape_map.at(name).get();
+            }
+            else
+                return nullptr;
+        }
 
         Texture *create_texture(const std::string &name, const std::string &path);
     };

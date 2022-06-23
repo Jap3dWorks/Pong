@@ -20,8 +20,6 @@ namespace Pong{
         LOG_DEBUG("Call Scene destructor");
         delete _directionalLight;
 
-        delete _camera;
-
         auto ait = actor_map.begin();
         for (int i = 0; i < actor_map.size(); i++)
         {
@@ -40,11 +38,12 @@ namespace Pong{
             delete std::next(cit, i)->second;
         }
 
-        auto sit = shape_map.begin();
-        for (int i = 0; i < shape_map.size(); i++)
-        {
-            delete std::next(sit, i)->second;
-        }
+//        auto sit = shape_map.begin();
+//        for (int i = 0; i < shape_map.size(); i++)
+//        {
+//            delete std::next(sit, i)->second;
+//
+//        }
 
         auto sh_it = shader_map.begin();
         for (int i = 0; i < shader_map.size(); i++)
@@ -67,21 +66,6 @@ namespace Pong{
         return instance;
     }
 
-    PointLight& Scene::get_point_light(int id) {
-        if (id < POINT_LIGHTS_COUNT)
-            return point_lights_array[id];
-        else
-            return point_lights_array[0];
-    }
-
-    DirectionalLight* Scene::get_directional_light() const
-    {
-        return _directionalLight;
-    }
-
-    ACamera* Scene::get_camera() const
-    {return _camera;}
-
     Actor* Scene::get_actor(const std::string& name) const
     {
         if (actor_map.find(name) != actor_map.end())
@@ -101,17 +85,6 @@ namespace Pong{
         if (collider_map.find(name) != collider_map.end())
         {
             return collider_map.at(name);
-        }
-        else
-            return nullptr;
-    }
-
-
-    GraphicShape* Scene::get_shape(const std::string& name) const
-    {
-        if (shape_map.find(name) != shape_map.end())
-        {
-            return shape_map.at(name);
         }
         else
             return nullptr;
@@ -229,9 +202,10 @@ namespace Pong{
     }
 
     void Scene::sort_shapes_maps() {
-        std::sort(shape_order.begin(),
-                shape_order.end(),
-                OrderComparer<GraphicShape *>());
+//        std::sort(shape_order.begin(),
+//                shape_order.end(),
+//                OrderComparer<GraphicShape *>());
+
         for (auto &pair: material_shape_map) {
             std::sort(pair.second.begin(),
                     pair.second.end(),

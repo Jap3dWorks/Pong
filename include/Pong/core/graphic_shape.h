@@ -41,8 +41,10 @@ namespace Pong {
     // _shapes classes
     class GraphicShape {
         // _mesh draw in other class
+    public:
         virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const = 0;
 
+        virtual ~GraphicShape() = default;
     };
 
     // GraphicMesh
@@ -56,13 +58,18 @@ namespace Pong {
         Mesh *_mesh = nullptr;
         uint32_t _vao_id = 0;
 
+        std::unique_ptr<Mesh> _internal_mesh;
+
     public:
         uint32_t order{10};  // TODO: move to other place
 
         uint32_t draw_primitive = GL_TRIANGLES;
 
     public:
-        GraphicMesh() = default;
+        GraphicMesh() {
+            _internal_mesh = std::make_unique<Mesh>();
+            _mesh = _internal_mesh.get();
+        };
 
         _P_EXPLICIT GraphicMesh(Mesh* mesh) :
         _mesh(mesh) {

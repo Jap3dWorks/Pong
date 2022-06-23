@@ -20,6 +20,8 @@ namespace Pong {
         Render *_render;
         std::vector<ProcessInput> _inputList;
 
+        using super = AbstractLevel;
+
     protected:
         virtual void _configInputs();
 

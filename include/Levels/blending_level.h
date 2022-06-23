@@ -136,7 +136,7 @@ protected:
         // TODO: https://learnopengl.com/Advanced-OpenGL/Instancing
 
         // --lighting--
-        Pong::DirectionalLight *directional_light = _scene->get_directional_light();
+        Pong::DirectionalLight *directional_light = _scene->get_directional_lights();
         directional_light->direction =
                 glm::normalize(glm::vec4{0.3f, -1.f, -0.5f, 1.f});
         directional_light->color =

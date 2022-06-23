@@ -42,7 +42,10 @@ namespace Pong {
         }
 
     public:
-        explicit CubeShape(
+        explicit CubeShape(Mesh *mesh) :
+                EditMesh(mesh) {}
+
+        CubeShape(
                 Mesh *mesh,
                 CubeSize sizes) :
                 EditMesh(mesh),
