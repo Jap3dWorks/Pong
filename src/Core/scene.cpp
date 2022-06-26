@@ -18,7 +18,7 @@ namespace Pong{
 
     Scene::~Scene() {
         LOG_DEBUG("Call Scene destructor");
-        delete _directionalLight;
+//        delete _directionalLight;
 
         auto ait = actor_map.begin();
         for (int i = 0; i < actor_map.size(); i++)
@@ -140,27 +140,6 @@ namespace Pong{
         }
     }
 
-    Texture* Scene::create_texture(const std::string& name,
-                                   const std::string& right,
-                                   const std::string& left,
-                                   const std::string& top,
-                                   const std::string& bottom,
-                                   const std::string& front,
-                                   const std::string& back){
-        if (textures_map.find(name) == textures_map.end())
-        {
-            auto* sb_ptr = new SkyBox(
-                    name,
-                    right, left, top,
-                    bottom,front, back);
-
-            textures_map[name] = sb_ptr;
-
-            return textures_map[name];
-        }
-        else return textures_map[name];
-    }
-
     Texture* Scene::get_texture(const std::string& name) const
     {
         if (textures_map.find(name) != textures_map.end())
@@ -171,34 +150,13 @@ namespace Pong{
             return nullptr;
     }
 
-    // import model methods
-    /**Import model from a file like fbx or obj, the shapes that compose the model,
-      Will be added to the Scene.
-      Returns: Number of shapes imported.*/
-
-    void Scene::assign_layer(const RenderLayer& rlay, Material* material)
-    {
-        renderlayer_material_map[rlay].push_back(material);
-    }
-
+    // import model method
     void Scene::assign_material(Material * material, GraphicShape * shape) {
         material_shape_map[material].push_back(shape);
     }
 
     void Scene::assign_shape(GraphicShape * shape, Actor * actor) {
         shape_actor_map[shape].push_back(actor);
-    }
-
-    void Scene::sort_materials() {
-        std::sort(material_order.begin(),
-                material_order.end(),
-                OrderComparer<Material *>());
-
-        for (auto &pair: renderlayer_material_map)
-        {
-            std::sort(pair.second.begin(), pair.second.end(),
-                      OrderComparer<Material *>());
-        }
     }
 
     void Scene::sort_shapes_maps() {
@@ -213,9 +171,9 @@ namespace Pong{
     }
 
     void Scene::sort_actor_maps() {
-        std::sort(actor_order.begin(),
-                actor_order.end(),
-                OrderComparer<Actor *>());
+//        std::sort(actor_order.begin(),
+//                actor_order.end(),
+//                OrderComparer<Actor *>());
         for (auto &pair: shape_actor_map) {
             std::sort(pair.second.begin(),
                     pair.second.end(),
@@ -231,14 +189,14 @@ namespace Pong{
     void Scene::collect_blending_actors() {
         blending_actors.clear();
         blending_actor_shape_material_map.clear();
-        for (auto material: renderlayer_material_map[RenderLayer::BLENDING])
+        for (auto &ord_mat: renderlayer_material_map[RenderLayer::BLENDING])
         {
-            for(auto shp: material_shape_map[material])
+            for(auto shp: material_shape_map[ord_mat.second])
             {
                 for(auto act: shape_actor_map[shp])
                 {
                     blending_actors.push_back(act);
-                    blending_actor_shape_material_map[act] = std::pair(shp, material);
+                    blending_actor_shape_material_map[act] = std::pair(shp, ord_mat.second);
                 }
             }
         }

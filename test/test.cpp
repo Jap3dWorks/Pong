@@ -10,6 +10,7 @@
 #include "utils/shader_parser.h"
 #include "Pong/core/primitive_component.h"
 #include <array>
+#include <set>
 
 //template<typename T>
 std::string replace(const std::smatch& t) {
@@ -96,14 +97,37 @@ void test_value() {
     auto v4 = pass_val({});
 }
 
+template<typename T>
+struct OrderComparer;
+
+template<typename C>
+struct OrderComparer<std::pair<uint32_t, C>>{
+    bool operator()(const std::pair<uint32_t, C>& left,
+            const std::pair<uint32_t, C>& right) const
+    {
+        return left.first < right.first;
+    }
+};
+
+using matComparer = const OrderComparer<std::pair<uint32_t, std::string>>;
+
+void test_multiset() {
+    std::map<uint32_t,
+            std::multiset<std::pair<uint32_t, std::string>, matComparer>>
+            maptest;
+
+    maptest[0].insert(
+            {1, std::string("abc")});
+
+}
 
 int main() {
 //    _test_text_template();
 //    _test_shader_parser();
 //    _test_sizes();
+//    test_value();
 
-    test_value();
-
+    test_multiset();
 
     return 0;
 

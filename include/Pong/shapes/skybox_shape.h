@@ -85,6 +85,10 @@ namespace Pong {
             glDepthFunc(GL_LESS);
         }
     };
+
+    class SkyBox {
+
+    };
 }
 
 #endif // GL_TEST_SKYBOX_SHAPE_H

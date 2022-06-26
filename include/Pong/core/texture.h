@@ -144,6 +144,7 @@ namespace Pong {
 
         std::string get_path() { return _path; }
 
+        // TODO: remove _name attribute
         std::string get_name() { return _name; }
 
         void set_wrap(TextureWrap texture_wrap_s, TextureWrap texture_wrap_t) const {

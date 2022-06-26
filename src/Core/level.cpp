@@ -129,19 +129,19 @@ namespace Pong
         _render->update_ubo_runtime_data();
 
         for (auto layer: _render->first_pass_render_layers){
-            for (auto material: _scene->renderlayer_material_map[layer]){
-                material->use();
-                material->update_shader(_render, _scene);
-                for (auto shape: _scene->material_shape_map[material])
+            for (auto &ord_mat: _scene->renderlayer_material_map[layer]){
+                ord_mat.second->use();
+                ord_mat.second->update_shader(_render, _scene);
+                for (auto shape: _scene->material_shape_map[ord_mat.second])
                 {
-                    shape->bind_VAO();
+                    shape->bind();
                     for (auto actor: _scene->shape_actor_map[shape])
                     {
                         // Draw by Actor
                         if (actor->get_visibility())
                         {
-                            actor->draw(_render, _scene, material);
-                            shape->draw(_render, _scene, material);
+                            actor->draw(_render, _scene, ord_mat.second);
+                            shape->draw(_render, _scene, ord_mat.second);
                         }
                     }
                 }

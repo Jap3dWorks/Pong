@@ -42,11 +42,15 @@ namespace Pong {
         }
     };
 
-    template<typename T>
-    bool compare_less_order(T* first, T* second)
-    {
-        return first->order < second->order;
-    }
+    template<typename D>
+    struct OrderComparer<std::pair<uint32_t, D>> {
+    public:
+        bool operator()(
+                const std::pair<uint32_t, D>& left,
+                const std::pair<uint32_t, D>& right) const {
+            return left.first < right.first;
+        }
+    };
 
     struct ActorCameraDistanceComparer {
         const ACamera *camera_ptr = nullptr;

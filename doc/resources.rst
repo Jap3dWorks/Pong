@@ -36,6 +36,7 @@ GLSL
 ----
 https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 https://www.khronos.org/registry/OpenGL-Refpages/gl4/index.php
+https://learnopengl.com/Advanced-OpenGL/Instancing
 
 ===
 PBR

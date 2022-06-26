@@ -18,10 +18,10 @@
 
 #include <cassert>
 #include <iostream>
+#include <functional>
 #include <vector>
 #include <set>
 #include <map>
-#include <functional>
 
 namespace Pong {
     // TODO: move mouse callbacks
@@ -37,9 +37,13 @@ namespace Pong {
         bool cam_firstMouse = true;
 
     private:
-        static Scene* instance;  // singleton static
+        using OrderMatPtrPair = std::pair<uint32_t, Material*>;
+        using OrderMatPtrComparer = OrderComparer<std::pair<uint32_t, Material*>>;
 
+    private:
+        static Scene* instance;  // singleton static
         std::vector<PointLight> _point_lights;
+
         // directional light
         std::vector<DirectionalLight> _directional_lights{{}};
 
@@ -64,17 +68,14 @@ namespace Pong {
         std::map<std::string, Shader*> shader_map;
         std::map<std::string, Texture*> textures_map;
 
-        std::vector<Material*> material_order;
-//        std::vector<GraphicShape*> shape_order;  // TODO: use another method for shp order.
-        std::vector<Actor*> actor_order;
-
         // blending actors ordered by distance to Render camera_ptr
         std::vector<Actor*>blending_actors;
         std::map<Actor*, std::pair<GraphicShape*, Material*>> blending_actor_shape_material_map;
 
-        // I have the problem of a GraphicShape in two different materials.
-        // GraphicShape actors will draw twice all materials in this case.
-        std::map<RenderLayer, std::vector<Material*>> renderlayer_material_map;
+        std::map<RenderLayer,
+                std::multiset<OrderMatPtrPair, OrderMatPtrComparer>
+        > renderlayer_material_map;
+
         std::map<Material*, std::vector<GraphicShape*>> material_shape_map;
         std::map<GraphicShape*, std::vector<Actor*>> shape_actor_map;
 
@@ -83,12 +84,14 @@ namespace Pong {
         static Scene* get_instance();
 
         void collect_blending_actors();
-        void assign_layer(const RenderLayer&, Material*);
+        void assign_layer(const RenderLayer& rlay, Material* material, uint32_t order=0) {
+            renderlayer_material_map[rlay].insert({order, material});
+        }
 
         void assign_material(Material*, GraphicShape*);
         void assign_shape(GraphicShape*, Actor*);
 
-        void sort_materials();
+//        void sort_materials();
         void sort_shapes_maps();
         void sort_actor_maps();
 
@@ -114,13 +117,14 @@ namespace Pong {
                            Shader *shader,
                            const TextureUniformVector &textures,
                            const RenderLayer &render_layer = RenderLayer::BASE) {
+
             if (!std::is_base_of<Material, T>::value)
                 return nullptr;
 
             if (material_map.find(name) == material_map.end()) {
                 auto *m_ptr = new T(name, shader, textures);
                 material_map[name] = static_cast<Material *>(m_ptr);
-                material_order.push_back(m_ptr);
+//                material_order.push_back(m_ptr);
 
                 assign_layer(render_layer, m_ptr);
 
@@ -147,7 +151,19 @@ namespace Pong {
                                 const std::string& top,
                                 const std::string& bottom,
                                 const std::string& front,
-                                const std::string& back);
+                                const std::string& back)  {
+            if (textures_map.find(name) == textures_map.end())
+            {
+                auto* sb_ptr = new SkyBox(
+                        name,
+                        right, left, top,
+                        bottom,front, back);
+
+                textures_map[name] = sb_ptr;
+
+            }
+            return textures_map[name];
+        }
 
         template<typename T>
         T* create_actor(const std::string& name) {
@@ -158,7 +174,6 @@ namespace Pong {
             {
                 T* a_ptr = new T(name);
                 actor_map[name] = static_cast<Actor*>(a_ptr);
-                actor_order.push_back(a_ptr);
                 return a_ptr;
             }
             else
@@ -195,34 +210,30 @@ namespace Pong {
         {return _camera.get();}
 
         template<typename T, typename... Args>
-        T* create_shape(const std::string& name, Args&&... args) {
-            assert(std::is_base_of<GraphicShape, T>::value);
+        _P_INLINE T* create_shape(const std::string& name, Args&&... args) {
+            #ifdef NDEBUG
+            #else
+            auto is_base = is_base_of_v<GraphicShape, T>;
+            assert(is_base);
+            #endif
 
-            if (shape_map.find(name) == shape_map.end())
-            {
-                auto ptr = new T(std::forward<Args>(args)...);
-                shape_map[name] = std::unique_ptr<GraphicShape>(
-                        static_cast<GraphicShape*>(ptr)
-                        );
-            }
+
+            auto ptr = new T(std::forward<Args>(args)...);
+            shape_map[name] = std::unique_ptr<GraphicShape>(
+                    static_cast<GraphicShape*>(ptr)
+                    );
 
             return static_cast<T*>(shape_map[name].get());
-
-//            else
-                // if GraphicShape exists in the map, return ptr to GraphicShape
-//                return shape_map[name].get();
         }
 
-        _P_NODISCARD GraphicShape* get_shape(const std::string& name) const {
-            if (shape_map.find(name) != shape_map.end())
-            {
-                return shape_map.at(name).get();
-            }
-            else
-                return nullptr;
+        _P_NODISCARD _P_INLINE bool contains_shape(const std::string& name) const {
+            return shape_map.find(name) != shape_map.end();
         }
 
-        Texture *create_texture(const std::string &name, const std::string &path);
+        _P_NODISCARD _P_INLINE GraphicShape* get_shape(const std::string& name) const {
+            assert(shape_map.find(name) != shape_map.end());
+            return shape_map[name];
+        }
     };
 }
 #endif // !SCENE_H

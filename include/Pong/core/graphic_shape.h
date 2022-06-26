@@ -44,6 +44,8 @@ namespace Pong {
     public:
         virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const = 0;
 
+        virtual void bind() {}
+
         virtual ~GraphicShape() = default;
     };
 
@@ -137,7 +139,7 @@ namespace Pong {
 
         }
 
-        virtual void bind_VAO() {
+        void bind() override {
             glBindVertexArray(_vao_id);
         }
 
