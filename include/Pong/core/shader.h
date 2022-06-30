@@ -13,9 +13,9 @@
 #include <fstream>
 #include <sstream>
 
-_P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& source) {
+_P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string &source) {
     unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
+    const char *src = source.c_str();
     glShaderSource(id, 1, &src, nullptr);
     glCompileShader(id);
 
@@ -23,21 +23,19 @@ _P_INLINE unsigned int CompileShader(unsigned int type, _P_CONST std::string& so
 
 }
 
-class Shader
-{
+class Shader {
     // the program id
 public:
     unsigned int ID;
 
     // constructor reads and builds the Shader
-    _P_EXPLICIT Shader(const char* shader_path)
-    {
+    _P_EXPLICIT Shader(const char *shader_path) {
         // retrieve the vertex/fragment source code from filepath
         auto parse_shader = shaders_from_file(shader_path);
 
         // to c type
-        const char * vShaderCode = parse_shader[ShaderType::VERTEX].get_data().c_str();
-        const char * fShaderCode = parse_shader[ShaderType::FRAGMENT].get_data().c_str();
+        const char *vShaderCode = parse_shader[ShaderType::VERTEX].get_data().c_str();
+        const char *fShaderCode = parse_shader[ShaderType::FRAGMENT].get_data().c_str();
 
         // compile shaders
         uint32_t vertex, fragment,
@@ -88,7 +86,7 @@ public:
         }
 
         if (parse_shader.contains(ShaderType::GEOMETRY)) {
-            const char* shader_code = parse_shader[
+            const char *shader_code = parse_shader[
                     ShaderType::GEOMETRY].get_data().c_str();
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(geometry, 1, &shader_code, nullptr);
@@ -99,7 +97,7 @@ public:
         }
 
         if (parse_shader.contains(ShaderType::COMPUTE)) {
-            const char* shader_code = parse_shader[
+            const char *shader_code = parse_shader[
                     ShaderType::COMPUTE].get_data().c_str();
             compute = glCreateShader(GL_COMPUTE_SHADER);
             glShaderSource(compute, 1, &shader_code, nullptr);
@@ -122,7 +120,7 @@ public:
 
     // utility uniform functions
     void set_bool(const std::string &name, bool value) const {
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), (int) value);
     }
 
     void set_int(const std::string &name, int value) const {
@@ -141,33 +139,27 @@ public:
         glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
     }
 
-    void set_vec3(const std::string &name, const glm::vec3 &value) const
-    {
+    void set_vec3(const std::string &name, const glm::vec3 &value) const {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
 
-    void set_vec3(const std::string &name, float x, float y, float z) const
-    {
+    void set_vec3(const std::string &name, float x, float y, float z) const {
         glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
     }
 
-    void set_vec4(const std::string &name, const glm::vec4 &value) const
-    {
+    void set_vec4(const std::string &name, const glm::vec4 &value) const {
         glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
 
-    void set_vec4(const std::string &name, float x, float y, float z, float w) const
-    {
+    void set_vec4(const std::string &name, float x, float y, float z, float w) const {
         glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
     }
 
-    void set_mat2(const std::string &name, const glm::mat2 &mat) const
-    {
+    void set_mat2(const std::string &name, const glm::mat2 &mat) const {
         glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    void set_mat3(const std::string &name, const glm::mat3 &mat) const
-    {
+    void set_mat3(const std::string &name, const glm::mat3 &mat) const {
         glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
@@ -177,22 +169,18 @@ public:
 
 
 private:
-    _P_STATIC void _check_compile_errors(GLuint shader, const std::string& type) {
+    _P_STATIC void _check_compile_errors(GLuint shader, const std::string &type) {
         GLint success;
         GLchar infoLog[1024];
         if (type != "PROGRAM") {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-            if (!success)
-            {
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success) {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
                 std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog;
             }
-        }
-        else
-        {
+        } else {
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
-            if (!success)
-            {
+            if (!success) {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
                 std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog;
             }

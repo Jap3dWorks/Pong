@@ -1,7 +1,8 @@
 #include "Pong/logger.h"
-#include "Levels/blending_level.h"
-#include "Levels/test_level.h"
-#include "Levels/paint_with_shaders_level.h"
+#include "Levels/load_model_level.h"
+//#include "Levels/blending_level.h"
+//#include "Levels/test_level.h"
+//#include "Levels/paint_with_shaders_level.h"
 #include <iostream>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -13,19 +14,19 @@
 // TODO: Load models
 
 int main(int argc, char** argv) {
-    if (true) {
+//    if (true) {
 //        BlendingLevel b_lvl;
-        TestLevel1 b_lvl;
-        LOG_INFO("Blending level run");
+    LoadModelLevel b_lvl;
+    LOG_INFO("Blending level run");
 
-        b_lvl.run();
-    }
+    b_lvl.run();
+//    }
 
-    else {
-        auto s_lvl = PaintWithShades();
-        LOG_INFO("Shading Level");
-        s_lvl.run();
-    }
+//    else {
+//        auto s_lvl = PaintWithShades();
+//        LOG_INFO("Shading Level");
+//        s_lvl.run();
+//    }
 
     return 0;
 }

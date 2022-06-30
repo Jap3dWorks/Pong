@@ -2,8 +2,8 @@
 // Created by Jordi on 6/13/2022.
 //
 
-#ifndef GL_TEST_SKYBOX_SHAPE_H
-#define GL_TEST_SKYBOX_SHAPE_H
+#ifndef GL_TEST_CUBEMAP_SHAPE_H
+#define GL_TEST_CUBEMAP_SHAPE_H
 
 #include "Pong/core/graphic_shape.h"
 #include "Pong/core/edit_shape.h"
@@ -11,9 +11,9 @@
 
 namespace Pong {
 
-    class SkyBoxMesh : public EditMesh {
+    class EditCubeMap : public EditMesh {
     public:
-        explicit SkyBoxMesh(Mesh * _mesh):
+        explicit EditCubeMap(Mesh * _mesh):
         EditMesh(_mesh) {}
 
     public:
@@ -69,7 +69,7 @@ namespace Pong {
         }
     };
 
-    class GraphicBoxMesh : GraphicMesh {
+    class CubeMapMesh : GraphicMesh {
     public:
         void draw(const Render *render,
                   const Scene *scene,
@@ -86,9 +86,6 @@ namespace Pong {
         }
     };
 
-    class SkyBox {
-
-    };
 }
 
-#endif // GL_TEST_SKYBOX_SHAPE_H
+#endif // GL_TEST_CUBEMAP_SHAPE_H

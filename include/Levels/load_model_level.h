@@ -12,9 +12,7 @@
 #include "Pong/logger.h"
 #include "Pong/shapes/cube_shape.h"
 #include "Pong/default_materials.h"
-#include "Levels/blending_level.h"
 #include "Pong/shapes/plane_shape.h"
-//#include "Pong/Shapes/skybox_shape.h"
 #include <vector>
 
 // Load a model scene
@@ -34,10 +32,11 @@ protected:
         // grass planes
         auto basic_shd = _scene->create_shader("basic_shd",
                                                "./Shaders/basic.glsl");
+
         auto basic_mat = _scene->create_material<Pong::Material>(
                 "basic_mat",
-                basic_shd,
-                {});
+                Pong::RenderLayer::BASE,
+                basic_shd);
 
         auto grass_shp = _scene->create_shape<Pong::GraphicMesh>("grass_shp");
         Pong::CubeShape(grass_shp->get_mesh()).build();

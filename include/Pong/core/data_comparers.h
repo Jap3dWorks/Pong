@@ -54,6 +54,7 @@ namespace Pong {
 
     struct ActorCameraDistanceComparer {
         const ACamera *camera_ptr = nullptr;
+        ActorCameraDistanceComparer() = default;
 
         explicit ActorCameraDistanceComparer(const ACamera *camera) : camera_ptr(camera) {}
 
@@ -66,8 +67,7 @@ namespace Pong {
         }
 
         bool operator()(const Actor * act_a, const Actor * act_b) const {
-            bool result = get_distance(act_a->get_transform()) < get_distance(act_b->get_transform());
-            return result;
+            return get_distance(act_a->get_transform()) < get_distance(act_b->get_transform());
         }
     };
 }

@@ -25,20 +25,16 @@ namespace Pong
 
 namespace Pong {
     // TODO: colliders with transform matrix to offset.
-    class Actor
-    {
+    class Actor {
     protected:
         bool _visible=true;
 
         glm::mat4 _transform = glm::mat4(1);
         std::string _name;
-        std::list<Component*> _components; // list is faster than vector
-        std::vector<Collider*> _colliders;
+        std::vector<Component*> _components;
+        std::vector<Collider*> _colliders; // TODO: collider as component
 
     public:
-        /**Draw order*/
-        unsigned int order{10};
-
         explicit Actor(std::string name): _name(std::move(name)) {}
 
         virtual ~Actor();
@@ -61,15 +57,13 @@ namespace Pong {
         [[nodiscard]] Collider* get_collider(unsigned int i=0) const { return _colliders[i]; }
 
         [[nodiscard]] std::string get_name() const { return _name; }
-        std::list<Component*> get_components() { return _components; }
+        auto& get_components() { return _components; }
 
         [[nodiscard]] bool get_visibility() const { return _visible; }
 
         // config members
         template<typename T>
         void add_component(T *component = nullptr);
-
-
     };
 
     // sky box
@@ -156,6 +150,8 @@ namespace Pong {
     /**
     ACamera Actor type preconfigured with input keyboard
      */
+     // camera as component
+     // input as component
     class ACamera : public Actor {
     public:
         static const float YAW;

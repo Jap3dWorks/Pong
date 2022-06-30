@@ -3,6 +3,7 @@
 
 #include "Pong/core/utils.h"
 #include "Pong/core/primitive_component.h"
+#include "Pong/core/component.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/graphic_flags.h"
 
@@ -36,10 +37,11 @@ namespace Pong {
                 std::exception(error){}
     };
 
+    // TODO: Shape as component=
     // TODO: separate model clas from controllers
 
     // _shapes classes
-    class GraphicShape {
+    class GraphicShape: public Component {
         // _mesh draw in other class
     public:
         virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const = 0;
@@ -63,8 +65,6 @@ namespace Pong {
         std::unique_ptr<Mesh> _internal_mesh;
 
     public:
-        uint32_t order{10};  // TODO: move to other place
-
         uint32_t draw_primitive = GL_TRIANGLES;
 
     public:

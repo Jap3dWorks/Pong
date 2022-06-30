@@ -18,8 +18,7 @@ namespace Pong {
         glm::vec4 ambient = glm::vec4(0.f, 0.f, 0.f, 1.f);
     };
 
-    struct PointLight
-    {
+    struct PointLight {
         glm::vec4 position = glm::vec4(0.f, 0.f, 0.f, 1.f);
         glm::vec4 color = glm::vec4(0.f, 0.f, 0.f, 1.f);
         // float Linear;

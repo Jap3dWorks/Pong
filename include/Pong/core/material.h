@@ -4,6 +4,7 @@
 #include "Pong/core/shader.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/texture.h"
+
 #include <stb_image.h>
 
 #include <iostream>
@@ -17,11 +18,12 @@ namespace Pong {
 }
 
 namespace Pong {
-
     using TextureUniformVector = std::vector<std::pair<std::string, Texture*>>;
 
-    class Material
-    {
+    class Material {
+    protected:
+        using super = Material;
+
     private:
         bool _is_setup = false;
         std::map<std::string, float> _float_params;
@@ -39,22 +41,22 @@ namespace Pong {
                             );
                 }
             }
-
             _is_setup = true;
         }
 
     protected:
         Shader* _shader;
-        TextureUniformVector _textures;
-        std::string _name;
+        TextureUniformVector _textures{};
 
     public:
         uint32_t order{50};
 
-        Material(std::string name,
-                 Shader *shader,
+        explicit Material(Shader * shader) : _shader(shader) {
+            _setup_material();
+        }
+
+        Material(Shader *shader,
                  TextureUniformVector textures) :
-                _name(std::move(name)),
                 _shader(shader),
                 _textures(std::move(textures)) {
             _setup_material();
@@ -122,13 +124,9 @@ namespace Pong {
                 _mat4_params.insert(std::pair<std::string, glm::mat4>(param, value));
         }
 
-        virtual void update_shader(Render*, Scene*)
-        {
+        virtual void update_shader(Render*, Scene*) {
             update_params();
         }
-
-        _P_NODISCARD std::string get_name() _P_CONST
-        { return _name; }
 
         virtual void use() {
             // bind Shader

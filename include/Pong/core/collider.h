@@ -13,6 +13,7 @@ namespace Pong
 #include "Pong/core/graphic_shape.h"
 #include "Pong/core/component.h"
 #include "Pong/core/core_vals.h"
+#include "collision_components.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,8 +27,10 @@ namespace Pong
 
 namespace Pong {
     // declare classes
-    class BoxCollider; class SphereCollider;
-    class PlaneCollider; class MeshCollider;
+    class BoxCollider;
+    class SphereCollider;
+    class PlaneCollider;
+    class MeshCollider;
 
     template<typename t>
     bool startCollision(Collider* myobj, Collider* other);
@@ -44,7 +47,6 @@ namespace Pong {
         std::chrono::system_clock::time_point time;
     };
 
-
     struct RayCastData
     {
         glm::vec3 point;
@@ -56,6 +58,7 @@ namespace Pong {
     class RayCast {
         //float _max_size;
     public:
+
         glm::vec3 direction;
         glm::vec3 position;
 

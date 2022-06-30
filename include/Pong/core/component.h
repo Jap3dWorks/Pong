@@ -4,6 +4,8 @@
 #include "Pong/core/actor.h"
 #include "Pong/core/collider.h"
 #include "Pong/logger.h"
+#include <typeinfo>
+#include <cassert>
 
 #include <iostream>
 
@@ -12,51 +14,65 @@ namespace Pong {
         Component class, an Actor has a list of compponents, each Component
         can contain a custom script you only have to inherit from Component.
     */
-    class Component
-    {
+    class Component {
     public:
         virtual ~Component() {}
 
-        virtual void at_init() {}
-        virtual void each_frame() {}
+        virtual void at_init(Actor* actor) {}
+        virtual void at_frame(Actor* actor) {}
     };
 
-    // collision components
-    class CollisionComponent: public Component {
+    class ComponentMap {
+        using ComponentData = std::map<size_t, std::vector<Component*>>;
+        ComponentData _component_map;
+
     public:
-        virtual ~CollisionComponent() { LOG_DEBUG("Collision Component destructor"); }
+        ComponentMap()=default;
+        ~ComponentMap()=default;
 
-        virtual void at_collision(Collider *owner, Collider *other) = 0;
-    };
+        ComponentMap(ComponentMap&& other) noexcept {
+            std::swap(_component_map, other._component_map);
+        }
 
+        ComponentMap& operator=(ComponentMap&& other) noexcept {
+            _component_map = std::move(other._component_map);
+        }
 
-    class BallCollisionComponent : public CollisionComponent {
+        ComponentMap(const ComponentMap& other) = delete;
+        ComponentMap& operator=(const ComponentMap& other) = delete;
+
     public:
-        void at_collision(Collider *owner, Collider *other) override;
+        template<typename T>
+        void register_type() {
+            auto t_info = typeid(T);
+            auto type_hash = t_info.hash_code();
+            _component_map[type_hash] = std::vector<Component*>;
+        }
 
-        virtual ~BallCollisionComponent() override {
-            LOG_DEBUG("BallCollisionComponent destructor");
+        template<typename T>
+        bool contains_type() {
+            auto t_info = typeid(T);
+            return _component_map.contains(t_info.hash_code());
+        }
+
+        template<typename T>
+        std::vector<Component*>& get_components() {
+            auto t_info = typeid(T);
+            assert(_component_map.contains(t_info.hash_code()));
+
+            return _component_map[t_info.hash_code()];
+        }
+
+        template<typename T>
+        void add_component(T* component) {
+            auto t_info = typeid(T);
+            _component_map[t_info.hash_code()].push_back(component);
+        }
+
+        const ComponentData& component_map() {
+            return _component_map;
         }
     };
 
-    class BorderCollisionComponent : public CollisionComponent {
-    public:
-        void at_collision(Collider *owner, Collider *other) override;
-
-        virtual ~BorderCollisionComponent() override {
-            LOG_DEBUG("BorderCollisionComponent destructor");
-        }
-    };
-
-    // Actor components
-    class ActorComponent : public Component {
-    public:
-        virtual ~ActorComponent() {
-            LOG_DEBUG("Actor Component destructor");
-        }
-
-        virtual void at_init(Actor*& owner) = 0;
-        virtual void each_frame(Actor*& owner) = 0;
-    };
 }
 #endif // COMPONENT_H

@@ -16,11 +16,6 @@
 #include <vector>
 
 #include "Pong/core/core_vals.h"
-#include "Pong/core/actor.h"
-#include "Pong/core/scene.h"
-#include "Pong/core/graphic_shape.h"
-#include "Pong/core/shader.h"
-#include "Pong/core/material.h"
 
 namespace Pong {
 
@@ -64,7 +59,6 @@ namespace Pong {
 
     class Texture {
     protected:
-        std::string _name;
         std::string _path;
         uint32_t _texture_id{};
         int32_t _gl_bind_type{GL_TEXTURE_2D};
@@ -121,14 +115,11 @@ namespace Pong {
             return textureID;
         }
 
-    public:
-        _P_EXPLICIT Texture(const std::string &name) :
-                _name(name) {
-        }
+    protected:
+        Texture() = default;
 
-        Texture(const std::string &name,
-                const std::string &path) :
-                _name(name),
+    public:
+        explicit Texture(const std::string &path) :
                 _path(path) {
             _texture_id = _load_texture(path.c_str(),
                                         _gamma_corrected);
@@ -144,8 +135,6 @@ namespace Pong {
 
         std::string get_path() { return _path; }
 
-        // TODO: remove _name attribute
-        std::string get_name() { return _name; }
 
         void set_wrap(TextureWrap texture_wrap_s, TextureWrap texture_wrap_t) const {
             glBindTexture(GL_TEXTURE_2D, get_id());

@@ -1,6 +1,7 @@
 
 #include "Pong/core/collider.h"
 #include "Pong/logger.h"
+#include "Pong/core/collision_components.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -74,8 +75,7 @@ namespace Pong {
 
         // SAT collision
         for (int j = 0; j < 2; j++) {
-            for (int i = 0; i < 6; i++)
-            {
+            for (int i = 0; i < 6; i++) {
                 glm::vec3 pnt = (buff[j][BoxCollider::FACES[i][0]] + buff[j][BoxCollider::FACES[i][1]] +
                     buff[j][BoxCollider::FACES[i][2]] + buff[j][BoxCollider::FACES[i][3]]) / 4.f;
                 glm::vec3 norm = glm::normalize(glm::cross(buff[j][BoxCollider::FACES[i][0]] - pnt,
@@ -200,7 +200,7 @@ namespace Pong {
     // ------------
     Collider::Collider(std::string name) : _name(name)
     {
-        _collision_data = new CollisionData;
+        _collision_data = new CollisionData;  // smart pointer
     }
     Collider::~Collider()
     {

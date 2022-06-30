@@ -8,6 +8,8 @@
 #include "Pong/core/collider.h"
 #include "Pong/core/lights.h"
 #include "Pong/core/render.h"
+#include "Pong/core/utils.h"
+//#include "Pong/default_materials.h"
 
 #include "Pong/core/data_comparers.h"
 
@@ -31,17 +33,28 @@ namespace Pong {
     class Scene {
     // singleton class
     public:
+        using OrderMatPtrPair = std::pair<uint32_t, Material*>;
+        using OrderMatPtrComparer = OrderComparer<OrderMatPtrPair>;
+
+        using OrderShpPtrPair = std::pair<uint32_t, GraphicShape*>;
+        using OrderShpPtrComparer = OrderComparer<OrderShpPtrPair>;
+
+        using OrderActorPtrPair = std::pair<uint32_t, Actor*>;
+        using OrderActorPtrComparer = OrderComparer<OrderActorPtrPair>;
+
+        using ShpMatPtrPair = std::pair<GraphicShape*, Material*>;
+
+        template<typename T>
+        using CameraOrderedActors = std::multiset<T*, ActorCameraDistanceComparer>;
+
+    public:
         // TODO: last frame data in a struct
         float cam_lastX = 0.f;
         float cam_lastY = 0.f;
         bool cam_firstMouse = true;
 
     private:
-        using OrderMatPtrPair = std::pair<uint32_t, Material*>;
-        using OrderMatPtrComparer = OrderComparer<std::pair<uint32_t, Material*>>;
-
-    private:
-        static Scene* instance;  // singleton static
+        inline static std::unique_ptr<Scene> instance;
         std::vector<PointLight> _point_lights;
 
         // directional light
@@ -53,49 +66,86 @@ namespace Pong {
                 glm::vec3(0.f, 0.f, 5.f)
         );
 
-        ActorCameraDistanceComparer _actor_blending_comparer =
-                ActorCameraDistanceComparer(_camera.get());
-
-    private:
-        //private methods
-        Scene();
-
     public:
         std::map<std::string, Actor*> actor_map;
-        std::map<std::string, Material*> material_map;
+        std::map<std::string, std::unique_ptr<Material>> material_map;
         std::map<std::string, Collider*> collider_map;
         std::map<std::string, std::unique_ptr<GraphicShape>> shape_map;
         std::map<std::string, Shader*> shader_map;
-        std::map<std::string, Texture*> textures_map;
+        std::map<std::string, std::unique_ptr<Texture>> textures_map;
 
-        // blending actors ordered by distance to Render camera_ptr
-        std::vector<Actor*>blending_actors;
-        std::map<Actor*, std::pair<GraphicShape*, Material*>> blending_actor_shape_material_map;
+        std::vector<Actor*> blending_actors;
 
+        std::map<Actor*, ShpMatPtrPair> blending_actor_shape_material_map;
+
+        // Relation maps
         std::map<RenderLayer,
                 std::multiset<OrderMatPtrPair, OrderMatPtrComparer>
         > renderlayer_material_map;
 
-        std::map<Material*, std::vector<GraphicShape*>> material_shape_map;
-        std::map<GraphicShape*, std::vector<Actor*>> shape_actor_map;
+        std::map<Material *,
+                std::multiset<OrderShpPtrPair, OrderShpPtrComparer>
+        > material_shape_map;
+
+        std::map<GraphicShape*,
+                std::multiset<OrderActorPtrPair, OrderActorPtrComparer>
+        > shape_actor_map;
+
+    private:
+
+        _P_INLINE void _initialize() {
+
+//            blending_actors = std::multiset<Actor*,
+//                            ActorCameraDistanceComparer>(
+//                    ActorCameraDistanceComparer(_camera.get())
+//                    );
+        }
+
+        //private methods
+        Scene() {
+            _initialize();
+            // start Render
+            Render* render = Render::get_instance();
+            // create callbacks
+            glfwSetCursorPosCallback(render->get_window(), Pong::mouse_callback);
+            glfwSetScrollCallback(render->get_window(), scroll_callback);
+        }
+
+
 
     public:
         virtual ~Scene();
         static Scene* get_instance();
 
+    public:
+        CameraOrderedActors<Actor> camera_sorted_blending_actors() {
+            CameraOrderedActors<Actor> result(
+                    ActorCameraDistanceComparer(
+                            _camera.get()
+                    ));
+            for (auto &actor: blending_actors) {
+                result.insert(actor);
+            }
+            return result;
+        }
+
         void collect_blending_actors();
+
         void assign_layer(const RenderLayer& rlay, Material* material, uint32_t order=0) {
             renderlayer_material_map[rlay].insert({order, material});
         }
 
-        void assign_material(Material*, GraphicShape*);
-        void assign_shape(GraphicShape*, Actor*);
+        void assign_material(Material* material,
+                             GraphicShape* shape,
+                             uint32_t order=0) {
+            material_shape_map[material].insert({order, shape});
+        }
 
-//        void sort_materials();
-        void sort_shapes_maps();
-        void sort_actor_maps();
-
-        void sort_blending_actors();
+        void assign_shape(GraphicShape* shape,
+                          Actor* actor,
+                          uint32_t order=0) {
+            shape_actor_map[shape].insert({order, actor});
+        }
 
         _P_NODISCARD std::vector<PointLight>& get_point_lights() {
             return _point_lights;
@@ -112,57 +162,53 @@ namespace Pong {
         _P_NODISCARD Shader* get_shader(const std::string& name) const;
 
         // create a material and save it in _materialMap
-        template<typename T>
+        template<typename T, typename... Args>
         T *create_material(const std::string &name,
-                           Shader *shader,
-                           const TextureUniformVector &textures,
-                           const RenderLayer &render_layer = RenderLayer::BASE) {
+                           const RenderLayer &render_layer = RenderLayer::BASE,
+                           Args &&... args) {
+            assert_base_class<Material, T>();
 
-            if (!std::is_base_of<Material, T>::value)
-                return nullptr;
+            auto ptr = new T(std::forward<Args>(args)...);
+            material_map[name] = std::unique_ptr<Material>(
+                    static_cast<Material*>(ptr)
+            );
 
-            if (material_map.find(name) == material_map.end()) {
-                auto *m_ptr = new T(name, shader, textures);
-                material_map[name] = static_cast<Material *>(m_ptr);
-//                material_order.push_back(m_ptr);
+            assign_layer(render_layer, ptr);
 
-                assign_layer(render_layer, m_ptr);
-
-                return m_ptr;
-
-            } else {
-                return nullptr;
-            }
+            return static_cast<T*>(material_map[name].get());
         }
 
-        // get a material by its name
-        _P_NODISCARD Material* get_material(const std::string& name) const;
+        _P_NODISCARD _P_INLINE bool contains_material(const std::string& name) const {
+            return material_map.find(name) != material_map.end();
+        }
+
+        _P_NODISCARD _P_INLINE Material* get_material(const std::string& name) const {
+            assert(material_map.find(name) != material_map.end());
+            return material_map.at(name).get();
+        }
 
         // create texture
+        template<typename T, typename ...Args>
         Texture* create_texture(const std::string& name,
-                                const std::string& path);
+                                Args&&... args) {
 
-        _P_NODISCARD Texture* get_texture(const std::string& name) const;
+            assert_base_class<Texture, T>();
 
-        /**create_texture Sky box overload.*/
-        Texture* create_texture(const std::string& name,
-                                const std::string& right,
-                                const std::string& left,
-                                const std::string& top,
-                                const std::string& bottom,
-                                const std::string& front,
-                                const std::string& back)  {
-            if (textures_map.find(name) == textures_map.end())
-            {
-                auto* sb_ptr = new SkyBox(
-                        name,
-                        right, left, top,
-                        bottom,front, back);
+            auto ptr = new T(std::forward<Args>(args)...);
+            textures_map[name] = std::unique_ptr<Texture>(
+                    static_cast<Texture*>(ptr)
+            );
 
-                textures_map[name] = sb_ptr;
+            return static_cast<T*>(textures_map[name].get());
+        }
 
-            }
-            return textures_map[name];
+        _P_NODISCARD bool contains_texture(const std::string& name) {
+            return textures_map.find(name) != textures_map.end();
+        }
+
+        _P_NODISCARD Texture *get_texture(const std::string &name) const {
+            assert(textures_map.find(name) != textures_map.end());
+            return textures_map.at(name).get();
         }
 
         template<typename T>
@@ -211,12 +257,7 @@ namespace Pong {
 
         template<typename T, typename... Args>
         _P_INLINE T* create_shape(const std::string& name, Args&&... args) {
-            #ifdef NDEBUG
-            #else
-            auto is_base = is_base_of_v<GraphicShape, T>;
-            assert(is_base);
-            #endif
-
+            assert_base_class<GraphicShape, T>();
 
             auto ptr = new T(std::forward<Args>(args)...);
             shape_map[name] = std::unique_ptr<GraphicShape>(
@@ -232,7 +273,7 @@ namespace Pong {
 
         _P_NODISCARD _P_INLINE GraphicShape* get_shape(const std::string& name) const {
             assert(shape_map.find(name) != shape_map.end());
-            return shape_map[name];
+            return shape_map.at(name).get();
         }
     };
 }

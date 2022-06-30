@@ -11,7 +11,6 @@
 #include "Pong/core/texture.h"
 #include "Pong/core/lights.h"
 #include "Pong/logger.h"
-#include "Pong/shapes/shape_primitives.h"
 #include "Pong/default_materials.h"
 #include "Levels/blending_level.h"
 #include "Pong/shapes/plane_shape.h"
@@ -95,7 +94,7 @@ protected:
         auto skybox_shd = _scene->create_shader("skybox_shd",
                                                 "./Shaders/reflect_skybox.glsl");
 
-        auto *skybox_mat = _scene->create_material<Pong::SKyBoxMaterial>(
+        auto *skybox_mat = _scene->create_material<Pong::CubeMapMaterial>(
                 "skybox_mat",
                 skybox_shd,
                 {_scene->create_texture("skybox_tex",

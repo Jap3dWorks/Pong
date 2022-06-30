@@ -24,7 +24,14 @@ _P_INLINE void cout_matrix(_P_CONST glm::mat4& matrix) {
     std::cout << std::endl;
 }
 
-
+template<typename _Base, typename _Derived>
+_P_INLINE void assert_base_class() {
+#ifdef NDEBUG
+#else
+    auto is_base = std::is_base_of_v<_Base, _Derived>;
+    assert(is_base);
+#endif
+}
 
 #endif // !UTILS_H
 
