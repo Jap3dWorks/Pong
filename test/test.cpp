@@ -2,15 +2,20 @@
 // Created by Jordi on 4/23/2022.
 //
 #include <iostream>
-#include "utils/text_template.h"
-#include "Pong/logger.h"
 #include <string>
 #include <regex>
-#include <fstream>
-#include "utils/shader_parser.h"
-#include "Pong/core/primitive_component.h"
+#include <map>
+#include <vector>
+#include <iostream>
 #include <array>
+#include <fstream>
 #include <set>
+
+#include "utils/text_template.h"
+#include "utils/shader_parser.h"
+#include "utils/subclasses_map.h"
+#include "Pong/logger.h"
+#include "Pong/core/primitive_component.h"
 
 //template<typename T>
 std::string replace(const std::smatch& t) {
@@ -121,13 +126,77 @@ void test_multiset() {
 
 }
 
+struct TClass {
+    int a=0;
+    TClass() = default;
+    explicit TClass(int _v): a(_v) {}
+};
+
+struct SClassA: public TClass {
+    SClassA(): TClass(1){}
+};
+struct SClassB: public TClass {
+    SClassB(): TClass(2){}
+};
+struct SClassC: public TClass {
+    SClassC(): TClass(3){}
+};
+
+void test_mapIteration() {
+    auto sclassmap = SubClassMap<TClass>();
+
+    sclassmap.register_type<SClassA>();
+    sclassmap.register_type<SClassB>();
+    sclassmap.register_type<SClassC>();
+
+    auto a = SClassA();
+    auto b = SClassB();
+    auto c = SClassC();
+
+    sclassmap.push_back<SClassA>(&a);
+    sclassmap.push_back<SClassB>(&b);
+    sclassmap.push_back<SClassC>(&c);
+
+    for (auto& it : sclassmap) {
+        LOG_INFO(it->a);
+    }
+
+    LOG_INFO("-SClassB values-");
+    auto itr = sclassmap.begin<SClassB>();
+    auto end = sclassmap.end<SClassB>();
+    for(;itr!=end; ++itr) {
+        LOG_INFO((*itr)->a);
+    }
+}
+
+void test_vectorit() {
+    auto a = SClassA();
+    auto b = SClassB();
+    auto c = SClassC();
+
+    auto _v = std::vector<TClass*>{&a, &b, &c};
+    auto& _v2 = _v;
+//    _v2.data
+    auto begin = _v.begin();
+    auto end = _v2.end();
+
+    if (begin != end) {
+        LOG_INFO("Vector Not Equal");
+    }
+    else {
+        LOG_INFO("Vector Equal");
+    }
+}
+
 int main() {
 //    _test_text_template();
 //    _test_shader_parser();
 //    _test_sizes();
 //    test_value();
+//    test_multiset();
 
-    test_multiset();
+//    test_vectorit();
+    test_mapIteration();
 
     return 0;
 
