@@ -38,8 +38,8 @@ protected:
                 Pong::RenderLayer::BASE,
                 basic_shd);
 
-        auto grass_shp = _scene->create_shape<Pong::GraphicMesh>("grass_shp");
-        Pong::CubeShape(grass_shp->get_mesh()).build();
+        auto grass_shp = _scene->create_shape<Pong::MeshComponent>("grass_shp");
+        Pong::CubeShape(grass_shp->mesh).build();
         auto grass_act_01 = _scene->create_actor<Pong::APlayer>("grass_act_01");
         _scene->assign_material(basic_mat, grass_shp);
         _scene->assign_shape(grass_shp, grass_act_01);

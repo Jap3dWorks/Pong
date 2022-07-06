@@ -27,7 +27,7 @@ namespace Pong {
 
             const Pong::CollisionData *coll_data = other->get_collision_data();
             // move ball out of collition zone
-            glm::vec3 ball_pnt = ball->get_transform()[3];
+            glm::vec3 ball_pnt = ball->transform[3];
 
             auto collision_distance = glm::vec3(ball_pnt - coll_data->point);
 
@@ -46,7 +46,7 @@ namespace Pong {
             glm::vec3 relocate_position = collision_distance - radius_vec + coll_data->normal * 0.05f;
 
             // multiply ajust vector by 1.5 to avoid double collisions.
-            ball->set_transform(glm::translate(ball->get_transform(), relocate_position));
+            ball->transform = glm::translate(ball->transform, relocate_position);
 
             // reflect _direction
             glm::vec3 collide_direction = glm::reflect(ball->getDirection(), coll_data->normal);
@@ -74,9 +74,9 @@ namespace Pong {
             Pong::ABall *ball = dynamic_cast<Pong::ABall *>(other->getActor());
 
             if (ball) {
-                glm::mat4 b_trnsform = ball->get_transform();
+                glm::mat4 b_trnsform = ball->transform;
                 b_trnsform[3] = glm::vec4(0, 0, 0, 1);
-                ball->set_transform(b_trnsform);
+                ball->transform = b_trnsform;
 
                 // set a random _direction
                 srand(time(nullptr));

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <string>
-#include "Pong/core/graphic_shape.h"
+#include "Pong/core/graphic_component.h"
 #include "Pong/core/edit_shape.h"
 #include "Pong/core/core_vals.h"
 

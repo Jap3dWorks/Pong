@@ -10,7 +10,7 @@ Welcome to Pong's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Project_design
+   Overview
 
 
 

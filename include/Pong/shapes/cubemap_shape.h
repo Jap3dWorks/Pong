@@ -5,7 +5,7 @@
 #ifndef GL_TEST_CUBEMAP_SHAPE_H
 #define GL_TEST_CUBEMAP_SHAPE_H
 
-#include "Pong/core/graphic_shape.h"
+#include "Pong/core/graphic_component.h"
 #include "Pong/core/edit_shape.h"
 #include "Pong/core/primitive_component.h"
 
@@ -69,18 +69,18 @@ namespace Pong {
         }
     };
 
-    class CubeMapMesh : GraphicMesh {
+    class CubeMapMesh : MeshComponent {
     public:
-        void draw(const Render *render,
-                  const Scene *scene,
-                  Pong::Material *material) const override {
+        void by_frame(const Render *render,
+                      const Scene *scene,
+                      Pong::Material *material) const override {
             glDepthFunc(GL_LEQUAL);
 
-            if (!_mesh->indices.empty()) {
-                glDrawElements(GL_TRIANGLES, _mesh->indices.size(),
+            if (!mesh->indices.empty()) {
+                glDrawElements(GL_TRIANGLES, mesh->indices.size(),
                                GL_UNSIGNED_INT, nullptr);
             } else {
-                glDrawArrays(GL_TRIANGLES, 0, _mesh->vertices.size());
+                glDrawArrays(GL_TRIANGLES, 0, mesh->vertices.size());
             }
             glDepthFunc(GL_LESS);
         }

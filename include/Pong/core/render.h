@@ -482,11 +482,11 @@ namespace Pong {
         _P_INLINE void clear_frame_count() noexcept {
             _runtime_data.frame_counter=0;}
 
-        _P_NODISCARD const auto& get_frame_count() const noexcept {
+        _P_NODISCARD auto get_frame_count() const noexcept {
             return _runtime_data.frame_counter;
         }
 
-        _P_NODISCARD _P_INLINE const auto& get_delta_time() const noexcept {
+        _P_NODISCARD _P_INLINE auto get_delta_time() const noexcept {
             return _runtime_data.delta_time;
         }
 

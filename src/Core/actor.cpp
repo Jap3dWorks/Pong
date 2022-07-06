@@ -1,54 +1,18 @@
 #include "Pong/core/actor.h"
 #include "Pong/logger.h"
+#include "Pong/core/Render.h"
 
 #include <utility>
 #include "Pong/core/material.h"
 
 namespace Pong {
-    Actor::~Actor() {
-        // remove components
-        for (auto const &c : _components)
-            delete c;
-    }
-
-    void Actor::set_scale(const glm::vec3 &scale) {
-        _transform = glm::scale(_transform, scale);
-    }
-
-    void Actor::draw(const Render *render, const Scene *scene, Material *material) const
-    {
-        // draw if is visible and has a GraphicShape
-//        material->set_param("model", _transform);
-        material->get_shader()->set_mat4("model", _transform);
-    }
-
-    void Actor::process_keyboard(Movements movement, const double& delta_time) {}
-
-    void Actor::add_collider(Collider* coll)
-    {
-        _colliders.push_back(coll);
-        coll->actor = this;
-    }
-
-    template<typename T>
-    void Actor::add_component(T * component) {
-        if (!std::is_base_of<Component, T>::value)
-            return;
-
-        // create new Component if not has input
-        if (!component)
-            component = new T;
-
-        // A derivate Component class
-        component->addActor(this);
-        _components.push_back(static_cast<Component *>(component));
-    }
+//    void Actor::process_keyboard(Movements movement, const double& delta_time) {}
 
     // ASkyBox
     // -------
     void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
     {
-        material->get_shader()->set_mat4("model", _transform);
+        material->get_shader()->set_mat4("model", transform);
     }
 
     // --AKinetic--
@@ -61,10 +25,12 @@ namespace Pong {
 
     AKinetic::~AKinetic() noexcept {}
 
-    void AKinetic::update(float delta_time)
+    void AKinetic::by_frame()
     {
+        float dtime = Pong::Render::get_instance()->get_delta_time();
         _vector_director = _direction * _velocity;
-        _transform = glm::translate(_transform, _vector_director * delta_time);
+        transform = glm::translate(
+                transform, _vector_director * dtime;
     }
 
     // getters
@@ -102,9 +68,9 @@ namespace Pong {
 
     APlayer::~APlayer() noexcept {}
 
-    void APlayer::update(float delta_time) {
+    void APlayer::by_frame(float delta_time) {
         _vector_director = _direction * _velocity;
-        _transform = glm::translate(_transform, _vector_director);
+        transform = glm::translate(transform, _vector_director);
 
         if (!_key_pressed) {
             if (_velocity != 0.f)

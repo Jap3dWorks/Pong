@@ -17,9 +17,9 @@ private:
     using SubclassData = std::map<size_t, BaseVector>;
     using BaseVectorIterator = typename BaseVector::iterator;
 
-
 private:
     SubclassData _subclass_map;
+    std::vector<std::unique_ptr<_base>> _storage;
 
 public:
     SubClassMap()=default;
@@ -37,6 +37,9 @@ public:
     SubClassMap& operator=(const SubClassMap& other) = delete;
 
 public:
+    // https://en.cppreference.com/w/cpp/language/constraints
+    // Add conpect to family reg
+
     template<typename T>
     void register_type() {
         auto& t_info = typeid(T);
@@ -52,17 +55,25 @@ public:
     }
 
     template<typename T>
-    std::vector<_base*>& get_registered_data() {
-        auto& t_info = typeid(T);
-        assert(_subclass_map.contains(t_info.hash_code()));
-
-        return _subclass_map[t_info.hash_code()];
-    }
-
-    template<typename T>
     void push_back(T* component) {
         auto& t_info = typeid(T);
         _subclass_map[t_info.hash_code()].push_back(component);
+    }
+
+    template<typename T>
+    void push_back(T &&component) {
+        auto _nw_ptr = std::make_unique<T>(std::forward<T>(component));
+        auto _ptr = _nw_ptr.get();
+        _storage.push_back(std::move(_nw_ptr));
+        _subclass_map[typeid(T).hash_code()].push_back(_ptr);
+    }
+
+    template<typename T, class... Args>
+    void emplace_back(Args&&... args) {
+        auto _nw_ptr = std::make_unique<T>(std::forward<Args>(args)...);
+        auto _ptr = _nw_ptr.get();
+        _storage.push_back(std::move(_nw_ptr));
+        _subclass_map[typeid(T).hash_code()].push_back(_ptr);
     }
 
     const SubclassData& data() {
@@ -179,7 +190,6 @@ public:
                 &_subclass_map,
                 _end};
     }
-
 };
 
 #endif //GL_TEST_SUBCLASSES_MAP_H

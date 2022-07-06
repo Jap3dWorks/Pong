@@ -37,55 +37,46 @@ namespace Pong {
                 std::exception(error){}
     };
 
-    // TODO: Shape as component=
-    // TODO: separate model clas from controllers
+    class GraphicComponent: public Component {
+        // mesh by_frame in other class
+    protected:
+        using graphic_component_super = GraphicComponent;
 
-    // _shapes classes
-    class GraphicShape: public Component {
-        // _mesh draw in other class
     public:
-        virtual void draw(const Render *render, const Scene *scene, Pong::Material *material) const = 0;
+//        void by_frame(Actor* actor, Component* parent) override = 0;
+        virtual void bind() = 0;
 
-        virtual void bind() {}
-
-        virtual ~GraphicShape() = default;
+        ~GraphicComponent() override = default;
     };
 
-    // GraphicMesh
-    class GraphicMesh : public GraphicShape {
+    // MeshComponent
+    class MeshComponent : public GraphicComponent {
     protected:
-        using super = GraphicMesh;
+//        using mesh_component_super = MeshComponent;
 
     protected:
         /**Vertex array buffer id*/
         // use Mesh*
-        Mesh *_mesh = nullptr;
         uint32_t _vao_id = 0;
-
         std::unique_ptr<Mesh> _internal_mesh;
 
     public:
+        Mesh *mesh = nullptr;
         uint32_t draw_primitive = GL_TRIANGLES;
 
     public:
-        GraphicMesh() {
+        MeshComponent() {
             _internal_mesh = std::make_unique<Mesh>();
-            _mesh = _internal_mesh.get();
+            mesh = _internal_mesh.get();
         };
 
-        _P_EXPLICIT GraphicMesh(Mesh* mesh) :
-        _mesh(mesh) {
+        _P_EXPLICIT MeshComponent(Mesh* mesh) :
+                mesh(mesh) {
         }
 
-        virtual ~GraphicMesh() = default;
+        ~MeshComponent() override = default;
 
-        _P_NODISCARD unsigned int get_VAO() const { return _vao_id; }
-
-        _P_NODISCARD _P_INLINE Mesh *get_mesh() const { return _mesh; }
-
-        void _P_INLINE set_mesh(Mesh *mesh) {
-            _mesh = mesh;
-        }
+        _P_NODISCARD uint32_t get_VAO() const { return _vao_id; }
 
         virtual void set_VAO() {
             // TODO: dynamic shapes
@@ -99,15 +90,15 @@ namespace Pong {
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
             glBufferData(GL_ARRAY_BUFFER,
-                         _mesh->vertices.size() * sizeof(decltype(_mesh->vertices)::value_type),
-                         _mesh->vertices.data(),
+                         mesh->vertices.size() * sizeof(decltype(mesh->vertices)::value_type),
+                         mesh->vertices.data(),
                          GL_STATIC_DRAW
             );
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                         _mesh->indices.size() * sizeof(decltype(_mesh->indices)::value_type),
-                         _mesh->indices.data(),
+                         mesh->indices.size() * sizeof(decltype(mesh->indices)::value_type),
+                         mesh->indices.data(),
                          GL_STATIC_DRAW
             );
 
@@ -143,13 +134,15 @@ namespace Pong {
             glBindVertexArray(_vao_id);
         }
 
-        // _mesh draw in other class
-        void draw(const Render *render, const Scene *scene, Pong::Material *material) const override {
-            if (!_mesh->indices.empty()){
-                glDrawElements(draw_primitive, _mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
+        // mesh by_frame in other class
+        void by_frame(Actor* actor, Component* parent) override {
+            GraphicComponent::by_frame(actor, parent);
+
+            if (!mesh->indices.empty()){
+                glDrawElements(draw_primitive, mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
             }
             else {
-                glDrawArrays(draw_primitive, 0, _mesh->vertices.size());
+                glDrawArrays(draw_primitive, 0, mesh->vertices.size());
             }
         }
     };

@@ -5,7 +5,7 @@
 #ifndef GL_TEST_SPHERE_SHAPE_H
 #define GL_TEST_SPHERE_SHAPE_H
 
-#include "Pong/core/graphic_shape.h"
+#include "Pong/core/graphic_component.h"
 #include "Pong/core/edit_shape.h"
 #include "Pong/core/primitive_component.h"
 #include "Pong/logger.h"
@@ -282,7 +282,7 @@ namespace Pong {
             else _build_vertices_flat();
 
             // set vertex buffers
-            GraphicShape::set_VAO();
+            GraphicComponent::set_VAO();
         }
 
         /**
@@ -566,7 +566,7 @@ namespace Pong {
 
             int count = (int) (sizeof(segments) / sizeof(segments[0]));
             for (int i = 0, j = 1; i < count; i += 2, j += 2) {
-                if (GraphicShape::is_on_line_segment(segments[i], segments[j], t))
+                if (GraphicComponent::is_on_line_segment(segments[i], segments[j], t))
                     return false;  // not shared
             }
             return true;

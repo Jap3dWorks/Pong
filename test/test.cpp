@@ -14,6 +14,7 @@
 #include "utils/text_template.h"
 #include "utils/shader_parser.h"
 #include "utils/subclasses_map.h"
+#include "utils/continuous_storage.h"
 #include "Pong/logger.h"
 #include "Pong/core/primitive_component.h"
 
@@ -139,10 +140,13 @@ struct SClassB: public TClass {
     SClassB(): TClass(2){}
 };
 struct SClassC: public TClass {
-    SClassC(): TClass(3){}
+    uint32_t c_attr=0;
+    SClassC(): TClass(3) {};
+    SClassC(uint32_t value):
+     TClass(3), c_attr(value){}
 };
 
-void test_mapIteration() {
+void test_subclasses_map1() {
     auto sclassmap = SubClassMap<TClass>();
 
     sclassmap.register_type<SClassA>();
@@ -151,7 +155,7 @@ void test_mapIteration() {
 
     auto a = SClassA();
     auto b = SClassB();
-    auto c = SClassC();
+    auto c = SClassC(9);
 
     sclassmap.push_back<SClassA>(&a);
     sclassmap.push_back<SClassB>(&b);
@@ -168,25 +172,64 @@ void test_mapIteration() {
         LOG_INFO((*itr)->a);
     }
 }
+void test_subclasses_map2() {
+    LOG_INFO("test subclasses map2");
+    auto sclassmap = SubClassMap<TClass>();
 
-void test_vectorit() {
+    sclassmap.register_type<SClassA>();
+    sclassmap.register_type<SClassB>();
+    sclassmap.register_type<SClassC>();
+
     auto a = SClassA();
-    auto b = SClassB();
-    auto c = SClassC();
 
-    auto _v = std::vector<TClass*>{&a, &b, &c};
-    auto& _v2 = _v;
-//    _v2.data
-    auto begin = _v.begin();
-    auto end = _v2.end();
+    sclassmap.push_back<SClassA>(&a);
+    sclassmap.push_back<SClassB>(SClassB());
+    sclassmap.emplace_back<SClassC>(9);
 
-    if (begin != end) {
-        LOG_INFO("Vector Not Equal");
+    LOG_INFO("-All classes values-");
+    for (auto& it : sclassmap) {
+        LOG_INFO(it->a);
     }
-    else {
-        LOG_INFO("Vector Equal");
+
+    LOG_INFO("-SClassB values-");
+    auto itr = sclassmap.begin<SClassB>();
+    auto end = sclassmap.end<SClassB>();
+    for(;itr!=end; ++itr) {
+        LOG_INFO((*itr)->a);
     }
 }
+
+
+void test_continuous_storage() {
+    LOG_INFO("test Continuous storage");
+    auto strg = BufferStorage();
+
+    auto a = SClassC(1);
+    auto b = SClassC(2);
+    auto c = SClassC(3);
+    auto d = SClassC(4);
+
+    auto aval = (SClassC*) strg.insert(a);
+    auto bval = (SClassC*) strg.insert(std::move(b));
+    auto cval = (SClassC*) strg.insert(c);
+    auto dval = (SClassC*) strg.insert(d);
+
+    LOG_INFO(aval->c_attr);
+    assert(aval->c_attr == 1 && "Attr should be 1!");
+
+    LOG_INFO(bval->c_attr);
+    assert(bval->c_attr == 2 && "Attr should be 2!");
+
+    LOG_INFO(cval->c_attr);
+    assert(cval->c_attr == 3 && "Attr should be 3!");
+
+    LOG_INFO(dval->c_attr);
+    assert(dval->c_attr == 4 && "Attr should be 4!");
+
+//    auto dt = (SClassC*) strg.data();
+//    LOG_INFO(dt->c_attr);
+}
+
 
 int main() {
 //    _test_text_template();
@@ -196,7 +239,10 @@ int main() {
 //    test_multiset();
 
 //    test_vectorit();
-    test_mapIteration();
+//    test_mapIteration();
+//    test_subclasses_map2();
+
+    test_continuous_storage();
 
     return 0;
 

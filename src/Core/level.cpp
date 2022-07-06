@@ -128,10 +128,10 @@ namespace Pong {
                     for (auto &ord_act: _scene->shape_actor_map[ord_shape.second])
                     {
                         // Draw by Actor
-                        if (ord_act.second->get_visibility())
+                        if (ord_act.second->active)
                         {
                             ord_act.second->draw(_render, _scene, ord_mat.second);
-                            ord_shape.second->draw(_render, _scene, ord_mat.second);
+                            ord_shape.second->by_frame(_render, _scene, ord_mat.second);
                         }
                     }
                 }
@@ -143,14 +143,14 @@ namespace Pong {
 //        _scene->sort_blending_actors();
 //        _scene->blending_actors;
         for (const auto &actor_ptr: _scene->camera_sorted_blending_actors()) {
-            if (!actor_ptr->get_visibility()) continue;
+            if (!actor_ptr->active) continue;
 
             auto shp_mat = _scene->blending_actor_shape_material_map[actor_ptr];
             shp_mat.second->use();
             shp_mat.second->update_shader(_render, _scene);
             shp_mat.first->bind();
             actor_ptr->draw(_render, _scene, shp_mat.second);
-            shp_mat.first->draw(_render, _scene, shp_mat.second);
+            shp_mat.first->by_frame(_render, _scene, shp_mat.second);
         }
 
         glActiveTexture(GL_TEXTURE0);
@@ -169,22 +169,15 @@ namespace Pong {
         auto it = _scene->actor_map.begin();
         for (int i = 0; i < _scene->actor_map.size(); i++)
         {
-            // try to update only kinetic actors
-            std::next(it, i)->second->update(
-                    _render->get_delta_time());
+            // try to by_frame only kinetic actors
+            std::next(it, i)->second->by_frame();
         }
     }
 
     void AbstractLevel::_components_start_level() {
         for (auto &act: _scene->actor_map) {
-            for (auto &cmp : act.second->get_components()) {
-                cmp->at_init();
-            }
-        }
-
-        for (auto &act : _scene->collider_map) {
-            for (auto &cmp : act.second->get_components()) {
-                cmp->at_init();
+            for (auto & cmp: act.second->component_map) {
+                cmp->start(act.second);
             }
         }
     }

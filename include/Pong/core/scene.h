@@ -4,7 +4,7 @@
 #include "Pong/core/core_vals.h"
 #include "Pong/core/actor.h"
 #include "Pong/core/material.h"
-#include "Pong/core/graphic_shape.h"
+#include "Pong/core/graphic_component.h"
 #include "Pong/core/collider.h"
 #include "Pong/core/lights.h"
 #include "Pong/core/render.h"
@@ -36,13 +36,13 @@ namespace Pong {
         using OrderMatPtrPair = std::pair<uint32_t, Material*>;
         using OrderMatPtrComparer = OrderComparer<OrderMatPtrPair>;
 
-        using OrderShpPtrPair = std::pair<uint32_t, GraphicShape*>;
+        using OrderShpPtrPair = std::pair<uint32_t, GraphicComponent*>;
         using OrderShpPtrComparer = OrderComparer<OrderShpPtrPair>;
 
         using OrderActorPtrPair = std::pair<uint32_t, Actor*>;
         using OrderActorPtrComparer = OrderComparer<OrderActorPtrPair>;
 
-        using ShpMatPtrPair = std::pair<GraphicShape*, Material*>;
+        using ShpMatPtrPair = std::pair<GraphicComponent*, Material*>;
 
         template<typename T>
         using CameraOrderedActors = std::multiset<T*, ActorCameraDistanceComparer>;
@@ -70,7 +70,7 @@ namespace Pong {
         std::map<std::string, Actor*> actor_map;
         std::map<std::string, std::unique_ptr<Material>> material_map;
         std::map<std::string, Collider*> collider_map;
-        std::map<std::string, std::unique_ptr<GraphicShape>> shape_map;
+        std::map<std::string, std::unique_ptr<GraphicComponent>> shape_map;
         std::map<std::string, Shader*> shader_map;
         std::map<std::string, std::unique_ptr<Texture>> textures_map;
 
@@ -87,7 +87,7 @@ namespace Pong {
                 std::multiset<OrderShpPtrPair, OrderShpPtrComparer>
         > material_shape_map;
 
-        std::map<GraphicShape*,
+        std::map<GraphicComponent*,
                 std::multiset<OrderActorPtrPair, OrderActorPtrComparer>
         > shape_actor_map;
 
@@ -136,12 +136,12 @@ namespace Pong {
         }
 
         void assign_material(Material* material,
-                             GraphicShape* shape,
+                             GraphicComponent* shape,
                              uint32_t order=0) {
             material_shape_map[material].insert({order, shape});
         }
 
-        void assign_shape(GraphicShape* shape,
+        void assign_shape(GraphicComponent* shape,
                           Actor* actor,
                           uint32_t order=0) {
             shape_actor_map[shape].insert({order, actor});
@@ -257,11 +257,11 @@ namespace Pong {
 
         template<typename T, typename... Args>
         _P_INLINE T* create_shape(const std::string& name, Args&&... args) {
-            assert_base_class<GraphicShape, T>();
+            assert_base_class<GraphicComponent, T>();
 
             auto ptr = new T(std::forward<Args>(args)...);
-            shape_map[name] = std::unique_ptr<GraphicShape>(
-                    static_cast<GraphicShape*>(ptr)
+            shape_map[name] = std::unique_ptr<GraphicComponent>(
+                    static_cast<GraphicComponent*>(ptr)
                     );
 
             return static_cast<T*>(shape_map[name].get());
@@ -271,7 +271,7 @@ namespace Pong {
             return shape_map.find(name) != shape_map.end();
         }
 
-        _P_NODISCARD _P_INLINE GraphicShape* get_shape(const std::string& name) const {
+        _P_NODISCARD _P_INLINE GraphicComponent* get_shape(const std::string& name) const {
             assert(shape_map.find(name) != shape_map.end());
             return shape_map.at(name).get();
         }

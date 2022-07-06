@@ -50,15 +50,15 @@ namespace Pong {
             } else vertex.tex_coords = glm::vec2(0.f);
 
             // tangent
-//            vector.x = _mesh.mTangents[i].x;
-//            vector.y = _mesh.mTangents[i].y;
-//            vector.z = _mesh.mTangents[i].z;
+//            vector.x = mesh.mTangents[i].x;
+//            vector.y = mesh.mTangents[i].y;
+//            vector.z = mesh.mTangents[i].z;
 //            vertex.tangent = vector;
 
             // bitangent
-//            vector.x = _mesh.mBitangents[i].x;
-//            vector.y = _mesh.mBitangents[i].y;
-//            vector.z = _mesh.mBitangents[i].z;
+//            vector.x = mesh.mBitangents[i].x;
+//            vector.y = mesh.mBitangents[i].y;
+//            vector.z = mesh.mBitangents[i].z;
 //            vertex.bitangent = vector;
 
             r_mesh.vertices.push_back(vertex);

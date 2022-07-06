@@ -63,11 +63,11 @@ namespace Pong {
         }
 
         bool operator()(const Actor &act_a, const Actor &act_b) const {
-            return get_distance(act_a.get_transform()) < get_distance(act_b.get_transform());
+            return get_distance(act_a.transform) < get_distance(act_b.transform);
         }
 
         bool operator()(const Actor * act_a, const Actor * act_b) const {
-            return get_distance(act_a->get_transform()) < get_distance(act_b->get_transform());
+            return get_distance(act_a->transform) < get_distance(act_b->transform);
         }
     };
 }

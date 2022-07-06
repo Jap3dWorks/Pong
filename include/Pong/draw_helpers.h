@@ -15,7 +15,7 @@
 
 #include "Pong/core/actor.h"
 #include "Pong/core/scene.h"
-#include "Pong/core/graphic_shape.h"
+#include "Pong/core/graphic_component.h"
 #include "Pong/core/shader.h"
 #include "Pong/core/material.h"
 
@@ -53,7 +53,7 @@ namespace Pong {
         // point Actor
         auto* a_point = scene->create_actor<AKinetic>(pnt_nme);
         auto* s_point = scene->create_shape<IcosphereShape>("point_shp");
-        a_point->set_transform(glm::translate(glm::mat4(1), point));
+        a_point->transform = glm::translate(glm::mat4(1), point);
         s_point->set_radius(0.05f);
         scene->assign_material(point_mat, s_point);
         scene->assign_shape(s_point, a_point);

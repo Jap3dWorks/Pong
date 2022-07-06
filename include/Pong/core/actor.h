@@ -16,6 +16,7 @@ namespace Pong
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
+#include "Pong/core/component.h"
 
 #include <iostream>
 #include <utility>
@@ -26,44 +27,23 @@ namespace Pong
 namespace Pong {
     // TODO: colliders with transform matrix to offset.
     class Actor {
-    protected:
-        bool _visible=true;
-
-        glm::mat4 _transform = glm::mat4(1);
-        std::string _name;
-        std::vector<Component*> _components;
-        std::vector<Collider*> _colliders; // TODO: collider as component
+    public:
+        std::string name;
+        glm::mat4 transform = glm::mat4(1);
+        bool active = true;
+        ComponentMap component_map;
 
     public:
-        explicit Actor(std::string name): _name(std::move(name)) {}
+        explicit Actor(std::string _name): name(std::move(_name)) {}
 
-        virtual ~Actor();
+        virtual ~Actor() = default;
 
-        virtual void process_keyboard(Movements movement, const double& delta_time);
+//        virtual void process_keyboard(Movements movement, const double& delta_time);
 
-        virtual void draw(const Render *render, const Scene *scene, Material *material) const;
+//        virtual void draw(const Render *render, const Scene *scene, Material *material) const;
+        virtual void start() {}
+        virtual void by_frame(){}
 
-        virtual void update(float delta_time){}
-
-        void set_transform(glm::mat4 trans) { _transform = trans; }
-
-        void add_collider(Collider* coll);
-
-        void set_visibility(bool vis) { _visible = vis; }
-
-        void set_scale(const glm::vec3 & scale);
-
-        [[nodiscard]] glm::mat4 get_transform() const { return _transform; }
-        [[nodiscard]] Collider* get_collider(unsigned int i=0) const { return _colliders[i]; }
-
-        [[nodiscard]] std::string get_name() const { return _name; }
-        auto& get_components() { return _components; }
-
-        [[nodiscard]] bool get_visibility() const { return _visible; }
-
-        // config members
-        template<typename T>
-        void add_component(T *component = nullptr);
     };
 
     // sky box
@@ -75,6 +55,8 @@ namespace Pong {
         void draw(const Render *render, const Scene *scene, Material *material) const override;
     };
 
+
+    // TODO: Deprecate below
     // --AKinetic class--
     // ------------------
     class AKinetic : public Actor
@@ -94,7 +76,7 @@ namespace Pong {
 
         ~AKinetic() override;
 
-        void update(float delta_time) override;
+        void by_frame() override;
 
         // returns AKinetic vector director
         [[nodiscard]] glm::vec3 getDirection() const;
@@ -127,7 +109,7 @@ namespace Pong {
         }
         ~APlayer() override;
 
-        void update(float delta_time) override;
+        void by_frame(float delta_time) override;
 
         void process_keyboard(Movements move_direction, const double& delta_time) override;
     };
@@ -232,7 +214,7 @@ namespace Pong {
                 else if (Pitch < -89.9f)
                     Pitch = -89.9f;
             }
-            // update Front, Right and Up vectos
+            // by_frame Front, Right and Up vectos
             update_camera_vectors();
         }
 
