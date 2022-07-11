@@ -131,6 +131,7 @@ struct TClass {
     int a=0;
     TClass() = default;
     explicit TClass(int _v): a(_v) {}
+    virtual ~TClass(){}
 };
 
 struct SClassA: public TClass {
@@ -144,6 +145,8 @@ struct SClassC: public TClass {
     SClassC(): TClass(3) {};
     SClassC(uint32_t value):
      TClass(3), c_attr(value){}
+
+     ~SClassC() override {LOG_INFO("SClassC Destructor " << c_attr << ".");}
 };
 
 void test_subclasses_map1() {
@@ -202,17 +205,17 @@ void test_subclasses_map2() {
 
 void test_continuous_storage() {
     LOG_INFO("test Continuous storage");
-    auto strg = BufferStorage();
+    auto strg = BufferStorage<TClass>();
 
     auto a = SClassC(1);
     auto b = SClassC(2);
     auto c = SClassC(3);
     auto d = SClassC(4);
 
-    auto aval = (SClassC*) strg.insert(a);
-    auto bval = (SClassC*) strg.insert(std::move(b));
-    auto cval = (SClassC*) strg.insert(c);
-    auto dval = (SClassC*) strg.insert(d);
+    auto aval = strg.insert(a);
+    auto bval = strg.insert(std::move(b));
+    auto cval = strg.insert(c);
+    auto dval =  strg.insert(d);
 
     LOG_INFO(aval->c_attr);
     assert(aval->c_attr == 1 && "Attr should be 1!");
