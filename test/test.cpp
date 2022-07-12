@@ -216,6 +216,7 @@ void test_continuous_storage() {
     auto bval = strg.insert(std::move(b));
     auto cval = strg.insert(c);
     auto dval =  strg.insert(d);
+    auto e_val =  strg.emplace<SClassC>(5);
 
     LOG_INFO(aval->c_attr);
     assert(aval->c_attr == 1 && "Attr should be 1!");
@@ -228,6 +229,9 @@ void test_continuous_storage() {
 
     LOG_INFO(dval->c_attr);
     assert(dval->c_attr == 4 && "Attr should be 4!");
+
+    LOG_INFO(e_val->c_attr);
+    assert(e_val->c_attr == 5 && "Attr should be 5!");
 
 //    auto dt = (SClassC*) strg.data();
 //    LOG_INFO(dt->c_attr);

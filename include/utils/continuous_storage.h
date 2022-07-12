@@ -37,7 +37,7 @@ public:
 
     ~BufferStorage() {
         for (auto& ptr: storage_objects) {
-            delete ptr;
+            ptr->~BaseClass();
         }
 
         for (uint32_t i=0; i<datas_num; ++i) {
