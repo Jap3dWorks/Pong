@@ -7,7 +7,7 @@
 
 #include "Pong/core/actor.h"
 #include "Pong/core/core_vals.h"
-#include "Pong/logger.h"
+#include "utils/logger.h"
 
 namespace Pong {
 //    template<typename T>
@@ -59,7 +59,7 @@ namespace Pong {
         explicit ActorCameraDistanceComparer(const ACamera *camera) : camera_ptr(camera) {}
 
          _P_NODISCARD inline float get_distance(const glm::mat4 &mat_a) const {
-            return glm::length<3, float>(glm::vec3(mat_a[3]) - camera_ptr->Position);
+            return glm::length<3, float>(glm::vec3(mat_a[3]) - camera_ptr->position);
         }
 
         bool operator()(const Actor &act_a, const Actor &act_b) const {

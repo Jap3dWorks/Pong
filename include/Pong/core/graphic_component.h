@@ -1,7 +1,6 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "Pong/core/utils.h"
 #include "Pong/core/primitive_component.h"
 #include "Pong/core/component.h"
 #include "Pong/core/core_vals.h"
@@ -38,15 +37,15 @@ namespace Pong {
     };
 
     class GraphicComponent: public Component {
-        // mesh by_frame in other class
+        // mesh update in other class
     protected:
         using graphic_component_super = GraphicComponent;
 
     public:
-//        void by_frame(Actor* actor, Component* parent) override = 0;
+//        void update(Actor* actor, Component* parent) override = 0;
         virtual void bind() = 0;
 
-        ~GraphicComponent() override = default;
+        ~GraphicComponent() = default;
     };
 
     // MeshComponent
@@ -74,7 +73,7 @@ namespace Pong {
                 mesh(mesh) {
         }
 
-        ~MeshComponent() override = default;
+        ~MeshComponent() = default;
 
         _P_NODISCARD uint32_t get_VAO() const { return _vao_id; }
 
@@ -134,9 +133,9 @@ namespace Pong {
             glBindVertexArray(_vao_id);
         }
 
-        // mesh by_frame in other class
-        void by_frame(Actor* actor, Component* parent) override {
-            GraphicComponent::by_frame(actor, parent);
+        // mesh update in other class
+        void update(Actor* actor, Component* parent) override {
+            GraphicComponent::update(actor, parent);
 
             if (!mesh->indices.empty()){
                 glDrawElements(draw_primitive, mesh->indices.size(), GL_UNSIGNED_INT, nullptr);

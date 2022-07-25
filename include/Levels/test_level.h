@@ -5,8 +5,8 @@
 #ifndef PONG_TEST_LEVEL_H
 #define PONG_TEST_LEVEL_H
 #include "Pong/core/Level.h"
-#include "Pong/default_materials.h"
-#include "Pong/logger.h"
+#include "Pong/material_lib.h"
+#include "utils/logger.h"
 #include "Pong/shapes/cube_shape.h"
 
 class TestLevel1 : public Pong::AbstractLevel {
@@ -36,7 +36,7 @@ protected:
                              cube_act_01);
 
         // get camera_ptr
-        _scene->get_camera()->Position = glm::vec3(0, 0, 5.0);
+        _scene->get_camera()->position = glm::vec3(0, 0, 5.0);
     }
 };
 

@@ -98,11 +98,8 @@ add_executable(
         ./test/test.cpp
 )
 
-#include_directories(${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/include)
-#target_link_libraries(
-#        TEST PRIVATE general ${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/lib-vc2019/glfw3.lib
-#)
-
+message("Compile and linking glad")
+target_link_libraries(TEST PRIVATE glad)
 
 
 # -------------

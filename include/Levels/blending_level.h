@@ -10,8 +10,8 @@
 #include "Pong/core/material.h"
 #include "Pong/core/texture.h"
 #include "Pong/core/lights.h"
-#include "Pong/logger.h"
-#include "Pong/default_materials.h"
+#include "utils/logger.h"
+#include "Pong/material_lib.h"
 #include "Levels/blending_level.h"
 #include "Pong/shapes/plane_shape.h"
 
@@ -25,7 +25,7 @@ protected:
         _render->update_enables();
         // get camera_ptr
         Pong::ACamera *a_camera = _scene->get_camera();
-        a_camera->Position = glm::vec3(0, 0, 9);
+        a_camera->position = glm::vec3(0, 0, 9);
 
         // grass planes
         auto grass_shd = _scene->create_shader("grass_shd",

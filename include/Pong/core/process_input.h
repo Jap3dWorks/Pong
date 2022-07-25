@@ -3,6 +3,7 @@
 
 #include "Pong/core/movements.h"
 #include "Pong/core/actor.h"
+#include "utils/action_event.h"
 
 #include <iostream>
 #include <GLFW/glfw3.h>
@@ -10,38 +11,61 @@
 #include <utility>
 
 namespace Pong {
-    /*
-    Functor class useful to manage the inputs of an Actor object.
+
+    /**
+    * Functor class useful to manage the inputs of an Actor object.
     */
-    class ProcessInput
-    {
+    class ProcessInput {
+    public:
+        using Window = GLFWwindow;
+        using EventMap = std::map<int32_t, Event<void(*)()>>;
+        using CursorCallback = void (*)(Window*, double, double);
+        using ScrollCallback = void (*)(Window*, double, double);
+
     private:
-        Actor*  _move_element = nullptr;
-        std::map<int, Movements> _glfw_keys;
-        GLFWwindow* _window = nullptr;
+//        inline static ProcessInput* _instance;
+        Window* _window = nullptr;
 
     public:
-        /*
-        Constructor receives a pointer of template class, also a map with the relations
-        (Key, Movements::_anyMove_)
-        @param move_element: object pointer, this object should override process_keyboard method.
-        @param glfw_keys(std::map): relations between keys and Movements type.*/
-        ProcessInput(Actor* move_element, std::map<int, Movements> glfw_keys,
-                     GLFWwindow* window) :_glfw_keys(std::move(glfw_keys)), _window(window)
-        {
-            // typeid
-            _move_element = move_element;
+        EventMap _event_map{};
+
+    public:
+        /**
+         * Constructor receives a pointer of template class,
+         *  also a map with the relations (Key, Movements::_anyMove_)
+         * @param _window:
+         */
+    public:
+        explicit ProcessInput(
+                Window *window
+        ) : _window(window) {}
+
+    void set_cursor_callback(CursorCallback _callback) noexcept {
+        glfwSetCursorPosCallback(_window, _callback);
         }
 
+    void set_scroll_callback(ScrollCallback _callback) noexcept {
+        glfwSetScrollCallback(_window, _callback);
+        }
 
-        void operator()(double delta_time) const
-        {
-            for (auto const& it: _glfw_keys)
-            {
-                if (glfwGetKey(_window, it.first) == GLFW_PRESS)
-                    _move_element->process_keyboard(it.second, delta_time);
+//        static inline ProcessInput *get_instance(
+//                GLFWwindow *_window
+//        ) {
+//            if (_instance == nullptr) {
+//                _instance = new ProcessInput(_window);
+//            }
+//            return _instance;
+//        }
+
+        void update() const {
+            for (auto &pair: _event_map) {
+                if (glfwGetKey(_window, pair.first) == GLFW_PRESS) {
+                    pair.second();
+                }
             }
         }
+
     };
+
 }
 #endif // !PROCESS_INPUT_H

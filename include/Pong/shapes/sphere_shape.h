@@ -8,7 +8,7 @@
 #include "Pong/core/graphic_component.h"
 #include "Pong/core/edit_shape.h"
 #include "Pong/core/primitive_component.h"
-#include "Pong/logger.h"
+#include "utils/logger.h"
 
 namespace Pong {
 

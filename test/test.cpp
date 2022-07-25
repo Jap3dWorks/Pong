@@ -10,13 +10,15 @@
 #include <array>
 #include <fstream>
 #include <set>
-
+#include <cstdlib>
+#include "utils/action_event.h"
 #include "utils/text_template.h"
 #include "utils/shader_parser.h"
 #include "utils/subclasses_map.h"
-#include "utils/continuous_storage.h"
-#include "Pong/logger.h"
+#include "utils/fixed_address_buffer.h"
+#include "utils/logger.h"
 #include "Pong/core/primitive_component.h"
+#include "Pong/core/component.h"
 
 //template<typename T>
 std::string replace(const std::smatch& t) {
@@ -54,7 +56,7 @@ void _test_shader_parser() {
 }
 
 void _test_sizes() {
-    LOG_INFO("Position size " << sizeof(Pong::Vertex::position));
+    LOG_INFO("position size " << sizeof(Pong::Vertex::position));
     LOG_INFO("OFFSET texcoords " << offsetof(Pong::Vertex, tex_coords));
 }
 
@@ -205,7 +207,7 @@ void test_subclasses_map2() {
 
 void test_continuous_storage() {
     LOG_INFO("test Continuous storage");
-    auto strg = BufferStorage<TClass>();
+    auto strg = FixedAddressBuffer<TClass>();
 
     auto a = SClassC(1);
     auto b = SClassC(2);
@@ -217,6 +219,8 @@ void test_continuous_storage() {
     auto cval = strg.insert(c);
     auto dval =  strg.insert(d);
     auto e_val =  strg.emplace<SClassC>(5);
+
+//    auto p_val =  strg.insert(6);
 
     LOG_INFO(aval->c_attr);
     assert(aval->c_attr == 1 && "Attr should be 1!");
@@ -232,11 +236,70 @@ void test_continuous_storage() {
 
     LOG_INFO(e_val->c_attr);
     assert(e_val->c_attr == 5 && "Attr should be 5!");
-
-//    auto dt = (SClassC*) strg.data();
-//    LOG_INFO(dt->c_attr);
 }
 
+namespace {
+    void _test_func_a(int a) {
+        LOG_INFO("test func a: " << a);
+    }
+
+    void _test_func_b(int a) {
+        LOG_INFO("test func b: " << a);
+    }
+
+    class _tstclass {
+    public:
+        void print_val(int a) {
+            LOG_INFO("_tstclass.print_val: " << a);
+        }
+    };
+
+    template<typename T>
+    void forwarder(void* context, int a) {
+        static_cast<T>(context)->print_val(a);
+    }
+}
+
+void test_action_event() {
+    LOG_INFO("test Continuous storage");
+
+//    auto act = Event<decltype(_test_func)>{};
+    auto act = Event<void(*)(int)>{};
+    act += &_test_func_a;
+
+    act.subscribe(&_test_func_b);
+    act(2);
+
+    auto inst = _tstclass();
+    auto act2 = Event<void(*)(void*, int)>{};
+    act2.subscribe(&(forwarder<_tstclass*>));
+    act2(&inst, 4);
+
+}
+
+constexpr uint32_t la_array() {
+//    std::srand(std::time(nullptr));
+    return 10;
+}
+
+
+namespace Pong {
+    class Actor;
+}
+
+class DComponent: public Pong::Component {
+public:
+    inline void start(Pong::Actor* actor, Pong::Component* parent) override {}
+    inline void update(Pong::Actor* actor, Pong::Component* parent) override {}
+};
+
+void test_component() {
+
+    auto compo = DComponent();
+
+    compo.subscribe(new DComponent);
+
+}
 
 int main() {
 //    _test_text_template();
@@ -250,7 +313,7 @@ int main() {
 //    test_subclasses_map2();
 
     test_continuous_storage();
+    test_action_event();
 
     return 0;
-
 }

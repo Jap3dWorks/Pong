@@ -8,10 +8,9 @@
 #include "Pong/core/collider.h"
 #include "Pong/core/lights.h"
 #include "Pong/core/render.h"
-#include "Pong/core/utils.h"
-//#include "Pong/default_materials.h"
 
 #include "Pong/core/data_comparers.h"
+#include "utils/type_conditions.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -31,7 +30,7 @@ namespace Pong {
     void scroll_callback(GLFWwindow*, double, double);
 
     class Scene {
-    // singleton class
+
     public:
         using OrderMatPtrPair = std::pair<uint32_t, Material*>;
         using OrderMatPtrComparer = OrderComparer<OrderMatPtrPair>;
@@ -60,11 +59,13 @@ namespace Pong {
         // directional light
         std::vector<DirectionalLight> _directional_lights{{}};
 
+        // TODO: Camera list or camera map
         // camera_ptr pointer
-        std::unique_ptr<ACamera> _camera = std::make_unique<ACamera>(
-                "default_cam",
-                glm::vec3(0.f, 0.f, 5.f)
-        );
+        Actor* active_camera;
+//        std::unique_ptr<Actor> _camera = std::make_unique<ACamera>(
+//                "default_cam",
+//                glm::vec3(0.f, 0.f, 5.f)
+//        );
 
     public:
         std::map<std::string, Actor*> actor_map;
@@ -162,12 +163,10 @@ namespace Pong {
         _P_NODISCARD Shader* get_shader(const std::string& name) const;
 
         // create a material and save it in _materialMap
-        template<typename T, typename... Args>
+        template<CondIsBase<Material> T, typename... Args>
         T *create_material(const std::string &name,
                            const RenderLayer &render_layer = RenderLayer::BASE,
                            Args &&... args) {
-            assert_base_class<Material, T>();
-
             auto ptr = new T(std::forward<Args>(args)...);
             material_map[name] = std::unique_ptr<Material>(
                     static_cast<Material*>(ptr)
@@ -188,12 +187,9 @@ namespace Pong {
         }
 
         // create texture
-        template<typename T, typename ...Args>
+        template<CondIsBase<Texture> T, typename ...Args>
         Texture* create_texture(const std::string& name,
                                 Args&&... args) {
-
-            assert_base_class<Texture, T>();
-
             auto ptr = new T(std::forward<Args>(args)...);
             textures_map[name] = std::unique_ptr<Texture>(
                     static_cast<Texture*>(ptr)
@@ -252,13 +248,11 @@ namespace Pong {
         _P_NODISCARD Collider* get_collider(const std::string& name) const;
 
         // get camera_ptr ptr
-        _P_NODISCARD ACamera* get_camera() const
+        _P_NODISCARD Actor* get_camera() const
         {return _camera.get();}
 
-        template<typename T, typename... Args>
+        template<CondIsBase<GraphicComponent> T, typename... Args>
         _P_INLINE T* create_shape(const std::string& name, Args&&... args) {
-            assert_base_class<GraphicComponent, T>();
-
             auto ptr = new T(std::forward<Args>(args)...);
             shape_map[name] = std::unique_ptr<GraphicComponent>(
                     static_cast<GraphicComponent*>(ptr)

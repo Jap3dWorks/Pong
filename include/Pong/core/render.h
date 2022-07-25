@@ -5,8 +5,11 @@
 #include "Pong/core/movements.h"
 #include "Pong/core/shader.h"
 #include "Pong/core/actor.h"
+#include "Pong/core/camera_component.h"
 #include "Pong/core/lights.h"
 #include "Pong/core/graphic_flags.h"
+#include "Pong/core/exceptions.h"
+#include "Pong/core/outputs.h"
 
 #include <cstdint>
 #include <stb_image.h>
@@ -39,6 +42,10 @@ namespace Pong {
     }
 
     class Render {
+    public:
+        using OutputPtr = Output*;
+        using OutputVector = std::vector<OutputPtr>;
+
     private:
         struct RuntimeData {
             double delta_time = 0;
@@ -67,8 +74,9 @@ namespace Pong {
         uint32_t _ubo_runtime_data = 0;
         uint32_t _ubo_render_data = 0;
 
-        GLFWwindow* _window;
-        _P_STATIC _P_INLINE Render* instance = nullptr;
+        OutputVector _outputs{};
+
+//        GLFWwindow* _window;
 
     public:
         _P_CONSTEXPR _P_STATIC _P_INLINE GLuint MAX_DIRECTIONAL_LIGHTS = 4;
@@ -77,7 +85,6 @@ namespace Pong {
         RenderLayer first_pass_render_layers[2] =
                 {RenderLayer::BASE,
                  RenderLayer::SKY_BOX};
-
         /**
          Configure open gl enables using bitwise operations
          1-> glEnable(GL_DEPTH_TEST)
@@ -230,43 +237,46 @@ namespace Pong {
         _P_STATIC void _framebuffer_size_callback(GLFWwindow* window,
                                                int width,
                                                int height) {
-            // make sure the viewport matches the new window dimensions; note that width and
+            // make sure the viewport matches the new _window dimensions;
+            // note that width and
             // height will be significantly larger than specified on retina displays.
             glViewport(0, 0, width, height);
         }
 
-        // private constructor
+    public:
+        // public constructor
         Render() {
-            //glfw initialize and configure
-            glfwInit();
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//            //glfw initialize and configure
+//            glfwInit();
+//            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//
+//            // glfw _window creation
+//
+//            _window = glfwCreateWindow((int) _render_data.width,
+//                                       (int) _render_data.height,
+//                                       "PongGL",
+//                                       nullptr,
+//                                       nullptr);
+//
+//            if (!_window) {
+//                LOG_ERROR("Failed to creat GLFW _window");
+//                glfwTerminate();
+//            }
 
-            // glfw window creation
-
-            _window = glfwCreateWindow((int) _render_data.width,
-                                       (int) _render_data.height,
-                                       "PongGL",
-                                       nullptr,
-                                       nullptr);
-
-            if (!_window) {
-                LOG_ERROR("Failed to creat GLFW window");
-                glfwTerminate();
-            }
-
-            glfwMakeContextCurrent(_window);
-
-            glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//            glfwMakeContextCurrent(_window);
+//            glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
             // glad: load all opengl functions pointers
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
                 LOG_ERROR("Failed to initialize GLAD");
-                return;
+                throw InitializeGladError(
+                        "Error during Glad library initialization!"
+                );
             }
 
-            glfwSetFramebufferSizeCallback(_window, _framebuffer_size_callback);
+//            glfwSetFramebufferSizeCallback(_window, _framebuffer_size_callback);
 
             _config_frame_buffers();
             _build_screen_quad();
@@ -279,7 +289,8 @@ namespace Pong {
 
             // framebuffer shaders
             framebuffer_shader = std::make_unique<Shader>(
-                    Shader("./Shaders/camera/framebuffer_screen.glsl"));
+                    Shader("./Shaders/camera/framebuffer_screen.glsl")
+            );
 
             _create_ubo_camera();
             _create_ubo_lights();
@@ -289,7 +300,7 @@ namespace Pong {
             update_ubo_render_data();
         }
 
-    public:
+
         /**Binds framebuffer, in this buffer the Scene is prerendered.*/
         _P_STATIC _P_INLINE void bind_framebuffer(unsigned int in_framebuffer=0) {
             glBindFramebuffer(GL_FRAMEBUFFER, in_framebuffer);
@@ -311,15 +322,23 @@ namespace Pong {
             glBindTexture(GL_TEXTURE_2D, _texture_color_buffer);
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
-            glfwSwapBuffers(_window);
-            glfwPollEvents();
+//            glfwSwapBuffers(_window);
+//            glfwPollEvents();
 
+            for (auto& output: _outputs) {
+                output->update();
+            }
+
+            glfwPollEvents();
             _runtime_data.frame_counter++;
             update_time_data();
         }
 
-        _P_INLINE void update_ubo_camera(ACamera* camera) const {
+        _P_INLINE void update_ubo_camera(CameraComponent* camera) const {
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
+
+            // pass a camera component;
+//            camera->get_component("camera");
 
             uint32_t buffer_offset = 0;
             float fov = glm::radians(camera->Zoom);
@@ -342,8 +361,8 @@ namespace Pong {
             buffer_offset += sizeof(glm::mat4);
 
             // view pos
-            // TODO: Use camera Position as vec4.
-            auto camera_position = glm::vec4(camera->Position, 1.0);
+            // TODO: Use camera position as vec4.
+            auto camera_position = glm::vec4(camera->position, 1.0);
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,
                             sizeof(glm::vec4),
@@ -437,25 +456,25 @@ namespace Pong {
             {return _framebuffer;}
 
         _P_INLINE void update_time_data() {
-            auto current_frame = glfwGetTime();
+            auto current_frame = glfwGetTime(); // TODO: use std lib
             _runtime_data.delta_time = current_frame - _runtime_data.time;
             _runtime_data.time = current_frame;
         }
 
-        _P_STATIC _P_INLINE Render* get_instance() {
-            if (!Render::instance) {
-                Render::instance = new Render;
-            }
-            return Render::instance;
-        }
+//        _P_STATIC _P_INLINE Render* get_instance() {
+//            if (!Render::instance) {
+//                Render::instance = new Render;
+//            }
+//            return Render::instance;
+//        }
 
-        auto get_window() {
-            return _window;
-        }
+//        auto get_window() {
+//            return _window;
+//        }
 
-        virtual ~Render() {
-            glfwTerminate();
-        }
+//        virtual ~Render() {
+//            glfwTerminate();
+//        }
 
         /**Make gl_enables_config configuration effective*/
         _P_INLINE void update_enables() const {

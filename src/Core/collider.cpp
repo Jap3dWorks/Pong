@@ -1,6 +1,6 @@
 
 #include "Pong/core/collider.h"
-#include "Pong/logger.h"
+#include "utils/logger.h"
 #include "Pong/core/collision_components.h"
 
 #include <glm/glm.hpp>
@@ -259,7 +259,7 @@ namespace Pong {
         if (depth != NULL)
             _depth = depth;
 
-        // by_frame buffer
+        // update buffer
         _setOBB_buffer(_width, _height, _depth);
     }
 

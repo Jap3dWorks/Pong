@@ -1,4 +1,4 @@
-#include "Pong/logger.h"
+#include "utils/logger.h"
 #include "Levels/load_model_level.h"
 //#include "Levels/blending_level.h"
 //#include "Levels/test_level.h"
@@ -13,13 +13,14 @@
 // https://project-awesome.org/terkelg/awesome-creative-coding#books
 // TODO: Load models
 
-int main(int argc, char** argv) {
-//    if (true) {
+int main(int argc, char **argv) {
+    try {
+        //    if (true) {
 //        BlendingLevel b_lvl;
-    LoadModelLevel b_lvl;
-    LOG_INFO("Blending level run");
+        LoadModelLevel b_lvl;
+        LOG_INFO("Blending level run");
 
-    b_lvl.run();
+        b_lvl.run();
 //    }
 
 //    else {
@@ -27,6 +28,14 @@ int main(int argc, char** argv) {
 //        LOG_INFO("Shading Level");
 //        s_lvl.run();
 //    }
+    }
+
+    catch (const std::exception &e) {
+        LOG_ERROR("ERROR: " << e.what());
+    }
+    catch (...) {
+        LOG_ERROR("UNCATCHED EXCEPTION OCCURS!");
+    }
 
     return 0;
 }

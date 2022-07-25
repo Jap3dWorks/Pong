@@ -9,9 +9,9 @@
 #include "Pong/core/level.h"
 #include "Pong/core/material.h"
 #include "Pong/core/lights.h"
-#include "Pong/logger.h"
+#include "utils/logger.h"
 #include "Pong/shapes/cube_shape.h"
-#include "Pong/default_materials.h"
+#include "Pong/material_lib.h"
 #include "Pong/shapes/plane_shape.h"
 #include <vector>
 
@@ -27,7 +27,7 @@ protected:
 
         // get camera_ptr
         Pong::ACamera *a_camera = _scene->get_camera();
-        a_camera->Position = glm::vec3(0, 0, 9);
+        a_camera->position = glm::vec3(0, 0, 9);
 
         // grass planes
         auto basic_shd = _scene->create_shader("basic_shd",

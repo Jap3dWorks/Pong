@@ -1,5 +1,5 @@
 #include "Pong/core/level.h"
-#include "Pong/logger.h"
+#include "utils/logger.h"
 #include "collision_components.h"
 
 #include <vector>
@@ -131,7 +131,7 @@ namespace Pong {
                         if (ord_act.second->active)
                         {
                             ord_act.second->draw(_render, _scene, ord_mat.second);
-                            ord_shape.second->by_frame(_render, _scene, ord_mat.second);
+                            ord_shape.second->update(_render, _scene, ord_mat.second);
                         }
                     }
                 }
@@ -150,7 +150,7 @@ namespace Pong {
             shp_mat.second->update_shader(_render, _scene);
             shp_mat.first->bind();
             actor_ptr->draw(_render, _scene, shp_mat.second);
-            shp_mat.first->by_frame(_render, _scene, shp_mat.second);
+            shp_mat.first->update(_render, _scene, shp_mat.second);
         }
 
         glActiveTexture(GL_TEXTURE0);
@@ -169,14 +169,14 @@ namespace Pong {
         auto it = _scene->actor_map.begin();
         for (int i = 0; i < _scene->actor_map.size(); i++)
         {
-            // try to by_frame only kinetic actors
-            std::next(it, i)->second->by_frame();
+            // try to update only kinetic actors
+            std::next(it, i)->second->update();
         }
     }
 
     void AbstractLevel::_components_start_level() {
         for (auto &act: _scene->actor_map) {
-            for (auto & cmp: act.second->component_map) {
+            for (auto & cmp: act.second->components) {
                 cmp->start(act.second);
             }
         }

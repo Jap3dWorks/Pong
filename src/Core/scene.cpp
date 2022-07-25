@@ -1,8 +1,8 @@
 #include "Pong/core/scene.h"
 
 #include <utility>
-#include "Pong/logger.h"
-#include "Pong/default_materials.h"
+#include "utils/logger.h"
+#include "Pong/material_lib.h"
 
 
 namespace Pong{
@@ -111,18 +111,18 @@ namespace Pong{
             scene->cam_firstMouse = false;
         }
 
-        float xoffset = x_pos - scene->cam_lastX;
-        float yoffset = scene->cam_lastY - y_pos;
+        float x_offset = x_pos - scene->cam_lastX;
+        float y_offset = scene->cam_lastY - y_pos;
 
         scene->cam_lastX = x_pos;
         scene->cam_lastY = y_pos;
 
-        scene->get_camera()->ProcessMouseMovement(xoffset, yoffset);
+        scene->get_camera()->process_mouse_movement(x_offset, y_offset);
     }
 
-    void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+    void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
     {
-        Scene::get_instance()->get_camera()->ProcessMouseScroll(yoffset);
+        Scene::get_instance()->get_camera()->process_mouse_scroll(y_offset);
     }
 
 }

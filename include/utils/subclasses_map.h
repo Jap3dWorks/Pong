@@ -8,7 +8,11 @@
 #include <vector>
 #include <iostream>
 
-
+/**
+ * Save each subclass instances in a map entry, where key is the subclass hash.
+ * SubClassMap can be iterated by subclass type.
+ * @tparam _base
+ */
 template<typename _base>
 class SubClassMap {
 private:

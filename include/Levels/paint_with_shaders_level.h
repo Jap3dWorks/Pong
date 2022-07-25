@@ -9,8 +9,8 @@
 #include "Pong/core/level.h"
 #include "Pong/core/material.h"
 #include "Pong/core/lights.h"
-#include "Pong/logger.h"
-#include "Pong/default_materials.h"
+#include "utils/logger.h"
+#include "Pong/material_lib.h"
 #include "Levels/blending_level.h"
 #include "Pong/shapes/plane_shape.h"
 #include <vector>
@@ -38,7 +38,7 @@ protected:
         auto draw_actor = _scene->create_actor<Pong::APlayer>("Draw Actor");
 
 
-        _scene->get_camera()->Position = glm::vec3(0.0, 5.0, 5.0);
+        _scene->get_camera()->position = glm::vec3(0.0, 5.0, 5.0);
 
         _scene->assign_material(draw_material, draw_shape);
         _scene->assign_shape(draw_shape, draw_actor);
