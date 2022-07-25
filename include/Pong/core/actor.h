@@ -4,7 +4,7 @@
 namespace Pong
 {
     class Component;
-    class Scene;
+    class Map;
     class Render;
     class Material;
 }
@@ -40,7 +40,7 @@ namespace Pong {
 
 //        virtual void process_keyboard(Movements movement, const double& delta_time);
 
-//        virtual void draw(const Render *render, const Scene *scene, Material *material) const;
+//        virtual void draw(const Render *render, const Map *scene, Material *material) const;
         virtual void start() {}
         virtual void update(){}
 
@@ -53,7 +53,7 @@ namespace Pong {
 //    {
 //    public:
 //        explicit ASkyBox(std::string name): Actor(std::move(name)) {}
-////        void draw(const Render *render, const Scene *scene, Material *material) const override;
+////        void draw(const Render *render, const Map *scene, Material *material) const override;
 //    };
 
     // TODO: Deprecate below

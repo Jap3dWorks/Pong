@@ -72,7 +72,7 @@ namespace Pong {
     class CubeMapMesh : MeshComponent {
     public:
         void by_frame(const Render *render,
-                      const Scene *scene,
+                      const Map *scene,
                       Pong::Material *material) const override {
             glDepthFunc(GL_LEQUAL);
 

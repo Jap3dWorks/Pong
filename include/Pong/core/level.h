@@ -3,7 +3,7 @@
 
 #include "movements.h"
 
-#include "Pong/core/scene.h"
+#include "Pong/core/map.h"
 #include "Pong/core/graphic_component.h"
 #include "Pong/core/actor.h"
 #include "Pong/core/render.h"
@@ -16,7 +16,7 @@ namespace Pong {
     private:
 
     protected:
-        Scene *_scene;
+        Map *_scene;
         Render *_render;
         std::vector<ProcessInput> _inputList;
 

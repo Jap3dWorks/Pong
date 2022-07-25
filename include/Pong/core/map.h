@@ -29,7 +29,7 @@ namespace Pong {
     void mouse_callback(GLFWwindow*, double, double);
     void scroll_callback(GLFWwindow*, double, double);
 
-    class Scene {
+    class Map {
 
     public:
         using OrderMatPtrPair = std::pair<uint32_t, Material*>;
@@ -53,7 +53,7 @@ namespace Pong {
         bool cam_firstMouse = true;
 
     private:
-        inline static std::unique_ptr<Scene> instance;
+        inline static std::unique_ptr<Map> instance;
         std::vector<PointLight> _point_lights;
 
         // directional light
@@ -62,6 +62,7 @@ namespace Pong {
         // TODO: Camera list or camera map
         // camera_ptr pointer
         Actor* active_camera;
+
 //        std::unique_ptr<Actor> _camera = std::make_unique<ACamera>(
 //                "default_cam",
 //                glm::vec3(0.f, 0.f, 5.f)
@@ -103,20 +104,21 @@ namespace Pong {
         }
 
         //private methods
-        Scene() {
+        Map() {
             _initialize();
             // start Render
-            Render* render = Render::get_instance();
+//            Render* render = Render::get_instance();
+
             // create callbacks
-            glfwSetCursorPosCallback(render->get_window(), Pong::mouse_callback);
-            glfwSetScrollCallback(render->get_window(), scroll_callback);
+//            glfwSetCursorPosCallback(render->get_window(), Pong::mouse_callback);
+//            glfwSetScrollCallback(render->get_window(), scroll_callback);
         }
 
 
 
     public:
-        virtual ~Scene();
-        static Scene* get_instance();
+        virtual ~Map();
+        static Map* get_instance();
 
     public:
         CameraOrderedActors<Actor> camera_sorted_blending_actors() {
@@ -124,6 +126,7 @@ namespace Pong {
                     ActorCameraDistanceComparer(
                             _camera.get()
                     ));
+
             for (auto &actor: blending_actors) {
                 result.insert(actor);
             }

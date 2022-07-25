@@ -17,7 +17,7 @@ namespace Pong {
     class Output;
     class ProcessInput;
     class Render;
-    class Scene;
+    class Map;
 }
 
 namespace Pong {
@@ -32,7 +32,7 @@ namespace Pong {
         using RenderPtr = std::unique_ptr<Render>;
 //        using RenderMap = std::unordered_map<std::string, RenderPtr>;
 
-        using ScenePtr = std::unique_ptr<Scene>;
+        using ScenePtr = std::unique_ptr<Map>;
         using SceneMap = std::unordered_map<std::string, ScenePtr>;
 
 

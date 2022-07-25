@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "Pong/core/actor.h"
-#include "Pong/core/scene.h"
+#include "Pong/core/map.h"
 #include "Pong/core/graphic_component.h"
 #include "Pong/core/shader.h"
 #include "Pong/core/material.h"
@@ -23,7 +23,7 @@
 namespace Pong {
     void draw_point(glm::vec3 point)
     {
-        Scene* scene = Scene::get_instance();
+        Map* scene = Map::get_instance();
 
         // point Actor name
         std::string pnt_nme = "point_";

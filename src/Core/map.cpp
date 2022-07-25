@@ -1,4 +1,4 @@
-#include "Pong/core/scene.h"
+#include "Pong/core/map.h"
 
 #include <utility>
 #include "utils/logger.h"
@@ -6,10 +6,10 @@
 
 
 namespace Pong{
-//    Scene* Scene::instance = nullptr;
+//    Map* Map::instance = nullptr;
 
-    Scene::~Scene() {
-        LOG_DEBUG("Call Scene destructor");
+    Map::~Map() {
+        LOG_DEBUG("Call Map destructor");
         auto ait = actor_map.begin();
         for (int i = 0; i < actor_map.size(); i++)
         {
@@ -29,14 +29,14 @@ namespace Pong{
         }
     }
 
-    Scene* Scene::get_instance() {
+    Map* Map::get_instance() {
         if (!instance) {
-            instance = std::unique_ptr<Scene>(new Scene);
+            instance = std::unique_ptr<Map>(new Map);
         }
         return instance.get();
     }
 
-    Actor* Scene::get_actor(const std::string& name) const
+    Actor* Map::get_actor(const std::string& name) const
     {
         if (actor_map.find(name) != actor_map.end())
         {
@@ -50,7 +50,7 @@ namespace Pong{
     }
 
     // -- Colliders--
-    Collider* Scene::get_collider(const std::string& name) const
+    Collider* Map::get_collider(const std::string& name) const
     {
         if (collider_map.find(name) != collider_map.end())
         {
@@ -60,8 +60,8 @@ namespace Pong{
             return nullptr;
     }
 
-    Shader* Scene::create_shader(const std::string &name,
-                                 const GLchar *shader_path) {
+    Shader* Map::create_shader(const std::string &name,
+                               const GLchar *shader_path) {
         if (shader_map.find(name) == shader_map.end())
         {
             auto* ptr = new Shader(shader_path);
@@ -72,7 +72,7 @@ namespace Pong{
             return shader_map[name];
     }
 
-    Shader* Scene::get_shader(const std::string& name) const {
+    Shader* Map::get_shader(const std::string& name) const {
         if (shader_map.find(name) != shader_map.end())
         {
             return shader_map.at(name);
@@ -81,7 +81,7 @@ namespace Pong{
             return nullptr;
     }
 
-    void Scene::collect_blending_actors() {
+    void Map::collect_blending_actors() {
         blending_actors.clear();
         blending_actor_shape_material_map.clear();
         for (auto &ord_mat: renderlayer_material_map[RenderLayer::BLENDING])
@@ -103,7 +103,7 @@ namespace Pong{
     // -----------------
     void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
     {
-        Scene* scene = Scene::get_instance();
+        Map* scene = Map::get_instance();
         if (scene->cam_firstMouse)
         {
             scene->cam_lastX = x_pos;
@@ -122,7 +122,7 @@ namespace Pong{
 
     void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
     {
-        Scene::get_instance()->get_camera()->process_mouse_scroll(y_offset);
+        Map::get_instance()->get_camera()->process_mouse_scroll(y_offset);
     }
 
 }

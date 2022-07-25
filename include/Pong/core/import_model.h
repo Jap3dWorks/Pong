@@ -15,7 +15,7 @@
 namespace Pong {
     /**
      * Import model from a file like fbx or obj, the shapes that compose the model,
-     * Will be added to the Scene.
+     * Will be added to the Map.
      * Returns: Number of shapes imported.
      * */
     using MeshVector = std::vector<Mesh>;

@@ -33,7 +33,7 @@ add_executable(${PROJECT_NAME}
         src/core/actor.cpp
         src/core/collider.cpp
         src/core/level.cpp
-        src/core/scene.cpp
+        src/Core/map.cpp
         src/core/component.cpp
         )
 

@@ -25,7 +25,7 @@ namespace Pong {
                         const TextureUniformVector &textures) :
                 Material(shader, textures) {}
 
-        void update_shader(Render *render, Scene *scene) override {
+        void update_shader(Render *render, Map *scene) override {
             super::update_shader(render, scene);
             // Do not use ubo view for cube maps, because a cube map only should rotate.
             _shader->set_mat4("view", glm::mat4(glm::mat3(

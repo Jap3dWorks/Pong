@@ -301,7 +301,7 @@ namespace Pong {
         }
 
 
-        /**Binds framebuffer, in this buffer the Scene is prerendered.*/
+        /**Binds framebuffer, in this buffer the Map is prerendered.*/
         _P_STATIC _P_INLINE void bind_framebuffer(unsigned int in_framebuffer=0) {
             glBindFramebuffer(GL_FRAMEBUFFER, in_framebuffer);
             glEnable(GL_DEPTH_TEST);

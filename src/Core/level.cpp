@@ -7,7 +7,7 @@
 namespace Pong {
     AbstractLevel::AbstractLevel() {
         _render = Pong::Render::get_instance();
-        _scene = Pong::Scene::get_instance();
+        _scene = Pong::Map::get_instance();
     }
 
     AbstractLevel::~AbstractLevel() {
@@ -19,7 +19,7 @@ namespace Pong {
         LOG_INFO("Clear frame counter");
         _render->clear_frame_count();
 
-        // --config Scene--
+        // --config Map--
         LOG_INFO("Setup level");
         _level_setup();
         LOG_INFO("Collect blending actors.");

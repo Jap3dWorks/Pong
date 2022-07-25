@@ -14,7 +14,7 @@
 
 namespace Pong {
     class Render;
-    class Scene;
+    class Map;
 }
 
 namespace Pong {
@@ -124,7 +124,7 @@ namespace Pong {
                 _mat4_params.insert(std::pair<std::string, glm::mat4>(param, value));
         }
 
-        virtual void update_shader(Render*, Scene*) {
+        virtual void update_shader(Render*, Map*) {
             update_params();
         }
 

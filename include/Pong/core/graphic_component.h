@@ -19,7 +19,7 @@
 #include <cstdarg>
 
 namespace Pong{
-    class Scene;
+    class Map;
     class Render;
     class Material;
 }
