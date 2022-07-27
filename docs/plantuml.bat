@@ -1,1 +1,0 @@
-java.exe -jar D:\tools\plantuml\plantuml.jar %*
