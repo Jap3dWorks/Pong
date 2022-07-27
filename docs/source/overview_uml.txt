@@ -1,0 +1,40 @@
+@startuml
+
+class Window {}
+class Render {}
+class Scene {}
+class Logic {
+  // Programable interface
+  + run()
+}
+class Actor {
+  string name
+  mat4 transform
+  bool active
+  vector<Component*>
+
+}
+
+Render - Window : Rendered images >
+
+Scene *-- Actor
+
+Actor o-- Component
+
+Component o-- Component
+
+Logic - Render : Render directives >
+Logic - Scene : Controls >
+
+class GraphicComponent {}
+class MeshComponent {}
+Component <|-- GraphicComponent
+GraphicComponent<|-- MeshComponent
+
+class CollisionComponent {}
+Component <|-- CollisionComponent
+
+class CameraComponent {}
+Component <|-- CameraComponent
+
+@enduml
