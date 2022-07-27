@@ -12,4 +12,12 @@ Main classes
 - Component: Adition to an actor, components can be Graphic component, Collision component or simple Component
 
 
-.. uml:: global_uml.txt
+.. uml:: overview_uml.txt
+
+
+----
+TODO
+----
+- Actor: compose actor behaviour using components
+- CameraComponent
+-

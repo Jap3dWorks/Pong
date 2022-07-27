@@ -1,2 +1,0 @@
-# Pong
-openGL and c++

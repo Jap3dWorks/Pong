@@ -1,8 +1,7 @@
-/.idea
-/cmake-build-debug
-/cmake-build-release
-/Textures
-/examples_documentation
-/docs/sources.txt
-/docs/build/
+/.idea/
 /3dmodels/
+/cmake-build-debug/
+/cmake-build-release/
+/docs/build/
+/examples_documentation/
+/Textures/
