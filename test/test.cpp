@@ -17,8 +17,8 @@
 #include "utils/subclasses_map.h"
 #include "utils/fixed_address_buffer.h"
 #include "utils/logger.h"
-#include "Pong/core/primitive_component.h"
-#include "Pong/core/component.h"
+#include "../src/Pong/core/primitive_component.h"
+#include "../src/Pong/core/component.h"
 
 //template<typename T>
 std::string replace(const std::smatch& t) {

@@ -30,11 +30,11 @@ include_directories("./include")
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/core/actor.cpp
-        src/core/collider.cpp
-        src/core/level.cpp
-        src/Core/map.cpp
-        src/core/component.cpp
+        src/Pong/core/actor.cpp
+        src/Pong/core/collider.cpp
+        src/Pong/core/level.cpp
+        src/Pong/core/map.cpp
+        src/Pong/core/component.cpp
         )
 
 # --External Libraries--
