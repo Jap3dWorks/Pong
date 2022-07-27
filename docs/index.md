@@ -1,1 +1,2 @@
-# Welcom to Pong pages
+# Welcome to Pong pages
+welcome
