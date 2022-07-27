@@ -3,5 +3,5 @@
 /cmake-build-release
 /Textures
 /examples_documentation
-/doc/sources.txt
-/doc/build/
+/docs/sources.txt
+/docs/build/
