@@ -86,5 +86,7 @@ namespace Pong {
 
     }
 
+    void run() {}
+
 }
 #endif //GL_TEST_ENGINE_H

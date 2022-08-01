@@ -1,9 +1,9 @@
-#include "actor.h"
+#include "Pong/core/actor.h"
 #include "utils/logger.h"
-#include "render.h"
+#include "Pong/core/render.h"
 
 #include <utility>
-#include "material.h"
+#include "Pong/core/material.h"
 
 namespace Pong {
 //    void Actor::process_keyboard(Movements movement, const double& delta_time) {}

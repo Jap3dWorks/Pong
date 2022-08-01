@@ -8,10 +8,10 @@ Welcome to Pong's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+#   :caption: Contents:
 
    Overview
-
+   Bitacora
 
 
 Indices and tables

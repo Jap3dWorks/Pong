@@ -17,8 +17,8 @@
 #include "utils/subclasses_map.h"
 #include "utils/fixed_address_buffer.h"
 #include "utils/logger.h"
-#include "../src/Pong/core/primitive_component.h"
-#include "../src/Pong/core/component.h"
+//#include "Pong/core/primitive_component.h"
+//#include "Pong/core/component.h"
 
 //template<typename T>
 std::string replace(const std::smatch& t) {
@@ -55,10 +55,10 @@ void _test_shader_parser() {
     }
 }
 
-void _test_sizes() {
-    LOG_INFO("position size " << sizeof(Pong::Vertex::position));
-    LOG_INFO("OFFSET texcoords " << offsetof(Pong::Vertex, tex_coords));
-}
+//void _test_sizes() {
+//    LOG_INFO("position size " << sizeof(Pong::Vertex::position));
+//    LOG_INFO("OFFSET texcoords " << offsetoff(Pong::Vertex, tex_coords));
+//}
 
 enum class TextureWrap : int32_t {
     REPEAT = 0,
@@ -287,19 +287,33 @@ namespace Pong {
     class Actor;
 }
 
-class DComponent: public Pong::Component {
-public:
-    inline void start(Pong::Actor* actor, Pong::Component* parent) override {}
-    inline void update(Pong::Actor* actor, Pong::Component* parent) override {}
-};
+//class DComponent: public Pong::Component {
+//public:
+//    inline void start(Pong::Actor* actor, Pong::Component* parent) override {}
+//    inline void update(Pong::Actor* actor, Pong::Component* parent) override {}
+//};
 
 void test_component() {
 
-    auto compo = DComponent();
+//    auto compo = DComponent();
 
-    compo.subscribe(new DComponent);
+//    compo.subscribe(new DComponent);
 
 }
+
+class CBase {
+public:
+    using c_str = const char*;
+public:
+    inline static c_str name="CBase";
+};
+
+class CDerived: public CBase {
+public:
+    uint32_t number = 0;
+    inline static c_str name="CDerived";
+};
+
 
 int main() {
 //    _test_text_template();
@@ -312,8 +326,15 @@ int main() {
 //    test_mapIteration();
 //    test_subclasses_map2();
 
-    test_continuous_storage();
-    test_action_event();
+//    test_continuous_storage();
+//    test_action_event();
+
+    CBase* drived = new CDerived;
+    drived->name = "a";
+
+    LOG_INFO("Derived name " << drived->name);
+    LOG_INFO("Derived name " << CBase::name);
+    LOG_INFO("Derived name " << CDerived::name);
 
     return 0;
 }
