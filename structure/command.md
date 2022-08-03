@@ -13,3 +13,4 @@ Command system are composed of 4 key classes
   `CommandFactory<CommandType>::create() -> unique_ptr<CommandType>`
 * **CommandReg**, Relation between command names and command classes, all commands must be registered in CommandReg
 * **CommandQueue**
+* **CommandParser**
