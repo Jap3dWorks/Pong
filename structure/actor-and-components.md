@@ -8,6 +8,8 @@ A Component should connected to a unique Actor, so actors will store Components 
 
 ## Actors
 
+Dynamic actors and static actors
+
 ## Components
 
 
