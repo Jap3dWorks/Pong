@@ -15,6 +15,8 @@
 
 * [Input management](structure/input-management.md)
 * [Command](structure/command.md)
+* [Actor](structure/actor.md)
+* [Component](structure/component.md)
 
 ## Dev diary
 
