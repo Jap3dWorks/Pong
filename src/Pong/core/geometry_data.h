@@ -2,12 +2,12 @@
 // Created by Jordi on 6/11/2022.
 //
 
-#ifndef GL_TEST_PRIMITIVE_COMPONENT_H
-#define GL_TEST_PRIMITIVE_COMPONENT_H
+#ifndef GL_TEST_GEOMETRY_DATA_H
+#define GL_TEST_GEOMETRY_DATA_H
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include <vector>
 #include <array>
 
@@ -49,4 +49,4 @@ namespace Pong {
     };
 }
 
-#endif //GL_TEST_PRIMITIVE_COMPONENT_H
+#endif //GL_TEST_GEOMETRY_DATA_H

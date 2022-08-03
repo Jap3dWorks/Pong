@@ -19,6 +19,7 @@
  * Buffer never will be moved to another memory address, so pointers to each
  * Buffer element will be consistent while FixedAddressBuffer object exists.
  */
+// TODO: remove items from FixedAddressBuffer (calling obj destructor and remove from _storage_objects but not from arrays data)
 
 template<typename BaseClass>
 class FixedAddressBuffer {
@@ -81,7 +82,6 @@ public:
 
     template<CondIsBase<BaseClass> T,
             class=ENSURE_LVALUE(T)>
-//    typename std::enable_if<std::is_base_of<Base, Derived_>::value, ReturnType>::type
     auto insert(T &&data) -> T* {
         auto data_num = valid_array_id(sizeof(T));
         auto ptr = _datas[data_num] + _quantities[data_num];

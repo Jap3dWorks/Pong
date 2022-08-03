@@ -15,7 +15,7 @@
 
 #include "Pong/core/actor.h"
 #include "Pong/core/map.h"
-#include "Pong/core/graphic_component.h"
+#include "Pong/components/graphic_component.h"
 #include "Pong/core/shader.h"
 #include "Pong/core/material.h"
 

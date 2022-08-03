@@ -5,7 +5,7 @@
 #ifndef GL_TEST_MESH_COMPACT_H
 #define GL_TEST_MESH_COMPACT_H
 #include "Pong/core/core_vals.h"
-#include "Pong/core/primitive_component.h"
+#include "geometry_data.h"
 #include <iostream>
 #include <algorithm>
 #include <memory>

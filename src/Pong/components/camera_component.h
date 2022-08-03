@@ -7,9 +7,9 @@
 
 #include "Pong/core/core_vals.h"
 #include "Pong/core/component.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 
 // TODO: make camera maths using actor transform.

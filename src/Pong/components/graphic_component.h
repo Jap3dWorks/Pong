@@ -1,15 +1,16 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "Pong/core/primitive_component.h"
+#include "Pong/core/geometry_data.h"
 #include "Pong/core/component.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/graphic_flags.h"
+#include "Pong/core/exceptions.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glad/glad.h>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glad/glad.h"
 
 #include <iostream>
 #include <utility>
@@ -29,12 +30,6 @@ namespace Pong {
     using TriangleVector = std::vector<Triangle>;
     using IndexVector = std::vector<uint32_t>;
 
-    // Exceptions
-    class MeshException : public std::exception {
-    public:
-        explicit MeshException(char const* const error) noexcept :
-                std::exception(error){}
-    };
 
     class GraphicComponent: public Component {
         // mesh update in other class
@@ -44,7 +39,6 @@ namespace Pong {
     public:
 //        void update(Actor* actor, Component* parent) override = 0;
         virtual void bind() = 0;
-
         ~GraphicComponent() = default;
     };
 

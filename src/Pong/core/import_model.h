@@ -1,7 +1,7 @@
 #ifndef GL_TEST_IMPORT_MODEL_H
 #define GL_TEST_IMPORT_MODEL_H
 
-#include "Pong/core/primitive_component.h"
+#include "geometry_data.h"
 #include "Pong/core/actor.h"
 
 #include <string>

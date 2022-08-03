@@ -8,8 +8,8 @@
 
 // debug
 #ifdef __LOG_DEBUG__
-#define LOG_DEBUG(message) \
-    std::cout << "DEBUG: " << message << std::endl
+#define LOG_DEBUG(what_) \
+    std::cout << "DEBUG: " << what_ << std::endl
 #else
 #define LOG_DEBUG(message)
 #endif
@@ -19,7 +19,7 @@
 #define LOG_INFO(message) \
     std::cout << "INFO: " << message << std::endl
 #else
-#define LOG_INFO(message)
+#define LOG_INFO(what_)
 #endif
 
 // warning
@@ -27,7 +27,7 @@
 #define LOG_WARNING(message) \
     std::cout << "WARNING: " << message << std::endl
 #else
-#define LOG_WARNING(message)
+#define LOG_WARNING(what_)
 #endif
 
 // Error
@@ -35,7 +35,7 @@
 #define LOG_ERROR(message) \
     std::cout << "ERROR: " << message << std::endl
 #else
-#define LOG_ERROR(message)
+#define LOG_ERROR(what_)
 #endif
 
 #endif //PONG_LOGGER_H

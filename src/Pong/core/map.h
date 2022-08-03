@@ -4,7 +4,7 @@
 #include "Pong/core/core_vals.h"
 #include "Pong/core/actor.h"
 #include "Pong/core/material.h"
-#include "Pong/core/graphic_component.h"
+#include "Pong/components/graphic_component.h"
 #include "Pong/core/collider.h"
 #include "Pong/core/lights.h"
 #include "Pong/core/render.h"
@@ -48,9 +48,9 @@ namespace Pong {
 
     public:
         // TODO: last frame data in a struct
-        float cam_lastX = 0.f;
-        float cam_lastY = 0.f;
-        bool cam_firstMouse = true;
+//        float cam_lastX = 0.f;
+//        float cam_lastY = 0.f;
+//        bool cam_firstMouse = true;
 
     private:
         inline static std::unique_ptr<Map> instance;

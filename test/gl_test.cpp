@@ -7,9 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../src/Pong/core/shader.h"
+#include "Pong/core/shader.h"
 #include "Utils/logger.h"
-#include "../src/Pong/core/graphic_component.h"
+#include "Pong/components/graphic_component.h"
 
 #include <iostream>
 

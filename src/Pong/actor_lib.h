@@ -6,7 +6,7 @@
 #define PONG_ACTOR_LIB_H
 
 #include "Pong/core/actor.h"
-#include "Pong/core/camera_component.h"
+#include "Pong/components/camera_component.h"
 #include "Pong/core/process_input.h"
 
 /**

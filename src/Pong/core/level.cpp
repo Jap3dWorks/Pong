@@ -1,5 +1,5 @@
 #include "Pong/core/level.h"
-#include "Pong/core/collision_components.h"
+#include "Pong/components/collision_components.h"
 #include "Utils/logger.h"
 
 #include <vector>

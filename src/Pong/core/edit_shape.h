@@ -6,7 +6,7 @@
 #define GL_TEST_EDIT_SHAPE_H
 
 #include <iostream>
-#include "Pong/core/primitive_component.h"
+#include "geometry_data.h"
 #include "Pong/core/core_vals.h"
 
 namespace Pong {
