@@ -4,5 +4,3 @@
 
 #include "Pong/core/command.h"
 
-const std::string Pong::PCommand::name{"PCommand"};
-
