@@ -17,6 +17,7 @@
 * [Command](structure/page-3.md)
 * [Actor and Components](structure/actor-and-components.md)
 * [Map](structure/map.md)
+* [Level](structure/level.md)
 
 ## Dev diary
 
