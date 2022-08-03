@@ -1,16 +1,16 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "core_vals.h"
-#include "actor.h"
-#include "material.h"
-#include "graphic_component.h"
-#include "collider.h"
-#include "lights.h"
-#include "render.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/material.h"
+#include "Pong/core/graphic_component.h"
+#include "Pong/core/collider.h"
+#include "Pong/core/lights.h"
+#include "Pong/core/render.h"
+#include "Pong/core/data_comparers.h"
 
-#include "data_comparers.h"
-#include "../../utils/type_conditions.h"
+#include "Utils/type_conditions.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,8 +26,8 @@
 
 namespace Pong {
     // TODO: move mouse callbacks
-    void mouse_callback(GLFWwindow*, double, double);
-    void scroll_callback(GLFWwindow*, double, double);
+//    void mouse_callback(GLFWwindow*, double, double);
+//    void scroll_callback(GLFWwindow*, double, double);
 
     class Map {
 
@@ -121,11 +121,8 @@ namespace Pong {
         static Map* get_instance();
 
     public:
-        CameraOrderedActors<Actor> camera_sorted_blending_actors() {
-            CameraOrderedActors<Actor> result(
-                    ActorDistanceComparer(
-                            _camera.get()
-                    ));
+        CameraOrderedActors<Actor> camera_sorted_blending_actors(Actor* camera) {
+            auto result = CameraOrderedActors<Actor>(ActorDistanceComparer(camera));
 
             for (auto &actor: blending_actors) {
                 result.insert(actor);
@@ -251,8 +248,10 @@ namespace Pong {
         _P_NODISCARD Collider* get_collider(const std::string& name) const;
 
         // get camera_ptr ptr
-        _P_NODISCARD Actor* get_camera() const
-        {return _camera.get();}
+//        _P_NODISCARD Actor* get_camera() const
+//        {
+//            return _camera.get();
+//        }
 
         template<CondIsBase<GraphicComponent> T, typename... Args>
         _P_INLINE T* create_shape(const std::string& name, Args&&... args) {

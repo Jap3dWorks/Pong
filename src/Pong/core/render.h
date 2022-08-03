@@ -339,20 +339,16 @@ namespace Pong {
         _P_INLINE void update_ubo_camera(CameraComponent* camera) const {
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
 
-            // pass a camera component;
-//            camera->get_component("camera");
-
             uint32_t buffer_offset = 0;
-            float fov = glm::radians(camera->Zoom);
 
             // set projection
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,
                             sizeof(glm::mat4),
                             glm::value_ptr(
-                                    glm::perspective(fov,
-                                                     (float)_render_data.width / (float)_render_data.height,
-                                                     _render_data.z_near,_render_data.z_far)));
+                                    glm::perspective(camera->fov,
+                                                     (float) _render_data.width / (float) _render_data.height,
+                                                     _render_data.z_near, _render_data.z_far)));
             buffer_offset += sizeof(glm::mat4);
 
             // set view
@@ -363,8 +359,7 @@ namespace Pong {
             buffer_offset += sizeof(glm::mat4);
 
             // view pos
-            // TODO: Use camera position as vec4.
-            auto camera_position = glm::vec4(camera->position, 1.0);
+            auto camera_position = glm::vec4(camera->actor->transform[3]);
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,
                             sizeof(glm::vec4),
@@ -375,7 +370,7 @@ namespace Pong {
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,
                             sizeof(float),
-                            &fov);
+                            &camera->fov);
 
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }

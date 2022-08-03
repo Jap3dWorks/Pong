@@ -1,13 +1,9 @@
 /.idea
-/cmake-build-debug
-/cmake-build-release
 /Textures
 /examples_documentation
 /docs/sources.txt
 /docs/build/
 /3dmodels/
 /libraries
-/cmake-build-debug-mingw-clang-basic/
-/cmake-build-debug-visual-studiox64/
-/cmake-build-release-mingw-clang-basic/
-/cmake-build-release-visual-studiox64/
+/cmake-build-*
+/.venv
