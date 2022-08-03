@@ -12,7 +12,9 @@ Two types, **Dynamic** actors and **Static** actors
 
 ## Components
 
-CameraComponent, ShapeComponent, CollisionComponent, ScriptComponent and LightComponent
+CameraComponent, GraphicComponent, CollisionComponent, ScriptComponent and LightComponent
 
+### GraphicComponent
 
+Represents a renderable component, So should store a Material\* and a Mesh or any Shape data struct. Also the OpenGl ID.
 

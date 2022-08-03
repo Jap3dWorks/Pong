@@ -11,3 +11,4 @@ A Level wraps and modifies a map. Level can:
 * Manage the start fase.
 * Manage the update fase.
 * Send job to Render.
+* ...

@@ -17,6 +17,8 @@
 * [Actor and Components](structure/actor-and-components.md)
 * [Map](structure/map.md)
 * [Level](structure/level.md)
+* [Data Structures](structure/data-structures/README.md)
+  * [FixedAddressBuffer](structure/data-structures/fixedaddressbuffer.md)
 
 ## Dev diary
 
