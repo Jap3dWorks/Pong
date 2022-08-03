@@ -12,5 +12,7 @@ Two types, **Dynamic** actors and **Static** actors
 
 ## Components
 
+CameraComponent, ShapeComponent, CollisionComponent and ScriptComponent
+
 
 
