@@ -17,10 +17,11 @@
 #include "utils/subclasses_map.h"
 #include "utils/fixed_address_buffer.h"
 #include "utils/logger.h"
+#include "Pong/core/command.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
 
-//template<typename T>
+//template<typename Derived_>
 std::string replace(const std::smatch& t) {
     return "adios";
 }
@@ -177,6 +178,7 @@ void test_subclasses_map1() {
         LOG_INFO((*itr)->a);
     }
 }
+
 void test_subclasses_map2() {
     LOG_INFO("test subclasses map2");
     auto sclassmap = SubClassMap<TClass>();
@@ -312,7 +314,36 @@ class CDerived: public CBase {
 public:
     uint32_t number = 0;
     inline static c_str name="CDerived";
+
 };
+
+void test_static_modifications() {
+    CBase* drived = new CDerived;
+    drived->name = "a";
+
+    LOG_INFO("Derived instance name " << drived->name);
+    LOG_INFO("Base name " << CBase::name);
+    LOG_INFO("Derived name " << CDerived::name);
+}
+
+class TCommand: public Pong::Command {
+    COMMAND_SETUP("derived_command", TCommand);
+
+public:
+    void doit() override {
+        LOG_INFO("Do it command");
+    }
+
+};
+
+void test_command_register() {
+    auto c_reg = Pong::CommandReg();
+    LOG_INFO(TCommand::name);
+
+    c_reg.register_command<TCommand>();
+    c_reg.create_command(TCommand::name)->doit();
+
+}
 
 
 int main() {
@@ -329,12 +360,8 @@ int main() {
 //    test_continuous_storage();
 //    test_action_event();
 
-    CBase* drived = new CDerived;
-    drived->name = "a";
+    test_command_register();
 
-    LOG_INFO("Derived name " << drived->name);
-    LOG_INFO("Derived name " << CBase::name);
-    LOG_INFO("Derived name " << CDerived::name);
 
     return 0;
 }

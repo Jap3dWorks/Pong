@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-cmake_path(GET CMAKE_SOURCE_DIR PARENT_PATH parentPath)
-set(LIBRARIES ${parentPath}/libraries)
+set(LIBRARIES ${CMAKE_SOURCE_DIR}/libraries)
+
 if(NOT EXISTS ${LIBRARIES})
     error("Libraries path %s{LIBRARIES} doesn't exists!")
 endif()
@@ -64,6 +64,8 @@ include_directories(${LIBRARIES}/assimp/include)
 message("Link assimp")
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBRARIES}/assimp/lib/assimp-vc140-mt.lib)
 
+message("Include doctest")
+include_directories(${LIBRARIES}/doctest/doctest)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message("copy Textures")
@@ -87,7 +89,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     )
 endif()
 
-# ----------
+
 # -- Test --
 # ----------
 project(TEST
@@ -113,3 +115,4 @@ target_link_libraries(
         ${PROJECT_NAME} PRIVATE general ${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/lib-vc2019/glfw3.lib)
 target_link_libraries(${PROJECT_NAME} PRIVATE glad)
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBRARIES}/assimp/lib/assimp-vc140-mt.lib)
+
