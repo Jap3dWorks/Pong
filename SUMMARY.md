@@ -14,9 +14,9 @@
 ## Structure
 
 * [Input management](structure/input-management.md)
-* [Command](structure/command.md)
-* [Actor](structure/actor.md)
-* [Component](structure/component.md)
+* [Command](structure/page-3.md)
+* [Actor and Components](structure/actor-and-components.md)
+* [Map](structure/map.md)
 
 ## Dev diary
 
