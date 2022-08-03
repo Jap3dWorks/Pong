@@ -1,18 +1,18 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include "core_vals.h"
-#include "movements.h"
-#include "shader.h"
-#include "actor.h"
-#include "camera_component.h"
-#include "lights.h"
-#include "graphic_flags.h"
-#include "exceptions.h"
-#include "outputs.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/movements.h"
+#include "Pong/core/shader.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/camera_component.h"
+#include "Pong/core/lights.h"
+#include "Pong/core/graphic_flags.h"
+#include "Pong/core/exceptions.h"
+#include "Pong/core/outputs.h"
 
 #include <cstdint>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <glm/glm.hpp>
@@ -57,8 +57,10 @@ namespace Pong {
         struct RenderData {
             uint32_t width=1280;
             uint32_t height=720;
-            float z_near = 0.1;
+
+            float z_near = 0.1; // move to camara
             float z_far = 10000.f;
+
             float aspect = float(width) / float(height);
         } _render_data;
 

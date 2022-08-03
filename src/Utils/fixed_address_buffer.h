@@ -11,7 +11,7 @@
 #include <cmath>
 #include <cassert>
 #include <string>
-#include "type_conditions.h"
+#include "Utils/type_conditions.h"
 
 /**
  * Storage objects must be derived from BaseClass
@@ -80,8 +80,8 @@ public:
     }
 
     template<CondIsBase<BaseClass> T,
-            class=ENSURE_LVALUE>
-//    typename std::enable_if<std::is_base_of<Base, T>::value, ReturnType>::type
+            class=ENSURE_LVALUE(T)>
+//    typename std::enable_if<std::is_base_of<Base, Derived_>::value, ReturnType>::type
     auto insert(T &&data) -> T* {
         auto data_num = valid_array_id(sizeof(T));
         auto ptr = _datas[data_num] + _quantities[data_num];

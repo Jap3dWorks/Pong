@@ -1,19 +1,11 @@
 #ifndef COLLIDER_H
 #define COLLIDER_H
 
-//#include "pongTypes.h"
-namespace Pong
-{
-    class Actor;
-    class CollisionComponent;
-    class Collider;
-}
-
-#include "actor.h"
-#include "graphic_component.h"
-#include "component.h"
-#include "core_vals.h"
-#include "collision_components.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/graphic_component.h"
+#include "Pong/core/component.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/collision_components.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

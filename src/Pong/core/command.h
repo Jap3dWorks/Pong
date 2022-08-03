@@ -5,9 +5,9 @@
 #ifndef GL_TEST_COMMAND_H
 #define GL_TEST_COMMAND_H
 
-#include "utils/hash_utils.h"
-#include "utils/reflection_utils.h"
-#include "utils/thread_safe_queue.h"
+#include "Utils/hash_utils.h"
+#include "Utils/reflection_utils.h"
+#include "Utils/thread_safe_queue.h"
 #include <string>
 #include <deque>
 #include <memory>

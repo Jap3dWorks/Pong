@@ -2,10 +2,10 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <yvals_core.h>
-#include "core_vals.h"
-#include "../../utils/logger.h"
-#include "../../utils/shader_parser.h"
+//#include <yvals_core.h>
+#include "Pong/core/core_vals.h"
+#include "Utils/logger.h"
+#include "Utils/shader_parser.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <iostream>

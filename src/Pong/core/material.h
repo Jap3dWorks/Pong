@@ -1,11 +1,11 @@
 #ifndef PONG_MATERIAL_H
 #define PONG_MATERIAL_H
 
-#include "shader.h"
-#include "core_vals.h"
-#include "texture.h"
+#include "Pong/core/shader.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/texture.h"
 
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 #include <iostream>
 #include <utility>

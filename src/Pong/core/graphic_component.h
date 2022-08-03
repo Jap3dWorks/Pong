@@ -1,10 +1,10 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "primitive_component.h"
-#include "component.h"
-#include "core_vals.h"
-#include "graphic_flags.h"
+#include "Pong/core/primitive_component.h"
+#include "Pong/core/component.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/graphic_flags.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

@@ -15,7 +15,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 #include <cassert>
 #include <iostream>
@@ -44,7 +44,7 @@ namespace Pong {
         using ShpMatPtrPair = std::pair<GraphicComponent*, Material*>;
 
         template<typename T>
-        using CameraOrderedActors = std::multiset<T*, ActorCameraDistanceComparer>;
+        using CameraOrderedActors = std::multiset<T*, ActorDistanceComparer>;
 
     public:
         // TODO: last frame data in a struct
@@ -98,8 +98,8 @@ namespace Pong {
         _P_INLINE void _initialize() {
 
 //            blending_actors = std::multiset<Actor*,
-//                            ActorCameraDistanceComparer>(
-//                    ActorCameraDistanceComparer(_camera.get())
+//                            ActorDistanceComparer>(
+//                    ActorDistanceComparer(_camera.get())
 //                    );
         }
 
@@ -123,7 +123,7 @@ namespace Pong {
     public:
         CameraOrderedActors<Actor> camera_sorted_blending_actors() {
             CameraOrderedActors<Actor> result(
-                    ActorCameraDistanceComparer(
+                    ActorDistanceComparer(
                             _camera.get()
                     ));
 

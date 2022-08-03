@@ -5,13 +5,13 @@
 #ifndef GL_TEST_SHADER_PARSER_H
 #define GL_TEST_SHADER_PARSER_H
 
+#include "Utils/text_template.h"
 #include <iostream>
 #include <string>
 #include <regex>
 #include <fstream>
 #include <utility>
 #include <sstream>
-#include "text_template.h"
 #include <cassert>
 #include <map>
 #include <unordered_map>

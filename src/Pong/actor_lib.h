@@ -5,9 +5,9 @@
 #ifndef PONG_ACTOR_LIB_H
 #define PONG_ACTOR_LIB_H
 
-#include "core/actor.h"
-#include "core/camera_component.h"
-#include "core/process_input.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/camera_component.h"
+#include "Pong/core/process_input.h"
 
 /**
  * Default functions like create a camera with its actor and components

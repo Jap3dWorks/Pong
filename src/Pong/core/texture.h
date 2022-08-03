@@ -10,12 +10,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <iostream>
 #include <utility>
 #include <vector>
 
-#include "core_vals.h"
+#include "Pong/core/core_vals.h"
 
 namespace Pong {
 

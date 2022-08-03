@@ -5,23 +5,23 @@
 #ifndef PONG_DATACOMPARERS_H
 #define PONG_DATACOMPARERS_H
 
-#include "actor.h"
-#include "core_vals.h"
-#include "../../utils/logger.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/core_vals.h"
+#include "Utils/logger.h"
 
 namespace Pong {
-//    template<typename T>
+//    template<typename Derived_>
 //    struct NameComparer {
 //    public:
-//        bool operator()(const T& first, const T& second) const {
+//        bool operator()(const Derived_& first, const Derived_& second) const {
 //            return first.get_name() < second.get_name();
 //        }
 //    };
 //
-//    template<typename T>
-//    struct NameComparer<T*> {
+//    template<typename Derived_>
+//    struct NameComparer<Derived_*> {
 //    public:
-//        bool operator()(const T* first, const T* second) const {
+//        bool operator()(const Derived_* first, const Derived_* second) const {
 //            return first->get_name() < second->get_name();
 //        }
 //    };
@@ -52,14 +52,14 @@ namespace Pong {
         }
     };
 
-    struct ActorCameraDistanceComparer {
-        const ACamera *camera_ptr = nullptr;
-        ActorCameraDistanceComparer() = default;
+    struct ActorDistanceComparer {
+        const Actor *camera_ptr = nullptr;
+        ActorDistanceComparer() = default;
 
-        explicit ActorCameraDistanceComparer(const ACamera *camera) : camera_ptr(camera) {}
+        explicit ActorDistanceComparer(const Actor *camera) : camera_ptr(camera) {}
 
          _P_NODISCARD inline float get_distance(const glm::mat4 &mat_a) const {
-            return glm::length<3, float>(glm::vec3(mat_a[3]) - camera_ptr->position);
+            return glm::length<3, float>(glm::vec3(mat_a[3]) - glm::vec3(camera_ptr->transform[3]));
         }
 
         bool operator()(const Actor &act_a, const Actor &act_b) const {
@@ -71,4 +71,5 @@ namespace Pong {
         }
     };
 }
+
 #endif //PONG_DATACOMPARERS_H

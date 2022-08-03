@@ -8,13 +8,13 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../src/Pong/core/shader.h"
-#include "utils/logger.h"
+#include "Utils/logger.h"
 #include "../src/Pong/core/graphic_component.h"
 
 #include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);

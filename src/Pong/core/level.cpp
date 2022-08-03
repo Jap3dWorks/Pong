@@ -1,6 +1,6 @@
-#include "level.h"
-#include "utils/logger.h"
-#include "collision_components.h"
+#include "Pong/core/level.h"
+#include "Pong/core/collision_components.h"
+#include "Utils/logger.h"
 
 #include <vector>
 

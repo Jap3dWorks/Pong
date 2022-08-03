@@ -4,10 +4,11 @@
 
 #ifndef GL_TEST_MESH_COMPACT_H
 #define GL_TEST_MESH_COMPACT_H
-#include "core_vals.h"
-#include "primitive_component.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/primitive_component.h"
 #include <iostream>
 #include <algorithm>
+#include <memory>
 
 
 namespace Pong{

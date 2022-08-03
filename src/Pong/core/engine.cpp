@@ -2,9 +2,8 @@
 // Created by Jordi on 7/25/2022.
 //
 
-#include "engine.h"
-#include "outputs.h"
-//#include "Pong/core/.h"
-#include "render.h"
-#include "map.h"
+#include "Pong/core/engine.h"
+#include "Pong/core/outputs.h"
+#include "Pong/core/render.h"
+#include "Pong/core/map.h"
 

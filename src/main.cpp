@@ -1,14 +1,12 @@
-#include "utils/logger.h"
+#include "Utils/logger.h"
 #include "Levels/load_model_level.h"
-//#include "Levels/blending_level.h"
-//#include "Levels/test_level.h"
-//#include "Levels/paint_with_shaders_level.h"
+
 #include <iostream>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #endif
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 // https://project-awesome.org/terkelg/awesome-creative-coding#books
 // TODO: Load models

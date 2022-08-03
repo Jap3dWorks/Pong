@@ -5,13 +5,13 @@
 #ifndef PONG_DEFAULTMATERIALS_H
 #define PONG_DEFAULTMATERIALS_H
 
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 #include <string>
 #include <vector>
-#include "core/texture.h"
-#include "core/shader.h"
-#include "core/material.h"
+#include "Pong/core/texture.h"
+#include "Pong/core/shader.h"
+#include "Pong/core/material.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

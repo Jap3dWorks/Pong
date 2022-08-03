@@ -6,17 +6,15 @@
 #define GL_TEST_OUTPUTS_H
 
 #include <GLFW/glfw3.h>
-#include "process_input.h"
-#include "../../utils/type_conditions.h"
+#include "Pong/core/process_input.h"
+#include "Utils/type_conditions.h"
+#include "Pong/core/exceptions.h"
 #include <memory>
-#include "exceptions.h"
 #include <string>
 
 // TODO: move here _window logic
 
 #define OutputTemplate(_TEMP_ARGS_) template<CondIsBase<Output> T, _TEMP_ARGS_>
-
-
 
 
 namespace Pong {

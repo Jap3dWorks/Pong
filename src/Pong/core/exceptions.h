@@ -6,16 +6,34 @@
 #define GL_TEST_EXCEPTIONS_H
 
 #include<exception>
-namespace Pong {
-class CreateOutputWindowError: public std::exception {
-public:
-    using std::exception::exception;
-};
 
-class InitializeGladError: public std::exception {
-public:
-    using std::exception::exception;
-};
+namespace Pong {
+
+    class CreateOutputWindowError : public std::exception {
+    private:
+        const char *message;
+    public:
+        using std::exception::exception;
+
+        explicit CreateOutputWindowError(const char *msg) : message(msg) {}
+
+        const char *what() {
+            return message;
+        }
+    };
+
+    class InitializeGladError : public std::exception {
+    private:
+        const char *message;
+    public:
+        using std::exception::exception;
+
+        explicit InitializeGladError(const char *msg) : message(msg) {}
+
+        const char *what() {
+            return message;
+        }
+    };
 
 
 

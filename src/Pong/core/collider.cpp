@@ -1,7 +1,7 @@
 
-#include "collider.h"
-#include "utils/logger.h"
-#include "collision_components.h"
+#include "Pong/core/collider.h"
+#include "Utils/logger.h"
+#include "Pong/core/collision_components.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

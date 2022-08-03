@@ -1,8 +1,10 @@
-#include "map.h"
+
+#include "Pong/core/map.h"
+#include "Utils/logger.h"
+#include "Pong/material_lib.h"
 
 #include <utility>
-#include "utils/logger.h"
-#include "../material_lib.h"
+
 
 
 namespace Pong{

@@ -9,15 +9,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <iostream>
 #include <vector>
 
-#include "core/actor.h"
-#include "core/map.h"
-#include "core/graphic_component.h"
-#include "core/shader.h"
-#include "core/material.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/map.h"
+#include "Pong/core/graphic_component.h"
+#include "Pong/core/shader.h"
+#include "Pong/core/material.h"
 
 
 namespace Pong {

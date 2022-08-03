@@ -5,7 +5,7 @@
 #ifndef GL_TEST_CAMERA_COMPONENT_H
 #define GL_TEST_CAMERA_COMPONENT_H
 
-#include "component.h"
+#include "Pong/core/component.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

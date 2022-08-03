@@ -1,9 +1,9 @@
 #ifndef PROCESS_INPUT_H
 #define PROCESS_INPUT_H
 
-#include "movements.h"
-#include "actor.h"
-#include "../../utils/action_event.h"
+#include "Pong/core/movements.h"
+#include "Pong/core/actor.h"
+#include "Utils/action_event.h"
 
 #include <iostream>
 #include <GLFW/glfw3.h>

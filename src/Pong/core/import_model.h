@@ -1,13 +1,13 @@
 #ifndef GL_TEST_IMPORT_MODEL_H
 #define GL_TEST_IMPORT_MODEL_H
 
+#include "Pong/core/primitive_component.h"
+#include "Pong/core/actor.h"
+
 #include <string>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "primitive_component.h"
-
-#include "actor.h"
 #include <vector>
 
 // https://learnopengl.com/Model-Loading/Mesh

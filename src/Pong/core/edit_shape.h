@@ -6,8 +6,8 @@
 #define GL_TEST_EDIT_SHAPE_H
 
 #include <iostream>
-#include "primitive_component.h"
-#include "core_vals.h"
+#include "Pong/core/primitive_component.h"
+#include "Pong/core/core_vals.h"
 
 namespace Pong {
     class EditShape {
@@ -87,7 +87,6 @@ namespace Pong {
         _P_INLINE virtual void build() {
             clear();
         }
-
     };
 }
 

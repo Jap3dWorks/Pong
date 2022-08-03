@@ -1,14 +1,15 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "actor.h"
-#include "collider.h"
-#include "../../utils/subclasses_map.h"
-#include "../../utils/fixed_address_buffer.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/collider.h"
+#include "Utils/subclasses_map.h"
+#include "Utils/fixed_address_buffer.h"
+#include "Utils/logger.h"
 
-#include "../../utils/logger.h"
 #include <vector>
 #include <cassert>
+#include <concepts>
 
 #include <iostream>
 
@@ -30,7 +31,7 @@ namespace Pong {
 
     protected:
         using component_super = Component;
-        bool active = True;
+        bool active = true;
 
     public:
         Actor* actor=nullptr;
@@ -38,7 +39,7 @@ namespace Pong {
 
     public:
         ~Component()=default;
-        Component(Actor *_actor = nullptr, Component *_parent = nullptr) :
+        explicit Component(Actor *_actor = nullptr, Component *_parent = nullptr) :
                 actor(_actor), parent(_parent) {}
 
         void subscribe(Component *observer) noexcept {
@@ -59,9 +60,9 @@ namespace Pong {
             _observers.erase(_observers.find(observer));
         }
 
-//        template<typename T, typename ...Args>
+//        template<typename Derived_, typename ...Args>
 //        virtual void emplace(Args&& ...args) {
-//            auto ptr = _storage.emplace<T>(std::forward<Args>(args)...);
+//            auto ptr = _storage.emplace<Derived_>(std::forward<Args>(args)...);
 //            _observers.push_back(ptr);
 //        }
 

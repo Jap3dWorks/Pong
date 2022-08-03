@@ -1,13 +1,13 @@
 #ifndef PONG_LEVEL
 #define PONG_LEVEL
 
-#include "movements.h"
+#include "Pong/core/movements.h"
+#include "Pong/core/map.h"
+#include "Pong/core/graphic_component.h"
+#include "Pong/core/actor.h"
+#include "Pong/core/render.h"
+#include "Pong/core/process_input.h"
 
-#include "map.h"
-#include "graphic_component.h"
-#include "actor.h"
-#include "render.h"
-#include "process_input.h"
 #include <ctime>
 
 // specific config of a level
