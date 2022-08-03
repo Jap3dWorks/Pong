@@ -14,7 +14,7 @@
 ## Structure
 
 * [Input management](structure/input-management.md)
-* [Page 3](structure/page-3.md)
+* [Command](structure/command.md)
 
 ## Dev diary
 
