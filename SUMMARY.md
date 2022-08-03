@@ -1,11 +1,10 @@
 # Table of contents
 
-## Group 1
+## About
 
 ***
 
-* [Page 1](README.md)
-  * [Page 4](page-1/page-4.md)
+* [What is Pong](README.md)
 
 ## Documentation
 
