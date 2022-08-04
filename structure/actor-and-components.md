@@ -16,7 +16,5 @@ CameraComponent, GraphicComponent, CollisionComponent, ScriptComponent and Light
 
 ### GraphicComponent
 
-Represents a renderable component, So should store a Material\* and a Mesh\* or any Shape data struct. Also the OpenGl ID.
-
-Graphic Component should not contains the logic for openGL binding buffers. Should delegate this functionality to other system.
+Represents a renderable component, So should store a Material\* and a Mesh or any Shape data struct. Also the OpenGl ID.
 

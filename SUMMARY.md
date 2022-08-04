@@ -24,3 +24,7 @@
 ## Dev diary
 
 * [Project management](dev-diary/project-management.md)
+
+## Other
+
+* [interesting reading](other/interesting-reading.md)
