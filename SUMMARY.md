@@ -15,6 +15,7 @@
 * [Input management](structure/input-management.md)
 * [Command](structure/page-3.md)
 * [Actor and Components](structure/actor-and-components.md)
+* [Shapes](structure/shapes.md)
 * [Map](structure/map.md)
 * [Level](structure/level.md)
 * [Data Structures](structure/data-structures/README.md)
