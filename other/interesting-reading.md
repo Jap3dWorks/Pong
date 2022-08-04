@@ -6,4 +6,10 @@
 
 Entt library
 
-[https://github.com/skypjack/entt](https://github.com/skypjack/entt)
+{% embed url="https://github.com/skypjack/entt" %}
+Entt repository
+{% endembed %}
+
+{% embed url="https://github.com/skypjack/entt" %}
+Entt Wiki
+{% endembed %}
