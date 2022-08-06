@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 /**
  * Save each subclass instances in a map entry, where key is the subclass hash.
@@ -197,3 +198,4 @@ public:
 };
 
 #endif //GL_TEST_SUBCLASSES_MAP_H
+

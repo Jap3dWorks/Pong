@@ -74,10 +74,10 @@ protected:
 //                                                                vert_shd,
 //                                                                {});
 //        auto vert_shp = _scene->create_shape<Pong::IcosphereShape>("vert_shp", 2.0);
-//        vert_shp->draw_primitive = GL_POINTS;
+//        vert_shp->primitive = GL_POINTS;
 //        LOG_DEBUG("Change vert_shp to GL_POINTS primitive " << GL_POINTS);
 //        auto vert2_shp = _scene->create_shape<Pong::IcosphereShape>("vert2_shp", 2.0);
-//        vert2_shp->draw_primitive = GL_LINE_STRIP;
+//        vert2_shp->primitive = GL_LINE_STRIP;
 //        LOG_DEBUG("Change vert2_shp to GL_LINE_STRIP primitive " << GL_LINE_STRIP);
 //
 //        LOG_DEBUG("GL_TRIANGLES id " << GL_TRIANGLES);

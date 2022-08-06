@@ -1,10 +1,10 @@
 #ifndef COLLIDER_H
 #define COLLIDER_H
 
-#include "Pong/core/actor.h"
+#include "Pong/core/actor/actor.h"
 #include "Pong/components/graphic_component.h"
 #include "Pong/components/collision_components.h"
-#include "Pong/core/component.h"
+#include "Pong/components/component.h"
 #include "Pong/core/core_vals.h"
 
 #include <glm/glm.hpp>

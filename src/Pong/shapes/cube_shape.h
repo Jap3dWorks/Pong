@@ -8,8 +8,8 @@
 #include <iostream>
 #include <string>
 #include "Pong/components/graphic_component.h"
-#include "../core/edit_shape.h"
-#include "../core/core_vals.h"
+#include "Pong/shapes/edit_shape.h"
+#include "Pong/core/core_vals.h"
 
 // TODO: cube subdivisions
 namespace Pong {

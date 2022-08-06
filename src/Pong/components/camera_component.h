@@ -6,7 +6,7 @@
 #define GL_TEST_CAMERA_COMPONENT_H
 
 #include "Pong/core/core_vals.h"
-#include "Pong/core/component.h"
+#include "component.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"

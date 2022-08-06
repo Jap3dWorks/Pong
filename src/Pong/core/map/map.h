@@ -2,7 +2,7 @@
 #define SCENE_H
 
 #include "Pong/core/core_vals.h"
-#include "Pong/core/actor.h"
+#include "Pong/core/actor/actor.h"
 #include "Pong/core/material.h"
 #include "Pong/components/graphic_component.h"
 #include "Pong/core/collider.h"
@@ -12,10 +12,10 @@
 
 #include "Utils/type_conditions.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <stb/stb_image.h>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "stb/stb_image.h"
 
 #include <cassert>
 #include <iostream>

@@ -2,7 +2,7 @@
 #define GL_TEST_IMPORT_MODEL_H
 
 #include "geometry_data.h"
-#include "Pong/core/actor.h"
+#include "Pong/core/actor/actor.h"
 
 #include <string>
 #include <assimp/Importer.hpp>

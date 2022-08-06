@@ -42,10 +42,25 @@ namespace Pong {
         std::vector<uint32_t> indices;
     };
 
+
+    struct StackMesh_ {
+    public:
+        Vertex* const vertices{nullptr};
+        uint32_t* const indices{nullptr};
+    };
+
     template<size_t V, size_t I>
-    struct StaticMesh {
-        Vertex vertices[V];
-        uint32_t indices[I];
+    struct StackMesh: public StackMesh_ {
+    private:
+        Vertex vertices_[V]{};
+        uint32_t indices_[I]{};
+
+    public:
+        Vertex* const vertices{vertices_};
+        uint32_t * const indices{indices_};
+
+        uint32_t vertex_size{0};
+        uint32_t indices_size{0};
     };
 }
 

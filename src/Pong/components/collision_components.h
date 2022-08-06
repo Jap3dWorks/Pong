@@ -5,9 +5,9 @@
 #ifndef GL_TEST_COLLISION_COMPONENTS_H
 #define GL_TEST_COLLISION_COMPONENTS_H
 
-#include "Pong/core/component.h"
+#include "Pong/components/component.h"
 #include "Pong/core/collider.h"
-#include "Pong/core/actor.h"
+#include "Pong/core/actor/actor.h"
 
 namespace Pong {
 // collision components

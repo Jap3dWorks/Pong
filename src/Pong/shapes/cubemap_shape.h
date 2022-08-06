@@ -6,7 +6,7 @@
 #define GL_TEST_CUBEMAP_SHAPE_H
 
 #include "Pong/components/graphic_component.h"
-#include "../core/edit_shape.h"
+#include "Pong/shape/edit_shape.h"
 #include "Pong/core/geometry_data.h"
 
 namespace Pong {

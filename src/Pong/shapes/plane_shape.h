@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 #include "Pong/components/graphic_component.h"
-#include "../core/edit_shape.h"
+#include "edit_shape.h"
 #include "../core/core_vals.h"
 
 namespace Pong {

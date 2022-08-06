@@ -6,9 +6,9 @@
 #define GL_TEST_SPHERE_SHAPE_H
 
 #include "Pong/components/graphic_component.h"
-#include "../core/edit_shape.h"
+#include "edit_shape.h"
 #include "Pong/core/geometry_data.h"
-#include "../../utils/logger.h"
+#include "Utils/logger.h"
 
 namespace Pong {
 

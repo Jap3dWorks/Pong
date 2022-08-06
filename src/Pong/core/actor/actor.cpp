@@ -1,5 +1,5 @@
 #include "Utils/logger.h"
-#include "Pong/core/actor.h"
+#include "actor.h"
 #include "Pong/core/render.h"
 #include "Pong/core/material.h"
 

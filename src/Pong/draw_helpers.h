@@ -13,8 +13,8 @@
 #include <iostream>
 #include <vector>
 
-#include "Pong/core/actor.h"
-#include "Pong/core/map.h"
+#include "Pong/core/actor/actor.h"
+#include "Pong/core/map/map.h"
 #include "Pong/components/graphic_component.h"
 #include "Pong/core/shader.h"
 #include "Pong/core/material.h"

@@ -2,7 +2,7 @@
 #define PROCESS_INPUT_H
 
 #include "Pong/core/movements.h"
-#include "Pong/core/actor.h"
+#include "Pong/core/actor/actor.h"
 #include "Utils/action_event.h"
 
 #include <iostream>

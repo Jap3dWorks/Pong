@@ -5,7 +5,7 @@
 #ifndef PONG_DATACOMPARERS_H
 #define PONG_DATACOMPARERS_H
 
-#include "Pong/core/actor.h"
+#include "Pong/core/actor/actor.h"
 #include "Pong/core/core_vals.h"
 #include "Utils/logger.h"
 

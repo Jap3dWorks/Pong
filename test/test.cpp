@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <array>
+#include <type_traits>
 #include <fstream>
 #include <set>
 #include <cstdlib>
@@ -18,8 +19,10 @@
 #include "Utils/fixed_address_buffer.h"
 #include "Utils/logger.h"
 #include "Pong/core/command.h"
+#include "Pong/core/map/type_reg.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
+#include "Pong/core/map/map_reg.h"
 
 //template<typename Derived_>
 std::string replace(const std::smatch& t) {
@@ -277,6 +280,12 @@ void test_action_event() {
     act2.subscribe(&(forwarder<_tstclass*>));
     act2(&inst, 4);
 
+    {
+        act.subscribe([](int){LOG_INFO("LAMBDA");});
+    }
+    act(9);
+
+//    auto act_2 = Event<void(*)(int)>{};
 }
 
 constexpr uint32_t la_array() {
@@ -346,6 +355,55 @@ void test_command_register() {
 }
 
 
+void test_for_loop() {
+    auto index = 0;
+    for (; index < 10; index++) {
+        LOG_INFO("Index: " << index);
+    }
+}
+
+
+struct CompA {
+    uint32_t value{0};
+    ~CompA() {LOG_INFO("Delete CompA");}
+};
+
+struct CompB {
+    uint32_t value{1};
+    ~CompB() {LOG_INFO("Delete CompB");}
+};
+
+struct CompC {
+    uint32_t value{2};
+    ~CompC() {LOG_INFO("Delete CompC");}
+};
+
+void test_class_map() {
+
+    auto typereg = Pong::TypeRegMap();
+    typereg.registry<CompA>();
+    typereg.registry<CompB>();
+    try {
+        typereg.registry<CompB>();
+
+    } catch (Pong::ClassMapException& e) {
+        LOG_INFO("ERROR: " << e.what());
+    }
+    typereg.registry<CompC>();
+
+    LOG_INFO("CompA.value: " << typereg.get<CompA>().value);
+    typereg.get<CompA>().value=10;
+    LOG_INFO("CompA.value: " << typereg.get<CompA>().value);
+}
+
+void test_registry_map() {
+
+    auto maprg = Pong::MapReg<CompA, CompB, CompC>();
+
+}
+
+
+
 int main() {
 //    _test_text_template();
 //    _test_shader_parser();
@@ -360,8 +418,12 @@ int main() {
 //    test_continuous_storage();
 //    test_action_event();
 
-    test_command_register();
+//    test_command_register();
 
+//    test_for_loop();
+
+//    test_class_map();
+    test_registry_map();
 
     return 0;
 }

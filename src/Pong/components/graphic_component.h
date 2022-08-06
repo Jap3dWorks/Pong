@@ -2,7 +2,7 @@
 #define SHAPE_H
 
 #include "Pong/core/geometry_data.h"
-#include "Pong/core/component.h"
+#include "Pong/components/component.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/graphic_flags.h"
 #include "Pong/core/exceptions.h"
@@ -13,6 +13,7 @@
 #include "glad/glad.h"
 
 #include <iostream>
+#include <memory>
 #include <utility>
 #include <vector>
 #include <map>
@@ -26,18 +27,13 @@ namespace Pong{
 }
 
 namespace Pong {
-    using VertexVector = std::vector<Vertex>;
-    using TriangleVector = std::vector<Triangle>;
-    using IndexVector = std::vector<uint32_t>;
-
-
     class GraphicComponent: public Component {
-        // mesh update in other class
     protected:
         using graphic_component_super = GraphicComponent;
 
     public:
-//        void update(Actor* actor, Component* parent) override = 0;
+        inline void update() override {};
+        virtual void update(Actor* actor, Component* parent) = 0;
         virtual void bind() = 0;
         ~GraphicComponent() = default;
     };
@@ -45,32 +41,30 @@ namespace Pong {
     // MeshComponent
     class MeshComponent : public GraphicComponent {
     protected:
-//        using mesh_component_super = MeshComponent;
+        using mesh_component_super = MeshComponent;
 
     protected:
         /**Vertex array buffer id*/
-        // use Mesh*
         uint32_t _vao_id = 0;
-        std::unique_ptr<Mesh> _internal_mesh;
 
     public:
         Mesh *mesh = nullptr;
-        uint32_t draw_primitive = GL_TRIANGLES;
+        Material *material=nullptr;
+        GraphicComponentType type=GraphicComponentType::STATIC;
+        GraphicPrimitives primitive = GraphicPrimitives::TRIANGLE;
 
     public:
-        MeshComponent() {
-            _internal_mesh = std::make_unique<Mesh>();
-            mesh = _internal_mesh.get();
-        };
+        MeshComponent() = default;
+        ~MeshComponent() = default;
 
         _P_EXPLICIT MeshComponent(Mesh* mesh) :
                 mesh(mesh) {
         }
 
-        ~MeshComponent() = default;
-
         _P_NODISCARD uint32_t get_VAO() const { return _vao_id; }
 
+
+        // TODO: RENDER functions in a render class
         virtual void set_VAO() {
             // TODO: dynamic shapes
             uint32_t VBO, EBO;
@@ -123,19 +117,21 @@ namespace Pong {
 
         }
 
+        // TODO: RENDER functions in a render class
         void bind() override {
             glBindVertexArray(_vao_id);
         }
 
         // mesh update in other class
+        // TODO: RENDER functions in a render class
         void update(Actor* actor, Component* parent) override {
-            GraphicComponent::update(actor, parent);
-
             if (!mesh->indices.empty()){
-                glDrawElements(draw_primitive, mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
+                glDrawElements(GL_TRIANGLES, mesh->indices.size(),
+                               GL_UNSIGNED_INT,
+                               nullptr);
             }
             else {
-                glDrawArrays(draw_primitive, 0, mesh->vertices.size());
+                glDrawArrays(GL_TRIANGLES, 0, mesh->vertices.size());
             }
         }
     };
