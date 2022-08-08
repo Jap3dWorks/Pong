@@ -12,55 +12,32 @@
 #include "glm/gtc/type_ptr.hpp"
 
 
-// TODO: make camera maths using actor transform.
+// TODO: make camera maths using actor translation.
 namespace Pong {
 
     class CameraComponent : public Component {
     public:
-        // camera_ptr attributes
-//        glm::vec3 position{};
-//        glm::vec3 front{};
-
-//    glm::vec3 up{};
-
-//        glm::vec3 right{};
-
-        glm::vec3 world_up{};
+        glm::vec3 world_up{0.0, 1.0, 0.0};
         float fov{_P_PI/3.5};
-
-        // Euler angles
-//        float Yaw = -90.f;
-//        float Pitch = 0.f;
-
-        // ACamera options
-//        float movement_speed = 2.5f;
-//        float mouse_sensitivity = .25f;
-//        float Zoom = 45.0f;
 
         /**
         Constructor using glm::vec3
          */
     public:
-
-        inline void start() override {
-        }
-
-        inline void update() override {
-        }
-
         explicit CameraComponent(
-                Actor* actor,
-                Component *parent,
                 glm::vec3 _up = glm::vec3(0.f, 1.f, 0.f)
         ) :
-            world_up(_up),
-            Component(actor, parent) {}
+            world_up(_up) {}
+
+        void start() override {}
+        void update() override {}
+        void end() {}
 
         // vew matrix calculated using euler angles and lookat matrix
-        [[nodiscard]] glm::mat4 get_view_matrix() const {
-            return actor->transform;
+//        [[nodiscard]] static glm::mat4 get_view_matrix() {
+//            return actor->translation;
 //            return glm::lookAt(position, position + front, up);
-        }
+//        }
 
         // processes input received from a mouse input system.
 //        void process_mouse_movement(float x_offset,

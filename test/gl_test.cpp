@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     // build and compile our Shader program
     // ------------------------------------
     LOG_DEBUG("Build and compile Shader program");
-    Shader ourShader("./Shaders/5.1.transform.glsl");
+    Shader ourShader("./Shaders/5.1.translation.glsl");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
 
         // get matrix's uniform location and set matrix
         ourShader.use();
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "translation");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
         // Render container

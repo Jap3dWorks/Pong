@@ -46,7 +46,7 @@ namespace Pong {
         virtual ~Actor() = default;
 
         template<typename T>
-        friend class MapReg;
+        friend class RegData;
     };
 }
 

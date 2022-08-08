@@ -2,8 +2,8 @@
 // Created by Jordi on 8/4/2022.
 //
 
-#ifndef GL_TEST_MAP_SSET_H
-#define GL_TEST_MAP_SSET_H
+#ifndef GL_TEST_SPARSE_SET_H
+#define GL_TEST_SPARSE_SET_H
 
 #include <typeinfo>
 #include <iostream>
@@ -15,35 +15,37 @@
 
 namespace Pong {
 
-class SSException : public std::exception {
-public:
-    using message_type = const char*;
-private:
-    message_type what_;
-public:
-    explicit SSException(message_type what): what_(what) {}
-    message_type what() noexcept {return what_;}
-};
+    class SSException : public std::exception {
+    public:
+        using message_type = const char *;
+    private:
+        message_type what_;
+    public:
+        explicit SSException(message_type what) : what_(what) {}
 
-
-template<typename T>
-struct SSetPosData {
-    T sparse_pos;
-    T dense_pos;
-};
-
-
-
-class SSIndexError : public SSException {
-    using SSException::SSException;
-};
-
-    class SparseSet_{
-
+        message_type what() noexcept { return what_; }
     };
 
+
+    template<typename T>
+    struct SSetPosData {
+        T sparse_pos;
+        T dense_pos;
+    };
+
+
+    class SSIndexError : public SSException {
+        using SSException::SSException;
+    };
+
+    class SparseSet_ {
+    };
+
+    /**
+     * The "id" of the object is the position in th sparse vector.
+     * */
     template<typename Type_>
-    class SparseSet: public SparseSet_ {
+    class SparseSet : public SparseSet_ {
     public:
         using denset_set = std::vector<Type_>;
         using size_type = typename denset_set::size_type;
@@ -54,8 +56,8 @@ class SSIndexError : public SSException {
         using sparse_set_class = SparseSet<Type_>;
 
         using value_type = Type_;
-        using reference = value_type&;
-        using const_reference = const value_type&;
+        using reference = value_type &;
+        using const_reference = const value_type &;
 
         using pos_data = SSetPosData<size_type>;
 
@@ -68,31 +70,32 @@ class SSIndexError : public SSException {
         sparse_set sparse_set_{};
 
     public:
-        SparseSet()=default;
-        ~SparseSet()=default;
+        SparseSet() = default;
 
-        SparseSet(const sparse_set_class& other):
+        ~SparseSet() = default;
+
+        SparseSet(const sparse_set_class &other) :
                 dense_set_(other.dense_set_),
                 sparse_set_(other.sparse_set_) {}
 
-        SparseSet(sparse_set_class&& other) noexcept :
+        SparseSet(sparse_set_class &&other) noexcept:
                 dense_set_(std::move(other.dense_set_)),
                 sparse_set_(std::move(other.sparse_set_)) {}
 
-        sparse_set_class& operator=(const SparseSet<Type_>& other) {
+        sparse_set_class &operator=(const SparseSet<Type_> &other) {
             dense_set_ = other.dense_set_;
             sparse_set_ = other.sparse_set_;
             return *this;
         }
 
-        sparse_set_class& operator=(sparse_set_class && other)  noexcept {
+        sparse_set_class &operator=(sparse_set_class &&other) noexcept {
             dense_set_ = std::move(other.dense_set_);
             sparse_set_ = std::move(other.sparse_set_);
         }
 
     private:
         inline void ensure_sparse_size_(size_type pos) {
-            if (pos > sparse_set_.max_size() -1) {
+            if (pos > sparse_set_.max_size() - 1) {
                 sparse_set_.resize(pos + 1);
             }
         }
@@ -103,19 +106,26 @@ class SSIndexError : public SSException {
         }
 
     public:
-        auto& insert(size_type pos, const_reference value) {
+        auto &insert(size_type pos, const_reference value) {
             ensure_sparse_size_(pos);
             auto dense_position = size();
             dense_set_.push_back(value);
             dense_set_index_.push_back(pos);
             sparse_set_[pos] = dense_position;
+
+            return dense_set_[dense_position];
         }
 
-        constexpr decltype(auto) at(size_type pos) {
+        auto &push_back(const_reference value) {
+            auto pos = dense_set_.size();
+            return insert(pos, value);
+        }
+
+        constexpr auto &at(size_type pos) {
             return dense_set_.at(*sparse_set_.at(pos));
         }
 
-        constexpr decltype(auto) at(size_type pos) const {
+        constexpr auto &at(size_type pos) const {
             return dense_set_.at(*sparse_set_.at(pos));
         }
 
@@ -143,8 +153,8 @@ class SSIndexError : public SSException {
         }
 
         pos_data assert_position(
-                std::optional<size_type> sparse_pos=std::nullopt,
-                std::optional<size_type> dense_pos=std::nullopt) {
+                std::optional<size_type> sparse_pos = std::nullopt,
+                std::optional<size_type> dense_pos = std::nullopt) {
             auto dense_size = size();
 
             if (sparse_pos && *sparse_pos < dense_size) {
@@ -156,13 +166,13 @@ class SSIndexError : public SSException {
             throw SSIndexError("Pos out of sparse set.");
         }
 
-        auto& data() {
+        auto &data() {
             return dense_set_.data();
         }
 
     public:
-        auto& operator[](size_type pos) {
-            return *sparse_set_[pos];
+        auto &operator[](size_type pos) {
+            return dense_set_[*sparse_set_[pos]];
         }
 
 
@@ -186,4 +196,4 @@ class SSIndexError : public SSException {
 }
 
 
-#endif //GL_TEST_MAP_SSET_H
+#endif //GL_TEST_SPARSE_SET_H

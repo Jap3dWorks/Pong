@@ -2,8 +2,8 @@
 // Created by Jordi on 8/5/2022.
 //
 
-#ifndef GL_TEST_TYPE_REG_H
-#define GL_TEST_TYPE_REG_H
+#ifndef GL_TEST_TYPE_REG_MAP_H
+#define GL_TEST_TYPE_REG_MAP_H
 
 #include <unordered_map>
 #include <vector>
@@ -34,7 +34,6 @@ namespace Pong {
         virtual ~TypeReg_() = default;
         virtual void *get() noexcept = 0;
     };
-
 
     template<typename T>
     class TypeReg : public TypeReg_ {
@@ -71,6 +70,11 @@ namespace Pong {
         friend class TypeRegMap;
     };
 
+    /**
+     * TypeRegMap is en essence an unordered_map<hash, type()>, so each entry
+     * of the class is the hash of the registered class, and an unique
+     * instance of the registered class is stored as de value.
+     * */
     class TypeRegMap {
     public:
         using hash_type = size_t;
@@ -102,7 +106,7 @@ namespace Pong {
         }
 
         template<typename reg_t_>
-        inline bool contains() {
+        [[nodiscard]] inline bool contains() {
             return _data_map.contains(hash_<reg_t_>());
         }
 
@@ -123,4 +127,4 @@ namespace Pong {
         }
     };
 }
-#endif //GL_TEST_TYPE_REG_H
+#endif //GL_TEST_TYPE_REG_MAP_H

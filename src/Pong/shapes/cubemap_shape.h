@@ -69,7 +69,7 @@ namespace Pong {
         }
     };
 
-    class CubeMapMesh : MeshComponent {
+    class CubeMapMesh : StaticMeshComponent {
     public:
         void by_frame(const Render *render,
                       const Map *scene,

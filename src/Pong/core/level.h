@@ -5,7 +5,7 @@
 #include "Pong/core/map/map.h"
 #include "Pong/components/graphic_component.h"
 #include "Pong/core/actor/actor.h"
-#include "Pong/core/render.h"
+#include "Pong/core/render/render.h"
 #include "Pong/core/process_input.h"
 
 #include <ctime>

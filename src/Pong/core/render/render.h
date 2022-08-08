@@ -12,13 +12,13 @@
 #include "Pong/core/outputs.h"
 
 #include <cstdint>
-#include <stb/stb_image.h>
-#include <GLFW/glfw3.h>
+#include "stb/stb_image.h"
+#include "GLFW/glfw3.h"
 #include <iostream>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glad/glad.h>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glad/glad.h"
 
 
 #define MAX_UINT_8 255
@@ -359,7 +359,7 @@ namespace Pong {
             buffer_offset += sizeof(glm::mat4);
 
             // view pos
-            auto camera_position = glm::vec4(camera->actor->transform[3]);
+            auto camera_position = glm::vec4(camera->actor->translation[3]);
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,
                             sizeof(glm::vec4),

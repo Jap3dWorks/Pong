@@ -19,7 +19,7 @@
 #include "Utils/fixed_address_buffer.h"
 #include "Utils/logger.h"
 #include "Pong/core/command.h"
-#include "Pong/core/map/type_reg.h"
+#include "Pong/core/map/type_reg_map.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
 #include "Pong/core/map/map_reg.h"
@@ -398,7 +398,7 @@ void test_class_map() {
 
 void test_registry_map() {
 
-    auto maprg = Pong::MapReg<CompA, CompB, CompC>();
+    auto maprg = Pong::RegData()template<typename ...Args>;
 
 }
 

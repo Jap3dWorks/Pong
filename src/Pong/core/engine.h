@@ -9,7 +9,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-#include "Pong/core/render.h"
+#include "Pong/core/render/render.h"
 #include "Pong/core/outputs.h"
 #include <GLFW/glfw3.h>
 

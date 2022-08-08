@@ -7,7 +7,7 @@
 #include "Pong/components/graphic_component.h"
 #include "Pong/core/collider.h"
 #include "Pong/core/lights.h"
-#include "Pong/core/render.h"
+#include "Pong/core/render/render.h"
 #include "Pong/core/data_comparers.h"
 
 #include "Utils/type_conditions.h"

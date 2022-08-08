@@ -1,6 +1,6 @@
 #include "Utils/logger.h"
 #include "actor.h"
-#include "Pong/core/render.h"
+#include "Pong/core/render/render.h"
 #include "Pong/core/material.h"
 
 #include <utility>
@@ -12,7 +12,7 @@ namespace Pong {
 //    // -------
 //    void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
 //    {
-//        material->get_shader()->set_mat4("model", transform);
+//        material->get_shader()->set_mat4("model", translation);
 //    }
 //
 //    // --AKinetic--
@@ -29,8 +29,8 @@ namespace Pong {
 //    {
 //        float dtime = Pong::Render::get_instance()->get_delta_time();
 //        _vector_director = _direction * _velocity;
-//        transform = glm::translate(
-//                transform, _vector_director * dtime;
+//        translation = glm::translate(
+//                translation, _vector_director * dtime;
 //    }
 //
 //    // getters
@@ -70,7 +70,7 @@ namespace Pong {
 //
 //    void APlayer::by_frame(float delta_time) {
 //        _vector_director = _direction * _velocity;
-//        transform = glm::translate(transform, _vector_director);
+//        translation = glm::translate(translation, _vector_director);
 //
 //        if (!_key_pressed) {
 //            if (_velocity != 0.f)

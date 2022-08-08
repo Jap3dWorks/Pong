@@ -66,7 +66,7 @@ namespace Pong {
         if (!checkAABB(cA, cB))
             return false;
 
-        // transform buffers
+        // translation buffers
         glm::vec3 buff[2][8];
         for (int i = 0; i < 8; i++) {
             buff[0][i] = cA->actor->transform * glm::vec4(cA->OBB_buffer[i], 1);
@@ -115,7 +115,7 @@ namespace Pong {
             return false;
         }
 
-        // transform buffer
+        // translation buffer
         glm::vec3 buff[8];
         for (int i = 0; i < 8; i++) {
             buff[i] = cb->actor->transform * glm::vec4(cb->OBB_buffer[i], 1);
@@ -308,7 +308,7 @@ namespace Pong {
     {
         bool check_ray = false;
 
-        // do not transform buffer, transform ray instead
+        // do not translation buffer, translation ray instead
         glm::vec3 r_dir = glm::inverse(actor->transform) * glm::vec4(ray.direction, 0.f);
         glm::vec3 r_pos = glm::inverse(actor->transform) * glm::vec4(ray.position, 1.f);
 
@@ -379,7 +379,7 @@ namespace Pong {
                     glm::transpose(glm::inverse(glm::mat3(actor->transform)));
 
                 RayCastData r_cast{glm::vec3(actor->transform * glm::vec4(pln_pnt, 1)),
-                    glm::normalize(normal_mat * norm),  // transform normal
+                    glm::normalize(normal_mat * norm),  // translation normal
                     i,
                     const_cast<BoxCollider*>(this)};
 
@@ -393,7 +393,7 @@ namespace Pong {
     // -------------------
     bool SphereCollider::ray_cast(const RayCast ray, std::vector<RayCastData> &ray_data) const
     {
-        // do not transform buffer, transform ray instead
+        // do not translation buffer, translation ray instead
         glm::vec3 r_dir = glm::inverse(actor->transform) * glm::vec4(ray.direction, 0.f);
         glm::vec3 r_pos = glm::inverse(actor->transform) * glm::vec4(ray.position, 1.f);
 

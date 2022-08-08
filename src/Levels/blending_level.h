@@ -49,10 +49,10 @@ protected:
         auto grass_act_02 = _scene->create_actor<
                 Pong::APlayer>("grass_act_02");
 
-        grass_act_01->transform = glm::rotate(
-                grass_act_01->transform, (float)_P_PI, glm::vec3(0,0,1));
+        grass_act_01->translation = glm::rotate(
+                grass_act_01->translation, (float)_P_PI, glm::vec3(0, 0, 1));
 
-        grass_act_02->transform = glm::translate(
+        grass_act_02->translation = glm::translate(
                 glm::mat4(1.f), glm::vec3(2, 0, 1));
 
         _scene->assign_material(grass_mat, grass_shp);
@@ -82,12 +82,12 @@ protected:
 //
 //        LOG_DEBUG("GL_TRIANGLES id " << GL_TRIANGLES);
 //
-//        auto vert_act = _scene->create_actor<Pong::Actor>("vert_act");
+//        auto vert_act = _scene->create_id<Pong::Actor>("vert_act");
 //        _scene->assign_material(vert_mat, vert_shp);
 //        _scene->assign_material(vert_mat, vert2_shp);
 //        _scene->assign_shape(vert_shp, vert_act);
 //        _scene->assign_shape(vert2_shp, vert_act);
-//        vert_act->set_transform(glm::translate(vert_act->transform, glm::vec3(4, 0, 0)));
+//        vert_act->set_transform(glm::translate(vert_act->translation, glm::vec3(4, 0, 0)));
 
         // skybox
         auto skybox_shd = _scene->create_shader("skybox_shd",
@@ -180,8 +180,8 @@ protected:
             auto bld_act = _scene->create_actor<Pong::APlayer>(
                     "bld_act" + std::to_string(i));
 
-            bld_act->transform =
-                    glm::translate(bld_act->transform, positions[i]);
+            bld_act->translation =
+                    glm::translate(bld_act->translation, positions[i]);
 
             _scene->assign_shape(bld_shp, bld_act);
         }
