@@ -9,12 +9,13 @@
 #include "Pong/core/process_input.h"
 #include "Utils/type_conditions.h"
 #include "Pong/core/exceptions.h"
+#include <concepts>
 #include <memory>
 #include <string>
 
 // TODO: move here _window logic
 
-#define OutputTemplate(_TEMP_ARGS_) template<CondIsBase<Output> T, _TEMP_ARGS_>
+#define OutputTemplate(_TEMP_ARGS_) template<std::derived_from<Output> T, _TEMP_ARGS_>
 
 
 namespace Pong {

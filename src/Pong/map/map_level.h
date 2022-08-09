@@ -5,7 +5,7 @@
 #ifndef GL_TEST_MAP_LEVEL_H
 #define GL_TEST_MAP_LEVEL_H
 
-#include "Pong/core/map/map_reg.h"
+#include "reg_data.h"
 #include "Pong/components/camera_component.h"
 #include "Pong/components/collision_components.h"
 #include "Pong/components/graphic_component.h"
@@ -37,20 +37,30 @@ namespace Pong {
 //            registry.registry<>();
                 // Build here views or gruops, e.g staticMesh with transp materials and transforms
                 // staticMesh with opaque materials and transforms
-
         }
 
+        void load() {
+        }
+
+        void save() {
+        }
+
+        // every frame logic
         void update() {
 
         }
 
         void update_meshes() {
-//            auto transform_comps =
-
             for (auto& mshcmp: components_reg.get_types<StaticMeshComponent>()) {
                 // do things
             }
         }
+
+
+        auto& get_mesh(RegId id_) {
+            return mesh_reg.get_type<>(id_);
+        }
+
     };
 }
 

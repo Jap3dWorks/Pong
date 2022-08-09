@@ -1,6 +1,6 @@
 #include "Utils/logger.h"
 #include "actor.h"
-#include "Pong/core/render/render.h"
+#include "Pong/render/render.h"
 #include "Pong/core/material.h"
 
 #include <utility>

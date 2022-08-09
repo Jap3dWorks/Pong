@@ -12,7 +12,7 @@ namespace Pong
 #include "Pong/core/movements.h"
 #include "Pong/core/collider.h"
 #include "Pong/components/component.h"
-#include "Pong/core/map/map_reg.h"
+#include "Pong/map/reg_data.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"

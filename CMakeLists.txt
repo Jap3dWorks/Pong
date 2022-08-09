@@ -30,10 +30,10 @@ include_directories("./src")
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/Pong/core/actor/actor.cpp
+        src/Pong/actor/actor.cpp
         src/Pong/core/collider.cpp
         src/Pong/core/level.cpp
-        src/Pong/core/map/map.cpp
+        src/Pong/map/map.cpp
         src/Pong/components/component.cpp
         )
 

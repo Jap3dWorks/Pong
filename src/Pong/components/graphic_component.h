@@ -6,7 +6,7 @@
 #include "Pong/core/core_vals.h"
 #include "Pong/core/graphic_flags.h"
 #include "Pong/core/exceptions.h"
-#include "Pong/core/map/map_reg.h"
+#include "Pong/core/map/reg_data.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

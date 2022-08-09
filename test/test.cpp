@@ -19,10 +19,11 @@
 #include "Utils/fixed_address_buffer.h"
 #include "Utils/logger.h"
 #include "Pong/core/command.h"
-#include "Pong/core/map/type_reg_map.h"
+#include "Pong/map/type_reg_map.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
-#include "Pong/core/map/map_reg.h"
+#include "Pong/map/reg_data.h"
+#include <cassert>
 
 //template<typename Derived_>
 std::string replace(const std::smatch& t) {
@@ -397,9 +398,22 @@ void test_class_map() {
 }
 
 void test_registry_map() {
+    auto maprg = Pong::RegData<CompA, CompB, CompC>();
+    auto nwid = maprg.create_id();
+    maprg.add_type<CompA>(nwid);
+}
 
-    auto maprg = Pong::RegData()template<typename ...Args>;
 
+// Test is_intersection
+template<typename T, typename ...Args>
+void test_intersection_() {
+    static_assert(is_intersection<T, Args...>::value);
+    LOG_INFO("SUCCESS");
+}
+
+
+void test_intersection_class() {
+    test_intersection_<CompC, CompA, CompB, CompC>();
 }
 
 

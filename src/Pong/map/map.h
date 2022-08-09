@@ -2,12 +2,12 @@
 #define SCENE_H
 
 #include "Pong/core/core_vals.h"
-#include "Pong/core/actor/actor.h"
+#include "Pong/actor/actor.h"
 #include "Pong/core/material.h"
 #include "Pong/components/graphic_component.h"
 #include "Pong/core/collider.h"
 #include "Pong/core/lights.h"
-#include "Pong/core/render/render.h"
+#include "Pong/render/render.h"
 #include "Pong/core/data_comparers.h"
 
 #include "Utils/type_conditions.h"
@@ -163,7 +163,7 @@ namespace Pong {
         _P_NODISCARD Shader* get_shader(const std::string& name) const;
 
         // create a material and save it in _materialMap
-        template<CondIsBase<Material> T, typename... Args>
+        template<std::derived_from<Material> T, typename... Args>
         T *create_material(const std::string &name,
                            const RenderLayer &render_layer = RenderLayer::BASE,
                            Args &&... args) {
@@ -187,7 +187,7 @@ namespace Pong {
         }
 
         // create texture
-        template<CondIsBase<Texture> T, typename ...Args>
+        template<std::derived_from<Texture> T, typename ...Args>
         Texture* create_texture(const std::string& name,
                                 Args&&... args) {
             auto ptr = new T(std::forward<Args>(args)...);
@@ -253,7 +253,7 @@ namespace Pong {
 //            return _camera.get();
 //        }
 
-        template<CondIsBase<GraphicComponent> T, typename... Args>
+        template<std::derived_from<GraphicComponent> T, typename... Args>
         _P_INLINE T* create_shape(const std::string& name, Args&&... args) {
             auto ptr = new T(std::forward<Args>(args)...);
             shape_map[name] = std::unique_ptr<GraphicComponent>(

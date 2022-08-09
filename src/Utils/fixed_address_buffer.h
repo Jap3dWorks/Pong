@@ -69,7 +69,7 @@ private:
     }
 
 public:
-    template<CondIsBase<BaseClass> T>
+    template<std::derived_from<BaseClass> T>
     auto insert(const T &data) -> T* {
         auto valid_data = valid_array_id(sizeof(T));
         auto ptr = _datas[valid_data] + _quantities[valid_data];
@@ -80,7 +80,7 @@ public:
         return (T*) ptr;
     }
 
-    template<CondIsBase<BaseClass> T,
+    template<std::derived_from<BaseClass> T,
             class=ENSURE_LVALUE(T)>
     auto insert(T &&data) -> T* {
         auto data_num = valid_array_id(sizeof(T));
@@ -92,7 +92,7 @@ public:
         return (T*) ptr;
     }
 
-    template<CondIsBase<BaseClass> T, typename ...Args>
+    template<std::derived_from<BaseClass> T, typename ...Args>
     auto emplace(Args&& ...args) -> T* {
         auto data_num = valid_array_id(sizeof(T));
         auto ptr = _datas[data_num] + _quantities[data_num];

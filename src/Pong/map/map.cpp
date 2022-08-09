@@ -1,5 +1,5 @@
 
-#include "Pong/core/map/map.h"
+#include "map.h"
 #include "Utils/logger.h"
 #include "Pong/material_lib.h"
 

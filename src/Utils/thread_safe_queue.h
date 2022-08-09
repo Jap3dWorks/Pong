@@ -10,6 +10,7 @@
 
 using namespace std;
 
+
 class non_empty_queue : public std::exception {
     std::string what_;
 public:
