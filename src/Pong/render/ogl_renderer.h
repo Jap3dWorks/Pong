@@ -5,7 +5,7 @@
 #ifndef GL_TEST_OGL_RENDERER_H
 #define GL_TEST_OGL_RENDERER_H
 
-#include "Pong/map/reg_id_manager.h"
+#include "Pong/core/reg_id_manager.h"
 
 class OglRenderer {
 

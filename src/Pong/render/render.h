@@ -5,7 +5,6 @@
 #include "Pong/core/movements.h"
 #include "Pong/core/shader.h"
 #include "Pong/actor/actor.h"
-#include "Pong/components/camera_component.h"
 #include "Pong/core/lights.h"
 #include "Pong/core/graphic_flags.h"
 #include "Pong/core/exceptions.h"

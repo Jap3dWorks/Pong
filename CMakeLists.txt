@@ -34,7 +34,6 @@ add_executable(${PROJECT_NAME}
         src/Pong/core/collider.cpp
         src/Pong/core/level.cpp
         src/Pong/map/map.cpp
-        src/Pong/components/component.cpp
         )
 
 # --External Libraries--

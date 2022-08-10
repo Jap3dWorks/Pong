@@ -30,14 +30,13 @@ namespace Pong {
     public:
         using AID = RegId;
         using const_AID = const RegId;
+//        bool active = true;
 
     private:
         RegId reg_id_;
 
     public:
-        glm::mat4 transform = glm::mat4(1);
-
-        bool active = true;
+//        glm::mat4 transform = glm::mat4(1);
 
     private:
         explicit Actor(RegId reg_id) : reg_id_(reg_id) {}
@@ -45,7 +44,7 @@ namespace Pong {
     public:
         virtual ~Actor() = default;
 
-        template<typename T>
+        template<typename ...Types>
         friend class RegData;
     };
 }

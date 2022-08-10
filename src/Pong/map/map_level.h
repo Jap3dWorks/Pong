@@ -6,17 +6,19 @@
 #define GL_TEST_MAP_LEVEL_H
 
 #include "reg_data.h"
-#include "Pong/components/camera_component.h"
+#include "Pong/components/component.h"
 #include "Pong/components/collision_components.h"
 #include "Pong/components/graphic_component.h"
 
 //#include "Pong/core/map/"
 //#include "Pong/core/map/reg_id_set.h"
 
-
+class RenderQueueSubmitter;
 
 namespace Pong {
     class MapLevel {
+    private:
+        std::vector<RenderQueueSubmitter> submitters;
 
     public:
         RegData<TransformComponent,

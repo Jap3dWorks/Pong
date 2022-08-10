@@ -6,11 +6,15 @@
 //#include "Utils/subclasses_map.h"
 //#include "Utils/fixed_address_buffer.h"
 #include "Utils/logger.h"
+#include "Pong/math_utils.h"
+#include "Pong/core/core_vals.h"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
+
 
 #include <vector>
 #include <cassert>
@@ -26,98 +30,45 @@ namespace Pong {
      *
     */
 
-    class Component {
-    public:
-//        using ComponentsPtrVector = std::vector<Component*>;
+    struct Component {
 
-    private:
-//            ComponentsPtrVector _observers;
-
-    protected:
-//        using component_super = Component;
-//        bool active = true;
-
-    public:
-//        Component *parent = nullptr;
-
-    public:
-        ~Component()=default;
-
-//        explicit Component(std::string name="", Actor *_actor = nullptr, Component *_parent = nullptr) :
-//            name(std::move(name)), actor(_actor), parent(_parent) {}
+        ~Component() = default;
 
         Component() = default;
 
-//        void subscribe(Component *observer) noexcept {
-//            if (observer->parent) {
-//                observer->parent->unsubscribe(observer);
-//            }
-//
-//            observer->actor = actor;
-//            observer->parent = this;
-//            _observers.push_back(observer);
-//        }
+        virtual inline void start() {};
 
-//        [[nodiscard]] bool contains(Component *observer) const noexcept {
-//            return std::find(_observers.begin(),
-//                             _observers.end(),
-//                             observer) != _observers.end();
-//        }
-
-//        void unsubscribe(Component *observer) noexcept {
-//            _observers.erase(
-//                    std::find(_observers.begin(),
-//                              _observers.end(),
-//                              observer));
-//        }
-
-//        virtual void start_wrapper() {
-//            start();
-//            for(auto& comp: _observers) {
-//                comp->start_wrapper();
-//            }
-//        }
-
-        virtual inline void start(){};
-        virtual inline void update(){};
-
-//        virtual void emit() {
-//            for (auto& obsrv: _observers) {
-//                obsrv->update_wrapper();
-//            }
-//        }
-
-//        virtual void update_wrapper() {
-//            if (active) {
-//                emit();
-//                update();
-//            }
-//        }
+        virtual inline void update() {};
 
     };
 
-    class TransformComponent : Component {
-    public:
+    struct CameraComponent : public Component {
+
+        float fov{_P_PI / 3.5};
+
+
+        explicit CameraComponent(
+                float fov_ = _P_PI / 3.5
+        ) :
+                fov(fov_) {}
+    };
+
+    struct TransformComponent : Component {
         glm::vec3 translation{0.0};
         glm::vec3 rotation{0.0};
         glm::vec3 scale{1.0};
+        bool visibility{true};
 
-        glm::mat4 get_transform() const
-        {
+        [[nodiscard]] glm::mat4 get_transform() const {
             return glm::translate(glm::mat4(1.0f), translation)
                    * glm::toMat4(glm::quat(rotation))
                    * glm::scale(glm::mat4(1.0f), scale);
         }
 
-        void set_transform(const glm::mat4& transform)
-        {
-            Math::DecomposeTransform(transform, translation, rotation, scale);
+        void set_transform(const glm::mat4 &transform) {
+            math::decompose_transforms(transform, translation, rotation, scale);
         }
     };
-
-//    using ComponentFixedBuffer = FixedAddressBuffer<Component>;
-//    using ComponentMap = SubClassMap<Component>;
-
 }
 
 #endif // COMPONENT_H
