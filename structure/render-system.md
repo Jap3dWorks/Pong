@@ -7,3 +7,7 @@ Render System also must offer a way to communicate with graphic APIs like openGl
 Render System also should offer a way to connect output systems like Output file, Output Window or OutputStream.
 
 RenderSystem also should be configurable to Discard submitted renders if necessary.
+
+
+
+<img src="../.gitbook/assets/file.drawing.svg" alt="" class="gitbook-drawing">
