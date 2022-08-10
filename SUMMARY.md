@@ -16,8 +16,8 @@
 * [Command](structure/page-3.md)
 * [Actor and Components](structure/actor-and-components.md)
 * [Shapes](structure/shapes.md)
-* [Map System](structure/map-system.md)
-* [Level](structure/level.md)
+* [Map System](structure/map-system/README.md)
+  * [Level](structure/map-system/level.md)
 * [Data Structures](structure/data-structures/README.md)
   * [FixedAddressBuffer](structure/data-structures/fixedaddressbuffer.md)
 
