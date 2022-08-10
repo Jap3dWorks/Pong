@@ -43,6 +43,13 @@ namespace Pong {
     };
 
 
+    enum class GraphicPrimitives: uint32_t {
+        POINT=0,
+        LINE=1,
+        TRIANGLE=2,
+        CAMERA=3
+    };
+
     struct StackMesh_ {
     public:
         Vertex* const vertices{nullptr};

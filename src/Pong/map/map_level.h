@@ -9,16 +9,16 @@
 #include "Pong/components/component.h"
 #include "Pong/components/collision_components.h"
 #include "Pong/components/graphic_component.h"
+#include "Pong/render/render_queue.h"
+#include <functional>
 
-//#include "Pong/core/map/"
-//#include "Pong/core/map/reg_id_set.h"
 
-class RenderQueueSubmitter;
 
 namespace Pong {
+
     class MapLevel {
     private:
-        std::vector<RenderQueueSubmitter> submitters;
+        std::reference_wrapper<RenderQueueSubmitter> submitter;
 
     public:
         RegData<TransformComponent,
@@ -30,9 +30,7 @@ namespace Pong {
 
     public:
 
-        virtual void setup() {
-
-        }
+        virtual void setup() {}
 
         void start() {
             auto& registry = components_reg.get_registry();
@@ -49,6 +47,7 @@ namespace Pong {
 
         // every frame logic
         void update() {
+            // Run logics and submit to render.
 
         }
 
@@ -59,9 +58,10 @@ namespace Pong {
         }
 
 
-        auto& get_mesh(RegId id_) {
-            return mesh_reg.get_type<>(id_);
-        }
+//        auto& get_mesh(RegId id_) {
+
+//            return mesh_reg.get_type<>(id_);
+//        }
 
     };
 }

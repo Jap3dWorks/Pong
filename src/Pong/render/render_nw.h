@@ -6,6 +6,7 @@
 #define GL_TEST_RENDER_NW_H
 
 #include "Pong/core/reg_id_manager.h"
+#include "Pong/core/graphic_flags.h"
 #include "Pong/map/map_level.h"
 #include "Pong/render/render_queue.h"
 #include <vector>
@@ -38,7 +39,26 @@ namespace Pong {
 
     class OglRenderer: public Renderer {
     private:
-        void render() override {}
+        void render() override {
+            queue_consumer_.get().active_back();
+            for (auto& rpiece: queue_consumer_.get().active_render_chunk.render_pieces) {
+                if(rpiece.primitive == GraphicPrimitives::CAMERA) {
+                    // update camera layouts
+                    update_camera(rpiece);
+                }
+                else if (rpiece.primitive == GraphicPrimitives::TRIANGLE) {
+                    draw_triangles(rpiece);
+                }
+            }
+        }
+
+        void update_camera(const RenderPiece& rpiece) {
+
+        }
+
+        void draw_triangles(const RenderPiece& rpiece) {
+            // OpenGl draw implementation here ...
+        }
 
         // transofrm component + camera component
 //        std::vector<std::pair<RegId, RegId>> cameras;

@@ -8,21 +8,44 @@
 #include <iostream>
 #include <vector>
 #include "Pong/core/reg_id_manager.h"
+#include  "Pong/core/geometry_data.h"
+#include "Pong/core/material.h"
+
 #include <deque>
 #include <functional>
 
 namespace Pong {
+
     struct RenderPiece {
-        RegId id; // Mesh Id
-        size_t primitive; // hash of the primitive type
-        // transforms, mesh, materials
-        void* data;
+        glm::mat4 projection_matrix;
+        glm::mat4 view_matrix;
+
+        std::vector<glm::mat4> transforms;
+            // paint multiple times same mesh.
+            // ID could be passed to render.
+
+        RegId mesh;  // a mesh in memory
+
+//        float* point_array;  // changes every frame
+//        uint32_t point_size;
+//        uint32_t* indices;
+//        uint32_t indices_size;
+
+        std::vector<float> points;  // changes every frame
+        std::vector<uint32_t> indices;
+
+        GraphicPrimitives primitive{GraphicPrimitives::TRIANGLE};
+        Material material;  // shader + textures + values
+
+        RenderPiece(RenderPiece&&) = default;
     };
 
     struct RenderChunk {
-        std::vector<RenderPiece> render_pieces_;
+        std::vector<RenderPiece> render_pieces;
 
-        void clean(){}
+        void clear() noexcept {
+            render_pieces.clear();
+        }
     };
 
     using RenderQueue = std::deque<RenderChunk>;
@@ -38,14 +61,14 @@ namespace Pong {
 
     public:
         void push_back(RenderPiece&& r_piece){
-            active_render_chunk.render_pieces_.push_back(
+            active_render_chunk.render_pieces.push_back(
                     std::move(r_piece)
                     );
         }
 
         void submit() {
             render_queue_.get().push_back(std::move(active_render_chunk));
-            active_render_chunk.clean();
+            active_render_chunk.clear();
         }
     };
 
@@ -56,9 +79,14 @@ namespace Pong {
 
     private:
         uint32_t active_pos;
-        RenderChunk active_render_chunk;
         render_queue_reference render_queue_;
 
+        uint32_t viewers{0};
+
+    public:
+        RenderChunk active_render_chunk;
+
+    public:
         void active_front() {
             active_render_chunk = std::move(render_queue_.get().front());
             render_queue_.get().pop_front();
@@ -67,7 +95,10 @@ namespace Pong {
         void active_back() {
             active_render_chunk = std::move(render_queue_.get().back());
             render_queue_.get().pop_back();
+        }
 
+        void clear() noexcept {
+            render_queue_.get().clear();
         }
     };
 }

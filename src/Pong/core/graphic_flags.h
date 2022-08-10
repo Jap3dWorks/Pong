@@ -26,16 +26,7 @@ namespace Pong {
         TEX_COORDS = 2
     };
 
-    enum class GraphicComponentType : uint32_t {
-        STATIC = 0,
-        DYNAMIC = 1
-    };
 
-    enum class GraphicPrimitives: uint32_t {
-        POINT=0,
-        LINE=1,
-        TRIANGLE=2
-    };
 
 }
 
