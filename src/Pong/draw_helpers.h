@@ -47,8 +47,8 @@ namespace Pong {
                 "point_shd",
                 "unlit.glsl");
 
-        auto point_mat = scene->create_material<Material>("point_mat", point_shd,
-                                                          std::vector<Pong::Texture *>());
+        auto point_mat = scene->create_material<MaterialController>("point_mat", point_shd,
+                                                                    std::vector<Pong::Texture *>());
 
         // point Actor
         auto* a_point = scene->create_actor<AKinetic>(pnt_nme);

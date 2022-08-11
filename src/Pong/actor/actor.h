@@ -6,7 +6,7 @@ namespace Pong
     class Component;
     class Map;
     class Render;
-    class Material;
+    class MaterialController;
 }
 
 #include "Pong/core/movements.h"

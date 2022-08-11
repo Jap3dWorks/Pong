@@ -35,7 +35,7 @@ namespace Pong {
         std::vector<uint32_t> indices;
 
         GraphicPrimitives primitive{GraphicPrimitives::TRIANGLE};
-        Material material;  // shader + textures + values
+        MaterialController material;  // shader + textures + values
 
         RenderPiece(RenderPiece&&) = default;
     };

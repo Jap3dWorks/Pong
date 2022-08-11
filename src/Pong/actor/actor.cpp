@@ -10,7 +10,7 @@ namespace Pong {
 
 //    // ASkyBox
 //    // -------
-//    void ASkyBox::draw(const Render *render, const Scene *scene, Material *material) const
+//    void ASkyBox::draw(const Render *render, const Scene *scene, MaterialController *material) const
 //    {
 //        material->get_shader()->set_mat4("model", translation);
 //    }

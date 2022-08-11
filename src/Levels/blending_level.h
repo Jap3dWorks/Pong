@@ -31,7 +31,7 @@ protected:
         auto grass_shd = _scene->create_shader("grass_shd",
                                                "./src/shaders/cutout.glsl");
 
-        auto grass_mat = _scene->create_material<Pong::Material>(
+        auto grass_mat = _scene->create_material<Pong::MaterialController>(
                 "grass_mat",
                 grass_shd,
                 {
@@ -70,7 +70,7 @@ protected:
 //        // vertex size
 //        auto vert_shd = _scene->create_shader("vert_shd",
 //                                              "./src/shaders/point.glsl");
-//        auto vert_mat = _scene->create_material<Pong::Material>("vert_mat",
+//        auto vert_mat = _scene->create_material<Pong::MaterialController>("vert_mat",
 //                                                                vert_shd,
 //                                                                {});
 //        auto vert_shp = _scene->create_shape<Pong::IcosphereShape>("vert_shp", 2.0);
@@ -119,9 +119,9 @@ protected:
         auto blinn_shd = _scene->create_shader("blinn_shd",
                                                "./src/shaders/blinn.glsl");
 
-        auto blinn_mat = _scene->create_material<Pong::Material>("blinn_mat",
-                                                                 blinn_shd,
-                                                                 {});
+        auto blinn_mat = _scene->create_material<Pong::MaterialController>("blinn_mat",
+                                                                           blinn_shd,
+                                                                           {});
 
         blinn_mat->set_param("surfaceColor", glm::vec3(0.1, 0.2, 0.3));
         blinn_mat->set_param("glow", 16.f);
@@ -148,7 +148,7 @@ protected:
         auto blnd_shader = _scene->create_shader("blnd_shader",
                                                  "./src/shaders/blending.glsl");
 
-        auto bld_mat = _scene->create_material<Pong::Material>(
+        auto bld_mat = _scene->create_material<Pong::MaterialController>(
                 "bld_mat",
                 blnd_shader,
                 {{"texture1",

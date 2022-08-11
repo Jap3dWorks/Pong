@@ -12,6 +12,10 @@
 #include <array>
 
 namespace Pong {
+    struct Point {
+        glm::vec3 position;
+    };
+
     struct Vertex {
         glm::vec3 position;
         glm::vec3 normal;
@@ -42,6 +46,9 @@ namespace Pong {
         std::vector<uint32_t> indices;
     };
 
+    struct Curve {
+        std::vector<Point> points;
+    };
 
     enum class GraphicPrimitives: uint32_t {
         POINT=0,

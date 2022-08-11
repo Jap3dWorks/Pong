@@ -4,6 +4,7 @@
 #include "Pong/core/shader.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/texture.h"
+#include "Pong/core/reg_id_manager.h"
 
 #include <stb/stb_image.h>
 
@@ -11,6 +12,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 namespace Pong {
     class Render;
@@ -20,16 +22,33 @@ namespace Pong {
 namespace Pong {
     using TextureUniformVector = std::vector<std::pair<std::string, Texture*>>;
 
-    class Material {
+    template<typename T>
+    using param_data = std::unordered_map<std::string, T>;
+
+    struct Material {
+        RegId Shader;
+
+        param_data<float> float_params;
+        param_data<int> int_params;
+        param_data<glm::vec3> vec3_params;
+        param_data<glm::mat4> mat4_params;
+
+        param_data<RegId> textures;
+    };
+
+
+    class MaterialController {
     protected:
-        using super = Material;
+        using super = MaterialController;
+
+
 
     private:
         bool _is_setup = false;
-        std::map<std::string, float> _float_params;
-        std::map<std::string, int> _int_params;
-        std::map<std::string, glm::vec3> _vec3_params;
-        std::map<std::string, glm::mat4> _mat4_params;
+        param_data<float> _float_params;
+        param_data<int> _int_params;
+        param_data<glm::vec3> _vec3_params;
+        param_data<glm::mat4> _mat4_params;
 
         void _setup_material() {
             if (!_is_setup) {
@@ -51,18 +70,18 @@ namespace Pong {
     public:
         uint32_t order{50};
 
-        explicit Material(Shader * shader) : _shader(shader) {
+        explicit MaterialController(Shader * shader) : _shader(shader) {
             _setup_material();
         }
 
-        Material(Shader *shader,
-                 TextureUniformVector textures) :
+        MaterialController(Shader *shader,
+                           TextureUniformVector textures) :
                 _shader(shader),
                 _textures(std::move(textures)) {
             _setup_material();
         }
 
-        virtual ~Material() = default;
+        virtual ~MaterialController() = default;
 
         _P_NODISCARD Shader* get_shader() const {
             return _shader;

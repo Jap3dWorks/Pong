@@ -32,7 +32,7 @@ namespace Pong {
     class Map {
 
     public:
-        using OrderMatPtrPair = std::pair<uint32_t, Material*>;
+        using OrderMatPtrPair = std::pair<uint32_t, MaterialController*>;
         using OrderMatPtrComparer = OrderComparer<OrderMatPtrPair>;
 
         using OrderShpPtrPair = std::pair<uint32_t, GraphicComponent*>;
@@ -41,7 +41,7 @@ namespace Pong {
         using OrderActorPtrPair = std::pair<uint32_t, Actor*>;
         using OrderActorPtrComparer = OrderComparer<OrderActorPtrPair>;
 
-        using ShpMatPtrPair = std::pair<GraphicComponent*, Material*>;
+        using ShpMatPtrPair = std::pair<GraphicComponent*, MaterialController*>;
 
         template<typename T>
         using CameraOrderedActors = std::multiset<T*, ActorDistanceComparer>;
@@ -70,7 +70,7 @@ namespace Pong {
 
     public:
         std::map<std::string, Actor*> actor_map;
-        std::map<std::string, std::unique_ptr<Material>> material_map;
+        std::map<std::string, std::unique_ptr<MaterialController>> material_map;
         std::map<std::string, Collider*> collider_map;
         std::map<std::string, std::unique_ptr<GraphicComponent>> shape_map;
         std::map<std::string, Shader*> shader_map;
@@ -85,7 +85,7 @@ namespace Pong {
                 std::multiset<OrderMatPtrPair, OrderMatPtrComparer>
         > renderlayer_material_map;
 
-        std::map<Material *,
+        std::map<MaterialController *,
                 std::multiset<OrderShpPtrPair, OrderShpPtrComparer>
         > material_shape_map;
 
@@ -132,11 +132,11 @@ namespace Pong {
 
         void collect_blending_actors();
 
-        void assign_layer(const RenderLayer& rlay, Material* material, uint32_t order=0) {
+        void assign_layer(const RenderLayer& rlay, MaterialController* material, uint32_t order=0) {
             renderlayer_material_map[rlay].insert({order, material});
         }
 
-        void assign_material(Material* material,
+        void assign_material(MaterialController* material,
                              GraphicComponent* shape,
                              uint32_t order=0) {
             material_shape_map[material].insert({order, shape});
@@ -163,13 +163,13 @@ namespace Pong {
         _P_NODISCARD Shader* get_shader(const std::string& name) const;
 
         // create a material and save it in _materialMap
-        template<std::derived_from<Material> T, typename... Args>
+        template<std::derived_from<MaterialController> T, typename... Args>
         T *create_material(const std::string &name,
                            const RenderLayer &render_layer = RenderLayer::BASE,
                            Args &&... args) {
             auto ptr = new T(std::forward<Args>(args)...);
-            material_map[name] = std::unique_ptr<Material>(
-                    static_cast<Material*>(ptr)
+            material_map[name] = std::unique_ptr<MaterialController>(
+                    static_cast<MaterialController*>(ptr)
             );
 
             assign_layer(render_layer, ptr);
@@ -181,7 +181,7 @@ namespace Pong {
             return material_map.find(name) != material_map.end();
         }
 
-        _P_NODISCARD _P_INLINE Material* get_material(const std::string& name) const {
+        _P_NODISCARD _P_INLINE MaterialController* get_material(const std::string& name) const {
             assert(material_map.find(name) != material_map.end());
             return material_map.at(name).get();
         }

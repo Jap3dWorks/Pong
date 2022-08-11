@@ -33,7 +33,7 @@ protected:
         auto basic_shd = _scene->create_shader("basic_shd",
                                                "./src/shaders/basic.glsl");
 
-        auto basic_mat = _scene->create_material<Pong::Material>(
+        auto basic_mat = _scene->create_material<Pong::MaterialController>(
                 "basic_mat",
                 Pong::RenderLayer::BASE,
                 basic_shd);

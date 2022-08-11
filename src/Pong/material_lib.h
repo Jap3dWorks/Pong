@@ -19,11 +19,11 @@
 
 namespace Pong {
 /**Overrides update_shader from material class*/
-    class CubeMapMaterial : public Material {
+    class CubeMapMaterial : public MaterialController {
     public:
         CubeMapMaterial(Shader *shader,
                         const TextureUniformVector &textures) :
-                Material(shader, textures) {}
+                MaterialController(shader, textures) {}
 
         void update_shader(Render *render, Map *scene) override {
             super::update_shader(render, scene);

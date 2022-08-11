@@ -27,7 +27,7 @@ protected:
                 "./src/shaders/raymarching_shaders/primitives_scene.glsl");
 
         auto draw_material =
-                _scene->create_material<Pong::Material>(
+                _scene->create_material<Pong::MaterialController>(
                 "draw_mat", draw_shader,
                 {});
 
