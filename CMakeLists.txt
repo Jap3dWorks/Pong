@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 set(LIBRARIES ${CMAKE_SOURCE_DIR}/libraries)
 
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
 if(NOT EXISTS ${LIBRARIES})
     error("Libraries path %s{LIBRARIES} doesn't exists!")
 endif()
@@ -65,6 +67,10 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBRARIES}/assimp/lib/assimp
 
 message("Include doctest")
 include_directories(${LIBRARIES}/doctest/doctest)
+
+message("Include boost")
+find_package(Boost)
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message("copy Textures")

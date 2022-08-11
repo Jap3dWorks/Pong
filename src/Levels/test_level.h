@@ -17,7 +17,7 @@ protected:
         // a cube
         auto grass_shd = _scene->create_shader(
                 "cube_shd",
-                "../Shaders/basic.glsl");
+                "../src/shaders/basic.glsl");
 
         auto cube_mat = _scene->create_material<Pong::Material>(
                 "cube_mat",

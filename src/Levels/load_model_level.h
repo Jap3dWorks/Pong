@@ -31,7 +31,7 @@ protected:
 
         // grass planes
         auto basic_shd = _scene->create_shader("basic_shd",
-                                               "./Shaders/basic.glsl");
+                                               "./src/shaders/basic.glsl");
 
         auto basic_mat = _scene->create_material<Pong::Material>(
                 "basic_mat",

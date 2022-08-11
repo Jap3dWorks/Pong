@@ -29,7 +29,7 @@ protected:
 
         // grass planes
         auto grass_shd = _scene->create_shader("grass_shd",
-                                               "./Shaders/cutout.glsl");
+                                               "./src/shaders/cutout.glsl");
 
         auto grass_mat = _scene->create_material<Pong::Material>(
                 "grass_mat",
@@ -69,7 +69,7 @@ protected:
 
 //        // vertex size
 //        auto vert_shd = _scene->create_shader("vert_shd",
-//                                              "./Shaders/point.glsl");
+//                                              "./src/shaders/point.glsl");
 //        auto vert_mat = _scene->create_material<Pong::Material>("vert_mat",
 //                                                                vert_shd,
 //                                                                {});
@@ -91,7 +91,7 @@ protected:
 
         // skybox
         auto skybox_shd = _scene->create_shader("skybox_shd",
-                                                "./Shaders/reflect_skybox.glsl");
+                                                "./src/shaders/reflect_skybox.glsl");
 
         auto *skybox_mat = _scene->create_material<Pong::CubeMapMaterial>(
                 "skybox_mat",
@@ -117,7 +117,7 @@ protected:
 
         // a blinn material
         auto blinn_shd = _scene->create_shader("blinn_shd",
-                                               "./Shaders/blinn.glsl");
+                                               "./src/shaders/blinn.glsl");
 
         auto blinn_mat = _scene->create_material<Pong::Material>("blinn_mat",
                                                                  blinn_shd,
@@ -146,7 +146,7 @@ protected:
     inline void _create_blending_actors() {
         // semitransparent
         auto blnd_shader = _scene->create_shader("blnd_shader",
-                                                 "./Shaders/blending.glsl");
+                                                 "./src/shaders/blending.glsl");
 
         auto bld_mat = _scene->create_material<Pong::Material>(
                 "bld_mat",

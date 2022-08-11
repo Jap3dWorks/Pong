@@ -31,7 +31,7 @@ namespace Pong {
 //        uint32_t* indices;
 //        uint32_t indices_size;
 
-        std::vector<float> points;  // changes every frame
+        std::vector<Vertex> points;  // changes every frame
         std::vector<uint32_t> indices;
 
         GraphicPrimitives primitive{GraphicPrimitives::TRIANGLE};

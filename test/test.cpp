@@ -53,7 +53,7 @@ void _test_text_template() {
 
 void _test_shader_parser() {
     auto result = shaders_from_file(
-            "./Shaders/raymarching_shaders/primitives_scene.glsl");
+            "./src/shaders/raymarching_shaders/primitives_scene.glsl");
 
     for (auto& shdr: result) {
         LOG_INFO(shdr.second.get_data());

@@ -290,7 +290,7 @@ namespace Pong {
 
             // framebuffer shaders
             framebuffer_shader = std::make_unique<Shader>(
-                    Shader("./Shaders/camera/framebuffer_screen.glsl")
+                    Shader("./src/shaders/camera/framebuffer_screen.glsl")
             );
 
             _create_ubo_camera();

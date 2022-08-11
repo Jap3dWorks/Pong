@@ -84,8 +84,8 @@ private:
     std::regex _shader_pattern {R"(#shader\s+(\w+))"};
 
 public:
-    inline static const char* shaders_path{"./Shaders/"};
-    inline static const char* templates_dir{"./Shaders/templates"};
+    inline static const char* shaders_path{"./src/shaders/"};
+    inline static const char* templates_dir{"./src/shaders/templates"};
 
 private:
     auto inline _get_shader_code(std::ifstream &input_stream) -> std::stringstream {
