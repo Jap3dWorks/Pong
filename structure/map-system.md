@@ -10,3 +10,9 @@ We will Define some concept elements:
 * **RegData**, RegData represents conjunction of related classes data. RegData manages each class separately using a SparseSets system (**TypeRegMap**). \
   e.g all components should be included in the same **RegData**. Also **RegData** use **RegId** for elements conjunction.
 * **MapLevel**, Most high level class of the system, MapLevel is the final interface, Map level defines which RegData, with which classes and how data will be operated. MapLevel can create any objects that appears in a map.
+
+## Rendering
+
+Map systems should submit geometry data using RenderSubmitter, later the associated render thread will take each job in the pool to make a render.
+
+<img src="../.gitbook/assets/file.drawing.svg" alt="" class="gitbook-drawing">

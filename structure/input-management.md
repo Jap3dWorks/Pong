@@ -1,4 +1,4 @@
-# Input management
+# Input System
 
 Input system should translate a queue of inputs in events.
 
