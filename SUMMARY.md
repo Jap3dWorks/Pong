@@ -12,14 +12,16 @@
 
 ## Structure
 
-* [Input management](structure/input-management.md)
-* [Command](structure/page-3.md)
-* [Actor and Components](structure/actor-and-components.md)
-* [Shapes](structure/shapes.md)
-* [Render System](structure/render-system.md)
+* [Input System](structure/input-system.md)
+* [Command System](structure/command-system.md)
+* [File System](structure/file-system/README.md)
+  * [Shapes](structure/file-system/shapes.md)
 * [Map System](structure/map-system.md)
+* [Actor and Components](structure/actor-and-components.md)
+* [Render System](structure/render-system.md)
 * [Data Structures](structure/data-structures/README.md)
   * [FixedAddressBuffer](structure/data-structures/fixedaddressbuffer.md)
+  * [SparseSet](structure/data-structures/sparseset.md)
 
 ## Dev diary
 
