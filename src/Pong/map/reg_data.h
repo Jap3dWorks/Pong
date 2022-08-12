@@ -28,7 +28,7 @@ namespace Pong {
     class RegData {
     private:
         using Registry = TypeRegMap;
-        using id_set_t = RegIdManager<uint32_t>;
+        using id_set_t = RegIdManager<>;
 
         template<Intersects<Types...> comp>
         using type_data = SparseSet<comp>;

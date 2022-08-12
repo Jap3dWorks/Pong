@@ -45,16 +45,16 @@ private:
     IdType last_id_{0};
 
 public:
-    RegId create_id() {
+    IdType create_id() {
         if (free_index_.empty()) {
             reg_id_.insert(++last_id_);
-            return last_id_;
+            return {last_id_};
         }
         else {
             auto _front = free_index_.front();
             free_index_.pop();
             reg_id_.insert(_front);
-            return _front;
+            return {_front};
         }
     }
 

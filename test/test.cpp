@@ -23,6 +23,7 @@
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
 #include "Pong/map/reg_data.h"
+#include "Pong/file_data/reflectable.h"
 #include <cassert>
 
 //template<typename Derived_>
@@ -417,6 +418,19 @@ void test_intersection_class() {
 }
 
 
+struct ReflectData {
+    REFLECTABLE(
+            EXPOSE(uint32_t, attr_1, 0),
+            EXPOSE(const char *, attr_2, "attr_2_value")
+    );
+
+};
+
+void test_class_reflection() {
+    auto rdata = ReflectData();
+    print_fields(rdata);
+}
+
 
 int main() {
 //    _test_text_template();
@@ -437,7 +451,9 @@ int main() {
 //    test_for_loop();
 
 //    test_class_map();
-    test_registry_map();
+//    test_registry_map();
+
+    test_class_reflection();
 
     return 0;
 }
