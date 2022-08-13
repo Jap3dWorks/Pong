@@ -24,6 +24,7 @@
 //#include "Pong/core/component.h"
 #include "Pong/map/reg_data.h"
 #include "Pong/file_data/reflectable.h"
+#include "Pong/file_data/serializer.h"
 #include <cassert>
 
 //template<typename Derived_>
@@ -420,9 +421,9 @@ void test_intersection_class() {
 
 struct ReflectData {
     REFLECTABLE(
-            EXPOSE(uint32_t, attr_1, 0),
-            EXPOSE(const char *, attr_2, "attr_2_value"),
-            EXPOSE(uint32_t, attr_3, 2)
+            FIELD(uint32_t, attr_1, 0),
+            FIELD(const char *, attr_2, "attr_2_value"),
+            FIELD(uint32_t, attr_3, 2)
     );
 };
 
@@ -432,6 +433,15 @@ void test_class_reflection() {
 }
 
 void test_serialize_data() {
+    auto rdata = ReflectData();
+    auto serializer = Pong::serializer::AssetSerializer();
+    LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola"));
+    LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola.asset"));
+
+    Pong::serializer::save_serialized(
+            serializer,
+            "D:/_docs/Pong/test/test_archive"
+            );
 
 }
 
@@ -458,6 +468,7 @@ int main() {
 //    test_registry_map();
 
     test_class_reflection();
+    test_serialize_data();
 
     return 0;
 }

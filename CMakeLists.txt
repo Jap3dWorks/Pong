@@ -69,8 +69,14 @@ message("Include doctest")
 include_directories(${LIBRARIES}/doctest/doctest)
 
 message("Include boost")
+#set(Boost_USE_STATIC_LIBS ON)
+#set(Boost_USE_STATIC_LIBS ON)
+
 find_package(Boost)
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+include_directories( ${Boost_INCLUDE_DIR} )
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
+
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message("copy Textures")
@@ -92,6 +98,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         DEPENDS ${destination}
         COMMENT "symbolic link resources folder from ${source} => ${destination}"
     )
+
 endif()
 
 
@@ -107,6 +114,10 @@ add_executable(
 
 message("Compile and linking glad")
 target_link_libraries(TEST PRIVATE glad)
+
+message("Link Boost")
+link_directories(${Boost_LIBRARY_DIRS})
+target_link_libraries(TEST LINK_PUBLIC ${Boost_LIBRARIES})
 
 
 # -------------

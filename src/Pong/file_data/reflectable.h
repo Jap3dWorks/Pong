@@ -17,18 +17,7 @@
 #include <boost/bind.hpp>
 
 
-#define REM(...) __VA_ARGS__
-#define EAT(...)
-
-#define TYPEOF(x) DETAIL_TYPEOF(DETAIL_TYPEOF_PROBE x,)  // x-> (type)a, contains the required(), so preprocessor can be executed
-#define DETAIL_TYPEOF(...) DETAIL_TYPEOF_HEAD(__VA_ARGS__)
-#define DETAIL_TYPEOF_HEAD(x, ...) REM x
-#define DETAIL_TYPEOF_PROBE(...) (__VA_ARGS__),
-
-#define STRIP(x) EAT x
-#define PAIR(x) REM x
-
-#define EXPOSE(...) (__VA_ARGS__)
+#define FIELD(...) (__VA_ARGS__)
 
 #define DECLARE(type, name, ...) type name{__VA_ARGS__}
 #define TYPE(type, name, ...) type
