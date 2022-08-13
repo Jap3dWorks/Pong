@@ -6,39 +6,50 @@
 #define GL_TEST_SERIALIZER_H
 
 
-#include <iostream>
-#include <vector>
-#include <boost/archive/text_iarchive.hpp>
 #include "Pong/core/geometry_data.h"
 #include "Pong/core/reg_id_manager.h"
 #include "Pong/core/material.h"
+#include "Pong/file_data/reflectable.h"
+
+#include <iostream>
+#include <vector>
+#include <boost/archive/text_iarchive.hpp>
 #include <functional>
 #include <optional>
 #include <vector>
 
+#define SERIALIZABLE REFLECTABLE
 
 namespace Pong::serializer {
     struct ElemData {
-        glm::mat4 transform{};
-        std::optional<RegId> parent{};
-        std::optional<RegId> shape{};
-        std::optional<RegId> material{};
-        std::optional<RegId> curve{};
+        SERIALIZABLE(
+            EXPOSE(glm::mat4, transform, 1),
+            EXPOSE(std::optional<RegId>, parent),
+            EXPOSE(std::optional<RegId>, shape),
+            EXPOSE(std::optional<RegId>, material),
+            EXPOSE(std::optional<RegId>, curve)
+        )
     };
 
     struct MeshData {
-        RegId uid{};
-        Mesh mesh{};
+        SERIALIZABLE(
+                EXPOSE(RegId, uid),
+                EXPOSE(Mesh, mesh)
+        )
     };
 
     struct CurveData {
-        RegId uid{};
-        Curve curve{};
+        SERIALIZABLE (
+            EXPOSE(RegId, uid),
+            EXPOSE(Curve, curve)
+        )
     };
 
     struct MaterialData {
-        RegId uid{};
-        Material material{};
+        SERIALIZABLE (
+                EXPOSE(RegId, uid),
+                EXPOSE(Material, material)
+        )
     };
 
 // Try to use reflection for struct serialization.
@@ -74,19 +85,47 @@ namespace Pong::serializer {
 
     };
 
+
+    struct serialize_visitor {
+        AssetSerializer &asset_serializer;
+
+        explicit serialize_visitor(AssetSerializer& asset_serializer_):
+        asset_serializer(asset_serializer_) {}
+
+        template<typename FieldData>
+        void operator()(FieldData f) {
+            asset_serializer & f.get();
+        }
+    };
+
+    template<typename T>
+    void serialize_fields(T& x, AssetSerializer& asset_serializer) {
+        visit_each(x, serialize_visitor(asset_serializer));
+    }
+
 }
 
 
 namespace boost::serialization {
+//    template<typename Archive>
+//    void serialize(Archive &ar, Pong::serializer::ElemData &elem_data, const uint32_t version) {
+//        ar & elem_data.transform;
+//        ar & elem_data.parent;
+//        ar & elem_data.shape;
+//        ar & elem_data.material;
+//        ar & elem_data.curve;
+//    }
+
     template<typename Archive>
-    void serialize(Archive &ar, Pong::serializer::ElemData &elem_data, const uint32_t version) {
-        ar & elem_data.transform;
-        ar & elem_data.parent;
-        ar & elem_data.shape;
-        ar & elem_data.material;
-        ar & elem_data.curve;
+    void serialize(Archive &ar, RegId &uid, const uint32_t version) {
+        ar & to_integer(uid);
     }
+
+
 }
+
+
+
 
 
 BOOST_CLASS_VERSION(Pong::serializer::AssetSerializer, 0);

@@ -28,14 +28,12 @@
 #define STRIP(x) EAT x
 #define PAIR(x) REM x
 
-
 #define EXPOSE(...) (__VA_ARGS__)
 
 #define DECLARE(type, name, ...) type name{__VA_ARGS__}
 #define TYPE(type, name, ...) type
 #define NAME(type, name, ...) name
 #define NAME_STR(type, name, ...) #name
-#define VALUE(type, name, ...) __VA_ARGS__
 
 
 template<typename M, typename T>
@@ -62,7 +60,7 @@ template<typename Self>                                  \
 struct field_data<i, Self>                               \
 {                                                        \
 Self & self;                                             \
-field_data(Self & self):self(self) {}                    \
+explicit field_data(Self & self):self(self) {}           \
                                                          \
 typename make_const<Self, TYPE x>::type & get()          \
 {                                                        \
@@ -80,26 +78,7 @@ const char* name() const                                 \
 };
 
 
-template<typename T>
-struct reflector_o {
-    template<int N>
-    struct field_data {
-
-    };
-
-    template<int N>
-    static constexpr typename T::template field_data<N, T> get_field_data(T &x) {
-        return typename T::template field_data<N, T>(x);
-    }
-
-    struct fields {
-        static const int n = T::fields_n;
-    };
-};
-
-
 struct reflector {
-
     template<int N, typename T>
     static constexpr typename T::template field_data<N, T> get_field_data(T &x) {
         return typename T::template field_data<N, T>(x);
@@ -111,43 +90,26 @@ struct reflector {
     };
 };
 
-struct field_visitor
-{
-    template<typename C, typename Visitor, class I>
-    constexpr void operator()(C& c, Visitor v, I) {
-        v(reflector::get_field_data<I::value, C>(c));
-    }
-};
-
 
 template<typename C, typename Visitor, class I>
-inline static constexpr void field_visitor_f(C& c, Visitor v, I) {
+inline static constexpr void field_visitor(C& c, Visitor v, I) {
     v(reflector::get_field_data<I::value, C>(c));
-};
+}
 
 
 template<typename C, typename Visitor>
 void visit_each(C &c, Visitor v) {
-
-//    using range = p_range<int, 0, reflector::fields<C>::n>;
-//    std::for_each(range::begin(), range::end(),
-//                  [&](auto &param_) -> void {
-//                      field_visitor().template operator()<C, Visitor>(c, v, param_);
-//                  }
-//    );
-
-
-    typedef boost::mpl::range_c<int,0,reflector::fields<C>::n> range;
-//    boost::mpl::for_each<range>(boost::bind<void>(field_visitor_f, boost::ref(c), v, _1));
+    typedef boost::mpl::range_c<int, 0, reflector::fields<C>::n> range;
 
     boost::mpl::for_each<range>(
             [&]<typename I>(I i) constexpr -> void {
-        field_visitor_f<C, Visitor, I>(
-                c, v, i
+                field_visitor<C, Visitor, I>(
+                        c, v, i
                 );
-    });
-
+            }
+        );
 }
+
 
 struct print_visitor {
         template<typename FieldData>

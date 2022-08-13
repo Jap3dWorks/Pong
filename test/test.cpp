@@ -421,14 +421,18 @@ void test_intersection_class() {
 struct ReflectData {
     REFLECTABLE(
             EXPOSE(uint32_t, attr_1, 0),
-            EXPOSE(const char *, attr_2, "attr_2_value")
+            EXPOSE(const char *, attr_2, "attr_2_value"),
+            EXPOSE(uint32_t, attr_3, 2)
     );
-
 };
 
 void test_class_reflection() {
     auto rdata = ReflectData();
     print_fields(rdata);
+}
+
+void test_serialize_data() {
+
 }
 
 
