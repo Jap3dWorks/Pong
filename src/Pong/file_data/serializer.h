@@ -10,16 +10,17 @@
 #include "Pong/core/reg_id_manager.h"
 #include "Pong/core/material.h"
 #include "Pong/file_data/reflectable.h"
+#include "Pong/file_data/serialization.h"
 
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
 
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
+//#include <boost/archive/binary_iarchive.hpp>
+//#include <boost/archive/binary_oarchive.hpp>
 
-#include <boost/serialization/vector.hpp>
+//#include <boost/serialization/vector.hpp>
 #include <boost/serialization/string.hpp>
-#include <boost/serialization/version.hpp>
+//#include <boost/serialization/version.hpp>
 
 #include <iostream>
 #include <ostream>
@@ -85,13 +86,12 @@ namespace Pong::serializer {
 
     // Save serialized
     template <typename T>
-    void save_serialized(const T&,  const char*);
+    void write_serialized_file(const T&,  const char*);
 
 
 // Try to use reflection for struct serialization.
 // https://stackoverflow.com/questions/41453/how-can-i-add-reflection-to-a-c-application
     class AssetSerializer {
-        friend class boost::serialization::access;
 
     public:
         template<typename T>
@@ -119,32 +119,23 @@ namespace Pong::serializer {
             ar & curve_data;
             ar & material_data;
         }
-
-        BOOST_SERIALIZATION_SPLIT_MEMBER();
-
     };
 
 
-    template<>
-    void save_serialized<AssetSerializer>(
-            const AssetSerializer& asset_serializer, const char* file_name) {
+    void write_serialized_file(
+            const AssetSerializer& asset_serializer,
+            const char* file_name) {
 
-        {
-            auto ofs = std::ofstream(
-                    ensure_file_name(asset_serializer, file_name).c_str(),
-                    ios::binary);
+        auto os = std::ofstream(
+                ensure_file_name(asset_serializer, file_name).c_str(),
+                std::ios::binary
+        );
 
-            const char* test = "test";
-            auto number = 10;
+        const char *test = "test";
+        auto number = 10;
 
-//            ofs.write((char*)test, 5);
-//            ofs.write((char*)&number, sizeof(number));
-
-//            auto out = boost::archive::binary_oarchive(ofs);
-//            out << number;
-
-        }
-
+        auto srlizer = OSSerializer(os);
+        srlizer << number;
 
     }
 
@@ -169,7 +160,7 @@ namespace Pong::serializer {
 }
 
 
-BOOST_CLASS_VERSION(Pong::serializer::AssetSerializer, 0);
+//BOOST_CLASS_VERSION(Pong::serializer::AssetSerializer, 0);
 
 
 namespace boost::serialization {

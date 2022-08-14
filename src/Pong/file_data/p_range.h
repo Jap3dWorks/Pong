@@ -6,22 +6,7 @@
 #define GL_TEST_P_RANGE_H
 
 
-template<typename T, typename U, U  value_, typename V, V ...values_>
-struct op_value: op_value<T, U, value_, bool>, op_value<T, V, values_...>
-{};
 
-template<typename T, T value_>
-struct op_value<T, T, value_, std::nullopt_t> {
-    using type=T;
-    static constexpr T value{value_};
-    static constexpr bool has_value{true};
-};
-
-template<typename T>
-struct op_value<T, std::nullopt_t, std::nullopt, std::nullopt_t> {
-    using type=T;
-    static constexpr bool has_value{false};
-};
 
 
 #define VAREXPR(x) VAREXPR_FRONT x

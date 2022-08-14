@@ -22,9 +22,12 @@
 #include "Pong/map/type_reg_map.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
+
 #include "Pong/map/reg_data.h"
 #include "Pong/file_data/reflectable.h"
 #include "Pong/file_data/serializer.h"
+#include "Pong/file_data/serialization.h"
+
 #include <cassert>
 
 //template<typename Derived_>
@@ -73,7 +76,8 @@ enum class TextureWrap : int32_t {
     MIRRORED_REPEAT = 2
 };
 void test_enum_type() {
-    std::underlying_type<TextureWrap>::type{10};
+    auto _val = std::underlying_type<TextureWrap>::type{10};
+    LOG_INFO("SUCCESS: " << _val);
 }
 
 
@@ -433,16 +437,26 @@ void test_class_reflection() {
 }
 
 void test_serialize_data() {
-    auto rdata = ReflectData();
     auto serializer = Pong::serializer::AssetSerializer();
     LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola"));
     LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola.asset"));
 
-    Pong::serializer::save_serialized(
+    Pong::serializer::write_serialized_file(
             serializer,
             "D:/_docs/Pong/test/test_archive"
-            );
+    );
 
+    auto ofs = std::ostringstream(
+                "testfile.asset",
+                ios::binary
+                );
+}
+
+
+class serializer;
+SERIAL_CLASS_VERSION(serializer, 10);
+void test_custom_serializer() {
+    LOG_INFO("Version: " << *Pong::serializer::serialized_version<serializer>::version);
 }
 
 
@@ -469,6 +483,6 @@ int main() {
 
     test_class_reflection();
     test_serialize_data();
-
+    test_custom_serializer();
     return 0;
 }

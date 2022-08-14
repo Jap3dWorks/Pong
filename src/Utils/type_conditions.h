@@ -7,27 +7,7 @@
 #include <iostream>
 #include <type_traits>
 #include <utility>
-
-
-//template<typename T>
-//struct empty{};
-//
-//template<typename... Ts>
-//struct unique;
-//
-//template<>
-//struct unique<>
-//{
-//    static constexpr bool value = true;
-//};
-//
-//template<typename T, typename... Ts>
-//struct unique<T, Ts...>: public unique<Ts...>, public empty<T>
-//{
-//    using base = unique<Ts...>;
-//
-//    static constexpr bool value = base::value and not std::is_base_of<empty<T>, base>::value;
-//};
+#include <optional>
 
 
 template <typename... Ts>
@@ -51,6 +31,24 @@ struct is_intersection<T, U, Ts...> {
 
 template<typename T, typename ...Ts>
 concept Intersects = is_intersection<T, Ts...>::value;
+
+
+template<typename T, typename U, U  value_, typename V, V ...values_>
+struct op_value: op_value<T, U, value_, bool>, op_value<T, V, values_...>
+{};
+
+template<typename T, T value_>
+struct op_value<T, T, value_, std::nullopt_t> {
+    using type=T;
+    static constexpr T value{value_};
+    static constexpr bool has_value{true};
+};
+
+template<typename T>
+struct op_value<T, std::nullopt_t, std::nullopt, std::nullopt_t> {
+    using type=T;
+    static constexpr bool has_value{false};
+};
 
 
 #endif //GL_TEST_TYPE_CONDITIONS_H
