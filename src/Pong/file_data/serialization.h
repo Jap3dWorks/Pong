@@ -8,6 +8,7 @@
 #include <iostream>
 #include <ostream>
 #include "Utils/type_conditions.h"
+#include <functional>
 #include <vector>
 #include <concepts>
 #include <string>
@@ -35,59 +36,179 @@ namespace Pong::serializer {
     }
 
     namespace {
-        inline void write(std::ostream &ostream, char *ptr, std::streamsize size) {
+        inline void save(std::ostream &ostream, char *ptr, std::streamsize size) {
             ostream.write(ptr, size);
         }
+
+        inline void load(std::istream &istream, char *ptr, std::streamsize size) {
+            istream.read(ptr, size);
+        }
+    }
+
+    // save types
+    template<typename T>
+    static inline void save(std::ostream &ostream, const T &value) {
+        save(ostream, (char *) &value, sizeof(value));
     }
 
     template<typename T>
-    static inline void write(std::ostream &ostream, const T &value) {
-        write(ostream, (char *) &value, sizeof(value));
-    }
+    static inline void save(std::ostream& ostream, const std::vector<T>& value) {
+        size_t size = value.size();
+        save(ostream, (char *) &size, sizeof(size));
 
-    template<typename T>
-    static inline void write(std::ostream& ostream, const std::vector<T>& value) {
         for(auto& it: value) {
-            write(ostream, *it);
+            save(ostream, *it);
         }
     }
 
-    static inline void write(std::ostream& ostream, const std::string& value) {
-        write(ostream, (char*)value.data(), value.size());
+    static inline void save(std::ostream& ostream, const std::string& value) {
+        size_t size = value.size();
+        save(ostream, (char *) &size, sizeof(size));
+        save(ostream, (char *) value.data(), size);
     }
 
-    class OSSerializer {
-    public:
-        using ostream = std::ostream;
+    template<typename T>
+    static inline void save(std::ostream& ostream, const std::reference_wrapper<T>& value) {
+        save(ostream, (char*)&value.get(), sizeof(T));
+    }
 
-    private:
-        ostream& os_;
+    template<typename T>
+    static inline void save(std::ostream& ostream, const std::optional<T>& value) {
+        auto hasval = value.has_value();
+        save(ostream, (char*)&hasval, sizeof(hasval));
 
-    public:
-        explicit OSSerializer(std::ostream& os): os_(os) {}
-
-        template<typename T>
-        OSSerializer& operator&(const T& other) {
-            write(os_, other);
-            return *this;
+        if (hasval) {
+            save(ostream, *value);
         }
+    }
+
+
+    // load types
+    template<typename T>
+    static inline void load(std::istream &istream, T &value) {
+        load(istream, (char *) &value, sizeof(value));
+    }
+
+    template<typename T>
+    static inline void load(std::istream &istream, std::vector<T> &value) {
+        size_t vector_size;
+        load(istream, (char *) &vector_size, sizeof(size_t));
+        value.resize(vector_size);
+
+        for(auto& it: value) {
+            load(istream, *it);
+        }
+    }
+
+    static inline void load(std::istream& istream, std::string& value) {
+        size_t string_size;
+        load(istream, (char *) &string_size, sizeof(size_t));
+        value.resize(string_size);
+
+        load(istream, (char *) value.data(), string_size);
+    }
+
+    template<typename T>
+    static inline void load(std::istream& istream, std::reference_wrapper<T>& value) {
+        load(istream, (char*)&value.get(), sizeof(T));
+    }
+
+    template<typename T>
+    static inline void load(std::istream& istream, std::optional<T>& value) {
+        auto hasval = value.has_value();
+        load(istream, (char*)&hasval, sizeof(hasval));
+
+        if (hasval) {
+            load(istream, *value);
+        }
+    }
+
+    struct Header {
+        uint32_t version;
+        std::string type;
+        uint32_t size;
+    };
+
+
+    template<typename Stream>
+    class BaseSerializer {
+    protected:
+        using base_serializer = BaseSerializer<Stream>;
+
+    public:
+        using stream_type = Stream;
+        using stream_reference = Stream&;
+
+    protected:
+        stream_reference stream_;
+
+    public:
+        explicit BaseSerializer(stream_reference& os_): stream_(os_) {}
+
 
         template<typename T>
-        OSSerializer& operator<<(const T& other) {
+        auto& operator<<(const T& other) {
             serialize(*this, other, serialized_version<T>::version);
             return *this;
         }
 
-        ostream& get() {
-            return os_;
+        auto& get() {
+            return stream_;
         }
     };
 
 
+    class OSSerializer : public BaseSerializer<std::ostream> {
+    public:
+        using base_serializer::base_serializer;
 
-    class ISSerializer {
-
+    public:
+        template<typename T>
+        auto &operator&(const T &other) {
+            save(stream_, other);
+            return *this;
+        }
     };
 
+
+    class ISSerializer : public BaseSerializer<std::istream> {
+    public:
+        using base_serializer::base_serializer;
+
+    public:
+        template<typename T>
+        auto &operator&(const T &other) {
+            load(stream_, other);
+            return *this;
+        }
+    };
+
+
+    template<typename Archive>
+    struct serialize_visitor {
+        Archive &ar;
+
+        explicit serialize_visitor(Archive& asset_serializer_):
+                ar(asset_serializer_) {}
+
+        template<typename ReflectedField>
+        void operator()(ReflectedField f) {
+            ar & f.get();
+        }
+    };
+
+    template<typename Archive, typename Reflected>
+    void serialize_fields(Archive& ar, Reflected& x) {
+        visit_each(x, serialize_visitor(ar));
+    }
+
+#define SERIALIZABLE REFLECTABLE
+
+#define SERIALIZABLE_IMPL(class_) \
+    template<typename Archive> \
+    void serialize(Archive &ar, class_ &value, const Version& file_version) { \
+        serialize_fields(value, ar);                              \
+    }
 }
+
 #endif //GL_TEST_SERIALIZATION_H

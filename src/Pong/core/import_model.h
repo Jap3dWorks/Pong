@@ -91,7 +91,7 @@ namespace Pong {
 
     inline auto import_model(const std::string &model_path) -> MeshVector {
 
-        // read file
+        // load file
         Assimp::Importer importer;
         const aiScene *ai_scene = importer.ReadFile(
                 model_path,

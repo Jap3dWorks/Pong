@@ -437,11 +437,11 @@ void test_class_reflection() {
 }
 
 void test_serialize_data() {
-    auto serializer = Pong::serializer::AssetSerializer();
+    auto serializer = Pong::serializer::AssetDescription();
     LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola"));
     LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola.asset"));
 
-    Pong::serializer::write_serialized_file(
+    Pong::serializer::save_file(
             serializer,
             "D:/_docs/Pong/test/test_archive"
     );

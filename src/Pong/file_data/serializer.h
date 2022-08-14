@@ -5,22 +5,13 @@
 #ifndef GL_TEST_SERIALIZER_H
 #define GL_TEST_SERIALIZER_H
 
-
 #include "Pong/core/geometry_data.h"
 #include "Pong/core/reg_id_manager.h"
 #include "Pong/core/material.h"
 #include "Pong/file_data/reflectable.h"
 #include "Pong/file_data/serialization.h"
 
-//#include <boost/archive/text_oarchive.hpp>
-//#include <boost/archive/text_iarchive.hpp>
-
-//#include <boost/archive/binary_iarchive.hpp>
-//#include <boost/archive/binary_oarchive.hpp>
-
-//#include <boost/serialization/vector.hpp>
 #include <boost/serialization/string.hpp>
-//#include <boost/serialization/version.hpp>
 
 #include <iostream>
 #include <ostream>
@@ -30,7 +21,6 @@
 #include <vector>
 #include <string>
 
-#define SERIALIZABLE REFLECTABLE
 
 namespace Pong::serializer {
     struct ElemData {
@@ -42,6 +32,7 @@ namespace Pong::serializer {
                 FIELD(std::optional<RegId>, curve)
         )
     };
+    SERIALIZABLE_IMPL(ElemData);
 
     struct MeshData {
         SERIALIZABLE(
@@ -49,6 +40,7 @@ namespace Pong::serializer {
                 FIELD(Mesh, mesh)
         )
     };
+    SERIALIZABLE_IMPL(MeshData);
 
     struct CurveData {
         SERIALIZABLE (
@@ -56,6 +48,7 @@ namespace Pong::serializer {
                 FIELD(Curve, curve)
         )
     };
+    SERIALIZABLE_IMPL(CurveData);
 
     struct MaterialData {
         SERIALIZABLE (
@@ -63,16 +56,47 @@ namespace Pong::serializer {
                 FIELD(Material, material)
         )
     };
+    SERIALIZABLE_IMPL(MaterialData);
+
+
+#define P_BASE_DESCRIPTION_DATA \
+    vector_data<ElemData> elem_data; \
+    vector_data<MeshData> mesh_data; \
+    vector_data<CurveData> curve_data; \
+    vector_data<MaterialData> material_data;
+
+    struct any_type{};
+    struct ref_wrapper_type{};
+
+    template<typename U>
+    class BaseDescription_ {
+    public:
+        template<typename T>
+        using vector_data = std::vector<T>;
+    public:
+        P_BASE_DESCRIPTION_DATA;
+    };
+
+    template<>
+    class BaseDescription_<ref_wrapper_type> {
+    public:
+        template<typename T>
+        using vector_data = std::vector<std::reference_wrapper<T>>;
+
+    public:
+        P_BASE_DESCRIPTION_DATA;
+    };
+
+    using IAssetDescription = BaseDescription_<any_type>;
+    using OAssetDescription = BaseDescription_<ref_wrapper_type>;
 
 
     // ensure output filenames template
     template<typename T>
     std::string ensure_file_name(const T&, const char* file_name);
 
-    class AssetSerializer;
-    template<>
-    std::string ensure_file_name<AssetSerializer>(
-            const AssetSerializer&,
+    std::string ensure_file_name(
+            const OAssetDescription&,
             const char* file_name) {
 
         auto string_path = std::string(file_name);
@@ -86,44 +110,11 @@ namespace Pong::serializer {
 
     // Save serialized
     template <typename T>
-    void write_serialized_file(const T&,  const char*);
+    void save_file(const T&,  const char*);
 
 
-// Try to use reflection for struct serialization.
-// https://stackoverflow.com/questions/41453/how-can-i-add-reflection-to-a-c-application
-    class AssetSerializer {
-
-    public:
-        template<typename T>
-//        using list_reference =  std::vector<std::reference_wrapper<T>>;
-        using list_reference =  std::vector<T>;
-
-    public:
-        list_reference<ElemData> elem_data;
-        list_reference<MeshData> mesh_data;
-        list_reference<CurveData> curve_data;
-        list_reference<MaterialData> material_data;
-
-        template<typename Archive>
-        void save(Archive & ar, const uint32_t version) const {
-//            ar & elem_data;
-//            ar & mesh_data;
-//            ar & curve_data;
-//            ar & material_data;
-        }
-
-        template<typename Archive>
-        void load(Archive & ar, const unsigned int version) {
-            ar & elem_data;
-            ar & mesh_data;
-            ar & curve_data;
-            ar & material_data;
-        }
-    };
-
-
-    void write_serialized_file(
-            const AssetSerializer& asset_serializer,
+    void save_file(
+            const OAssetDescription& asset_serializer,
             const char* file_name) {
 
         auto os = std::ofstream(
@@ -140,41 +131,18 @@ namespace Pong::serializer {
     }
 
 
-    struct serialize_visitor {
-        AssetSerializer &asset_serializer;
-
-        explicit serialize_visitor(AssetSerializer& asset_serializer_):
-        asset_serializer(asset_serializer_) {}
-
-        template<typename FieldData>
-        void operator()(FieldData f) {
-            asset_serializer & f.get();
-        }
-    };
-
-    template<typename T>
-    void serialize_fields(T& x, AssetSerializer& asset_serializer) {
-        visit_each(x, serialize_visitor(asset_serializer));
-    }
-
-}
-
-
-//BOOST_CLASS_VERSION(Pong::serializer::AssetSerializer, 0);
-
-
-namespace boost::serialization {
     template<typename Archive>
     void serialize(Archive &ar, RegId &uid, const uint32_t version) {
         ar & to_integer(uid);
     }
 
-    template<typename Archive, typename SubType>
-    void serialize(Archive &ar, std::reference_wrapper<SubType> &uid, const uint32_t version) {
-        ar & &uid;
-    }
+    SERIAL_CLASS_VERSION(OAssetDescription, 1);
+    SERIAL_CLASS_VERSION(IAssetDescription, 1);
 
 }
+
+
+
 
 
 #endif //GL_TEST_SERIALIZER_H

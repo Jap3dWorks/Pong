@@ -92,7 +92,7 @@ namespace Pong {
          2-> glEnable(GL_BLEND)
          4-> glEnable(GL_CULL_FACE)
          8-> glEnable(GL_PROGRAM_POINT_SIZE)
-         The upper list must be read as bits, e.g 4 -> 00000100
+         The upper list must be load as bits, e.g 4 -> 00000100
          You can modigi gl_enables_config attribute to config openGL enables, after edit
          gl_enables_config you should tu call update_enables to make changes effective.*/
         unsigned char gl_enables_config = 7;
