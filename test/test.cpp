@@ -437,26 +437,16 @@ void test_class_reflection() {
 }
 
 void test_serialize_data() {
-    auto serializer = Pong::serializer::AssetDescription();
-    LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola"));
-    LOG_INFO(Pong::serializer::ensure_file_name(serializer, "Hola.asset"));
+    auto description = Pong::serializer::OAssetDescription();
+    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
+    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
+
+    description.
 
     Pong::serializer::save_file(
-            serializer,
+            description,
             "D:/_docs/Pong/test/test_archive"
     );
-
-    auto ofs = std::ostringstream(
-                "testfile.asset",
-                ios::binary
-                );
-}
-
-
-class serializer;
-SERIAL_CLASS_VERSION(serializer, 10);
-void test_custom_serializer() {
-    LOG_INFO("Version: " << *Pong::serializer::serialized_version<serializer>::version);
 }
 
 
@@ -483,6 +473,6 @@ int main() {
 
     test_class_reflection();
     test_serialize_data();
-    test_custom_serializer();
+
     return 0;
 }

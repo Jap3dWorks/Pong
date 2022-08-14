@@ -11,8 +11,6 @@
 #include "Pong/file_data/reflectable.h"
 #include "Pong/file_data/serialization.h"
 
-#include <boost/serialization/string.hpp>
-
 #include <iostream>
 #include <ostream>
 #include <vector>
@@ -32,7 +30,7 @@ namespace Pong::serializer {
                 FIELD(std::optional<RegId>, curve)
         )
     };
-    SERIALIZABLE_IMPL(ElemData);
+    IMPL_SERIALIZE(ElemData);
 
     struct MeshData {
         SERIALIZABLE(
@@ -40,7 +38,7 @@ namespace Pong::serializer {
                 FIELD(Mesh, mesh)
         )
     };
-    SERIALIZABLE_IMPL(MeshData);
+    IMPL_SERIALIZE(MeshData);
 
     struct CurveData {
         SERIALIZABLE (
@@ -48,7 +46,7 @@ namespace Pong::serializer {
                 FIELD(Curve, curve)
         )
     };
-    SERIALIZABLE_IMPL(CurveData);
+    IMPL_SERIALIZE(CurveData);
 
     struct MaterialData {
         SERIALIZABLE (
@@ -56,7 +54,7 @@ namespace Pong::serializer {
                 FIELD(Material, material)
         )
     };
-    SERIALIZABLE_IMPL(MaterialData);
+    IMPL_SERIALIZE(MaterialData);
 
 
 #define P_BASE_DESCRIPTION_DATA \
@@ -89,7 +87,8 @@ namespace Pong::serializer {
 
     using IAssetDescription = BaseDescription_<any_type>;
     using OAssetDescription = BaseDescription_<ref_wrapper_type>;
-
+    SERIAL_CLASS_VERSION(IAssetDescription, 1);
+    SERIAL_CLASS_VERSION(OAssetDescription, 1);
 
     // ensure output filenames template
     template<typename T>
@@ -122,23 +121,18 @@ namespace Pong::serializer {
                 std::ios::binary
         );
 
-        const char *test = "test";
-        auto number = 10;
-
         auto srlizer = OSSerializer(os);
-        srlizer << number;
+        srlizer << asset_serializer;
 
     }
-
 
     template<typename Archive>
-    void serialize(Archive &ar, RegId &uid, const uint32_t version) {
-        ar & to_integer(uid);
+    void serialize(Archive &ar, OAssetDescription &descriptor, const Version &file_version) {
+        ar & descriptor.elem_data;
+        ar & descriptor.mesh_data;
+        ar & descriptor.curve_data;
+        ar & descriptor.material_data;
     }
-
-    SERIAL_CLASS_VERSION(OAssetDescription, 1);
-    SERIAL_CLASS_VERSION(IAssetDescription, 1);
-
 }
 
 

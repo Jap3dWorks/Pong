@@ -35,6 +35,11 @@ namespace Pong::serializer {
         ar & value;
     }
 
+    template<typename Archive>
+    void serialize(Archive &ar, RegId &uid, const Version& file_version) {
+        ar & to_integer(uid);
+    }
+
     namespace {
         inline void save(std::ostream &ostream, char *ptr, std::streamsize size) {
             ostream.write(ptr, size);
@@ -56,9 +61,13 @@ namespace Pong::serializer {
         size_t size = value.size();
         save(ostream, (char *) &size, sizeof(size));
 
-        for(auto& it: value) {
-            save(ostream, *it);
+        for (uint32_t i=0; i<size; ++i) {
+            save(ostream, value[i]);
         }
+
+//        for(auto& it: value) {
+//            save(ostream, *it);
+//        }
     }
 
     static inline void save(std::ostream& ostream, const std::string& value) {
@@ -130,37 +139,26 @@ namespace Pong::serializer {
     };
 
 
-    template<typename Stream>
-    class BaseSerializer {
-    protected:
-        using base_serializer = BaseSerializer<Stream>;
+#define SERIALIZER_COMMON(Serial, Stream) \
+protected: \
+    public: \
+    using stream_type = Stream; \
+    using stream_reference = Stream&; \
+    protected: \
+    stream_reference stream_; \
+    public: \
+    explicit Serial(stream_reference& os_): stream_(os_) {} \
+    template<typename T> \
+    auto& operator<<(T& other) { \
+        serialize(*this, other, serialized_version<T>::version); \
+        return *this; \
+    } \
+    auto& get() {    \
+        return stream_; \
+    }
 
-    public:
-        using stream_type = Stream;
-        using stream_reference = Stream&;
-
-    protected:
-        stream_reference stream_;
-
-    public:
-        explicit BaseSerializer(stream_reference& os_): stream_(os_) {}
-
-
-        template<typename T>
-        auto& operator<<(const T& other) {
-            serialize(*this, other, serialized_version<T>::version);
-            return *this;
-        }
-
-        auto& get() {
-            return stream_;
-        }
-    };
-
-
-    class OSSerializer : public BaseSerializer<std::ostream> {
-    public:
-        using base_serializer::base_serializer;
+    class OSSerializer {
+    SERIALIZER_COMMON(OSSerializer, std::ostream);
 
     public:
         template<typename T>
@@ -171,9 +169,8 @@ namespace Pong::serializer {
     };
 
 
-    class ISSerializer : public BaseSerializer<std::istream> {
-    public:
-        using base_serializer::base_serializer;
+    class ISSerializer{
+    SERIALIZER_COMMON(ISSerializer, std::istream);
 
     public:
         template<typename T>
@@ -204,7 +201,7 @@ namespace Pong::serializer {
 
 #define SERIALIZABLE REFLECTABLE
 
-#define SERIALIZABLE_IMPL(class_) \
+#define IMPL_SERIALIZE(class_) \
     template<typename Archive> \
     void serialize(Archive &ar, class_ &value, const Version& file_version) { \
         serialize_fields(value, ar);                              \
