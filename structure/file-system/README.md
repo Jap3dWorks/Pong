@@ -20,7 +20,7 @@ Here is the the most high level functions,&#x20;
 
 Override function&#x20;
 
-```
+```cpp
 template<typename Archive>
 Pong::serializer::serialize(Archive& ar, Custom custom, Pong::serializer::Version version) {
    ar & custom.attr_1;
