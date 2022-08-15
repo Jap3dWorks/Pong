@@ -25,7 +25,7 @@
 
 #include "Pong/map/reg_data.h"
 #include "Pong/file_data/reflectable.h"
-#include "Pong/file_data/serializer.h"
+#include "Pong/file_data/serial_data.h"
 #include "Pong/file_data/serialization.h"
 
 #include <cassert>
@@ -441,14 +441,23 @@ void test_serialize_data() {
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
 
-    description.
+    auto elem = Pong::serializer::ElemData{{}, {}};
+    description.elem_data.push_back({elem});
 
     Pong::serializer::save_file(
             description,
             "D:/_docs/Pong/test/test_archive"
     );
+
+    LOG_INFO("-File serialized-");
 }
 
+
+void test_create_header() {
+    auto version = Pong::serializer::Version(1);
+    auto h = Pong::serializer::Header{*version, {"TestTypeField"}, 0};
+    LOG_INFO(h.type);
+}
 
 int main() {
 //    _test_text_template();
@@ -473,6 +482,7 @@ int main() {
 
     test_class_reflection();
     test_serialize_data();
+    test_create_header();
 
     return 0;
 }

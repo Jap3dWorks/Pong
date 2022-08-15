@@ -2,13 +2,12 @@
 // Created by Jordi on 8/11/2022.
 //
 
-#ifndef GL_TEST_SERIALIZER_H
-#define GL_TEST_SERIALIZER_H
+#ifndef GL_TEST_SERIAL_DATA_H
+#define GL_TEST_SERIAL_DATA_H
 
 #include "Pong/core/geometry_data.h"
 #include "Pong/core/reg_id_manager.h"
 #include "Pong/core/material.h"
-#include "Pong/file_data/reflectable.h"
 #include "Pong/file_data/serialization.h"
 
 #include <iostream>
@@ -113,21 +112,20 @@ namespace Pong::serializer {
 
 
     void save_file(
-            const OAssetDescription& asset_serializer,
+            const OAssetDescription& descriptor,
             const char* file_name) {
 
         auto os = std::ofstream(
-                ensure_file_name(asset_serializer, file_name).c_str(),
+                ensure_file_name(descriptor, file_name),
                 std::ios::binary
         );
 
         auto srlizer = OSSerializer(os);
-        srlizer << asset_serializer;
-
+        srlizer << descriptor;
     }
 
     template<typename Archive>
-    void serialize(Archive &ar, OAssetDescription &descriptor, const Version &file_version) {
+    inline void serialize(Archive &ar, OAssetDescription &descriptor, const Version &file_version) {
         ar & descriptor.elem_data;
         ar & descriptor.mesh_data;
         ar & descriptor.curve_data;
@@ -139,4 +137,4 @@ namespace Pong::serializer {
 
 
 
-#endif //GL_TEST_SERIALIZER_H
+#endif //GL_TEST_SERIAL_DATA_H

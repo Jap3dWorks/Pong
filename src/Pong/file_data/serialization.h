@@ -5,6 +5,7 @@
 #ifndef GL_TEST_SERIALIZATION_H
 #define GL_TEST_SERIALIZATION_H
 
+#include "Pong/file_data/reflectable.h"
 #include <iostream>
 #include <ostream>
 #include "Utils/type_conditions.h"
@@ -15,129 +16,160 @@
 #include <optional>
 
 
-#define SERIAL_CLASS_VERSION(class_, version_)                                \
-template<>                                                                    \
-struct Pong::serializer::serialized_version<class_> {                         \
-    static inline constexpr Version version{version_};                        \
+#define SERIALIZABLE REFLECTABLE
+
+#define SERIAL_CLASS_VERSION(type_, version_) \
+template<> \
+struct serialized_version<type_> { \
+    static inline constexpr Version version{version_}; \
+    static inline const char* type = #type_; \
+}; \
+template<> \
+struct serialized_version<const type_> { \
+    static inline constexpr Version version{version_}; \
+    static inline const char* type = #type_; \
 };
+
+#define IMPL_SERIALIZE(type_) \
+    template<typename Archive> \
+    inline void serialize(Archive &ar,\
+        type_ &value, \
+        const Version& version) { \
+        serialize_fields(ar, value); \
+    }
+
 
 namespace Pong::serializer {
     using Version=std::optional<uint32_t>;
 
-    template<typename T>
-    struct serialized_version {
-        static inline constexpr Version version{};
+    template<typename Archive>
+    struct serialize_visitor {
+        Archive &ar;
+
+        explicit serialize_visitor(Archive& archive):
+                ar(archive) {}
+
+        template<typename ReflectedField>
+        inline void operator()(ReflectedField f) {
+            serialize(ar, f.get(), {});
+        }
     };
 
+    template<typename Archive, typename Reflected>
+    void serialize_fields(Archive& ar, Reflected& x) {
+        visit_each(x, serialize_visitor(ar));
+    }
 
     template<typename Archive, typename Value>
-    void serialize(Archive &ar, Value &value, const Version& file_version) {
+    inline void serialize(Archive &ar, Value &value, const Version& version) {
         ar & value;
     }
 
     template<typename Archive>
-    void serialize(Archive &ar, RegId &uid, const Version& file_version) {
+    inline void serialize(Archive &ar, RegId &uid, const Version& version) {
         ar & to_integer(uid);
     }
 
-    namespace {
-        inline void save(std::ostream &ostream, char *ptr, std::streamsize size) {
-            ostream.write(ptr, size);
-        }
+    template<typename T>
+    struct serialized_version {};
 
-        inline void load(std::istream &istream, char *ptr, std::streamsize size) {
-            istream.read(ptr, size);
-        }
+    struct Header {
+        SERIALIZABLE (
+                FIELD(Version, version),
+                FIELD(std::string, type),
+                FIELD(uint32_t, size)
+        )
+    };
+    IMPL_SERIALIZE(Header);
+
+    template<typename T>
+    inline void save(T &ar, char *ptr, std::streamsize size) {
+        ar.get().write(ptr, size);
+    }
+
+    template<typename T>
+    inline void load(T &ar, char *ptr, std::streamsize size) {
+        ar.get().read(ptr, size);
     }
 
     // save types
-    template<typename T>
-    static inline void save(std::ostream &ostream, const T &value) {
-        save(ostream, (char *) &value, sizeof(value));
+    template<typename T, typename U>
+    static inline void save(T &ar, const U &value) {
+        save(ar, (char *) &value, sizeof(value));
     }
 
-    template<typename T>
-    static inline void save(std::ostream& ostream, const std::vector<T>& value) {
+    template<typename T, typename U>
+    static inline void save(T& ar, const std::vector<U>& value) {
         size_t size = value.size();
-        save(ostream, (char *) &size, sizeof(size));
+        save(ar, (char *) &size, sizeof(size));
 
         for (uint32_t i=0; i<size; ++i) {
-            save(ostream, value[i]);
+            serialize(ar, value[i], {});
         }
-
-//        for(auto& it: value) {
-//            save(ostream, *it);
-//        }
     }
 
-    static inline void save(std::ostream& ostream, const std::string& value) {
+    template<typename T>
+    static inline void save(T& ar, const std::string& value) {
         size_t size = value.size();
-        save(ostream, (char *) &size, sizeof(size));
-        save(ostream, (char *) value.data(), size);
+        save(ar, (char *) &size, sizeof(size));
+        save(ar, (char *) value.data(), size);
     }
 
-    template<typename T>
-    static inline void save(std::ostream& ostream, const std::reference_wrapper<T>& value) {
-        save(ostream, (char*)&value.get(), sizeof(T));
+    template<typename T, typename U>
+    static inline void save(T& ar, const std::reference_wrapper<U>& value) {
+        serialize(ar, value.get(), {});
     }
 
-    template<typename T>
-    static inline void save(std::ostream& ostream, const std::optional<T>& value) {
+    template<typename T, typename U>
+    static inline void save(T& ar, const std::optional<U>& value) {
         auto hasval = value.has_value();
-        save(ostream, (char*)&hasval, sizeof(hasval));
+        save(ar, (char*)&hasval, sizeof(hasval));
 
         if (hasval) {
-            save(ostream, *value);
+            serialize(ar, *value, {});
         }
     }
 
-
     // load types
-    template<typename T>
-    static inline void load(std::istream &istream, T &value) {
-        load(istream, (char *) &value, sizeof(value));
+    template<typename T, typename U>
+    static inline void load(T &ar, U &value) {
+        load(ar, (char *) &value, sizeof(value));
     }
 
-    template<typename T>
-    static inline void load(std::istream &istream, std::vector<T> &value) {
+    template<typename T, typename U>
+    static inline void load(T &ar, std::vector<U> &value) {
         size_t vector_size;
-        load(istream, (char *) &vector_size, sizeof(size_t));
+        load(ar, (char *) &vector_size, sizeof(size_t));
         value.resize(vector_size);
 
         for(auto& it: value) {
-            load(istream, *it);
+            serialize(ar, *it, {});
         }
     }
 
-    static inline void load(std::istream& istream, std::string& value) {
+    template<typename T>
+    static inline void load(T& ar, std::string& value) {
         size_t string_size;
-        load(istream, (char *) &string_size, sizeof(size_t));
+        load(ar, (char *) &string_size, sizeof(size_t));
         value.resize(string_size);
 
-        load(istream, (char *) value.data(), string_size);
+        load(ar, (char *) value.data(), string_size);
     }
 
-    template<typename T>
-    static inline void load(std::istream& istream, std::reference_wrapper<T>& value) {
-        load(istream, (char*)&value.get(), sizeof(T));
+    template<typename T, typename U>
+    static inline void load(T& ar, std::reference_wrapper<U>& value) {
+        serialize(ar, value.get(), {});
     }
 
-    template<typename T>
-    static inline void load(std::istream& istream, std::optional<T>& value) {
+    template<typename T, typename U>
+    static inline void load(T& ar, std::optional<U>& value) {
         auto hasval = value.has_value();
-        load(istream, (char*)&hasval, sizeof(hasval));
+        load(ar, (char*)&hasval, sizeof(hasval));
 
         if (hasval) {
-            load(istream, *value);
+            serialize(ar, *value, {});
         }
     }
-
-    struct Header {
-        uint32_t version;
-        std::string type;
-        uint32_t size;
-    };
-
 
 #define SERIALIZER_COMMON(Serial, Stream) \
 protected: \
@@ -150,10 +182,14 @@ protected: \
     explicit Serial(stream_reference& os_): stream_(os_) {} \
     template<typename T> \
     auto& operator<<(T& other) { \
-        serialize(*this, other, serialized_version<T>::version); \
+        auto version = serialized_version<T>::version; \
+        auto type_name = std::string(serialized_version<T>::type); \
+        auto header = Header{*version, type_name, 0};       \
+        serialize(*this, header, version); \
+        serialize(*this, other, version); \
         return *this; \
     } \
-    auto& get() {    \
+    auto& get() { \
         return stream_; \
     }
 
@@ -163,7 +199,7 @@ protected: \
     public:
         template<typename T>
         auto &operator&(const T &other) {
-            save(stream_, other);
+            save(*this, other);
             return *this;
         }
     };
@@ -174,38 +210,12 @@ protected: \
 
     public:
         template<typename T>
-        auto &operator&(const T &other) {
+        auto &operator&(T &other) {
             load(stream_, other);
             return *this;
         }
     };
 
-
-    template<typename Archive>
-    struct serialize_visitor {
-        Archive &ar;
-
-        explicit serialize_visitor(Archive& asset_serializer_):
-                ar(asset_serializer_) {}
-
-        template<typename ReflectedField>
-        void operator()(ReflectedField f) {
-            ar & f.get();
-        }
-    };
-
-    template<typename Archive, typename Reflected>
-    void serialize_fields(Archive& ar, Reflected& x) {
-        visit_each(x, serialize_visitor(ar));
-    }
-
-#define SERIALIZABLE REFLECTABLE
-
-#define IMPL_SERIALIZE(class_) \
-    template<typename Archive> \
-    void serialize(Archive &ar, class_ &value, const Version& file_version) { \
-        serialize_fields(value, ar);                              \
-    }
 }
 
 #endif //GL_TEST_SERIALIZATION_H
