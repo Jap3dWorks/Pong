@@ -22,7 +22,7 @@ Override function&#x20;
 
 ```cpp
 template<typename Archive>
-Pong::serializer::serialize(Archive& ar, Custom custom, Pong::serializer::Version version) {
+Pong::serializer::serialize(Archive& ar, Custom &custom, Pong::serializer::Version version) {
    ar & custom.attr_1;
    ar * custom.attr_2;
 }
