@@ -66,7 +66,7 @@ namespace Pong::serializer {
     struct ref_wrapper_type{};
 
     template<typename U>
-    class BaseDescription_ {
+    class BaseDescriptor_ {
     public:
         template<typename T>
         using vector_data = std::vector<T>;
@@ -75,7 +75,7 @@ namespace Pong::serializer {
     };
 
     template<>
-    class BaseDescription_<ref_wrapper_type> {
+    class BaseDescriptor_<ref_wrapper_type> {
     public:
         template<typename T>
         using vector_data = std::vector<std::reference_wrapper<T>>;
@@ -84,17 +84,17 @@ namespace Pong::serializer {
         P_BASE_DESCRIPTION_DATA;
     };
 
-    using IAssetDescription = BaseDescription_<any_type>;
-    using OAssetDescription = BaseDescription_<ref_wrapper_type>;
-    SERIAL_CLASS_VERSION(IAssetDescription, 1);
-    SERIAL_CLASS_VERSION(OAssetDescription, 1);
+    using IAssetDescriptor = BaseDescriptor_<any_type>;
+    using OAssetDescriptor = BaseDescriptor_<ref_wrapper_type>;
+    SERIAL_CLASS_VERSION(IAssetDescriptor, 1);
+    SERIAL_CLASS_VERSION(OAssetDescriptor, 1);
 
     // ensure output filenames template
     template<typename T>
-    std::string ensure_file_name(const T&, const char* file_name);
+    inline std::string ensure_file_name(const T&, const char* file_name);
 
-    std::string ensure_file_name(
-            const OAssetDescription&,
+    inline std::string ensure_file_name(
+            const OAssetDescriptor&,
             const char* file_name) {
 
         auto string_path = std::string(file_name);
@@ -112,7 +112,7 @@ namespace Pong::serializer {
 
 
     void save_file(
-            const OAssetDescription& descriptor,
+            const OAssetDescriptor& descriptor,
             const char* file_name) {
 
         auto os = std::ofstream(
@@ -125,7 +125,7 @@ namespace Pong::serializer {
     }
 
     template<typename Archive>
-    inline void serialize(Archive &ar, OAssetDescription &descriptor, const Version &file_version) {
+    inline void serialize(Archive &ar, OAssetDescriptor &descriptor, const Version &file_version) {
         ar & descriptor.elem_data;
         ar & descriptor.mesh_data;
         ar & descriptor.curve_data;

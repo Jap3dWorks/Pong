@@ -437,7 +437,7 @@ void test_class_reflection() {
 }
 
 void test_serialize_data() {
-    auto description = Pong::serializer::OAssetDescription();
+    auto description = Pong::serializer::OAssetDescriptor();
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
 
