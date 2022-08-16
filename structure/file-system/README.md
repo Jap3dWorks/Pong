@@ -1,5 +1,5 @@
 ---
-description: serialization
+description: namespace Pong::serializer
 ---
 
 # File Data
@@ -68,5 +68,9 @@ Also you can use save\_file to serialize a descriptor into a file.
 Pong::serializer::save_file(OAssetDescriptor descriptor, const char* file_name);
 ```
 
+## Serializers
 
+**OSSerializer** and **ISSerializer**, Serializers is the core class of the system, serializers calls Pong::serializer::serialize functions and writes or loads data into a file.
+
+Serializers needs an std::ostream (**OSSerializer**) or an std::istream (**ISSerializer**) objects.
 
