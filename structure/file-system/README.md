@@ -68,6 +68,10 @@ Also you can use save\_file to serialize a descriptor into a file.
 Pong::serializer::save_file(OAssetDescriptor descriptor, const char* file_name);
 ```
 
+When a descriptor is saved its version is appended to the resultant file.
+
+When a descriptor is loaded the version of the file is read from disk file.
+
 ## Serializers
 
 **OSSerializer** and **ISSerializer**, Serializers is the core class of the system, serializers calls Pong::serializer::serialize functions and writes or loads data into a file.
