@@ -16,7 +16,6 @@
 #include <string>
 #include <optional>
 
-
 namespace Pong::serializer {
 
     struct Header {
@@ -116,6 +115,7 @@ namespace Pong::serializer {
             serialize(ar, *value, {});
         }
     }
+
 
 #define SERIALIZER_COMMON(Serial, Stream) \
 protected: \

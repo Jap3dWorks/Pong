@@ -105,7 +105,6 @@ namespace Pong::serializer {
         return string_path;
     }
 
-
     template<typename Archive, typename Descriptor>
     inline void serialize_base_(Archive &ar, Descriptor &descriptor, const Version &version) {
         ar & descriptor.elem_data;
@@ -123,7 +122,6 @@ namespace Pong::serializer {
     inline void serialize(Archive &ar, IAssetDescriptor &descriptor, const Version &version) {
         serialize_base_(ar, descriptor, version);
     }
-
 
     void save_file(
             OAssetDescriptor &descriptor,
