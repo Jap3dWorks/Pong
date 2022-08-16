@@ -6,6 +6,7 @@
 #define GL_TEST_SERIALIZATION_H
 
 #include "Pong/file_data/reflectable.h"
+#include "Pong/file_data/serialize_functions.h"
 #include <iostream>
 #include <ostream>
 #include "Utils/type_conditions.h"
@@ -16,62 +17,7 @@
 #include <optional>
 
 
-#define SERIALIZABLE REFLECTABLE
-
-#define SERIAL_CLASS_VERSION(type_, version_) \
-template<> \
-struct serialized_version<type_> { \
-    static inline constexpr Version version{version_}; \
-    static inline const char* type = #type_; \
-}; \
-template<> \
-struct serialized_version<const type_> { \
-    static inline constexpr Version version{version_}; \
-    static inline const char* type = #type_; \
-};
-
-#define IMPL_SERIALIZE(type_) \
-    template<typename Archive> \
-    inline void serialize(Archive &ar,\
-        type_ &value, \
-        const Version& version) { \
-        serialize_fields(ar, value); \
-    }
-
-
 namespace Pong::serializer {
-    using Version=std::optional<uint32_t>;
-
-    template<typename Archive>
-    struct serialize_visitor {
-        Archive &ar;
-
-        explicit serialize_visitor(Archive& archive):
-                ar(archive) {}
-
-        template<typename ReflectedField>
-        inline void operator()(ReflectedField f) {
-            serialize(ar, f.get(), {});
-        }
-    };
-
-    template<typename Archive, typename Reflected>
-    void serialize_fields(Archive& ar, Reflected& x) {
-        visit_each(x, serialize_visitor(ar));
-    }
-
-    template<typename Archive, typename Value>
-    inline void serialize(Archive &ar, Value &value, const Version& version) {
-        ar & value;
-    }
-
-    template<typename Archive>
-    inline void serialize(Archive &ar, RegId &uid, const Version& version) {
-        ar & to_integer(uid);
-    }
-
-    template<typename T>
-    struct serialized_version {};
 
     struct Header {
         SERIALIZABLE (
@@ -142,8 +88,8 @@ namespace Pong::serializer {
         load(ar, (char *) &vector_size, sizeof(size_t));
         value.resize(vector_size);
 
-        for(auto& it: value) {
-            serialize(ar, *it, {});
+        for(uint32_t i=0; i<vector_size; ++i) {
+            serialize(ar, value[i], {});
         }
     }
 
@@ -163,10 +109,10 @@ namespace Pong::serializer {
 
     template<typename T, typename U>
     static inline void load(T& ar, std::optional<U>& value) {
-        auto hasval = value.has_value();
+        bool hasval;
         load(ar, (char*)&hasval, sizeof(hasval));
-
         if (hasval) {
+            value.emplace();
             serialize(ar, *value, {});
         }
     }
@@ -179,26 +125,28 @@ protected: \
     protected: \
     stream_reference stream_; \
     public: \
-    explicit Serial(stream_reference& os_): stream_(os_) {} \
-    template<typename T> \
-    auto& operator<<(T& other) { \
-        auto version = serialized_version<T>::version; \
-        auto type_name = std::string(serialized_version<T>::type); \
-        auto header = Header{*version, type_name, 0};       \
-        serialize(*this, header, version); \
-        serialize(*this, other, version); \
-        return *this; \
-    } \
+    explicit Serial(stream_reference& fsparam_): stream_(fsparam_) {} \
     auto& get() { \
         return stream_; \
     }
 
+
     class OSSerializer {
-    SERIALIZER_COMMON(OSSerializer, std::ostream);
+    SERIALIZER_COMMON(OSSerializer, std::ofstream);
 
     public:
         template<typename T>
-        auto &operator&(const T &other) {
+        auto &operator<<(T &other) {
+            auto version = serialized_version<T>::version;
+            auto type_name = std::string(serialized_version<T>::type);
+            auto header = Header{version, type_name, 0};
+            serialize(*this, header, version);
+            serialize(*this, other, version);
+            return *this;
+        }
+
+        template<typename T>
+        auto &operator&(T &other) {
             save(*this, other);
             return *this;
         }
@@ -206,14 +154,26 @@ protected: \
 
 
     class ISSerializer{
-    SERIALIZER_COMMON(ISSerializer, std::istream);
+    SERIALIZER_COMMON(ISSerializer, std::ifstream);
 
     public:
         template<typename T>
-        auto &operator&(T &other) {
-            load(stream_, other);
+        auto &operator>>(T &other) {
+            auto header = Header{};
+
+            serialize(*this, header, {});
+            auto version = header.version;
+            serialize(*this, other, version);
+
             return *this;
         }
+
+        template<typename T>
+        auto &operator&(T &other) {
+            load(*this, other);
+            return *this;
+        }
+
     };
 
 }

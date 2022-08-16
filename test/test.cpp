@@ -459,6 +459,48 @@ void test_create_header() {
     LOG_INFO(h.type);
 }
 
+
+void test_save_serialize_plane() {
+    std::vector<Pong::Vertex> vertices = {
+            {{-1,-1, 0}, {0,0,-1}, {0,0}},
+            {{1, -1, 0}, {0,0,-1}, {0,1}},
+            {{1, 1, 0}, {0,0,-1}, {1,1}},
+            {{-1, 1, 0}, {0,0,-1}, {1,0}}
+    };
+
+    std::vector<uint32_t> indices =
+            {0, 1, 3, 1, 2, 3};
+
+    auto mesh_data = Pong::serializer::MeshData{
+           Pong::RegId(0), Pong::Mesh{vertices, indices}
+    };
+
+    auto odescriptor = Pong::serializer::OAssetDescriptor();
+    odescriptor.mesh_data.push_back({mesh_data});
+
+    Pong::serializer::save_file(
+            odescriptor,
+            "../src/assets/plane"
+    );
+
+    // read plane.asset
+    auto idescriptor =  Pong::serializer::IAssetDescriptor();
+    Pong::serializer::load_file(
+            idescriptor,
+            "../src/assets/plane");
+
+    assert(!idescriptor.mesh_data.empty());
+
+    for(auto& d: idescriptor.mesh_data) {
+//        LOG_INFO(d.uid);
+    }
+
+    LOG_INFO("-test save serialize Success-");
+
+}
+
+
+
 int main() {
 //    _test_text_template();
 //    _test_shader_parser();
@@ -480,9 +522,11 @@ int main() {
 //    test_class_map();
 //    test_registry_map();
 
-    test_class_reflection();
-    test_serialize_data();
-    test_create_header();
+//    test_class_reflection();
+//    test_serialize_data();
+//    test_create_header();
+
+    test_save_serialize_plane();
 
     return 0;
 }
