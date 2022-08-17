@@ -20,7 +20,7 @@ namespace Pong {
  * MeshCompactData Compacts in consecutive memory an arbitrary number of Mesh or Mesh* objects.
  * label: optimizations
  * TODO: Workflow, current compact stores first vertex and stores the offset,
- * the stores indices and save the offset. [Vertex..., Indices...]
+ * the stores indices_val and save the offset. [Vertex..., Indices...]
  * This class could be used for compact a chunk of
  * meshes with the same shader or material assigned.
  * */

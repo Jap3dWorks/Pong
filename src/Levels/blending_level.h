@@ -10,9 +10,9 @@
 #include "../Pong/core/material.h"
 #include "../Pong/core/texture.h"
 #include "../Pong/core/lights.h"
-#include "../utils/logger.h"
+#include "Utils/logger.h"
 #include "../Pong/material_lib.h"
-#include "blending_level.h"
+// #include "Levels/blending_level.h"
 #include "Pong/shapes/plane_shape.h"
 
 class BlendingLevel : public Pong::AbstractLevel {

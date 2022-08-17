@@ -65,7 +65,7 @@ namespace Pong {
                 {{1.0f,  -1.0f, 1.0f}}
             };
 
-            // TODO: build indices
+            // TODO: build indices_val
         }
     };
 
@@ -76,8 +76,8 @@ namespace Pong {
                       Pong::Material *material) const override {
             glDepthFunc(GL_LEQUAL);
 
-            if (!mesh->indices.empty()) {
-                glDrawElements(GL_TRIANGLES, mesh->indices.size(),
+            if (!mesh->indices_val.empty()) {
+                glDrawElements(GL_TRIANGLES, mesh->indices_val.size(),
                                GL_UNSIGNED_INT, nullptr);
             } else {
                 glDrawArrays(GL_TRIANGLES, 0, mesh->vertices.size());

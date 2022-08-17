@@ -27,9 +27,7 @@ namespace Pong::serializer {
         SERIALIZABLE(
                 FIELD(glm::mat4, transform, 1),
                 FIELD(std::optional<RegId>, parent),
-                FIELD(std::optional<RegId>, shape),
-                FIELD(std::optional<RegId>, material),
-                FIELD(std::optional<RegId>, curve)
+                FIELD(std::optional<std::vector<RegId>>, shape)
         )
     };
     IMPL_SERIALIZE(ElemData);
@@ -37,7 +35,8 @@ namespace Pong::serializer {
     struct MeshData {
         SERIALIZABLE(
                 FIELD(RegId, uid),
-                FIELD(Mesh, mesh)
+                FIELD(Mesh, mesh),
+                FIELD(std::optional<RegId>, material)
         )
     };
     IMPL_SERIALIZE(MeshData);
@@ -45,7 +44,8 @@ namespace Pong::serializer {
     struct CurveData {
         SERIALIZABLE (
                 FIELD(RegId, uid),
-                FIELD(Curve, curve)
+                FIELD(Curve, curve),
+                FIELD(std::optional<RegId>, material)
         )
     };
     IMPL_SERIALIZE(CurveData);

@@ -28,7 +28,7 @@ namespace Pong {
 
 //        float* point_array;  // changes every frame
 //        uint32_t point_size;
-//        uint32_t* indices;
+//        uint32_t* indices_val;
 //        uint32_t indices_size;
 
         std::vector<Vertex> points;  // changes every frame

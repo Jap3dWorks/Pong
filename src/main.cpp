@@ -15,10 +15,10 @@ int main(int argc, char **argv) {
     try {
         //    if (true) {
 //        BlendingLevel b_lvl;
-        LoadModelLevel b_lvl;
+//        LoadModelLevel b_lvl;
         LOG_INFO("Blending level run");
 
-        b_lvl.run();
+//        b_lvl.run();
 //    }
 
 //    else {

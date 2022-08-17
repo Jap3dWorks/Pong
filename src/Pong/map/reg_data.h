@@ -28,7 +28,7 @@ namespace Pong {
     class RegData {
     private:
         using Registry = TypeRegMap;
-        using id_set_t = RegIdManager<>;
+        using id_set_t = RegIdArray<>;
 
         template<Intersects<Types...> comp>
         using type_data = SparseSet<comp>;
@@ -57,14 +57,14 @@ namespace Pong {
         template<Intersects<Types...> type_>
         constexpr auto& get_type(RegId id_) const {
             registry_.template get<type_data<type_>>().at(
-                    to_integer(id_)
+                    id_
             );
         }
 
         template<Intersects<Types...> type_>
         auto &add_type(RegId id_) {
             return registry_.template get<type_data<type_>>().insert(
-                    to_integer(id_), type_()
+                    id_, type_()
             );
         }
 
