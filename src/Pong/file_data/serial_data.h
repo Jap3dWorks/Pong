@@ -11,6 +11,7 @@
 #include "Pong/file_data/serialization.h"
 #include "Utils/type_conditions.h"
 
+#include <concepts>
 #include <iostream>
 #include <ostream>
 #include <vector>
@@ -67,8 +68,10 @@ namespace Pong::serializer {
     struct any_type{};
     struct ref_wrapper_type{};
 
+    class base_descriptor_ {};
+
     template<typename U>
-    class BaseDescriptor_ {
+    class Descriptor_: public base_descriptor_ {
     public:
         template<typename T>
         using vector_data = std::vector<T>;
@@ -77,23 +80,20 @@ namespace Pong::serializer {
     };
 
     template<>
-    class BaseDescriptor_<ref_wrapper_type> {
+    class Descriptor_<ref_wrapper_type>: public base_descriptor_ {
     public:
         template<typename T>
         using vector_data = std::vector<std::reference_wrapper<T>>;
-
     public:
         P_BASE_DESCRIPTION_DATA;
     };
 
-    using IAssetDescriptor = BaseDescriptor_<any_type>;
-    using OAssetDescriptor = BaseDescriptor_<ref_wrapper_type>;
-    SERIAL_CLASS_VERSION(IAssetDescriptor, 1);
-    SERIAL_CLASS_VERSION(OAssetDescriptor, 1);
+    using IAssetDescriptor = Descriptor_<any_type>;
+    using OAssetDescriptor = Descriptor_<ref_wrapper_type>;
+    REG_DESCRIPTOR(IAssetDescriptor, 1);
+    REG_DESCRIPTOR(OAssetDescriptor, 1);
 
 
-    // ensure output filenames template
-    // Save serialized
     template <Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
     inline std::string ensure_file_name(Descriptor&,  const char* file_name) {
 
@@ -105,26 +105,17 @@ namespace Pong::serializer {
         return string_path;
     }
 
-    template<typename Archive, typename Descriptor>
-    inline void serialize_base_(Archive &ar, Descriptor &descriptor, const Version &version) {
+    template<typename Archive, Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
+    inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
         ar & descriptor.elem_data;
         ar & descriptor.mesh_data;
         ar & descriptor.curve_data;
         ar & descriptor.material_data;
     }
 
-    template<typename Archive>
-    inline void serialize(Archive &ar, OAssetDescriptor &descriptor, const Version &version) {
-        serialize_base_(ar, descriptor, version);
-    }
-
-    template<typename Archive>
-    inline void serialize(Archive &ar, IAssetDescriptor &descriptor, const Version &version) {
-        serialize_base_(ar, descriptor, version);
-    }
-
-    void save_file(
-            OAssetDescriptor &descriptor,
+    template<std::derived_from<base_descriptor_> T>
+    inline void save_file(
+            T &descriptor,
             const char *file_name) {
         auto ofstream = std::ofstream(
                 ensure_file_name(descriptor, file_name),
@@ -135,8 +126,9 @@ namespace Pong::serializer {
         srlizer << descriptor;
     }
 
-    void load_file(
-            IAssetDescriptor &descriptor,
+    template<std::derived_from<base_descriptor_> T>
+    inline void load_file(
+            T &descriptor,
             const char *file_name
     ) {
 

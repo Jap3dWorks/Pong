@@ -19,7 +19,7 @@
     }
 
 
-#define SERIAL_CLASS_VERSION(type_, version_) \
+#define REG_DESCRIPTOR(type_, version_) \
 template<> \
 struct serialized_version<type_> { \
     static inline constexpr Version version{version_}; \
