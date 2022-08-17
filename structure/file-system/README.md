@@ -58,7 +58,9 @@ class OAssetDescriptor;
 REG_DESCRIPTOR(OAssetDescriptor, 1);
 ```
 
-When a Descriptor is registered can be serialized using **OSerializer::operator<<**. To serialize a descriptor into a file.
+When a Descriptor is registered can be serialized using **OSerializer::operator<<.**&#x20;
+
+To serialize a descriptor into a file.
 
 <pre class="language-cpp"><code class="lang-cpp"><strong>Pong::serializer::OSSerializer(os) &#x3C;&#x3C; Pong::serializer::OAssetDescriptor();</strong></code></pre>
 
@@ -68,13 +70,15 @@ Also you can use save\_file to serialize a descriptor into a file.
 Pong::serializer::save_file(OAssetDescriptor descriptor, const char* file_name);
 ```
 
-When a descriptor is saved its version is appended to the resultant file.
+When a descriptor is saved its **version** is appended to the resultant file.
 
-When a descriptor is loaded the version of the file is read from disk file.
+When a descriptor is loaded the **version** of the file is read from disk file.
+
+
 
 ## Serializers
 
-**OSSerializer** and **ISSerializer**, Serializers is the core class of the system, serializers calls Pong::serializer::serialize functions and writes or loads data into a file.
+**OSSerializer** and **ISSerializer**, Serializers is the core class of the system, serializers calls Pong::serializer::serialize functions and saves or load data into a file.
 
-Serializers needs an std::ostream (**OSSerializer**) or an std::istream (**ISSerializer**) objects.
+Serializers needs an **std::ofstream** (**OSSerializer**) or an **std::ifstream** (**ISSerializer**) objects.
 
