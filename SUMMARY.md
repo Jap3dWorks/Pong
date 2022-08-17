@@ -18,6 +18,7 @@
 * [File Data](structure/file-system/README.md)
   * [Shapes](structure/shapes.md)
 * [Map System](structure/map-system.md)
+* [Register](structure/register.md)
 * [Actor and Components](structure/actor-and-components.md)
 * [Data Structures](structure/data-structures/README.md)
   * [FixedAddressBuffer](structure/data-structures/fixedaddressbuffer.md)
