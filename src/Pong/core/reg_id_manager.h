@@ -166,7 +166,7 @@ namespace Pong {
 
 
         inline auto create() {
-            ASSERT_MAX_SIZE();
+            ASSERT_MAX_SIZE(indices_valid.size());
 
             auto index = indices_free.get();
             indices_free.erase(index);
@@ -180,6 +180,7 @@ namespace Pong {
         }
 
         inline auto constexpr insert(RegId index) noexcept {
+            ASSERT_MAX_SIZE(index);
 
             if (!contains(index)) {
                 auto temp_highest = indices_valid.highest();

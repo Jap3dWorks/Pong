@@ -20,7 +20,7 @@ namespace Pong {
     class Map;
 }
 
-namespace Pong {
+namespace Pong::engine {
     class Engine {
     public:
         using OutputPtr = std::unique_ptr<Output>;

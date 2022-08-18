@@ -51,7 +51,7 @@ namespace Pong {
         }
 
         auto create_id() {
-            return reg_id_.create_id();
+            return reg_id_.create();
         }
 
         template<Intersects<Types...> type_>

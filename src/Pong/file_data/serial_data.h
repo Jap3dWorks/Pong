@@ -10,6 +10,7 @@
 #include "Pong/core/material.h"
 #include "Pong/file_data/serialization.h"
 #include "Utils/type_conditions.h"
+#include "Pong/config/config.h"
 
 #include <concepts>
 #include <iostream>
@@ -20,6 +21,9 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 namespace Pong::serializer {
@@ -98,8 +102,8 @@ namespace Pong::serializer {
     inline std::string ensure_file_name(Descriptor&,  const char* file_name) {
 
         auto string_path = std::string(file_name);
-        if (!string_path.ends_with(".asset")) {
-            string_path.append(".asset");
+        if (!string_path.ends_with(P_ASSET_EXTENSION)) {
+            string_path.append(P_ASSET_EXTENSION);
         }
 
         return string_path;
