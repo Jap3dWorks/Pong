@@ -73,7 +73,11 @@ namespace Pong {
     /**
      * TypeRegMap is en essence an unordered_map<hash, type()>, so each entry
      * of the class is the hash of the registered class, and an unique
-     * instance of the registered class is stored as de value.
+     * instance of the registered class is stored as value.
+     * This class is been used for components storage, so each component has its own data structure storage
+     * class instance.
+     * In the case above TypeRegMap do not apply any restriction for parallelism id between data structures,
+     * this means that a TransformComponent can share id with a CameraComponent.
      * */
     class TypeRegMap {
     public:

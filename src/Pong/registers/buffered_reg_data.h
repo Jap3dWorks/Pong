@@ -18,14 +18,16 @@
 
 namespace Pong {
     /**
-     * RegData represents conjunction of related classes data.
-     * RegData manages each class separately using a SparseSets system
+     * BufferedRegData represents conjunction of related classes data.
+     * BufferedRegData manages each class separately using a SparseSets system
      * (TypeRegMap).
-     * e.g all components should be included in the same RegData.
-     * Also RegData use RegId for elements conjunction.
+     * e.g all components should be included in the same BufferedRegData.
+     * Also BufferedRegData use RegId for elements conjunction.
+     * BufferedRegData do not apply any restriction with ids parallelism.
+     * This behaviour its ok with Components, but is the desired behaviour between shapes and meshes?.
      * */
     template<typename ...Types>
-    class RegData {
+    class BufferedRegData {
     private:
         using Registry = TypeRegMap;
         using id_set_t = RegIdArray<>;
@@ -38,7 +40,7 @@ namespace Pong {
         id_set_t reg_id_{};
 
     public:
-        RegData() {
+        BufferedRegData() {
             (registry_.registry<Types>(), ...);
     }
 

@@ -12,7 +12,7 @@ namespace Pong
 #include "Pong/core/movements.h"
 #include "Pong/core/collider.h"
 #include "Pong/components/component.h"
-#include "Pong/map/reg_data.h"
+#include "Pong/registers/buffered_reg_data.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -45,7 +45,7 @@ namespace Pong {
         virtual ~Actor() = default;
 
         template<typename ...Types>
-        friend class RegData;
+        friend class BufferedRegData;
     };
 }
 

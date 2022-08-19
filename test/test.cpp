@@ -19,11 +19,11 @@
 #include "Utils/fixed_address_buffer.h"
 #include "Utils/logger.h"
 #include "Pong/core/command.h"
-#include "Pong/map/type_reg_map.h"
+#include "Pong/registers/type_reg_map.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
 
-#include "Pong/map/reg_data.h"
+#include "Pong/registers/buffered_reg_data.h"
 #include "Pong/file_data/reflectable.h"
 #include "Pong/file_data/serial_data.h"
 #include "Pong/file_data/serialization.h"
@@ -404,7 +404,7 @@ void test_class_map() {
 }
 
 void test_registry_map() {
-    auto maprg = Pong::RegData<CompA, CompB, CompC>();
+    auto maprg = Pong::BufferedRegData<CompA, CompB, CompC>();
     auto nwid = maprg.create_id();
     maprg.add_type<CompA>(nwid);
 }

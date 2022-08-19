@@ -169,7 +169,6 @@ namespace Pong::serializer {
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
         ar & descriptor.actor_data;
     }
-
     template<std::derived_from<base_descriptor_> T>
     inline void save_file(
             T &descriptor,

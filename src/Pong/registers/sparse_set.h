@@ -10,6 +10,7 @@
 #include <vector>
 #include <exception>
 #include <optional>
+#include "Pong/registers/reg_id.h"
 
 // https://www.geeksforgeeks.org/sparse-set/
 
@@ -48,7 +49,7 @@ namespace Pong {
     class SparseSet : public SparseSet_ {
     public:
         using denset_set = std::vector<Type_>;
-        using size_type = typename denset_set::size_type;
+        using size_type = RegId;
         using denset_set_index = std::vector<size_type>;
 
         using sparse_value_type = std::optional<size_type>;

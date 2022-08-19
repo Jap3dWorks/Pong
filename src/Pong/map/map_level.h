@@ -5,28 +5,33 @@
 #ifndef GL_TEST_MAP_LEVEL_H
 #define GL_TEST_MAP_LEVEL_H
 
-#include "reg_data.h"
+#include "Pong/registers/buffered_reg_data.h"
 #include "Pong/components/component.h"
 #include "Pong/components/collision_components.h"
-#include "Pong/components/graphic_component.h"
+#include "Pong/core/geometry_data.h"
 #include "Pong/render/render_queue.h"
+#include "Pong/core/material.h"
 #include <functional>
 
 
-
 namespace Pong {
-
+/*
+ * MapLevel (provisional name) should manage the current map actors and components
+ * And apply changes to any component in the scene.
+ * Provisionaly MapLevel also has all the logic related with send jobs to renderer and
+ * update scene each frame.
+ */
     class MapLevel {
     private:
         std::reference_wrapper<RenderQueueSubmitter> submitter;
 
     public:
-        RegData<TransformComponent,
+        BufferedRegData<TransformComponent,
                 CameraComponent,
                 StaticMeshComponent> components_reg{};
 
-        RegData<> mesh_reg{};
-        RegData<> material_reg{};
+        BufferedRegData<Mesh, Curve> shape_reg{}; // a temp buffer with geo buffers
+        BufferedRegData<Material> material_reg{};  // a temp buffer with mat buffers
 
     public:
 
