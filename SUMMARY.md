@@ -16,6 +16,7 @@
 * [Command System](structure/page-3.md)
 * [Render System](structure/render-system.md)
 * [File Data](structure/file-system/README.md)
+  * [Files](structure/file-data/files.md)
   * [Shapes](structure/shapes.md)
 * [Map System](structure/map-system.md)
 * [Register](structure/register.md)

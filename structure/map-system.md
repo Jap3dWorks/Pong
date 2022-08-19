@@ -15,4 +15,4 @@ We will Define some concept elements:
 
 Map systems should submit geometry data using RenderSubmitter, later the associated render thread will take each job in the pool to make a render.
 
-<img src="../.gitbook/assets/file.drawing.svg" alt="" class="gitbook-drawing">
+<img src="../.gitbook/assets/file.drawing (2).svg" alt="" class="gitbook-drawing">

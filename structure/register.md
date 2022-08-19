@@ -14,3 +14,8 @@ Ids should be unique for collections, e.g Mesh and Curve should be a collection 
 
 ## RegId
 
+## Engine Reg types
+
+<img src="../.gitbook/assets/file.drawing.svg" alt="" class="gitbook-drawing">
+
+## Buffered maps and File maps
