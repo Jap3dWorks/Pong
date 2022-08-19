@@ -9,6 +9,8 @@
 #define P_ASSETS_DIR "/assets"
 #define P_ASSET_EXTENSION ".asset"
 
+#define P_MAPS_DIR "/maps"
+#define P_MAPS_EXTENSION ".map"
 
 
 #endif //GL_TEST_COMFIG_H

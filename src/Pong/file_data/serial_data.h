@@ -6,11 +6,12 @@
 #define GL_TEST_SERIAL_DATA_H
 
 #include "Pong/core/geometry_data.h"
-#include "Pong/core/reg_id_manager.h"
+#include "Pong/registers/reg_id.h"
 #include "Pong/core/material.h"
 #include "Pong/file_data/serialization.h"
 #include "Utils/type_conditions.h"
 #include "Pong/config/config.h"
+#include "Pong/components/component.h"
 
 #include <concepts>
 #include <iostream>
@@ -24,23 +25,29 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <unordered_map>
 
 
 namespace Pong::serializer {
-    struct ElemData {
+
+    struct ActorData {
         SERIALIZABLE(
-                FIELD(glm::mat4, transform, 1),
+                FIELD(std::optional<RegId>, uid), // serialized maps will need
+                FIELD(size_t, size),
                 FIELD(std::optional<RegId>, parent),
-                FIELD(std::optional<std::vector<RegId>>, shape)
+                FIELD(std::optional<std::vector<TransformComponent>>, transform_component),
+                FIELD(std::optional<std::vector<CameraComponent>>, camera_component),
+                FIELD(std::optional<std::vector<StaticMeshComponent>>, staticmesh_component),
+                FIELD(std::optional<std::vector<CubemapComponent>>, cubemap_component)
         )
     };
-    IMPL_SERIALIZE(ElemData);
+    IMPL_SERIALIZE(ActorData);
 
     struct MeshData {
         SERIALIZABLE(
                 FIELD(RegId, uid),
-                FIELD(Mesh, mesh),
-                FIELD(std::optional<RegId>, material)
+                FIELD(size_t, size),
+                FIELD(Mesh, mesh)
         )
     };
     IMPL_SERIALIZE(MeshData);
@@ -48,8 +55,8 @@ namespace Pong::serializer {
     struct CurveData {
         SERIALIZABLE (
                 FIELD(RegId, uid),
-                FIELD(Curve, curve),
-                FIELD(std::optional<RegId>, material)
+                FIELD(size_t, size),
+                FIELD(Curve, curve)
         )
     };
     IMPL_SERIALIZE(CurveData);
@@ -57,45 +64,76 @@ namespace Pong::serializer {
     struct MaterialData {
         SERIALIZABLE (
                 FIELD(RegId, uid),
+                FIELD(size_t, size),
                 FIELD(Material, material)
         )
     };
     IMPL_SERIALIZE(MaterialData);
 
 
-#define P_BASE_DESCRIPTION_DATA \
-    vector_data<ElemData> elem_data; \
-    vector_data<MeshData> mesh_data; \
-    vector_data<CurveData> curve_data; \
-    vector_data<MaterialData> material_data;
+    // Descriptors (data as file)
 
     struct any_type{};
     struct ref_wrapper_type{};
 
     class base_descriptor_ {};
 
+// Asset descriptor
+
+#define P_DESCRIPTOR_VECTOR_DATA(vecdata) \
+    public: \
+    template<typename T> \
+    using vector_data = std::vector<vecdata>;
+
+
+#define P_ASSET_DESCRIPTION_DATA \
+    vector_data<ActorData> actor_data; \
+    vector_data<MeshData> mesh_data; \
+    vector_data<CurveData> curve_data; \
+    vector_data<MaterialData> material_data;
+
+
     template<typename U>
-    class Descriptor_: public base_descriptor_ {
+    class AssetDescriptor_ : public base_descriptor_ {
+    P_DESCRIPTOR_VECTOR_DATA(T);
     public:
-        template<typename T>
-        using vector_data = std::vector<T>;
-    public:
-        P_BASE_DESCRIPTION_DATA;
+        P_ASSET_DESCRIPTION_DATA;
     };
 
     template<>
-    class Descriptor_<ref_wrapper_type>: public base_descriptor_ {
+    class AssetDescriptor_<ref_wrapper_type> : public base_descriptor_ {
+    P_DESCRIPTOR_VECTOR_DATA(std::reference_wrapper<T>);
     public:
-        template<typename T>
-        using vector_data = std::vector<std::reference_wrapper<T>>;
-    public:
-        P_BASE_DESCRIPTION_DATA;
+        P_ASSET_DESCRIPTION_DATA;
     };
 
-    using IAssetDescriptor = Descriptor_<any_type>;
-    using OAssetDescriptor = Descriptor_<ref_wrapper_type>;
+    using IAssetDescriptor = AssetDescriptor_<any_type>;
+    using OAssetDescriptor = AssetDescriptor_<ref_wrapper_type>;
     REG_DESCRIPTOR(IAssetDescriptor, 1);
     REG_DESCRIPTOR(OAssetDescriptor, 1);
+
+// Map descriptor
+#define P_MAP_DESCRIPTION_DATA \
+    vector_data<ActorData> actor_data;
+
+    template<typename U>
+    class MapDescriptor_: public base_descriptor_ {
+    P_DESCRIPTOR_VECTOR_DATA(T);
+    public:
+        P_MAP_DESCRIPTION_DATA;
+    };
+
+    template<>
+    class MapDescriptor_<ref_wrapper_type>: public base_descriptor_ {
+    P_DESCRIPTOR_VECTOR_DATA(std::reference_wrapper<T>);
+    public:
+        P_MAP_DESCRIPTION_DATA;
+    };
+
+    using IMapDescriptor = MapDescriptor_<any_type>;
+    using OMapDescriptor = MapDescriptor_<ref_wrapper_type>;
+    REG_DESCRIPTOR(IMapDescriptor, 1);
+    REG_DESCRIPTOR(OMapDescriptor, 1);
 
 
     template <Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
@@ -109,12 +147,27 @@ namespace Pong::serializer {
         return string_path;
     }
 
+    template <Intersects<OMapDescriptor, IMapDescriptor> Descriptor>
+    inline std::string ensure_file_name(Descriptor&,  const char* file_name) {
+
+        auto string_path = std::string(file_name);
+        if (!string_path.ends_with(P_MAPS_EXTENSION)) {
+            string_path.append(P_MAPS_EXTENSION);
+        }
+        return string_path;
+    }
+
     template<typename Archive, Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
         ar & descriptor.elem_data;
         ar & descriptor.mesh_data;
         ar & descriptor.curve_data;
         ar & descriptor.material_data;
+    }
+
+    template<typename Archive, Intersects<OMapDescriptor, IMapDescriptor> Descriptor>
+    inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
+        ar & descriptor.actor_data;
     }
 
     template<std::derived_from<base_descriptor_> T>

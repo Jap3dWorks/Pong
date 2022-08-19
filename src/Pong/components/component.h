@@ -31,13 +31,9 @@ namespace Pong {
     */
 
     struct Component {
-
-        ~Component() = default;
-
-        Component() = default;
+        RegId actor{};
 
         virtual inline void start() {};
-
         virtual inline void update() {};
 
     };
@@ -45,7 +41,6 @@ namespace Pong {
     struct CameraComponent : public Component {
 
         float fov{_P_PI / 3.5};
-
 
         explicit CameraComponent(
                 float fov_ = _P_PI / 3.5
@@ -69,6 +64,21 @@ namespace Pong {
             math::decompose_transforms(transform, translation, rotation, scale);
         }
     };
+
+    // StaticMeshComponent
+    struct StaticMeshComponent : public Component {
+        /**Vertex array buffer id*/
+        // files in disk
+        RegId material{};
+        RegId mesh{};
+    };
+
+    struct CubemapComponent : public Component {
+        RegId material{};
+    };
+
 }
+
+
 
 #endif // COMPONENT_H

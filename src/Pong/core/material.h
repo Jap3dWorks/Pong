@@ -4,7 +4,7 @@
 #include "Pong/core/shader.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/texture.h"
-#include "Pong/core/reg_id_manager.h"
+#include "Pong/registers/reg_id.h"
 
 #include <stb/stb_image.h>
 

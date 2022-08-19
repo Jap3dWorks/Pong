@@ -7,7 +7,7 @@
 
 #include "Pong/components/component.h"
 #include "Pong/core/collider.h"
-#include "Pong/core/reg_id_manager.h"
+#include "Pong/registers/reg_id.h"
 // #include "Pong/core/actor/actor.h"
 
 namespace Pong {

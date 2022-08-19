@@ -5,7 +5,7 @@
 #ifndef GL_TEST_RENDER_NW_H
 #define GL_TEST_RENDER_NW_H
 
-#include "Pong/core/reg_id_manager.h"
+#include "Pong/registers/reg_id.h"
 #include "Pong/core/graphic_flags.h"
 #include "Pong/map/map_level.h"
 #include "Pong/render/render_queue.h"

@@ -7,7 +7,7 @@
 
 #include "sparse_set.h"
 #include "type_reg_map.h"
-#include "Pong/core/reg_id_manager.h"
+#include "Pong/registers/reg_id.h"
 #include "Pong/components/component.h"
 #include "Utils/type_conditions.h"
 #include <tuple>

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <vector>
-#include "Pong/core/reg_id_manager.h"
+#include "Pong/registers/reg_id.h"
 #include  "Pong/core/geometry_data.h"
 #include "Pong/core/material.h"
 

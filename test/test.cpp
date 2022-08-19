@@ -441,7 +441,7 @@ void test_serialize_data() {
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
 
-    auto elem = Pong::serializer::ElemData{{}, {}};
+    auto elem = Pong::serializer::ActorData{{}, {}};
     description.elem_data.push_back({elem});
 
     Pong::serializer::save_file(
@@ -472,7 +472,7 @@ void test_save_serialize_plane() {
             {0, 1, 3, 1, 2, 3};
 
     auto mesh_data = Pong::serializer::MeshData{
-           Pong::RegId(0), Pong::Mesh{vertices, indices}
+           Pong::RegId(0), 0, Pong::Mesh{vertices, indices}
     };
 
     auto odescriptor = Pong::serializer::OAssetDescriptor();

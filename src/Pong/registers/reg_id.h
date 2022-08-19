@@ -233,6 +233,7 @@ namespace Pong {
         inline static auto& get() {
             return reg_id_array_;
         }
+
     };
 
 
