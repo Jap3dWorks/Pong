@@ -159,7 +159,7 @@ namespace Pong::serializer {
 
     template<typename Archive, Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
-        ar & descriptor.elem_data;
+        ar & descriptor.actor_data;
         ar & descriptor.mesh_data;
         ar & descriptor.curve_data;
         ar & descriptor.material_data;

@@ -20,10 +20,11 @@
 #include "Utils/logger.h"
 #include "Pong/core/command.h"
 #include "Pong/registers/type_reg_map.h"
+#include "reg_id_tests.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
 
-#include "Pong/registers/buffered_reg_data.h"
+#include "Pong/registers/reg_data_controller.h"
 #include "Pong/file_data/reflectable.h"
 #include "Pong/file_data/serial_data.h"
 #include "Pong/file_data/serialization.h"
@@ -404,9 +405,9 @@ void test_class_map() {
 }
 
 void test_registry_map() {
-    auto maprg = Pong::BufferedRegData<CompA, CompB, CompC>();
+    auto maprg = Pong::RegDataController<CompA, CompB, CompC>();
     auto nwid = maprg.create_id();
-    maprg.add_type<CompA>(nwid);
+    maprg.insert_type<CompA>(nwid, {});
 }
 
 
@@ -442,7 +443,7 @@ void test_serialize_data() {
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
 
     auto elem = Pong::serializer::ActorData{{}, {}};
-    description.elem_data.push_back({elem});
+    description.actor_data.push_back({elem});
 
     Pong::serializer::save_file(
             description,
@@ -501,6 +502,8 @@ void test_save_serialize_plane() {
 
 
 
+
+
 int main() {
 //    _test_text_template();
 //    _test_shader_parser();
@@ -526,7 +529,9 @@ int main() {
 //    test_serialize_data();
 //    test_create_header();
 
-    test_save_serialize_plane();
+//    test_save_serialize_plane();
+
+    test_variadic_class_access();
 
     return 0;
 }

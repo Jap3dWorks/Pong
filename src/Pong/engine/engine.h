@@ -68,6 +68,13 @@ namespace Pong::engine {
         void add_output(const std::string& name, OutputPtr&& output) {
             _outputs[name] = std::move(output);
         }
+
+        void run() {}
+
+        void setup() {
+            // inspect asset and seg asset ids
+        }
+
     };
 
     OutputTemplate(typename ...Args)
@@ -86,7 +93,6 @@ namespace Pong::engine {
 
     }
 
-    void run() {}
 
 }
 #endif //GL_TEST_ENGINE_H

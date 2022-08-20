@@ -51,4 +51,22 @@ struct op_value<T, std::nullopt_t, std::nullopt, std::nullopt_t> {
 };
 
 
+/**
+ * Get the class at index N in a variadic argument template.
+ * @tparam N
+ * @tparam T
+ * @tparam Args
+ */
+template<uint32_t N, typename T, typename ...Args>
+struct variadic_id_t: variadic_id_t<N-1, Args...>{
+};
+
+template<typename T, typename ...Args>
+struct variadic_id_t<0, T, Args...> {
+    static constexpr uint32_t index{0};
+    using type_t = T;
+};
+
+
+
 #endif //GL_TEST_TYPE_CONDITIONS_H

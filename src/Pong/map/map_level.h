@@ -5,7 +5,7 @@
 #ifndef GL_TEST_MAP_LEVEL_H
 #define GL_TEST_MAP_LEVEL_H
 
-#include "Pong/registers/buffered_reg_data.h"
+#include "Pong/registers/reg_data_controller.h"
 #include "Pong/components/component.h"
 #include "Pong/components/collision_components.h"
 #include "Pong/core/geometry_data.h"
@@ -26,19 +26,19 @@ namespace Pong {
         std::reference_wrapper<RenderQueueSubmitter> submitter;
 
     public:
-        BufferedRegData<TransformComponent,
+        RegDataController<TransformComponent,
                 CameraComponent,
                 StaticMeshComponent> components_reg{};
 
-        BufferedRegData<Mesh, Curve> shape_reg{}; // a temp buffer with geo buffers
-        BufferedRegData<Material> material_reg{};  // a temp buffer with mat buffers
+        RegDataController<Mesh, Curve> shape_reg{}; // a temp buffer with geo buffers
+        RegDataController<Material> material_reg{};  // a temp buffer with mat buffers
 
     public:
 
         virtual void setup() {}
 
         void start() {
-            auto& registry = components_reg.get_registry();
+            auto& registry = components_reg.get_reg_data();
 //            registry.registry<>();
                 // Build here views or gruops, e.g staticMesh with transp materials and transforms
                 // staticMesh with opaque materials and transforms
