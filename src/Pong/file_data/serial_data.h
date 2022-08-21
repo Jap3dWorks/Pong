@@ -32,7 +32,6 @@ namespace Pong::serializer {
 
     struct ActorData {
         SERIALIZABLE(
-                FIELD(size_t, size),
                 FIELD(std::optional<RegId>, uid), // serialized maps will need
                 FIELD(std::optional<RegId>, parent),
                 FIELD(std::optional<std::vector<TransformComponent>>, transform_component),
@@ -45,7 +44,6 @@ namespace Pong::serializer {
 
     struct MeshData {
         SERIALIZABLE(
-                FIELD(size_t, size),
                 FIELD(RegId, uid),
                 FIELD(Mesh, mesh)
         )
@@ -54,7 +52,6 @@ namespace Pong::serializer {
 
     struct CurveData {
         SERIALIZABLE (
-                FIELD(size_t, size),
                 FIELD(RegId, uid),
                 FIELD(Curve, curve)
         )
@@ -63,7 +60,6 @@ namespace Pong::serializer {
 
     struct MaterialData {
         SERIALIZABLE (
-                FIELD(size_t, size),
                 FIELD(RegId, uid),
                 FIELD(Material, material)
         )
@@ -73,65 +69,43 @@ namespace Pong::serializer {
 
     // Descriptors (data as file)
 
-    struct any_type{};
-    struct ref_wrapper_type{};
+    struct oasset_t{};
 
-    class base_descriptor_ {};
-
-// Asset descriptor
-
-#define P_DESCRIPTOR_VECTOR_DATA(vecdata) \
-    public: \
-    template<typename T> \
-    using vector_data = std::vector<vecdata>;
-
-
-#define P_ASSET_DESCRIPTION_DATA \
-    vector_data<ActorData> actor_data; \
-    vector_data<MeshData> mesh_data; \
-    vector_data<CurveData> curve_data; \
-    vector_data<MaterialData> material_data;
-
+    class base_descriptor_ {
+    public:
+        template<typename T>
+        using headed_data_t = HeadedData<Header<T>, T>;
+        template<typename T>
+        using serialize_data_t = headed_data_t<std::vector<headed_data_t<T>>>;
+    };
 
     template<typename U>
     class AssetDescriptor_ : public base_descriptor_ {
-    P_DESCRIPTOR_VECTOR_DATA(T);
     public:
-        P_ASSET_DESCRIPTION_DATA;
+
+        serialize_data_t<ActorData> actor_data;
+        serialize_data_t<MeshData> mesh_data;
+        serialize_data_t<CurveData> curve_data;
+        serialize_data_t<MaterialData> material_data;
     };
 
-    template<>
-    class AssetDescriptor_<ref_wrapper_type> : public base_descriptor_ {
-    P_DESCRIPTOR_VECTOR_DATA(std::reference_wrapper<T>);
-    public:
-        P_ASSET_DESCRIPTION_DATA;
-    };
 
-    using IAssetDescriptor = AssetDescriptor_<any_type>;
-    using OAssetDescriptor = AssetDescriptor_<ref_wrapper_type>;
+    using IAssetDescriptor = AssetDescriptor_<Any_t>;
+    using OAssetDescriptor = AssetDescriptor_<oasset_t>;
     REG_DESCRIPTOR(IAssetDescriptor, 1);
     REG_DESCRIPTOR(OAssetDescriptor, 1);
 
-// Map descriptor
-#define P_MAP_DESCRIPTION_DATA \
-    vector_data<ActorData> actor_data;
 
     template<typename U>
     class MapDescriptor_: public base_descriptor_ {
-    P_DESCRIPTOR_VECTOR_DATA(T);
+
     public:
-        P_MAP_DESCRIPTION_DATA;
+        serialize_data_t<ActorData> actor_data;
     };
 
-    template<>
-    class MapDescriptor_<ref_wrapper_type>: public base_descriptor_ {
-    P_DESCRIPTOR_VECTOR_DATA(std::reference_wrapper<T>);
-    public:
-        P_MAP_DESCRIPTION_DATA;
-    };
 
-    using IMapDescriptor = MapDescriptor_<any_type>;
-    using OMapDescriptor = MapDescriptor_<ref_wrapper_type>;
+    using IMapDescriptor = MapDescriptor_<Any_t>;
+    using OMapDescriptor = MapDescriptor_<oasset_t>;
     REG_DESCRIPTOR(IMapDescriptor, 1);
     REG_DESCRIPTOR(OMapDescriptor, 1);
 
@@ -159,6 +133,7 @@ namespace Pong::serializer {
 
     template<typename Archive, Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
+
         ar & descriptor.actor_data;
         ar & descriptor.mesh_data;
         ar & descriptor.curve_data;
@@ -197,32 +172,7 @@ namespace Pong::serializer {
     }
 
 
-    inline void set_sizes(OAssetDescriptor& descriptor) {
-        auto size_desc = SizeSerializer();
-        for (auto& dt: descriptor.actor_data) {
-            serialize(size_desc, dt, {});
-            dt.get().size = size_desc.get();
-            size_desc.clear();
-        }
 
-        for (auto& dt: descriptor.mesh_data) {
-            serialize(size_desc, dt, {});
-            dt.get().size = size_desc.get();
-            size_desc.clear();
-        }
-
-        for (auto& dt: descriptor.curve_data) {
-            serialize(size_desc, dt, {});
-            dt.get().size = size_desc.get();
-            size_desc.clear();
-        }
-
-        for (auto& dt: descriptor.material_data) {
-            serialize(size_desc, dt, {});
-            dt.get().size = size_desc.get();
-            size_desc.clear();
-        }
-    }
 }
 
 #endif //GL_TEST_SERIAL_DATA_H

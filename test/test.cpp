@@ -437,70 +437,70 @@ void test_class_reflection() {
     print_fields(rdata);
 }
 
-void test_serialize_data() {
-    auto description = Pong::serializer::OAssetDescriptor();
-    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
-    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
-
-    auto elem = Pong::serializer::ActorData{{}, {}};
-    description.actor_data.push_back({elem});
-
-    Pong::serializer::save_file(
-            description,
-            "D:/_docs/Pong/test/test_archive"
-    );
-
-    LOG_INFO("-File serialized-");
-}
-
-
-void test_create_header() {
-    auto version = Pong::serializer::Version(1);
-    auto h = Pong::serializer::Header{*version, {"TestTypeField"}, 0};
-    LOG_INFO(h.type);
-}
-
-
-void test_save_serialize_plane() {
-    std::vector<Pong::Vertex> vertices = {
-            {{-1,-1, 0}, {0,0,-1}, {0,0}},
-            {{1, -1, 0}, {0,0,-1}, {0,1}},
-            {{1, 1, 0}, {0,0,-1}, {1,1}},
-            {{-1, 1, 0}, {0,0,-1}, {1,0}}
-    };
-
-    std::vector<uint32_t> indices =
-            {0, 1, 3, 1, 2, 3};
-
-    auto mesh_data = Pong::serializer::MeshData{
-           Pong::RegId(0), 0, Pong::Mesh{vertices, indices}
-    };
-
-    auto odescriptor = Pong::serializer::OAssetDescriptor();
-    odescriptor.mesh_data.push_back({mesh_data});
-
-    Pong::serializer::save_file(
-            odescriptor,
-            "../src/assets/plane"
-    );
-
-    // read plane.asset
-    auto idescriptor =  Pong::serializer::IAssetDescriptor();
-    Pong::serializer::load_file(
-            idescriptor,
-            "../src/assets/plane");
-
-    assert(!idescriptor.mesh_data.empty());
-
-    for(auto& d: idescriptor.mesh_data) {
-//        LOG_INFO(d.uid);
-    }
-
-    LOG_INFO("-test save serialize Success-");
-
-}
-
-
+//void test_serialize_data() {
+//    auto description = Pong::serializer::OAssetDescriptor();
+//    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
+//    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
+//
+//    auto elem = Pong::serializer::ActorData{{}, {}};
+//    description.actor_data.push_back({elem});
+//
+//    Pong::serializer::save_file(
+//            description,
+//            "D:/_docs/Pong/test/test_archive"
+//    );
+//
+//    LOG_INFO("-File serialized-");
+//}
+//
+//
+//void test_create_header() {
+//    auto version = Pong::serializer::Version(1);
+//    auto h = Pong::serializer::Header{*version, {"TestTypeField"}, 0};
+//    LOG_INFO(h.type);
+//}
+//
+//
+//void test_save_serialize_plane() {
+//    std::vector<Pong::Vertex> vertices = {
+//            {{-1,-1, 0}, {0,0,-1}, {0,0}},
+//            {{1, -1, 0}, {0,0,-1}, {0,1}},
+//            {{1, 1, 0}, {0,0,-1}, {1,1}},
+//            {{-1, 1, 0}, {0,0,-1}, {1,0}}
+//    };
+//
+//    std::vector<uint32_t> indices =
+//            {0, 1, 3, 1, 2, 3};
+//
+//    auto mesh_data = Pong::serializer::MeshData{
+//           Pong::RegId(0), 0, Pong::Mesh{vertices, indices}
+//    };
+//
+//    auto odescriptor = Pong::serializer::OAssetDescriptor();
+//    odescriptor.mesh_data.push_back({mesh_data});
+//
+//    Pong::serializer::save_file(
+//            odescriptor,
+//            "../src/assets/plane"
+//    );
+//
+//    // read plane.asset
+//    auto idescriptor =  Pong::serializer::IAssetDescriptor();
+//    Pong::serializer::load_file(
+//            idescriptor,
+//            "../src/assets/plane");
+//
+//    assert(!idescriptor.mesh_data.empty());
+//
+//    for(auto& d: idescriptor.mesh_data) {
+////        LOG_INFO(d.uid);
+//    }
+//
+//    LOG_INFO("-test save serialize Success-");
+//
+//}
+//
+//
 
 
 
@@ -531,7 +531,9 @@ int main() {
 
 //    test_save_serialize_plane();
 
-    test_variadic_class_access();
+//    test_variadic_class_access();
+
+    test_file_byte_pos();
 
     return 0;
 }

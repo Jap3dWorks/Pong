@@ -34,10 +34,17 @@ void test_reg_id_data() {
 }
 
 void test_file_byte_pos() {
-    auto stream = std::ifstream();
+    auto h = Pong::serializer::Header<uint32_t>{9};
+
+    LOG_INFO(sizeof(h));
+    LOG_INFO(sizeof(Pong::serializer::data_size_t));
 
 
 
 }
+
+
+
+
 
 #endif //PONG_REG_ID_TESTS_H

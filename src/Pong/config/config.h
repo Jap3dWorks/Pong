@@ -13,4 +13,6 @@
 #define P_MAPS_EXTENSION ".map"
 
 
+#define P_MAX_SERIALIZER_NAME_LENGTH 24
+
 #endif //GL_TEST_COMFIG_H

@@ -10,6 +10,10 @@
 namespace Pong::serializer {
     using Version=std::optional<uint32_t>;
 
+    using data_size_t = size_t;
+
+    struct Any_t{};
+    struct reference_data_t{};
 
 }
 

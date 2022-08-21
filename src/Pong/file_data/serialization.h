@@ -5,8 +5,10 @@
 #ifndef GL_TEST_SERIALIZATION_H
 #define GL_TEST_SERIALIZATION_H
 
+#include "Pong/file_data/serialize_types.h"
 #include "Pong/file_data/reflectable.h"
 #include "Pong/file_data/serialize_functions.h"
+#include "Pong/file_data/data_header.h"
 #include <iostream>
 #include <ostream>
 #include "Utils/type_conditions.h"
@@ -17,98 +19,6 @@
 #include <optional>
 
 namespace Pong::serializer {
-
-    struct Header {
-        SERIALIZABLE (
-                FIELD(size_t, size),
-                FIELD(Version, version),
-                FIELD(char, type[16])
-        )
-    };
-    IMPL_SERIALIZE(Header);
-
-
-    class SizeSerializer {
-    private:
-        size_t size_{0};
-
-    public:
-        template<typename T>
-        auto &operator&(T &other) {
-            size(*this, other);
-            return *this;
-        }
-
-        [[nodiscard]] auto get() const noexcept {
-            return size_;
-        }
-
-        auto clear() noexcept {
-            size_ = 0;
-        }
-
-        template<typename T>
-        SizeSerializer& operator+=(const T& other) {
-            size_ += other;
-            return *this;
-        }
-
-        template<typename T>
-        SizeSerializer operator+(const T& other) {
-            auto temp = size_ + other;
-            return temp;
-        }
-
-        template<typename T>
-        SizeSerializer &operator*=(const T &other) {
-            size_ *= other;
-            return *this;
-        }
-
-        template<typename T>
-        SizeSerializer operator*(const T& other) {
-            auto temp = *this;
-            temp += other;
-            return temp;
-        }
-
-        template<typename T>
-        friend T& operator+=(T& left_, const SizeSerializer& right_);
-
-        template<typename T>
-        friend T operator+(T& left_, const SizeSerializer& right_);
-
-        template<typename T>
-        friend T& operator*=(T& left_, const SizeSerializer& right_);
-
-        template<typename T>
-        friend T operator*(T& left_, const SizeSerializer& right_);
-
-    };
-
-    template<typename T>
-    T &operator+=(T& left_, const SizeSerializer& right_) {
-        left_ += right_.size_;
-        return left_;
-    }
-
-    template<typename T>
-    T operator+(T& left_, const SizeSerializer& right_) {
-        auto temp = left_ + right_.size_;
-        return temp;
-    }
-
-    template<typename T>
-    T& operator*=(T& left_, const SizeSerializer& right_) {
-        left_ *= right_.size_;
-        return left_;
-    }
-
-    template<typename T>
-    T operator*(T& left_, const SizeSerializer& right_) {
-        auto temp = left_ * right_.size_;
-        return temp;
-    }
 
 
 #define SERIALIZER_COMMON(Serial, Stream) \
@@ -131,13 +41,19 @@ protected: \
     public:
         template<typename T>
         auto &operator<<(T &other) {
-            auto version = serialized_version<T>::version;
-            auto type_name = std::string(serialized_version<T>::type);
-            auto header = Header{version, type_name, 0};
+            assert(strlen(descriptor_data<T>::type)<= descriptor_data<T>::type);
+
+            auto version = descriptor_data<T>::version;
+//            auto header = FileHeader{0, version, descriptor_data<T>::type};
+            auto header = FileHeader{0, version};
+            std::strncpy(header.type_name,
+                         descriptor_data<T>::type,
+                         P_MAX_SERIALIZER_NAME_LENGTH);
+
             auto size_serializer = SizeSerializer();
 
             serialize(size_serializer, header, version);
-            header.size = size_serializer.get();
+            header.data_size = size_serializer.get();
             size_serializer.clear();
             serialize(*this, header, version);
 
@@ -148,9 +64,11 @@ protected: \
 
         template<typename T>
         auto &operator&(T &other) {
-            save(*this, other);
+            SaveLoadSize<T>::save(*this, other, {});
             return *this;
         }
+
+
     };
 
 
@@ -160,9 +78,9 @@ protected: \
     public:
         template<typename T>
         auto &operator>>(T &other) {
-            auto header = Header{};
-
+            auto header = FileHeader{};
             serialize(*this, header, {});
+
             auto version = header.version;
             serialize(*this, other, version);
 
@@ -171,7 +89,7 @@ protected: \
 
         template<typename T>
         auto &operator&(T &other) {
-            load(*this, other);
+            SaveLoadSize<T>::load(*this, other, {});
             return *this;
         }
 
