@@ -21,6 +21,8 @@ namespace Pong::engine {
 
 
     std::vector<MeshDtLocation> get_shape_dt(const std::string& asset_path ) {
+
+
         return {MeshDtLocation() };
     }
 

@@ -32,8 +32,8 @@ namespace Pong::serializer {
 
     struct ActorData {
         SERIALIZABLE(
-                FIELD(std::optional<RegId>, uid), // serialized maps will need
                 FIELD(size_t, size),
+                FIELD(std::optional<RegId>, uid), // serialized maps will need
                 FIELD(std::optional<RegId>, parent),
                 FIELD(std::optional<std::vector<TransformComponent>>, transform_component),
                 FIELD(std::optional<std::vector<CameraComponent>>, camera_component),
@@ -45,8 +45,8 @@ namespace Pong::serializer {
 
     struct MeshData {
         SERIALIZABLE(
-                FIELD(RegId, uid),
                 FIELD(size_t, size),
+                FIELD(RegId, uid),
                 FIELD(Mesh, mesh)
         )
     };
@@ -54,8 +54,8 @@ namespace Pong::serializer {
 
     struct CurveData {
         SERIALIZABLE (
-                FIELD(RegId, uid),
                 FIELD(size_t, size),
+                FIELD(RegId, uid),
                 FIELD(Curve, curve)
         )
     };
@@ -63,8 +63,8 @@ namespace Pong::serializer {
 
     struct MaterialData {
         SERIALIZABLE (
-                FIELD(RegId, uid),
                 FIELD(size_t, size),
+                FIELD(RegId, uid),
                 FIELD(Material, material)
         )
     };
@@ -169,24 +169,22 @@ namespace Pong::serializer {
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
         ar & descriptor.actor_data;
     }
+
     template<std::derived_from<base_descriptor_> T>
-    inline void save_file(
-            T &descriptor,
-            const char *file_name) {
+    inline void save_file(T &descriptor, const char *file_name) {
+
         auto ofstream = std::ofstream(
                 ensure_file_name(descriptor, file_name),
                 std::ofstream::binary
         );
 
         auto srlizer = OSSerializer(ofstream);
+
         srlizer << descriptor;
     }
 
     template<std::derived_from<base_descriptor_> T>
-    inline void load_file(
-            T &descriptor,
-            const char *file_name
-    ) {
+    inline void load_file(T &descriptor, const char *file_name) {
 
         auto ifstream = std::ifstream(
                 ensure_file_name(descriptor, file_name),
@@ -198,6 +196,33 @@ namespace Pong::serializer {
         srlizer >> descriptor;
     }
 
+
+    inline void set_sizes(OAssetDescriptor& descriptor) {
+        auto size_desc = SizeSerializer();
+        for (auto& dt: descriptor.actor_data) {
+            serialize(size_desc, dt, {});
+            dt.get().size = size_desc.get();
+            size_desc.clear();
+        }
+
+        for (auto& dt: descriptor.mesh_data) {
+            serialize(size_desc, dt, {});
+            dt.get().size = size_desc.get();
+            size_desc.clear();
+        }
+
+        for (auto& dt: descriptor.curve_data) {
+            serialize(size_desc, dt, {});
+            dt.get().size = size_desc.get();
+            size_desc.clear();
+        }
+
+        for (auto& dt: descriptor.material_data) {
+            serialize(size_desc, dt, {});
+            dt.get().size = size_desc.get();
+            size_desc.clear();
+        }
+    }
 }
 
 #endif //GL_TEST_SERIAL_DATA_H

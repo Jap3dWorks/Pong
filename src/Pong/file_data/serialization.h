@@ -20,100 +20,94 @@ namespace Pong::serializer {
 
     struct Header {
         SERIALIZABLE (
+                FIELD(size_t, size),
                 FIELD(Version, version),
-                FIELD(std::string, type),
-                FIELD(uint32_t, size)
+                FIELD(char, type[16])
         )
     };
     IMPL_SERIALIZE(Header);
 
-    template<typename T>
-    inline void save(T &ar, char *ptr, std::streamsize size) {
-        ar.get().write(ptr, size);
-    }
 
-    template<typename T>
-    inline void load(T &ar, char *ptr, std::streamsize size) {
-        ar.get().read(ptr, size);
-    }
+    class SizeSerializer {
+    private:
+        size_t size_{0};
 
-    // save types
-    template<typename T, typename U>
-    static inline void save(T &ar, const U &value) {
-        save(ar, (char *) &value, sizeof(value));
-    }
-
-    template<typename T, typename U>
-    static inline void save(T& ar, const std::vector<U>& value) {
-        size_t size = value.size();
-        save(ar, (char *) &size, sizeof(size));
-
-        for (uint32_t i=0; i<size; ++i) {
-            serialize(ar, value[i], {});
+    public:
+        template<typename T>
+        auto &operator&(T &other) {
+            size(*this, other);
+            return *this;
         }
-    }
 
-    template<typename T>
-    static inline void save(T& ar, const std::string& value) {
-        size_t size = value.size();
-        save(ar, (char *) &size, sizeof(size));
-        save(ar, (char *) value.data(), size);
-    }
-
-    template<typename T, typename U>
-    static inline void save(T& ar, const std::reference_wrapper<U>& value) {
-        serialize(ar, value.get(), {});
-    }
-
-    template<typename T, typename U>
-    static inline void save(T& ar, const std::optional<U>& value) {
-        auto hasval = value.has_value();
-        save(ar, (char*)&hasval, sizeof(hasval));
-
-        if (hasval) {
-            serialize(ar, *value, {});
+        [[nodiscard]] auto get() const noexcept {
+            return size_;
         }
-    }
 
-    // load types
-    template<typename T, typename U>
-    static inline void load(T &ar, U &value) {
-        load(ar, (char *) &value, sizeof(value));
-    }
-
-    template<typename T, typename U>
-    static inline void load(T &ar, std::vector<U> &value) {
-        size_t vector_size;
-        load(ar, (char *) &vector_size, sizeof(size_t));
-        value.resize(vector_size);
-
-        for(uint32_t i=0; i<vector_size; ++i) {
-            serialize(ar, value[i], {});
+        auto clear() noexcept {
+            size_ = 0;
         }
-    }
+
+        template<typename T>
+        SizeSerializer& operator+=(const T& other) {
+            size_ += other;
+            return *this;
+        }
+
+        template<typename T>
+        SizeSerializer operator+(const T& other) {
+            auto temp = size_ + other;
+            return temp;
+        }
+
+        template<typename T>
+        SizeSerializer &operator*=(const T &other) {
+            size_ *= other;
+            return *this;
+        }
+
+        template<typename T>
+        SizeSerializer operator*(const T& other) {
+            auto temp = *this;
+            temp += other;
+            return temp;
+        }
+
+        template<typename T>
+        friend T& operator+=(T& left_, const SizeSerializer& right_);
+
+        template<typename T>
+        friend T operator+(T& left_, const SizeSerializer& right_);
+
+        template<typename T>
+        friend T& operator*=(T& left_, const SizeSerializer& right_);
+
+        template<typename T>
+        friend T operator*(T& left_, const SizeSerializer& right_);
+
+    };
 
     template<typename T>
-    static inline void load(T& ar, std::string& value) {
-        size_t string_size;
-        load(ar, (char *) &string_size, sizeof(size_t));
-        value.resize(string_size);
-
-        load(ar, (char *) value.data(), string_size);
+    T &operator+=(T& left_, const SizeSerializer& right_) {
+        left_ += right_.size_;
+        return left_;
     }
 
-    template<typename T, typename U>
-    static inline void load(T& ar, std::reference_wrapper<U>& value) {
-        serialize(ar, value.get(), {});
+    template<typename T>
+    T operator+(T& left_, const SizeSerializer& right_) {
+        auto temp = left_ + right_.size_;
+        return temp;
     }
 
-    template<typename T, typename U>
-    static inline void load(T& ar, std::optional<U>& value) {
-        bool hasval;
-        load(ar, (char*)&hasval, sizeof(hasval));
-        if (hasval) {
-            value.emplace();
-            serialize(ar, *value, {});
-        }
+    template<typename T>
+    T& operator*=(T& left_, const SizeSerializer& right_) {
+        left_ *= right_.size_;
+        return left_;
+    }
+
+    template<typename T>
+    T operator*(T& left_, const SizeSerializer& right_) {
+        auto temp = left_ * right_.size_;
+        return temp;
     }
 
 
@@ -140,7 +134,14 @@ protected: \
             auto version = serialized_version<T>::version;
             auto type_name = std::string(serialized_version<T>::type);
             auto header = Header{version, type_name, 0};
+            auto size_serializer = SizeSerializer();
+
+            serialize(size_serializer, header, version);
+            header.size = size_serializer.get();
+            size_serializer.clear();
             serialize(*this, header, version);
+
+            // serialize each struct with its size.
             serialize(*this, other, version);
             return *this;
         }
@@ -175,6 +176,8 @@ protected: \
         }
 
     };
+
+
 
 }
 

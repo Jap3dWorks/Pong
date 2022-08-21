@@ -10,7 +10,6 @@
 #include "Pong/core/geometry_data.h"
 #include "Utils/type_conditions.h"
 #include "Utils/logger.h"
-
 #include <iostream>
 
 
@@ -32,12 +31,13 @@ void test_variadic_class_access () {
 
 void test_reg_id_data() {
     auto reg_data = Pong::RegDataController<Pong::RegDataLocation<Pong::Mesh>>();
+}
 
-    reg_data.
+void test_file_byte_pos() {
+    auto stream = std::ifstream();
 
 
 
 }
-
 
 #endif //PONG_REG_ID_TESTS_H
