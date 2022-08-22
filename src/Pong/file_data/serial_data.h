@@ -67,8 +67,6 @@ namespace Pong::serializer {
     IMPL_SERIALIZE(MaterialData);
 
 
-    // Descriptors (data as file)
-
     struct oasset_t{};
 
     class base_descriptor_ {
@@ -82,6 +80,8 @@ namespace Pong::serializer {
     template<typename U>
     class AssetDescriptor_ : public base_descriptor_ {
     public:
+        // file header
+
 
         serialize_data_t<ActorData> actor_data;
         serialize_data_t<MeshData> mesh_data;
@@ -135,8 +135,11 @@ namespace Pong::serializer {
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
 
         ar & descriptor.actor_data;
+
         ar & descriptor.mesh_data;
+
         ar & descriptor.curve_data;
+
         ar & descriptor.material_data;
     }
 
@@ -152,6 +155,9 @@ namespace Pong::serializer {
                 ensure_file_name(descriptor, file_name),
                 std::ofstream::binary
         );
+
+        auto sizeser = SizeSerializer();
+        sizeser >> descriptor;
 
         auto srlizer = OSSerializer(ofstream);
 
@@ -170,8 +176,6 @@ namespace Pong::serializer {
         auto srlizer = ISSerializer(ifstream);
         srlizer >> descriptor;
     }
-
-
 
 }
 

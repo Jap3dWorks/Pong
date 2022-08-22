@@ -11,6 +11,7 @@
 #include "Utils/type_conditions.h"
 #include "Utils/logger.h"
 #include <iostream>
+#include <cassert>
 
 
 struct TestType{
@@ -35,12 +36,8 @@ void test_reg_id_data() {
 
 void test_file_byte_pos() {
     auto h = Pong::serializer::Header<uint32_t>{9};
-
-    LOG_INFO(sizeof(h));
-    LOG_INFO(sizeof(Pong::serializer::data_size_t));
-
-
-
+    assert(sizeof(h) == sizeof(h.data_size));
+    LOG_INFO("test_file_byte_pos Success");
 }
 
 

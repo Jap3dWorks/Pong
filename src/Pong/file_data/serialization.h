@@ -41,14 +41,10 @@ protected: \
     public:
         template<typename T>
         auto &operator<<(T &other) {
-            assert(strlen(descriptor_data<T>::type)<= descriptor_data<T>::type);
+            assert(strlen(descriptor_data<T>::type) <= P_MAX_SERIALIZER_NAME_LENGTH);
 
             auto version = descriptor_data<T>::version;
-//            auto header = FileHeader{0, version, descriptor_data<T>::type};
-            auto header = FileHeader{0, version};
-            std::strncpy(header.type_name,
-                         descriptor_data<T>::type,
-                         P_MAX_SERIALIZER_NAME_LENGTH);
+            auto header = FileHeader{0, version, *descriptor_data<T>::type};
 
             auto size_serializer = SizeSerializer();
 
@@ -70,7 +66,6 @@ protected: \
 
 
     };
-
 
     class ISSerializer{
     SERIALIZER_COMMON(ISSerializer, std::ifstream);
