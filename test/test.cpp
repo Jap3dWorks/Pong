@@ -453,10 +453,12 @@ int main() {
 //    test_class_reflection();
 
 //    test_save_serialize_data();
-    test_save_serialize_plane();
+//    test_save_serialize_plane();
 
 //    test_variadic_class_access();
 //    test_file_byte_pos();
+
+    test_char_list_cpy();
 
     return 0;
 }

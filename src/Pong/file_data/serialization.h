@@ -39,29 +39,20 @@ protected: \
     SERIALIZER_COMMON(OSSerializer, std::ofstream);
 
     public:
+
+        Version version{};
+
         template<typename T>
-        auto &operator<<(T &other) {
-            assert(strlen(descriptor_data<T>::type) <= P_MAX_SERIALIZER_NAME_LENGTH);
-
-            auto version = descriptor_data<T>::version;
-            auto header = FileHeader{0, version};
-
-            auto size_serializer = SizeSerializer();
-
-            serialize(size_serializer, other, version);
-            header.data_size = size_serializer.get();
-            size_serializer.clear();
-
-            serialize(*this, header, version);
-
-            // serialize each struct with its size.
-            serialize(*this, other, version);
+        auto &operator<<(T &descriptor) {
+            version = descriptor_data<T>::version;
+            descriptor.data.header.version = version;
+            serialize(*this, descriptor, version);
             return *this;
         }
 
         template<typename T>
         auto &operator&(T &other) {
-            SaveLoadSize<T>::save(*this, other, {});
+            SaveLoadSize<T>::save(*this, other, version);
             return *this;
         }
     };
@@ -70,20 +61,21 @@ protected: \
     SERIALIZER_COMMON(ISSerializer, std::ifstream);
 
     public:
+        Version version{};
+
         template<typename T>
         auto &operator>>(T &other) {
-            auto header = FileHeader{};
-            serialize(*this, header, {});
-
-            auto version = header.version;
-            serialize(*this, other, version);
+            serialize(*this, other.data.header, {});
+            version = other.data.header.version;
+//            stream_.seekg(0, stream_type::beg);
+            serialize(*this, other.data.data, version);
 
             return *this;
         }
 
         template<typename T>
         auto &operator&(T &other) {
-            SaveLoadSize<T>::load(*this, other, {});
+            SaveLoadSize<T>::load(*this, other, version);
             return *this;
         }
 

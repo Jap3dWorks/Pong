@@ -26,6 +26,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <unordered_map>
+#include <concepts>
 
 
 namespace Pong::serializer {
@@ -41,8 +42,6 @@ namespace Pong::serializer {
     };
     IMPL_SERIALIZE(ActorData);
 
-    struct oasset_t{};
-
     class base_descriptor_ {
     public:
         template<typename T>
@@ -51,32 +50,52 @@ namespace Pong::serializer {
         using serialize_data_t = headed_data_t<std::vector<headed_data_t<T>>>;
     };
 
+    struct AssetData {
+        SERIALIZABLE (
+                FIELD(base_descriptor_::serialize_data_t<ActorData>, actor_data),
+                FIELD(base_descriptor_::serialize_data_t<Mesh>, mesh_data),
+                FIELD(base_descriptor_::serialize_data_t<Curve>, curve_data),
+                FIELD(base_descriptor_::serialize_data_t<Material>, material_data)
+        )
+    };
+    IMPL_SERIALIZE(AssetData);
+
     template<typename U>
     class AssetDescriptor_ : public base_descriptor_ {
     public:
-        serialize_data_t<ActorData> actor_data;
-        serialize_data_t<Mesh> mesh_data;
-        serialize_data_t<Curve> curve_data;
-        serialize_data_t<Material> material_data;
+        HeadedData<FileHeader, AssetData> data{};
+    public:
+        serialize_data_t<ActorData>& actor_data{data.data.actor_data};
+        serialize_data_t<Mesh>& mesh_data{data.data.mesh_data};
+        serialize_data_t<Curve>& curve_data{data.data.curve_data};
+        serialize_data_t<Material>& material_data{data.data.material_data};
     };
 
-
+    struct oasset_t{};
     using IAssetDescriptor = AssetDescriptor_<Any_t>;
     using OAssetDescriptor = AssetDescriptor_<oasset_t>;
     REG_DESCRIPTOR(IAssetDescriptor, 1);
     REG_DESCRIPTOR(OAssetDescriptor, 1);
 
 
+    struct MapData {
+        SERIALIZABLE (
+                FIELD(base_descriptor_::serialize_data_t<ActorData>, actor_data)
+        )
+    };
+    IMPL_SERIALIZE(MapData);
+
     template<typename U>
     class MapDescriptor_: public base_descriptor_ {
 
     public:
-        serialize_data_t<ActorData> actor_data;
+        HeadedData<FileHeader, MapData> data{};
+        serialize_data_t<ActorData>& actor_data{data.data.actor_data};
     };
 
-
+    struct omap_t{};
     using IMapDescriptor = MapDescriptor_<Any_t>;
-    using OMapDescriptor = MapDescriptor_<oasset_t>;
+    using OMapDescriptor = MapDescriptor_<omap_t>;
     REG_DESCRIPTOR(IMapDescriptor, 1);
     REG_DESCRIPTOR(OMapDescriptor, 1);
 
@@ -102,17 +121,9 @@ namespace Pong::serializer {
         return string_path;
     }
 
-    template<typename Archive, Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
+    template<typename Archive, std::derived_from<base_descriptor_> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
-        serialize(ar, descriptor.actor_data, version);
-        serialize(ar, descriptor.mesh_data, version);
-        serialize(ar, descriptor.curve_data, version);
-        serialize(ar, descriptor.material_data, version);
-    }
-
-    template<typename Archive, Intersects<OMapDescriptor, IMapDescriptor> Descriptor>
-    inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
-        serialize(ar, descriptor.actor_data, version);
+        ar & descriptor.data;
     }
 
     template<std::derived_from<base_descriptor_> T>
@@ -123,12 +134,12 @@ namespace Pong::serializer {
                 std::ofstream::binary
         );
 
-        auto sizeser = SizeSerializer();
-        sizeser >> descriptor;
+        auto size_ser = SizeSerializer();
+        size_ser >> descriptor;
 
-        auto srlizer = OSSerializer(ofstream);
+        auto out_ser = OSSerializer(ofstream);
 
-        srlizer << descriptor;
+        out_ser << descriptor;
     }
 
     template<std::derived_from<base_descriptor_> T>

@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <algorithm>
 
 namespace Pong::serializer {
     struct FileHeader_t{};
@@ -32,12 +33,13 @@ namespace Pong::serializer {
 
     template<>
     struct data_header_<FileHeader_t> {
-        static inline constexpr data_size_t header_size {(sizeof(data_size_t) * 2)};
+        static inline constexpr data_size_t header_size {
+            (sizeof(data_size_t) * 2) + P_MAX_SERIALIZER_NAME_LENGTH};
 
         SERIALIZABLE(
         FIELD(data_size_t, data_size, 0),
-        FIELD(Version, version)
-//        FIELD(const char, type_name[P_MAX_SERIALIZER_NAME_LENGTH])
+        FIELD(Version, version),
+        FIELD(const char, type_name[P_MAX_SERIALIZER_NAME_LENGTH])
         )
 
         using type = FileHeader_t;
@@ -66,11 +68,6 @@ namespace Pong::serializer {
         Header_ header{};
         Data_ &data{};
     };
-
-    template<typename Archive, typename Header, typename Data>
-    void serialize(Archive &ar, HeadedData<Header, Data> &value, const Version &version) {
-        ar & value;
-    }
 
     template<typename T>
     struct SaveLoadSize<Header<T>> {
@@ -133,6 +130,11 @@ namespace Pong::serializer {
         template<typename T>
         auto& operator>>(T &other) {
             auto version = descriptor_data<T>::version;
+            strncpy((char *) other.data.header.type_name,
+                    descriptor_data<T>::type,
+                    std::min(strlen(descriptor_data<T>::type),
+                             {P_MAX_SERIALIZER_NAME_LENGTH}));
+
             serialize(*this, other, version);
             return *this;
         }

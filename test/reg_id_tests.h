@@ -7,6 +7,7 @@
 
 #include "Pong/registers/reg_data_controller.h"
 #include "Pong/file_data/serial_data.h"
+#include "Pong/registers/reg_id.h"
 #include "Pong/core/geometry_data.h"
 #include "Utils/type_conditions.h"
 #include "Utils/logger.h"

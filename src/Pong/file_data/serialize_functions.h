@@ -103,6 +103,26 @@ namespace Pong::serializer {
         }
     };
 
+    template<>
+    struct SaveLoadSize<const char*> {
+        using type = const char*;
+
+        template<typename Archive>
+        static inline void save(Archive &ar, type value, const Version& version) {
+            ar.get().write(value, strlen(value));
+        }
+
+        template<typename Archive>
+        static inline void load(Archive &ar, type value, const Version& version) {
+            ar.get().read(value, strlen(value));
+        }
+
+        template<typename Archive>
+        static inline void size(Archive& ar, type value, const Version& version) {
+            ar += strlen(value);
+        }
+    };
+
     template<typename T>
     struct SaveLoadSize<std::vector<T>> {
         using type=std::vector<T>;
