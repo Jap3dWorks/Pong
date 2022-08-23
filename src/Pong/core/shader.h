@@ -28,7 +28,7 @@ class Shader {
 public:
     unsigned int ID;
 
-    // constructor reads and builds the Shader
+    // constructor reads and builds the shader
     _P_EXPLICIT Shader(const char *shader_path) {
         // retrieve the vertex/fragment source code from filepath
         auto parse_shader = shaders_from_file(shader_path);
@@ -42,19 +42,19 @@ public:
                 tess_control, tess_evaluation,
                 geometry, compute;
 
-        // vertex Shader
+        // vertex shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, nullptr);
         glCompileShader(vertex);
         _check_compile_errors(vertex, "POSITION");
 
-        // fragment Shader
+        // fragment shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, nullptr);
         glCompileShader(fragment);
         _check_compile_errors(fragment, "FRAGMENT");
 
-        // Shader program
+        // shader program
         ID = glCreateProgram();
 
         glAttachShader(ID, vertex);
@@ -113,7 +113,7 @@ public:
         // delete shaders once they're linked
     }
 
-    // use/activate the Shader
+    // use/activate the shader
     void use() const {
         glUseProgram(ID);
     }

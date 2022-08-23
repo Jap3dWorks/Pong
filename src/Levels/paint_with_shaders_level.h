@@ -15,7 +15,7 @@
 #include "Pong/shapes/plane_shape.h"
 #include <vector>
 
-// TODO: quad level for Shader testing
+// TODO: quad level for shader testing
 class PaintWithShades : public Pong::AbstractLevel {
 protected:
     void _level_setup() override {

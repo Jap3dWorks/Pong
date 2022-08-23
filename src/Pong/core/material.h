@@ -26,7 +26,7 @@ namespace Pong {
     using param_data = std::unordered_map<std::string, T>;
 
     struct Material {
-        RegId Shader;
+        RegId shader;
 
         param_data<float> float_params;
         param_data<int> int_params;
@@ -41,8 +41,6 @@ namespace Pong {
     protected:
         using super = MaterialController;
 
-
-
     private:
         bool _is_setup = false;
         param_data<float> _float_params;
@@ -52,7 +50,7 @@ namespace Pong {
 
         void _setup_material() {
             if (!_is_setup) {
-                // configure Shader for the material
+                // configure shader for the material
                 for (int i = 0; i < _textures.size(); i++) {
                     // assign an id to each texture slot
                     _shader->set_int(
@@ -90,7 +88,7 @@ namespace Pong {
         // stared Parameters that not vary each frame,
         // it can be a roughness value.
         void update_params() {
-            // set Shader parametters
+            // set shader parametters
             for (auto &p : _float_params) // floats
             {
                 _shader->set_float(p.first, p.second);
@@ -148,13 +146,13 @@ namespace Pong {
         }
 
         virtual void use() {
-            // bind Shader
+            // bind shader
             _shader->use();
 
             // bing Textures texture
             for (unsigned int i =0; i < _textures.size(); i++)
             {
-                // Active texture Shader slot
+                // Active texture shader slot
                 glActiveTexture(GL_TEXTURE0 + i);
                 // bind texture ID
                 // e.g  GL_TEXTURE_2D or GL_TEXTURE_CUBE_MAP

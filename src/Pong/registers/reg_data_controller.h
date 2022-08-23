@@ -91,7 +91,7 @@ namespace Pong {
 
         template<Intersects<Types...> type_>
         constexpr auto& get_type(RegId reg_id) const {
-            reg_data_.template get<data_t<type_>>().at(
+            return reg_data_.template get<data_t<type_>>().at(
                     reg_id
             );
         }

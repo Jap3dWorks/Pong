@@ -32,40 +32,14 @@ namespace Pong::serializer {
 
     struct ActorData {
         SERIALIZABLE(
-                FIELD(std::optional<RegId>, uid), // serialized maps will need
-                FIELD(std::optional<RegId>, parent),
-                FIELD(std::optional<std::vector<TransformComponent>>, transform_component),
-                FIELD(std::optional<std::vector<CameraComponent>>, camera_component),
-                FIELD(std::optional<std::vector<StaticMeshComponent>>, staticmesh_component),
-                FIELD(std::optional<std::vector<CubemapComponent>>, cubemap_component)
+                FIELD(RegId, parent, 0),
+                FIELD(std::vector<TransformComponent>, transform_component),
+                FIELD(std::vector<CameraComponent>, camera_component),
+                FIELD(std::vector<StaticMeshComponent>, staticmesh_component),
+                FIELD(std::vector<CubemapComponent>, cubemap_component)
         )
     };
     IMPL_SERIALIZE(ActorData);
-
-    struct MeshData {
-        SERIALIZABLE(
-                FIELD(RegId, uid),
-                FIELD(Mesh, mesh)
-        )
-    };
-    IMPL_SERIALIZE(MeshData);
-
-    struct CurveData {
-        SERIALIZABLE (
-                FIELD(RegId, uid),
-                FIELD(Curve, curve)
-        )
-    };
-    IMPL_SERIALIZE(CurveData);
-
-    struct MaterialData {
-        SERIALIZABLE (
-                FIELD(RegId, uid),
-                FIELD(Material, material)
-        )
-    };
-    IMPL_SERIALIZE(MaterialData);
-
 
     struct oasset_t{};
 
@@ -80,13 +54,10 @@ namespace Pong::serializer {
     template<typename U>
     class AssetDescriptor_ : public base_descriptor_ {
     public:
-        // file header
-
-
         serialize_data_t<ActorData> actor_data;
-        serialize_data_t<MeshData> mesh_data;
-        serialize_data_t<CurveData> curve_data;
-        serialize_data_t<MaterialData> material_data;
+        serialize_data_t<Mesh> mesh_data;
+        serialize_data_t<Curve> curve_data;
+        serialize_data_t<Material> material_data;
     };
 
 
@@ -133,19 +104,15 @@ namespace Pong::serializer {
 
     template<typename Archive, Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
-
-        ar & descriptor.actor_data;
-
-        ar & descriptor.mesh_data;
-
-        ar & descriptor.curve_data;
-
-        ar & descriptor.material_data;
+        serialize(ar, descriptor.actor_data, version);
+        serialize(ar, descriptor.mesh_data, version);
+        serialize(ar, descriptor.curve_data, version);
+        serialize(ar, descriptor.material_data, version);
     }
 
     template<typename Archive, Intersects<OMapDescriptor, IMapDescriptor> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
-        ar & descriptor.actor_data;
+        serialize(ar, descriptor.actor_data, version);
     }
 
     template<std::derived_from<base_descriptor_> T>

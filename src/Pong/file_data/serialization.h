@@ -44,13 +44,14 @@ protected: \
             assert(strlen(descriptor_data<T>::type) <= P_MAX_SERIALIZER_NAME_LENGTH);
 
             auto version = descriptor_data<T>::version;
-            auto header = FileHeader{0, version, *descriptor_data<T>::type};
+            auto header = FileHeader{0, version};
 
             auto size_serializer = SizeSerializer();
 
-            serialize(size_serializer, header, version);
+            serialize(size_serializer, other, version);
             header.data_size = size_serializer.get();
             size_serializer.clear();
+
             serialize(*this, header, version);
 
             // serialize each struct with its size.
@@ -63,8 +64,6 @@ protected: \
             SaveLoadSize<T>::save(*this, other, {});
             return *this;
         }
-
-
     };
 
     class ISSerializer{

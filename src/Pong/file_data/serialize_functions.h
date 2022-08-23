@@ -74,6 +74,14 @@ namespace Pong::serializer {
         ar & value.points;
     }
 
+    template<typename Archive>
+    void serialize(Archive& ar, Material& value, const Version& version) {
+        ar & value.shader;
+        ar & value.float_params;
+        ar & value.int_params;
+        ar & value.vec3_params;
+        ar & value.mat4_params;
+    }
 
     template<typename T>
     struct SaveLoadSize {

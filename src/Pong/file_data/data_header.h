@@ -17,10 +17,14 @@ namespace Pong::serializer {
 
     template<typename T>
     struct data_header_ {
-        static inline constexpr data_size_t header_size {sizeof(data_size_t)};
+        static inline constexpr data_size_t header_size {
+            sizeof(RegId) +
+            sizeof(data_size_t)
+        };
 
         SERIALIZABLE (
-        FIELD(data_size_t, data_size)
+                FIELD(RegId, reg_id, 0),
+                FIELD(data_size_t, data_size, 0)
         )
 
         using type = T;
@@ -28,13 +32,12 @@ namespace Pong::serializer {
 
     template<>
     struct data_header_<FileHeader_t> {
-        static inline constexpr data_size_t header_size {(sizeof(data_size_t) * 2) +
-            P_MAX_SERIALIZER_NAME_LENGTH};
+        static inline constexpr data_size_t header_size {(sizeof(data_size_t) * 2)};
 
         SERIALIZABLE(
-        FIELD(data_size_t, data_size),
-        FIELD(Version, version),
-        FIELD(const char, type_name[P_MAX_SERIALIZER_NAME_LENGTH])
+        FIELD(data_size_t, data_size, 0),
+        FIELD(Version, version)
+//        FIELD(const char, type_name[P_MAX_SERIALIZER_NAME_LENGTH])
         )
 
         using type = FileHeader_t;
@@ -52,22 +55,21 @@ namespace Pong::serializer {
     IMPL_SERIALIZE(FileHeader);
 
 
-    template<typename Header_, typename Data_>
+    template<typename Header_, typename Data_, typename DataType_=Any_t>
     struct HeadedData {
-        Header_ header;
-        Data_ data;
+        Header_ header{};
+        Data_ data{};
     };
 
-//    template<typename Header_, typename Data_>
-//    struct HeadedData<Header_, Data_, reference_data_t> {
-//        Header_ header;
-//        Data_ &data;
-//    };
+    template<typename Header_, typename Data_>
+    struct HeadedData<Header_, Data_, reference_data_t> {
+        Header_ header{};
+        Data_ &data{};
+    };
 
     template<typename Archive, typename Header, typename Data>
     void serialize(Archive &ar, HeadedData<Header, Data> &value, const Version &version) {
-        serialize(ar, value.header, version);
-        serialize(ar, value.data, version);
+        ar & value;
     }
 
     template<typename T>
@@ -86,7 +88,7 @@ namespace Pong::serializer {
 
         template<typename Archive>
         static inline void size(Archive& ar, type& value, const Version& version) {
-            serialize(ar, value, version);
+            ar += type::header_size;
         }
     };
 
@@ -96,17 +98,23 @@ namespace Pong::serializer {
 
         template<typename Archive>
         static inline void save(Archive& ar, type& value, const Version& version) {
-            serialize(ar, value, version);
+            serialize(ar, value.header, version);
+            serialize(ar, value.data, version);
         }
 
         template<typename Archive>
         static inline void load(Archive& ar, type& value, const Version& version) {
-            serialize(ar, value, version);
+            serialize(ar, value.header, version);
+            serialize(ar, value.data, version);
         }
 
         template<typename Archive>
         static inline void size(Archive& ar, type& value, const Version& version) {
-            serialize(ar, value, version);
+            auto new_ar = Archive();
+            serialize(new_ar, value.data, version);
+            value.header.data_size = new_ar.get();
+
+            ar += T::header_size + new_ar;
         }
     };
 

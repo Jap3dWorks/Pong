@@ -89,7 +89,7 @@ vec2 map(in vec3 pos) {
 
     // --------------------
     // temp = vec2(sd, 5.0);
-    // temp = vec2(sd_torus(pos, 1.0, 0.2), 5.0);
+    // temp = vec2(sd_torus(index, 1.0, 0.2), 5.0);
     temp = vec2(
         op_smooth_union(
             sd_torus(op_transform(pos - vec3(-1.0, 3.0, -4.0), vec3(1.0, 0.0, 0.0), float(Time*0.5)), 1.0, 0.2),

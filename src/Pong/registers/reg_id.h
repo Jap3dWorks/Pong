@@ -13,30 +13,60 @@
 #include <cstdlib>
 #include <random>
 
-
 namespace Pong {
+    struct RegId {
+        using id_type = uint32_t;
+        using index_type = id_type;
 
-//    enum class RegId : uint32_t {
-//    };
-//
-//    constexpr auto to_integer(RegId reg_id) noexcept {
-//        return static_cast<std::underlying_type_t<RegId>>(reg_id);
-//    }
-//
-//    RegId &operator++(RegId &reg_id) {
-//        using IntType = typename std::underlying_type<RegId>::type;
-//        reg_id = static_cast<RegId>( static_cast<IntType>(reg_id) + 1 );
-//        return reg_id;
-//    }
-//
-//    RegId operator++(RegId &c, int) {
-//        RegId result = c;
-//        ++c;
-//        return result;
-//    }
+        id_type id{0};
 
+        static inline constexpr RegId from_index(index_type index) {
+            return RegId{index + 1};
+        }
 
-    using RegId = uint32_t;
+        explicit operator bool() const noexcept {
+            return id;
+        }
+
+        [[nodiscard]] index_type index() const noexcept {
+            return id - 1;
+        }
+
+        RegId& operator++() {
+            ++id;
+            return *this;
+        }
+
+        RegId operator++(int) {
+            auto temp = RegId{id};
+            ++id;
+            return temp;
+        }
+
+        RegId& operator--() {
+            --id;
+            return *this;
+        }
+
+        RegId operator--(int) {
+            auto temp = RegId{id};
+            --id;
+            return temp;
+        }
+
+        bool operator==(const RegId& other) const {
+            return id == other.id;
+        }
+
+        bool operator<(const RegId& other) const {
+            return id < other.id;
+        }
+    };
+
+    std::ostream & operator<<(std::ostream& out, const RegId& reg_id) {
+        out << reg_id.id;
+        return out;
+    }
 
 
 #ifndef NDEBUG
@@ -56,9 +86,11 @@ namespace Pong {
 
     template<size_t MAX=4096>
     class StaticSparseSet {
+    public:
+        using index_type = RegId::index_type;
     private:
-        RegId dense_[MAX]{0};
-        RegId sparse_[MAX]{0};
+        index_type dense_[MAX]{0};
+        index_type sparse_[MAX]{0};
         uint8_t values_[MAX]{0};
         size_t size_{0};
         size_t highest_{0};
@@ -68,7 +100,7 @@ namespace Pong {
 
         DECLARE_ASSERT_MAX_SIZE(MAX);
 
-        inline auto constexpr insert(RegId index) noexcept {
+        inline auto constexpr insert(index_type index) noexcept {
             if (!contains(index)) {
                 sparse_[index] = size_;
                 dense_[size_]=index;
@@ -87,7 +119,7 @@ namespace Pong {
             }
         }
 
-        inline auto constexpr erase(RegId index) noexcept {
+        inline auto constexpr erase(index_type index) noexcept {
             if (contains(index)) {
                 auto dense_id = sparse_[index];
                 dense_[dense_id] = dense_[size_ - 1];
@@ -102,7 +134,7 @@ namespace Pong {
             }
         }
 
-        [[nodiscard]] inline auto constexpr contains(RegId index) const noexcept {
+        [[nodiscard]] inline auto constexpr contains(index_type index) const noexcept {
 //            ASSERT_MAX_SIZE(index);
             if (values_[index] != 0) {
                 return true;
@@ -148,10 +180,10 @@ namespace Pong {
         [[nodiscard]] inline auto constexpr highest() const noexcept {
             return highest_;
         }
-
     };
 
 
+    // TODO: min id: 1, 0 invalid id
     template<size_t MAX=4096>
     class RegIdArray {
     private:
@@ -176,10 +208,10 @@ namespace Pong {
                 indices_free.insert(indices_valid.highest() + 1);
             }
 
-            return index;
+            return RegId::from_index(index);
         }
 
-        inline auto constexpr insert(RegId index) noexcept {
+        inline auto constexpr insert(RegId::index_type index) noexcept {
             ASSERT_MAX_SIZE(index);
 
             if (!contains(index)) {
@@ -199,21 +231,27 @@ namespace Pong {
             }
         }
 
-        inline auto constexpr erase(RegId index) noexcept {
+        inline auto constexpr insert(RegId reg_id) noexcept {
+            insert(reg_id.index());
+        }
+
+
+        inline auto constexpr erase(RegId::index_type index) noexcept {
             indices_valid.erase(index);
             indices_free.insert(index);
         }
 
-        [[nodiscard]] inline auto constexpr contains(RegId index) const noexcept {
+        inline auto constexpr erase(RegId index) noexcept {
+            indices_valid.erase(index.index());
+            indices_free.insert(index.index());
+        }
+
+        [[nodiscard]] inline auto constexpr contains(RegId reg_id) const noexcept {
+            return contains(reg_id.index());
+        }
+
+        [[nodiscard]] inline auto constexpr contains(RegId::index_type index) const noexcept {
             return indices_valid.contains(index);
-        }
-
-        [[nodiscard]] inline auto constexpr begin() const noexcept {
-            return indices_valid.begin();
-        }
-
-        [[nodiscard]] inline auto constexpr end() const noexcept {
-            return indices_valid.end();
         }
 
         [[nodiscard]] inline auto constexpr max_size() const noexcept  {
@@ -223,18 +261,60 @@ namespace Pong {
         [[nodiscard]] inline auto constexpr size() const noexcept {
             return indices_valid.size();
         }
-    };
 
+        struct Iterator {
+            RegId::index_type * ptr_;
 
-    template<typename ...Types>
-    struct RegIdCollection {
-        inline static constexpr RegIdArray<> reg_id_array_{};
+            RegId operator*() {
+                return RegId::from_index(*ptr_);
+            }
 
-        inline static auto& get() {
-            return reg_id_array_;
+            Iterator& operator++ () {
+                ++ptr_;
+                return *this;
+            }
+
+            Iterator operator++ (int) {
+                auto temp = *this;
+                ++ptr_;
+                return temp;
+            }
+
+            Iterator& operator-- () {
+                --ptr_;
+                return *this;
+            }
+
+            Iterator operator-- (int) {
+                auto temp = *this;
+                --ptr_;
+                return temp;
+            }
+
+            bool operator==(const Iterator& other) {
+                return ptr_ == other.ptr_;
+            }
+        };
+
+        [[nodiscard]] inline auto constexpr begin() const noexcept {
+            return RegIdArray::Iterator{indices_valid.begin()};
         }
 
+        [[nodiscard]] inline auto constexpr end() const noexcept {
+            return RegIdArray::Iterator{indices_valid.end()};
+        }
     };
+
+
+//    template<typename ...Types>
+//    struct RegIdCollection {
+//        inline static constexpr RegIdArray<> reg_id_array_{};
+//
+//        inline static auto& get() {
+//            return reg_id_array_;
+//        }
+//
+//    };
 
 
 }

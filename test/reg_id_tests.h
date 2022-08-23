@@ -26,8 +26,10 @@ void test_variadic_class_access () {
     LOG_INFO("Type " << typeid(decltype(a)).name());
 
     LOG_INFO("Data " << a.Name << " " << a.data);
-
 }
+
+
+
 
 
 void test_reg_id_data() {

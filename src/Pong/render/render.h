@@ -357,7 +357,7 @@ namespace Pong {
                             glm::value_ptr(camera->get_view_matrix()));
             buffer_offset += sizeof(glm::mat4);
 
-            // view pos
+            // view index
             auto camera_position = glm::vec4(camera->actor->translation[3]);
             glBufferSubData(GL_UNIFORM_BUFFER,
                             buffer_offset,

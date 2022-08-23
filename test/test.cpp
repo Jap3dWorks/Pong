@@ -1,6 +1,10 @@
 //
 // Created by Jordi on 4/23/2022.
 //
+#include "reg_id_tests.h"
+#include "basic_tests.h"
+#include "filedata_tests.h"
+
 #include <iostream>
 #include <string>
 #include <regex>
@@ -20,7 +24,6 @@
 #include "Utils/logger.h"
 #include "Pong/core/command.h"
 #include "Pong/registers/type_reg_map.h"
-#include "reg_id_tests.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
 
@@ -424,78 +427,6 @@ void test_intersection_class() {
 }
 
 
-struct ReflectData {
-    REFLECTABLE(
-            FIELD(uint32_t, attr_1, 0),
-            FIELD(const char *, attr_2, "attr_2_value"),
-            FIELD(uint32_t, attr_3, 2)
-    );
-};
-
-void test_class_reflection() {
-    auto rdata = ReflectData();
-    print_fields(rdata);
-}
-
-void test_save_serialize_data() {
-    auto description = Pong::serializer::OAssetDescriptor();
-    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
-    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
-
-    auto elem = Pong::serializer::ActorData{{}, {}};
-//    description.actor_data.push_back({elem});
-    description.actor_data.data.push_back({{}, elem});
-
-    Pong::serializer::save_file(
-            description,
-            "D:/_docs/Pong/test/test_archive"
-    );
-
-    LOG_INFO("-File serialized-");
-}
-
-
-void test_save_serialize_plane() {
-    std::vector<Pong::Vertex> vertices = {
-            {{-1,-1, 0}, {0,0,-1}, {0,0}},
-            {{1, -1, 0}, {0,0,-1}, {0,1}},
-            {{1, 1, 0}, {0,0,-1}, {1,1}},
-            {{-1, 1, 0}, {0,0,-1}, {1,0}}
-    };
-
-    std::vector<uint32_t> indices =
-            {0, 1, 3, 1, 2, 3};
-
-    auto mesh_data = Pong::serializer::MeshData{
-           Pong::RegId(0), Pong::Mesh{vertices, indices}
-    };
-
-    auto odescriptor = Pong::serializer::OAssetDescriptor();
-    odescriptor.mesh_data.data.push_back({{}, mesh_data});
-
-    Pong::serializer::save_file(
-            odescriptor,
-            "./assets/plane"
-    );
-
-    // read plane.asset
-    auto idescriptor =  Pong::serializer::IAssetDescriptor();
-    Pong::serializer::load_file(
-            idescriptor,
-            "./assets/plane");
-
-    assert(!idescriptor.mesh_data.data.empty() && "Data is empty");
-
-    for(auto& d: idescriptor.mesh_data.data) {
-        LOG_INFO(d.data.uid);
-    }
-
-    LOG_INFO("-test save serialize Success-");
-
-}
-
-
-
 
 
 int main() {
@@ -521,11 +452,10 @@ int main() {
 
 //    test_class_reflection();
 
-    test_save_serialize_data();
+//    test_save_serialize_data();
     test_save_serialize_plane();
 
 //    test_variadic_class_access();
-
 //    test_file_byte_pos();
 
     return 0;

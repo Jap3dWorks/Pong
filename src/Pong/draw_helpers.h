@@ -42,7 +42,7 @@ namespace Pong {
             }
         }
 
-        // get Shader
+        // get shader
         Shader* point_shd = scene->create_shader(
                 "point_shd",
                 "unlit.glsl");

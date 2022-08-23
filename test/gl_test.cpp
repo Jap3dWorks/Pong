@@ -54,9 +54,9 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    // build and compile our Shader program
+    // build and compile our shader program
     // ------------------------------------
-    LOG_DEBUG("Build and compile Shader program");
+    LOG_DEBUG("Build and compile shader program");
     Shader ourShader("./src/shaders/5.1.translation.glsl");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes

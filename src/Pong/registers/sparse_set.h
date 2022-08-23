@@ -39,8 +39,10 @@ namespace Pong {
         using SSException::SSException;
     };
 
+
     class SparseSet_ {
     };
+
 
     /**
      * The "id" of the object is the position in th sparse vector.
@@ -49,10 +51,13 @@ namespace Pong {
     class SparseSet : public SparseSet_ {
     public:
         using denset_set = std::vector<Type_>;
-        using size_type = RegId;
-        using denset_set_index = std::vector<size_type>;
 
-        using sparse_value_type = std::optional<size_type>;
+        using size_type = size_t;
+        using index_type = RegId::index_type;
+
+        using denset_set_index = std::vector<index_type>;
+
+        using sparse_value_type = std::optional<index_type>;
         using sparse_set = std::vector<sparse_value_type>;
         using sparse_set_class = SparseSet<Type_>;
 
@@ -60,10 +65,7 @@ namespace Pong {
         using reference = value_type &;
         using const_reference = const value_type &;
 
-        using pos_data = SSetPosData<size_type>;
-
-        using dense_iterator = typename denset_set::iterator;
-        using sparse_iterator = typename sparse_set::iterator;
+        using pos_data = SSetPosData<index_type>;
 
     private:
         denset_set dense_set_{};
@@ -95,49 +97,57 @@ namespace Pong {
         }
 
     private:
-        inline void ensure_sparse_size_(size_type pos) {
-            if (pos > sparse_set_.max_size() - 1) {
-                sparse_set_.resize(pos + 1);
+        inline void ensure_sparse_size_(index_type index) {
+            if (index > sparse_set_.max_size() - 1) {
+                sparse_set_.resize(index + 1);
             }
         }
 
-        inline void ensure_dense_size_(size_type size_) {
+        inline void ensure_dense_size_(size_t size_) {
             dense_set_.resize(size_);
             dense_set_index_.resize(size_);
         }
 
     public:
-        auto &insert(size_type pos, const_reference value) {
-            ensure_sparse_size_(pos);
-            auto dense_position = size();
-            dense_set_.push_back(value);
-            dense_set_index_.push_back(pos);
-            sparse_set_[pos] = dense_position;
-
-            return dense_set_[dense_position];
-        }
-
-        auto &push_back(const_reference value) {
-            auto pos = dense_set_.size();
-            return insert(pos, value);
-        }
-
-        constexpr auto &at(size_type pos) {
-            return dense_set_.at(*sparse_set_.at(pos));
-        }
-
-        constexpr auto &at(size_type pos) const {
-            return dense_set_.at(*sparse_set_.at(pos));
-        }
-
         size_type size() {
             return dense_set_.size();
         }
 
-        void erase(size_type pos) {
-            size_type temp_size = size();
+        inline void insert(index_type index, const_reference value) {
+            ensure_sparse_size_(index);
+            auto dense_position = size();
+            dense_set_.push_back(value);
+            dense_set_index_.push_back(index);
+            sparse_set_[index] = dense_position;
 
-            auto erase_pos = assert_position(pos);
+            dense_set_[dense_position];
+        }
+
+        inline void insert(RegId reg_id, const_reference value) {
+            insert(reg_id.index(), value);
+        }
+
+        void push_back(const_reference value) {
+            index_type index = dense_set_.size();
+            insert(index, value);
+        }
+
+        constexpr auto &at(index_type index) {
+            return dense_set_.at(*sparse_set_.at(index));
+        }
+
+        inline constexpr auto &at(index_type index) const {
+            return dense_set_.at(*sparse_set_.at(index));
+        }
+
+        inline constexpr auto& at(RegId reg_id) {
+            return at(reg_id.index());
+        }
+
+        inline void erase(index_type index) {
+            auto temp_size = size();
+
+            auto erase_pos = assert_position(index);
             auto back_pos = assert_position(std::nullopt,
                                             temp_size - 1);
 
@@ -153,15 +163,19 @@ namespace Pong {
             ensure_dense_size_(temp_size - 1);
         }
 
+        inline void erase(RegId reg_id) {
+            erase(reg_id.index());
+        }
+
         pos_data assert_position(
-                std::optional<size_type> sparse_pos = std::nullopt,
-                std::optional<size_type> dense_pos = std::nullopt) {
+                std::optional<index_type> sparse_index = std::nullopt,
+                std::optional<index_type> dense_index = std::nullopt) {
             auto dense_size = size();
 
-            if (sparse_pos && *sparse_pos < dense_size) {
-                return {*sparse_pos, *sparse_set_[*sparse_pos]};
-            } else if (dense_pos && *dense_pos < dense_size) {
-                return {dense_set_index_[*dense_pos], *dense_pos};
+            if (sparse_index && *sparse_index < dense_size) {
+                return {*sparse_index, *sparse_set_[*sparse_index]};
+            } else if (dense_index && *dense_index < dense_size) {
+                return {dense_set_index_[*dense_index], *dense_index};
             }
 
             throw SSIndexError("Pos out of sparse set.");
@@ -171,9 +185,22 @@ namespace Pong {
             return dense_set_.data();
         }
 
+        [[nodiscard]] bool contains(index_type index) const {
+            return sparse_set_[index].has_value();
+        }
+
+        [[nodiscard]] bool contains(RegId reg_id) const {
+            return contains(reg_id.index());
+        }
+
+
     public:
-        auto &operator[](size_type pos) {
-            return dense_set_[*sparse_set_[pos]];
+        auto &operator[](index_type index) {
+            return dense_set_[*sparse_set_[index]];
+        }
+
+        auto &operator[](RegId reg_id) {
+            return dense_set_[*sparse_set_[reg_id.index()]];
         }
 
 

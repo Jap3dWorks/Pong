@@ -26,7 +26,12 @@ namespace Pong
 #include <list>
 
 namespace Pong {
-    class Actor {
+    struct Actor {
+        RegId reg_id;
+        RegId parent_id;
+
+        // components id
+
     public:
         using AID = RegId;
         using const_AID = const RegId;
