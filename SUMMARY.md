@@ -4,7 +4,7 @@
 
 ***
 
-* [What is Pong](README.md)
+* [What is Mikka](README.md)
 
 ## Documentation
 
