@@ -17,6 +17,20 @@ void test_len(const char value[]) {
     LOG_INFO("Len "<< (sizeof(value) / sizeof(char)) );
 }
 
+template<typename T>
+struct TestTemp {
+};
+
+template<>
+struct TestTemp<const char [24]> {
+    using type = const char [24];
+    static inline void func(type &value) {
+        LOG_INFO("char[0]: " << value[0]);
+        LOG_INFO("char*: " << (char*)&value);
+    }
+};
+
+
 void test_char_list_cpy() {
     const char namer[24]{};
     const char* value = "value";
@@ -34,7 +48,10 @@ void test_char_list_cpy() {
 
     test_len(namer);
 
+    TestTemp<decltype(namer)>::func(namer);
+
 }
+
 
 
 

@@ -7,7 +7,11 @@
 #include "Pong/core/geometry_data.h"
 #include "Pong/file_data/serialize_types.h"
 #include "Pong/config/config.h"
+#include "Pong/core/material.h"
+#include "Utils/type_conditions.h"
 #include <iostream>
+#include <concepts>
+#include <type_traits>
 
 #define SERIALIZABLE REFLECTABLE
 
@@ -83,6 +87,7 @@ namespace Pong::serializer {
         ar & value.mat4_params;
     }
 
+
     template<typename T>
     struct SaveLoadSize {
         using type=T;
@@ -103,23 +108,24 @@ namespace Pong::serializer {
         }
     };
 
-    template<>
-    struct SaveLoadSize<const char*> {
-        using type = const char*;
+
+    template<typename T, size_t N>
+    struct SaveLoadSize<T[N]> {
+        using type = T[N];
 
         template<typename Archive>
-        static inline void save(Archive &ar, type value, const Version& version) {
-            ar.get().write(value, strlen(value));
+        static inline void save(Archive &ar, T (&value)[N], const Version& version) {
+            ar.get().write((char*) value, sizeof(T) * N);
         }
 
         template<typename Archive>
-        static inline void load(Archive &ar, type value, const Version& version) {
-            ar.get().read(value, strlen(value));
+        static inline void load(Archive &ar, T (&value)[N], const Version& version) {
+            ar.get().read((char*) value, sizeof(T) * N);
         }
 
         template<typename Archive>
-        static inline void size(Archive& ar, type value, const Version& version) {
-            ar += strlen(value);
+        static inline void size(Archive& ar, T (&value)[N], const Version& version) {
+            ar += sizeof(T) * N;
         }
     };
 

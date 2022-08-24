@@ -36,11 +36,9 @@ namespace Pong::serializer {
         static inline constexpr data_size_t header_size {
             (sizeof(data_size_t) * 2) + P_MAX_SERIALIZER_NAME_LENGTH};
 
-        SERIALIZABLE(
-        FIELD(data_size_t, data_size, 0),
-        FIELD(Version, version),
-        FIELD(const char, type_name[P_MAX_SERIALIZER_NAME_LENGTH])
-        )
+        data_size_t data_size{0};
+        Version version{};
+        const char type_name[P_MAX_SERIALIZER_NAME_LENGTH]{};
 
         using type = FileHeader_t;
     };
@@ -54,7 +52,12 @@ namespace Pong::serializer {
         serialize_fields(ar, value);
     }
 
-    IMPL_SERIALIZE(FileHeader);
+    template<typename Archive>
+    void serialize(Archive & ar, FileHeader& value, const Version &version) {
+        ar & value.data_size;
+        ar & value.version;
+        ar & value.type_name;
+    }
 
 
     template<typename Header_, typename Data_, typename DataType_=Any_t>
@@ -130,10 +133,6 @@ namespace Pong::serializer {
         template<typename T>
         auto& operator>>(T &other) {
             auto version = descriptor_data<T>::version;
-            strncpy((char *) other.data.header.type_name,
-                    descriptor_data<T>::type,
-                    std::min(strlen(descriptor_data<T>::type),
-                             {P_MAX_SERIALIZER_NAME_LENGTH}));
 
             serialize(*this, other, version);
             return *this;

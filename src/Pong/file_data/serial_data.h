@@ -8,7 +8,7 @@
 #include "Pong/core/geometry_data.h"
 #include "Pong/registers/reg_id.h"
 #include "Pong/core/material.h"
-#include "Pong/file_data/serialization.h"
+#include "Pong/file_data/serializers.h"
 #include "Utils/type_conditions.h"
 #include "Pong/config/config.h"
 #include "Pong/components/component.h"
@@ -126,8 +126,8 @@ namespace Pong::serializer {
         ar & descriptor.data;
     }
 
-    template<std::derived_from<base_descriptor_> T>
-    inline void save_file(T &descriptor, const char *file_name) {
+    template<std::derived_from<base_descriptor_> Descriptor>
+    inline void save_file(Descriptor &descriptor, const char *file_name) {
 
         auto ofstream = std::ofstream(
                 ensure_file_name(descriptor, file_name),
@@ -142,8 +142,8 @@ namespace Pong::serializer {
         out_ser << descriptor;
     }
 
-    template<std::derived_from<base_descriptor_> T>
-    inline void load_file(T &descriptor, const char *file_name) {
+    template<std::derived_from<base_descriptor_> Descriptor>
+    inline void load_file(Descriptor &descriptor, const char *file_name) {
 
         auto ifstream = std::ifstream(
                 ensure_file_name(descriptor, file_name),
@@ -154,6 +154,8 @@ namespace Pong::serializer {
         auto srlizer = ISSerializer(ifstream);
         srlizer >> descriptor;
     }
+
+
 
 }
 
