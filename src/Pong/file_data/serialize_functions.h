@@ -106,10 +106,15 @@ namespace Pong::serializer {
         static inline void size(Archive& ar, type& value, const Version& version) {
             ar += sizeof(value);
         }
+
+        template<typename Archive>
+        static inline void jump(Archive& ar, type& value, const Version& version) {
+            ar.get().seekg(sizeof(value), ar.stream_type::cur);
+        }
     };
 
 
-    template<typename T, size_t N>
+    template<Intersects<char, const char> T, size_t N>
     struct SaveLoadSize<T[N]> {
         using type = T[N];
 
@@ -126,6 +131,11 @@ namespace Pong::serializer {
         template<typename Archive>
         static inline void size(Archive& ar, T (&value)[N], const Version& version) {
             ar += sizeof(T) * N;
+        }
+
+        template<typename Archive>
+        static inline void jump(Archive& ar, type& value, const Version& version) {
+            ar.get().seekg(sizeof(T) * N, ar.stream_type::cur);
         }
     };
 
@@ -166,6 +176,11 @@ namespace Pong::serializer {
                 temp_ar.clear();
             }
         }
+
+        template<typename Archive>
+        static inline void jump(Archive &ar, type &value, const Version &version) {
+            load(ar, value, version);
+        }
     };
 
     template<>
@@ -195,6 +210,16 @@ namespace Pong::serializer {
             ar += sizeof(data_size_t);
             ar += size;
         }
+
+        template<typename Archive>
+        static inline void jump(Archive& ar, type& value, const Version& version) {
+            data_size_t string_size;
+            SaveLoadSize<data_size_t>::load(ar, string_size, version);
+            value.resize(string_size);
+
+            ar.get().seekg(string_size, ar.stream_type::cur);
+        }
+
     };
 
     template<typename T>
@@ -215,6 +240,12 @@ namespace Pong::serializer {
         static inline void size(Archive & ar, type& value, const Version& version) {
             serialize(ar, value.get(), version);
         }
+
+        template<typename Archive>
+        static inline void jump(Archive& ar, type& value, const Version& version) {
+            serialize(ar, value.get(), version);
+        }
+
     };
 
     template<typename T>
@@ -246,6 +277,15 @@ namespace Pong::serializer {
             auto hasval = value.has_value();
             ar += sizeof(hasval);
 
+            if (hasval) {
+                serialize(ar, *value, version);
+            }
+        }
+
+        template<typename Archive>
+        static inline void jump(Archive& ar, type& value, const Version& version) {
+            bool hasval;
+            SaveLoadSize<bool>::load(ar, hasval, version);
             if (hasval) {
                 serialize(ar, *value, version);
             }

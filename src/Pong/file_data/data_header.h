@@ -90,6 +90,13 @@ namespace Pong::serializer {
         static inline void size(Archive& ar, type& value, const Version& version) {
             ar += type::header_size;
         }
+
+        template<typename Archive>
+        static inline void jump(Archive& ar, type& value, const Version& version) {
+            ar.get().seekg(type::header_size, ar.stream_type::cur);
+        }
+
+
     };
 
     template<typename T, typename U>
@@ -116,6 +123,12 @@ namespace Pong::serializer {
 
             ar += T::header_size + new_ar;
         }
+
+        template<typename Archive>
+        static inline void jump(Archive& ar, type& value, const Version& version) {
+            load(ar, value, version);
+        }
+
     };
 
 

@@ -458,7 +458,7 @@ int main() {
 //    test_variadic_class_access();
 //    test_file_byte_pos();
 
-    test_char_list_cpy();
+//    test_char_list_cpy();
 
     return 0;
 }

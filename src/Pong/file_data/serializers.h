@@ -109,13 +109,30 @@ protected: \
             return *this;
         }
 
-        template<typename Descriptor, typename T>
-        void load_selection(Descriptor &descriptor, DataLocation<T> selection) {
+        template<typename Descriptor, typename headed_data>
+        void load_selection(Descriptor &descriptor, DataLocation<headed_data> selection) {
             collect_version();
             stream_.seekg(selection.offset, stream_type::beg);
-            SaveLoadSize<T>::load(descriptor, selection, version);
+            SaveLoadSize<headed_data>::load(
+                    descriptor,
+                    selection,
+                    version);
+        }
+    };
+
+    class ISHeaderSerializer: public ISSerializer {
+
+        template<typename T>
+        auto &operator&(T &other)  {
+            SaveLoadSize<T>::jump(*this, other, version);
+            return *this;
         }
 
+        template<typename T>
+        auto &operator&(Header<T>& other) {
+            SaveLoadSize<T>::load(*this, other, version);
+            return *this;
+        }
     };
 
 }
