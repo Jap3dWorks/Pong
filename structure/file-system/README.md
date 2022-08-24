@@ -6,11 +6,9 @@ description: namespace Pong::serializer
 
 file\_data is the serializer system, also includes serializable structs that can represent geometries and nodes.
 
-_Needs real testing for write and for read data._
-
 ## serial\_data.h
 
-_`#include "Pong/filedata/serial_data"`_
+_`#include "Pong/file_data/serial_data"`_
 
 Here is the the most high level functions, only this header should be included.
 
@@ -45,11 +43,21 @@ struct CurveData {
 IMPL_SERIALIZE(CurveData);
 ```
 
-## AssetDescriptors
+## Serializers
 
-**IAssetDescription** and **OAssetDescription** classes will define an structure to be serialized in a document.
+**OSSerializer** and **ISSerializer** classes are the interface to serialize a [Descriptor](./#descriptors).
 
-Descriptors represents a set of elements like meshes, transforms and materials.
+Osserializer::operator<< saves a descriptor into a file, ISSerializer::operator>> loads a file into a descriptor.
+
+Serializers uses the function Pong::serializer::serialize for a correct serialization.
+
+## Descriptors
+
+**IAssetDescriptor** and **OAssetDescriptor** classes will define an asset structure to be serialized in a document.
+
+**IMapDescriptor** and **IMapDescriptor** classes will define a map structure to be serialized in a document.
+
+Descriptors represents a set of elements like actors, meshes and materials.
 
 Descriptors should be registered using **REG\_DESCRIPTOR(class, version)** macro.
 
@@ -58,11 +66,14 @@ class OAssetDescriptor;
 REG_DESCRIPTOR(OAssetDescriptor, 1);
 ```
 
-When a Descriptor is registered can be serialized using **OSerializer::operator<<.**&#x20;
+### Output descriptors
+
+When a Descriptor is registered can be serialized into a file using **OSerializer::operator<<**.&#x20;
 
 To serialize a descriptor into a file.
 
-<pre class="language-cpp"><code class="lang-cpp"><strong>Pong::serializer::OSSerializer(os) &#x3C;&#x3C; Pong::serializer::OAssetDescriptor();</strong></code></pre>
+<pre class="language-cpp"><code class="lang-cpp"><strong>auto os = std::ofstream(file_name, std::ofstream::binary);
+</strong><strong>Pong::serializer::OSSerializer(os) &#x3C;&#x3C; descriptor;</strong></code></pre>
 
 Also you can use save\_file to serialize a descriptor into a file.
 
@@ -70,15 +81,18 @@ Also you can use save\_file to serialize a descriptor into a file.
 Pong::serializer::save_file(OAssetDescriptor descriptor, const char* file_name);
 ```
 
+### Input Descriptors
+
+To load a file into a descriptor
+
+<pre><code><strong>auto istream = std::ifstream(file_name, std::ofstream::binary);
+</strong><strong>Pong::serializer::ISSerializer(istream) >> descriptor;</strong></code></pre>
+
+### Version
+
 When a descriptor is saved its **version** is appended to the resultant file.
 
 When a descriptor is loaded the **version** of the file is read from disk file.
 
 
-
-## Serializers
-
-**OSSerializer** and **ISSerializer**, Serializers is the core class of the system, serializers calls Pong::serializer::serialize functions and saves or load data into a file.
-
-Serializers needs an **std::ofstream** (**OSSerializer**) or an **std::ifstream** (**ISSerializer**) objects.
 
