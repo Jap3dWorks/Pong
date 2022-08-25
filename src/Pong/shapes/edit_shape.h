@@ -9,7 +9,7 @@
 #include "Pong/core/geometry_data.h"
 #include "Pong/core/core_vals.h"
 
-namespace Pong {
+namespace pong {
     class EditShape {
     };
 

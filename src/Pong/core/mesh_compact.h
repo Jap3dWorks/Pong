@@ -12,7 +12,7 @@
 #include <memory>
 
 
-namespace Pong {
+namespace pong {
     using VertexVector = std::vector<Vertex>;
     using IndexVector = std::vector<uint32_t>;
 

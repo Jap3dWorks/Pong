@@ -12,7 +12,7 @@
 #include <exception>
 
 
-namespace Pong {
+namespace pong {
 
     class ClassMapException : std::exception {
     public:
@@ -71,7 +71,7 @@ namespace Pong {
     };
 
     /**
-     * TypeRegMap is en essence an unordered_map<hash, type()>, so each entry
+     * TypeRegMap is en essence an unordered_map<hash, Type()>, so each entry
      * of the class is the hash of the registered class, and an unique
      * instance of the registered class is stored as value.
      * This class is been used for components storage, so each component has its own data structure storage

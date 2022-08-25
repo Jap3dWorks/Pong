@@ -12,7 +12,7 @@
 
 // https://learnopengl.com/Model-Loading/Mesh
 
-namespace Pong {
+namespace pong {
     /**
      * Import model from a file like fbx or obj, the shapes that compose the model,
      * Will be added to the Map.

@@ -10,9 +10,9 @@
 #include "Pong/registers/reg_id.h"
 // #include "Pong/core/actor/actor.h"
 
-namespace Pong {
+namespace pong {
 // collision components
-    class CollisionComponent : public Pong::Component {
+    class CollisionComponent : public pong::Component {
     public:
         RegId collider;
 

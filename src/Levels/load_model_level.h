@@ -16,7 +16,7 @@
 #include <vector>
 
 // Load a model scene
-class LoadModelLevel : public Pong::AbstractLevel {
+class LoadModelLevel : public pong::AbstractLevel {
 protected:
     void _level_setup() override {
         super::_level_setup();
@@ -26,21 +26,21 @@ protected:
         _render->update_enables();
 
         // get camera_ptr
-        Pong::ACamera *a_camera = _scene->get_camera();
+        pong::ACamera *a_camera = _scene->get_camera();
         a_camera->position = glm::vec3(0, 0, 9);
 
         // grass planes
         auto basic_shd = _scene->create_shader("basic_shd",
                                                "./src/shaders/basic.glsl");
 
-        auto basic_mat = _scene->create_material<Pong::MaterialController>(
-                "basic_mat",
-                Pong::RenderLayer::BASE,
-                basic_shd);
+        auto basic_mat = _scene->create_material<pong::MaterialController>(
+			"basic_mat",
+			pong::RenderLayer::BASE,
+			basic_shd);
 
-        auto grass_shp = _scene->create_shape<Pong::StaticMeshComponent>("grass_shp");
-        Pong::CubeShape(grass_shp->mesh).build();
-        auto grass_act_01 = _scene->create_actor<Pong::APlayer>("grass_act_01");
+        auto grass_shp = _scene->create_shape<pong::StaticMeshComponent>("grass_shp");
+        pong::CubeShape(grass_shp->mesh).build();
+        auto grass_act_01 = _scene->create_actor<pong::APlayer>("grass_act_01");
         _scene->assign_material(basic_mat, grass_shp);
         _scene->assign_shape(grass_shp, grass_act_01);
 

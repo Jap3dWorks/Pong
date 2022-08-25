@@ -14,7 +14,7 @@
 
 // https://www.geeksforgeeks.org/sparse-set/
 
-namespace Pong {
+namespace pong {
 
     class SSException : public std::exception {
     public:
@@ -53,7 +53,7 @@ namespace Pong {
         using denset_set = std::vector<Type_>;
 
         using size_type = size_t;
-        using index_type = RegId::index_type;
+        using index_type = RegId::IndexType;
 
         using denset_set_index = std::vector<index_type>;
 

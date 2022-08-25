@@ -11,7 +11,7 @@
 #include <algorithm>
 
 
-namespace Pong {
+namespace pong {
 
     glm::vec3 ray_on_plane(glm::vec3 plane_normal, glm::vec3 plane_point,
         glm::vec3 ray_direction, glm::vec3 ray_origin)

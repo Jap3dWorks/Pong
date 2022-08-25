@@ -20,7 +20,7 @@
 #include "Pong/core/material.h"
 
 
-namespace Pong {
+namespace pong {
     void draw_point(glm::vec3 point)
     {
         Map* scene = Map::get_instance();
@@ -48,7 +48,7 @@ namespace Pong {
                 "unlit.glsl");
 
         auto point_mat = scene->create_material<MaterialController>("point_mat", point_shd,
-                                                                    std::vector<Pong::Texture *>());
+                                                                    std::vector<pong::Texture *>());
 
         // point Actor
         auto* a_point = scene->create_actor<AKinetic>(pnt_nme);

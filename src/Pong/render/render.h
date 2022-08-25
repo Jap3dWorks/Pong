@@ -25,19 +25,19 @@
 // TODO: PBR materials
 // TODO: postprocessing
 
-namespace Pong {
-    _P_INLINE RenderLayer operator|(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl) {
-        return static_cast<Pong::RenderLayer>(
+namespace pong {
+    _P_INLINE RenderLayer operator|(const pong::RenderLayer& lrl, const pong::RenderLayer& rrl) {
+        return static_cast<pong::RenderLayer>(
                 static_cast<uint32_t>(lrl) | static_cast<uint32_t>(rrl));
     }
 
-    _P_INLINE RenderLayer operator&(const Pong::RenderLayer& lrl, const Pong::RenderLayer& rrl) {
-        return static_cast<Pong::RenderLayer>(
+    _P_INLINE RenderLayer operator&(const pong::RenderLayer& lrl, const pong::RenderLayer& rrl) {
+        return static_cast<pong::RenderLayer>(
                 static_cast<uint32_t>(lrl) & static_cast<uint32_t>(rrl));
     }
 
-    _P_INLINE bool any(const Pong::RenderLayer& rlay) {
-        return rlay != Pong::RenderLayer::NO_LAYER;
+    _P_INLINE bool any(const pong::RenderLayer& rlay) {
+        return rlay != pong::RenderLayer::NO_LAYER;
     }
 
     class Render {

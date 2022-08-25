@@ -7,7 +7,7 @@
 
 
 
-namespace Pong{
+namespace pong{
 //    Map* Map::instance = nullptr;
 
     Map::~Map() {

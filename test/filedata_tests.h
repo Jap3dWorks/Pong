@@ -28,15 +28,15 @@ void test_class_reflection() {
 }
 
 void test_save_serialize_data() {
-    auto description = Pong::serializer::AssetDescriptor();
-    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
-    LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
+    auto description = pong::serializer::AssetDescriptor();
+    LOG_INFO(pong::serializer::ensure_file_name(description, "Hola"));
+    LOG_INFO(pong::serializer::ensure_file_name(description, "Hola.asset"));
 
-    auto elem = Pong::serializer::ActorData{{}, {}};
+    auto elem = pong::serializer::ActorData{{}, {}};
 //    description.actor_data.push_back({elem});
     description.actor_data.data.push_back({{}, elem});
 
-    Pong::serializer::save_file(
+    pong::serializer::save_file(
             description,
             "D:/_docs/Pong/test/test_archive"
     );
@@ -46,7 +46,7 @@ void test_save_serialize_data() {
 
 
 void test_save_serialize_plane() {
-    std::vector<Pong::Vertex> vertices = {
+    std::vector<pong::Vertex> vertices = {
             {{-1,-1, 0}, {0,0,-1}, {0,0}},
             {{1, -1, 0}, {0,0,-1}, {0,1}},
             {{1, 1, 0}, {0,0,-1}, {1,1}},
@@ -56,19 +56,19 @@ void test_save_serialize_plane() {
     std::vector<uint32_t> indices =
             {0, 1, 3, 1, 2, 3};
 
-    auto mesh_ = Pong::Mesh{vertices, indices};
+    auto mesh_ = pong::Mesh{vertices, indices};
 
-    auto odescriptor = Pong::serializer::AssetDescriptor();
+    auto odescriptor = pong::serializer::AssetDescriptor();
     odescriptor.mesh_data.data.push_back({{1, {}}, mesh_});
 
-    Pong::serializer::save_file(
+    pong::serializer::save_file(
             odescriptor,
             "./assets/plane"
     );
 
     // read plane.asset
-    auto idescriptor =  Pong::serializer::AssetDescriptor();
-    Pong::serializer::load_file(
+    auto idescriptor =  pong::serializer::AssetDescriptor();
+    pong::serializer::load_file(
             idescriptor,
             "./assets/plane");
 
@@ -83,9 +83,9 @@ void test_save_serialize_plane() {
 
 
 void test_load_id_from_file() {
-    auto descriptor = Pong::serializer::AssetDescriptor();
+    auto descriptor = pong::serializer::AssetDescriptor();
 
-    Pong::serializer::load_reg_id<Pong::Mesh, decltype(descriptor)>(
+    pong::serializer::load_reg_id<pong::Mesh, decltype(descriptor)>(
             descriptor, {1}, "./assets/plane"
             );
 
@@ -93,7 +93,6 @@ void test_load_id_from_file() {
         assert(d.header.reg_id.id == 1 && "Wrong Id Loaded!");
         LOG_INFO(d.header.reg_id);
     }
-
 }
 
 

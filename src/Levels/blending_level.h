@@ -15,7 +15,7 @@
 // #include "Levels/blending_level.h"
 #include "Pong/shapes/plane_shape.h"
 
-class BlendingLevel : public Pong::AbstractLevel {
+class BlendingLevel : public pong::AbstractLevel {
 protected:
     void _level_setup() override {
         AbstractLevel::_level_setup();
@@ -24,14 +24,14 @@ protected:
         _render->gl_enables_config |= 8;
         _render->update_enables();
         // get camera_ptr
-        Pong::ACamera *a_camera = _scene->get_camera();
+        pong::ACamera *a_camera = _scene->get_camera();
         a_camera->position = glm::vec3(0, 0, 9);
 
         // grass planes
         auto grass_shd = _scene->create_shader("grass_shd",
                                                "./src/shaders/cutout.glsl");
 
-        auto grass_mat = _scene->create_material<Pong::MaterialController>(
+        auto grass_mat = _scene->create_material<pong::MaterialController>(
                 "grass_mat",
                 grass_shd,
                 {
@@ -43,11 +43,11 @@ protected:
                 });
 
         auto grass_shp = _scene->create_shape<
-                Pong::PlaneShape>("grass_shp");
+			pong::PlaneShape>("grass_shp");
         auto grass_act_01 = _scene->create_actor<
-                Pong::APlayer>("grass_act_01");
+			pong::APlayer>("grass_act_01");
         auto grass_act_02 = _scene->create_actor<
-                Pong::APlayer>("grass_act_02");
+			pong::APlayer>("grass_act_02");
 
         grass_act_01->translation = glm::rotate(
                 grass_act_01->translation, (float)_P_PI, glm::vec3(0, 0, 1));
@@ -93,23 +93,23 @@ protected:
         auto skybox_shd = _scene->create_shader("skybox_shd",
                                                 "./src/shaders/reflect_skybox.glsl");
 
-        auto *skybox_mat = _scene->create_material<Pong::CubeMapMaterial>(
-                "skybox_mat",
-                skybox_shd,
-                {_scene->create_texture("skybox_tex",
+        auto *skybox_mat = _scene->create_material<pong::CubeMapMaterial>(
+			"skybox_mat",
+			skybox_shd,
+			{_scene->create_texture("skybox_tex",
                                         "skybox",
                                         "./Textures/skybox_right.jpg", "./Textures/skybox_left.jpg",
                                         "./Textures/skybox_top.jpg", "./Textures/skybox_bottom.jpg",
                                         "./Textures/skybox_front.jpg", "./Textures/skybox_back.jpg")},
-                Pong::RenderLayer::SKY_BOX);
+			pong::RenderLayer::SKY_BOX);
 
         // Sky box should be drawn last.
         skybox_mat->order = 900;
         // hack z_skybox to sort at the end of the map.
-        auto* skybox_shp = _scene->create_shape<Pong::SkyBoxShape>("skybox_shp");
-        auto* skybox_act = _scene->create_actor<Pong::ASkyBox>("skybox_act");
+        auto* skybox_shp = _scene->create_shape<pong::SkyBoxShape>("skybox_shp");
+        auto* skybox_act = _scene->create_actor<pong::ASkyBox>("skybox_act");
         _scene->assign_material(skybox_mat,
-                                _scene->create_shape<Pong::SkyBoxShape>("skybox_shp"));
+                                _scene->create_shape<pong::SkyBoxShape>("skybox_shp"));
 
         _scene->assign_shape(skybox_shp, skybox_act);
 
@@ -119,9 +119,9 @@ protected:
         auto blinn_shd = _scene->create_shader("blinn_shd",
                                                "./src/shaders/blinn.glsl");
 
-        auto blinn_mat = _scene->create_material<Pong::MaterialController>("blinn_mat",
-                                                                           blinn_shd,
-                                                                           {});
+        auto blinn_mat = _scene->create_material<pong::MaterialController>("blinn_mat",
+																		   blinn_shd,
+																		   {});
 
         blinn_mat->set_param("surfaceColor", glm::vec3(0.1, 0.2, 0.3));
         blinn_mat->set_param("glow", 16.f);
@@ -134,7 +134,7 @@ protected:
         // TODO: https://learnopengl.com/Advanced-OpenGL/Instancing
 
         // --lighting--
-        Pong::DirectionalLight *directional_light = _scene->get_directional_lights();
+        pong::DirectionalLight *directional_light = _scene->get_directional_lights();
         directional_light->direction =
                 glm::normalize(glm::vec4{0.3f, -1.f, -0.5f, 1.f});
         directional_light->color =
@@ -148,17 +148,17 @@ protected:
         auto blnd_shader = _scene->create_shader("blnd_shader",
                                                  "./src/shaders/blending.glsl");
 
-        auto bld_mat = _scene->create_material<Pong::MaterialController>(
-                "bld_mat",
-                blnd_shader,
-                {{"texture1",
+        auto bld_mat = _scene->create_material<pong::MaterialController>(
+			"bld_mat",
+			blnd_shader,
+			{{"texture1",
                   _scene->create_texture("bld_tex", "./Textures/blending_transparent_window.png",
                   )}
                 },
 
-                Pong::RenderLayer::BLENDING);
+			pong::RenderLayer::BLENDING);
 
-        auto bld_shp = _scene->create_shape<Pong::PlaneShape>(
+        auto bld_shp = _scene->create_shape<pong::PlaneShape>(
                 "blnd_shp",
                 1.f, 1.f);
 
@@ -177,7 +177,7 @@ protected:
 
         for(unsigned int i = 0; i < 8; i ++)
         {
-            auto bld_act = _scene->create_actor<Pong::APlayer>(
+            auto bld_act = _scene->create_actor<pong::APlayer>(
                     "bld_act" + std::to_string(i));
 
             bld_act->translation =

@@ -14,7 +14,7 @@
 #include <deque>
 #include <functional>
 
-namespace Pong {
+namespace pong {
 
     struct RenderPiece {
         glm::mat4 projection_matrix;

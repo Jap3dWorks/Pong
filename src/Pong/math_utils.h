@@ -11,7 +11,7 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-namespace Pong::math {
+namespace pong::math {
 
     bool decompose_transforms(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale) {
         using namespace glm;

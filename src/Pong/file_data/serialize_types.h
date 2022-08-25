@@ -7,7 +7,7 @@
 #include <optional>
 #include <iostream>
 
-namespace Pong::serializer {
+namespace pong::serializer {
     using Version=std::optional<uint32_t>;
 
     using data_size_t = size_t;

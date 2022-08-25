@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
     data = stbi_load("./Textures/awesomeface.png", &width, &height, &nrChannels, 0);
     if (data)
     {
-        // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
+        // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data Type is of GL_RGBA
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }

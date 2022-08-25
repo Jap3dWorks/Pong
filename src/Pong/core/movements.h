@@ -1,7 +1,7 @@
 #ifndef PONG_TYPES_H
 #define PONG_TYPES_H
 
-namespace Pong {
+namespace pong {
     enum class Movements
     {
         FORWARD,

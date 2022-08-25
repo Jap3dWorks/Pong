@@ -11,7 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-namespace Pong {
+namespace pong {
     struct DirectionalLight {
         glm::vec4 direction = glm::vec4(0.f, -1.f, 0.f, 1.f);
         glm::vec4 color = glm::vec4(0.f, 0.f, 0.f, 1.f);

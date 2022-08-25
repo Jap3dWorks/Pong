@@ -2,8 +2,8 @@
 // Created by Jordi on 8/11/2022.
 //
 
-#ifndef GL_TEST_SERIAL_DATA_H
-#define GL_TEST_SERIAL_DATA_H
+#ifndef PONG_SERIAL_DATA_H_
+#define PONG_SERIAL_DATA_H_
 
 #include "Pong/core/geometry_data.h"
 #include "Pong/registers/reg_id.h"
@@ -29,7 +29,7 @@
 #include <concepts>
 
 
-namespace Pong::serializer {
+namespace pong::serializer {
 
     struct ActorData {
         SERIALIZABLE(
@@ -42,57 +42,57 @@ namespace Pong::serializer {
     };
     IMPL_SERIALIZE(ActorData);
 
-    class base_descriptor_ {
+    class BaseDescriptor {
     public:
         template<typename T>
-        using headed_data_t = HeadedData<Header<T>, T>;
+        using HeadedDataT = HeadedData<Header<T>, T>;
         template<typename T>
-        using serialize_data_t = headed_data_t<std::vector<headed_data_t<T>>>;
+        using SerializeDataT = HeadedDataT<std::vector<HeadedDataT<T>>>;
     };
 
     struct AssetData {
         SERIALIZABLE (
-                FIELD(base_descriptor_::serialize_data_t<ActorData>, actor_data),
-                FIELD(base_descriptor_::serialize_data_t<Mesh>, mesh_data),
-                FIELD(base_descriptor_::serialize_data_t<Curve>, curve_data),
-                FIELD(base_descriptor_::serialize_data_t<Material>, material_data)
+                FIELD(BaseDescriptor::SerializeDataT<ActorData>, actor_data),
+                FIELD(BaseDescriptor::SerializeDataT<Mesh>, mesh_data),
+                FIELD(BaseDescriptor::SerializeDataT<Curve>, curve_data),
+                FIELD(BaseDescriptor::SerializeDataT<Material>, material_data)
         )
     };
     IMPL_SERIALIZE(AssetData);
 
     template<typename U>
-    class AssetDescriptor_ : public base_descriptor_ {
+    class AssetDescriptorT : public BaseDescriptor {
     public:
         HeadedData<FileHeader, AssetData> data{};
     public:
-        serialize_data_t<ActorData>& actor_data{data.data.actor_data};
-        serialize_data_t<Mesh>& mesh_data{data.data.mesh_data};
-        serialize_data_t<Curve>& curve_data{data.data.curve_data};
-        serialize_data_t<Material>& material_data{data.data.material_data};
+        SerializeDataT<ActorData>& actor_data{data.data.actor_data};
+        SerializeDataT<Mesh>& mesh_data{data.data.mesh_data};
+        SerializeDataT<Curve>& curve_data{data.data.curve_data};
+        SerializeDataT<Material>& material_data{data.data.material_data};
     };
 
 
-    using AssetDescriptor = AssetDescriptor_<Any_t>;
+    using AssetDescriptor = AssetDescriptorT<Any_t>;
     REG_DESCRIPTOR(AssetDescriptor, 1);
 
 
     struct MapData {
         SERIALIZABLE (
-                FIELD(base_descriptor_::serialize_data_t<ActorData>, actor_data)
+                FIELD(BaseDescriptor::SerializeDataT<ActorData>, actor_data)
         )
     };
     IMPL_SERIALIZE(MapData);
 
     template<typename U>
-    class MapDescriptor_: public base_descriptor_ {
+    class MapDescriptorT: public BaseDescriptor {
 
     public:
         HeadedData<FileHeader, MapData> data{};
-        serialize_data_t<ActorData>& actor_data{data.data.actor_data};
+        SerializeDataT<ActorData>& actor_data{data.data.actor_data};
     };
 
 
-    using MapDescriptor = MapDescriptor_<Any_t>;
+    using MapDescriptor = MapDescriptorT<Any_t>;
     REG_DESCRIPTOR(MapDescriptor, 1);
 
 
@@ -116,12 +116,12 @@ namespace Pong::serializer {
         return string_path;
     }
 
-    template<typename Archive, std::derived_from<base_descriptor_> Descriptor>
+    template<typename Archive, std::derived_from<BaseDescriptor> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
         ar & descriptor.data;
     }
 
-    template<std::derived_from<base_descriptor_> Descriptor>
+    template<std::derived_from<BaseDescriptor> Descriptor>
     inline void save_file(Descriptor &descriptor, const char *file_name) {
 
         auto ofstream = std::ofstream(
@@ -137,7 +137,7 @@ namespace Pong::serializer {
         out_ser << descriptor;
     }
 
-    template<std::derived_from<base_descriptor_> Descriptor>
+    template<std::derived_from<BaseDescriptor> Descriptor>
     inline void load_file(Descriptor &descriptor, const char *file_name) {
 
         auto ifstream = std::ifstream(
@@ -150,7 +150,7 @@ namespace Pong::serializer {
         srlizer >> descriptor;
     }
 
-    template<std::derived_from<base_descriptor_> Descriptor>
+    template<std::derived_from<BaseDescriptor> Descriptor>
     inline void load_headers(Descriptor & descriptor, const char *file_name) {
         auto ifstream = std::ifstream(
                 ensure_file_name(descriptor, file_name),
@@ -162,7 +162,7 @@ namespace Pong::serializer {
         srlizer >> descriptor;
     }
 
-    template<typename data_type, std::derived_from<base_descriptor_> Descriptor>
+    template<typename data_type, std::derived_from<BaseDescriptor> Descriptor>
     inline void load_reg_id(Descriptor & descriptor, RegId reg_id, const char *file_name) {
         auto ifstream = std::ifstream(
                 ensure_file_name(descriptor, file_name),
@@ -177,4 +177,4 @@ namespace Pong::serializer {
 
 }
 
-#endif //GL_TEST_SERIAL_DATA_H
+#endif //PONG_SERIAL_DATA_H_

@@ -1,7 +1,7 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-namespace Pong
+namespace pong
 {
     class Component;
     class Map;
@@ -25,7 +25,7 @@ namespace Pong
 #include <string>
 #include <list>
 
-namespace Pong {
+namespace pong {
     struct Actor {
         RegId reg_id;
         RegId parent_id;

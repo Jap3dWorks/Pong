@@ -11,7 +11,7 @@
 #include "edit_shape.h"
 #include "../core/core_vals.h"
 
-namespace Pong {
+namespace pong {
 
     struct PlaneSize{
         float width;

@@ -33,7 +33,7 @@ public:
         // retrieve the vertex/fragment source code from filepath
         auto parse_shader = shaders_from_file(shader_path);
 
-        // to c type
+        // to c Type
         const char *vShaderCode = parse_shader[ShaderType::VERTEX].get_data().c_str();
         const char *fShaderCode = parse_shader[ShaderType::FRAGMENT].get_data().c_str();
 
@@ -176,13 +176,13 @@ private:
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success) {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog;
+                std::cout << "ERROR::SHADER_COMPILATION_ERROR of Type: " << type << "\n" << infoLog;
             }
         } else {
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
             if (!success) {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog;
+                std::cout << "ERROR::PROGRAM_LINKING_ERROR of Type: " << type << "\n" << infoLog;
             }
         }
     }

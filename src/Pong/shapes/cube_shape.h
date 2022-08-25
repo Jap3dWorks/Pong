@@ -12,7 +12,7 @@
 #include "Pong/core/core_vals.h"
 
 // TODO: cube subdivisions
-namespace Pong {
+namespace pong {
     struct CubeSize {
         float width;
         float height;

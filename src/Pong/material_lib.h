@@ -17,7 +17,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Pong {
+namespace pong {
 /**Overrides update_shader from material class*/
     class CubeMapMaterial : public MaterialController {
     public:

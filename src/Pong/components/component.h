@@ -23,7 +23,7 @@
 #include <iostream>
 #include <algorithm>
 
-namespace Pong {
+namespace pong {
     /**
      *  Component class, an Actor has a list of components, each Component
      *  can contain a custom script you only have to inherit from Component.

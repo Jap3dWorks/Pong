@@ -9,7 +9,7 @@
 #include "Pong/shape/edit_shape.h"
 #include "Pong/core/geometry_data.h"
 
-namespace Pong {
+namespace pong {
 
     class EditCubeMap : public EditMesh {
     public:
@@ -72,8 +72,8 @@ namespace Pong {
     class CubeMapMesh : StaticMeshComponent {
     public:
         void by_frame(const Render *render,
-                      const Map *scene,
-                      Pong::Material *material) const override {
+					  const Map *scene,
+					  pong::Material *material) const override {
             glDepthFunc(GL_LEQUAL);
 
             if (!mesh->indices_val.empty()) {

@@ -14,7 +14,7 @@
 #include <functional>
 
 
-namespace Pong {
+namespace pong {
 /*
  * MapLevel (provisional name) should manage the current map actors and components
  * And apply changes to any component in the scene.

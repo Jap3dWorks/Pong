@@ -18,7 +18,7 @@
 #include <string>
 #include <optional>
 
-namespace Pong::serializer {
+namespace pong::serializer {
 
 
 #define SERIALIZER_COMMON(type_name_) \
@@ -99,6 +99,7 @@ namespace Pong::serializer {
     class ibase_serializer_ : public base_serializer_<std::ifstream> {
     public:
         using base_serializer_<std::ifstream>::base_serializer_;
+
     };
 
 #define IBASE_SERIALIZER_CONSTRUCTORS() \
@@ -178,7 +179,6 @@ namespace Pong::serializer {
 
         template<typename Archive, typename T>
         RegId get_reg_id(Archive &ar, Header<T> header, Version& version) {
-
             auto pos = stream_.tellg();
 
             auto input_serializer = ISSerializer(stream_);
@@ -202,7 +202,9 @@ namespace Pong::serializer {
             }
             return *this;
         }
+
     };
+
 }
 
 #endif //GL_TEST_SERIALIZATION_H

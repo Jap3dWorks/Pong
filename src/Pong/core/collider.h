@@ -17,7 +17,7 @@
 #include <chrono>
 #include <vector>
 
-namespace Pong {
+namespace pong {
     // declare classes
     class BoxCollider;
     class SphereCollider;

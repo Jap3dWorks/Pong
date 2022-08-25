@@ -4,10 +4,10 @@
 
 #include <vector>
 
-namespace Pong {
+namespace pong {
     AbstractLevel::AbstractLevel() {
-        _render = Pong::Render::get_instance();
-        _scene = Pong::Map::get_instance();
+        _render = pong::Render::get_instance();
+        _scene = pong::Map::get_instance();
     }
 
     AbstractLevel::~AbstractLevel() {
@@ -46,7 +46,7 @@ namespace Pong {
 
             _frame_calc();
 
-            Pong::Render::bind_framebuffer(_render->get_framebuffer());
+            pong::Render::bind_framebuffer(_render->get_framebuffer());
             _frame_draw();
 
             _render->draw_framebuffer();
@@ -66,14 +66,14 @@ namespace Pong {
     void AbstractLevel::_configInputs() {
         // camera_ptr inputs
         Render* render = Render::get_instance();
-        std::map<int, Pong::Movements> camMap =
+        std::map<int, pong::Movements> camMap =
         {
-            {GLFW_KEY_W, Pong::Movements::FORWARD},
-            {GLFW_KEY_S, Pong::Movements::BACKWARD},
-            {GLFW_KEY_A, Pong::Movements::LEFT},
-            {GLFW_KEY_D, Pong::Movements::RIGHT},
-            {GLFW_KEY_E, Pong::Movements::UP},
-            {GLFW_KEY_Q, Pong::Movements::DOWN}
+            {GLFW_KEY_W, pong::Movements::FORWARD},
+            {GLFW_KEY_S, pong::Movements::BACKWARD},
+            {GLFW_KEY_A, pong::Movements::LEFT},
+            {GLFW_KEY_D, pong::Movements::RIGHT},
+            {GLFW_KEY_E, pong::Movements::UP},
+            {GLFW_KEY_Q, pong::Movements::DOWN}
         };
         _inputList.emplace_back(
                 _scene->get_camera(),

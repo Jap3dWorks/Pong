@@ -5,7 +5,7 @@
 #ifndef PONG_GRAPHIC_FLAGS_H
 #define PONG_GRAPHIC_FLAGS_H
 
-namespace Pong {
+namespace pong {
     enum class RenderLayer : uint32_t {
         NO_LAYER = 0,
         BASE = 1,

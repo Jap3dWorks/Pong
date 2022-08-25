@@ -14,7 +14,7 @@
 #include <filesystem>
 #include <vector>
 
-namespace Pong::engine {
+namespace pong::engine {
 
     using MeshDtLocation = RegDataLocation<Mesh>;
     using CurveDtLocation = RegDataLocation<Curve>;

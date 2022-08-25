@@ -9,7 +9,7 @@
 #include "../utils/logger.h"
 #include "Pong/shapes/cube_shape.h"
 
-class TestLevel1 : public Pong::AbstractLevel {
+class TestLevel1 : public pong::AbstractLevel {
 protected:
     void _level_setup() override {
         AbstractLevel::_level_setup();
@@ -19,14 +19,14 @@ protected:
                 "cube_shd",
                 "../src/shaders/basic.glsl");
 
-        auto cube_mat = _scene->create_material<Pong::MaterialController>(
+        auto cube_mat = _scene->create_material<pong::MaterialController>(
                 "cube_mat",
                 grass_shd,
                 {});
 
-        auto cube_shp = _scene->create_shape<Pong::CubeShape>(
+        auto cube_shp = _scene->create_shape<pong::CubeShape>(
                 "cube_shp", 2.0, 2.0, 2.0);
-        auto cube_act_01 = _scene->create_actor<Pong::APlayer>(
+        auto cube_act_01 = _scene->create_actor<pong::APlayer>(
                 "cube_act_01");
 
         _scene->assign_material(cube_mat,

@@ -2,8 +2,8 @@
 // Created by Jordi on 8/8/2022.
 //
 
-#ifndef GL_TEST_REG_ID_MANAGER_H
-#define GL_TEST_REG_ID_MANAGER_H
+#ifndef PONG_REG_ID_H_
+#define PONG_REG_ID_H_
 
 #include<iostream>
 #include<unordered_set>
@@ -13,14 +13,14 @@
 #include <cstdlib>
 #include <random>
 
-namespace Pong {
+namespace pong {
     struct RegId {
-        using id_type = uint32_t;
-        using index_type = id_type;
+        using IdType = uint32_t;
+        using IndexType = IdType;
 
-        id_type id{0};
+        IdType id{0};
 
-        static inline constexpr RegId from_index(index_type index) {
+        static inline constexpr RegId from_index(IndexType index) {
             return RegId{index + 1};
         }
 
@@ -28,7 +28,7 @@ namespace Pong {
             return id;
         }
 
-        [[nodiscard]] index_type index() const noexcept {
+        [[nodiscard]] IndexType index() const noexcept {
             return id - 1;
         }
 
@@ -72,7 +72,7 @@ namespace Pong {
 #ifndef NDEBUG
 #define DECLARE_ASSERT_MAX_SIZE(max_size) \
     void inline constexpr assert_max_size(const size_t& size) const { \
-        assert(size <= max_size); \
+        assert(size <= (max_size)); \
     }
 
 #define ASSERT_MAX_SIZE(size_) \
@@ -87,7 +87,7 @@ namespace Pong {
     template<size_t MAX=4096>
     class StaticSparseSet {
     public:
-        using index_type = RegId::index_type;
+        using index_type = RegId::IndexType;
     private:
         index_type dense_[MAX]{0};
         index_type sparse_[MAX]{0};
@@ -211,7 +211,7 @@ namespace Pong {
             return RegId::from_index(index);
         }
 
-        inline auto constexpr insert(RegId::index_type index) noexcept {
+        inline auto constexpr insert(RegId::IndexType index) noexcept {
             ASSERT_MAX_SIZE(index);
 
             if (!contains(index)) {
@@ -236,7 +236,7 @@ namespace Pong {
         }
 
 
-        inline auto constexpr erase(RegId::index_type index) noexcept {
+        inline auto constexpr erase(RegId::IndexType index) noexcept {
             indices_valid.erase(index);
             indices_free.insert(index);
         }
@@ -250,7 +250,7 @@ namespace Pong {
             return contains(reg_id.index());
         }
 
-        [[nodiscard]] inline auto constexpr contains(RegId::index_type index) const noexcept {
+        [[nodiscard]] inline auto constexpr contains(RegId::IndexType index) const noexcept {
             return indices_valid.contains(index);
         }
 
@@ -263,7 +263,7 @@ namespace Pong {
         }
 
         struct Iterator {
-            RegId::index_type * ptr_;
+            RegId::IndexType * ptr_;
 
             RegId operator*() {
                 return RegId::from_index(*ptr_);
@@ -318,4 +318,4 @@ namespace Pong {
 
 
 }
-#endif //GL_TEST_REG_ID_MANAGER_H
+#endif //PONG_REG_ID_H_

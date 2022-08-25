@@ -11,7 +11,7 @@
 #include <vector>
 #include <array>
 
-namespace Pong {
+namespace pong {
     struct Point {
         glm::vec3 position;
     };

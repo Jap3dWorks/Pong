@@ -1,4 +1,6 @@
 /.idea
+/.vscode
+/.emacs
 /Textures
 /examples_documentation
 /docs/sources.txt

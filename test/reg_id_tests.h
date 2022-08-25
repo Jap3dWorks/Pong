@@ -34,11 +34,11 @@ void test_variadic_class_access () {
 
 
 void test_reg_id_data() {
-    auto reg_data = Pong::RegDataController<Pong::RegDataLocation<Pong::Mesh>>();
+    auto reg_data = pong::RegDataController<pong::RegDataLocation<pong::Mesh>>();
 }
 
 void test_file_byte_pos() {
-    auto h = Pong::serializer::Header<uint32_t>{9};
+    auto h = pong::serializer::Header<uint32_t>{9};
     assert(sizeof(h) == sizeof(h.data_size));
     LOG_INFO("test_file_byte_pos Success");
 }

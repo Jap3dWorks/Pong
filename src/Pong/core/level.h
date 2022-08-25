@@ -11,7 +11,7 @@
 #include <ctime>
 
 // specific config of a level
-namespace Pong {
+namespace pong {
     class AbstractLevel {
     private:
 

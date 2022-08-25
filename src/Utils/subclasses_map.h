@@ -11,7 +11,7 @@
 
 /**
  * Save each subclass instances in a map entry, where key is the subclass hash.
- * SubClassMap can be iterated by subclass type.
+ * SubClassMap can be iterated by subclass Type.
  * @tparam _base
  */
 template<typename _base>

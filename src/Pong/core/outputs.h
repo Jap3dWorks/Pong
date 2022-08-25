@@ -18,7 +18,7 @@
 #define OutputTemplate(_TEMP_ARGS_) template<std::derived_from<Output> T, _TEMP_ARGS_>
 
 
-namespace Pong {
+namespace pong {
     class Output {
 
     protected:

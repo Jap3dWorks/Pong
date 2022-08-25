@@ -14,12 +14,12 @@
 #include <map>
 #include <unordered_map>
 
-namespace Pong {
+namespace pong {
     class Render;
     class Map;
 }
 
-namespace Pong {
+namespace pong {
     using TextureUniformVector = std::vector<std::pair<std::string, Texture*>>;
 
     template<typename T>

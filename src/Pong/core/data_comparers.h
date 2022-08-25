@@ -9,7 +9,7 @@
 #include "Pong/core/core_vals.h"
 #include "Utils/logger.h"
 
-namespace Pong {
+namespace pong {
 //    template<typename Derived_>
 //    struct NameComparer {
 //    public:

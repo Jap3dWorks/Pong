@@ -7,7 +7,7 @@
 
 #include<exception>
 
-namespace Pong {
+namespace pong {
 
     class CreateOutputWindowError : public std::exception {
     private:

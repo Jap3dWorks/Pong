@@ -10,7 +10,7 @@
 #include "Pong/core/geometry_data.h"
 #include "Utils/logger.h"
 
-namespace Pong {
+namespace pong {
 
     template<typename T>
     struct GlmCompare {

@@ -13,14 +13,14 @@
 #include "Pong/core/outputs.h"
 #include <GLFW/glfw3.h>
 
-namespace Pong {
+namespace pong {
     class Output;
     class ProcessInput;
     class Render;
     class Map;
 }
 
-namespace Pong::engine {
+namespace pong::engine {
     class Engine {
     public:
         using OutputPtr = std::unique_ptr<Output>;

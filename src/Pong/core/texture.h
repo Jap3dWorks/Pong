@@ -17,7 +17,7 @@
 
 #include "Pong/core/core_vals.h"
 
-namespace Pong {
+namespace pong {
 
     enum class TextureWrap : int32_t {
         REPEAT = GL_REPEAT,

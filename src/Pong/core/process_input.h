@@ -10,7 +10,7 @@
 #include <map>
 #include <utility>
 
-namespace Pong {
+namespace pong {
 
     /**
     * Functor class useful to manage the inputs of an Actor object.

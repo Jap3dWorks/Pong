@@ -305,7 +305,7 @@ constexpr uint32_t la_array() {
 }
 
 
-namespace Pong {
+namespace pong {
     class Actor;
 }
 
@@ -346,7 +346,7 @@ void test_static_modifications() {
     LOG_INFO("Derived name " << CDerived::name);
 }
 
-class TCommand: public Pong::Command {
+class TCommand: public pong::Command {
     COMMAND_SETUP("derived_command", TCommand);
 
 public:
@@ -357,7 +357,7 @@ public:
 };
 
 void test_command_register() {
-    auto c_reg = Pong::CommandReg();
+    auto c_reg = pong::CommandReg();
     LOG_INFO(TCommand::name);
 
     c_reg.register_command<TCommand>();
@@ -391,13 +391,13 @@ struct CompC {
 
 void test_class_map() {
 
-    auto typereg = Pong::TypeRegMap();
+    auto typereg = pong::TypeRegMap();
     typereg.registry<CompA>();
     typereg.registry<CompB>();
     try {
         typereg.registry<CompB>();
 
-    } catch (Pong::ClassMapException& e) {
+    } catch (pong::ClassMapException& e) {
         LOG_INFO("ERROR: " << e.what());
     }
     typereg.registry<CompC>();
@@ -408,7 +408,7 @@ void test_class_map() {
 }
 
 void test_registry_map() {
-    auto maprg = Pong::RegDataController<CompA, CompB, CompC>();
+    auto maprg = pong::RegDataController<CompA, CompB, CompC>();
     auto nwid = maprg.create_id();
     maprg.insert_type<CompA>(nwid, {});
 }

@@ -17,7 +17,7 @@
 #include <concepts>
 
 
-namespace Pong {
+namespace pong {
 
     template<typename T, typename U>
     struct valid_names {

@@ -14,7 +14,7 @@
 #include <functional>
 
 
-namespace Pong {
+namespace pong {
 
     class RenderManager {
         // create renderers queues and connect to submitters and renderers

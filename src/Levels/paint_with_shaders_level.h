@@ -16,7 +16,7 @@
 #include <vector>
 
 // TODO: quad level for shader testing
-class PaintWithShades : public Pong::AbstractLevel {
+class PaintWithShades : public pong::AbstractLevel {
 protected:
     void _level_setup() override {
         AbstractLevel::_level_setup();
@@ -27,15 +27,15 @@ protected:
                 "./src/shaders/raymarching_shaders/primitives_scene.glsl");
 
         auto draw_material =
-                _scene->create_material<Pong::MaterialController>(
+                _scene->create_material<pong::MaterialController>(
                 "draw_mat", draw_shader,
                 {});
 
         // full screen quad
-        auto draw_shape = _scene->create_shape<Pong::PlaneShape>(
+        auto draw_shape = _scene->create_shape<pong::PlaneShape>(
                 "draw_shape", 2.0, 2.0);
 
-        auto draw_actor = _scene->create_actor<Pong::APlayer>("Draw Actor");
+        auto draw_actor = _scene->create_actor<pong::APlayer>("Draw Actor");
 
 
         _scene->get_camera()->position = glm::vec3(0.0, 5.0, 5.0);

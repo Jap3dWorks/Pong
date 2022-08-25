@@ -16,7 +16,7 @@
 #include <type_traits>
 #include <concepts>
 
-namespace Pong {
+namespace pong {
 
     /**
      * RegDataLocation represents where you can find the RegId associated data

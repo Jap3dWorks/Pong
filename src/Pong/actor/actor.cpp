@@ -5,7 +5,7 @@
 
 #include <utility>
 
-namespace Pong {
+namespace pong {
 //    void Actor::process_keyboard(Movements movement, const double& delta_time) {}
 
 //    // ASkyBox

@@ -24,7 +24,7 @@
 #include <set>
 #include <map>
 
-namespace Pong {
+namespace pong {
     // TODO: move mouse callbacks
 //    void mouse_callback(GLFWwindow*, double, double);
 //    void scroll_callback(GLFWwindow*, double, double);
@@ -227,7 +227,7 @@ namespace Pong {
         // get an Actor by its name
         _P_NODISCARD Actor* get_actor(const std::string& name) const;
 
-        // Create a Collider, template you must specify the Collider type
+        // Create a Collider, template you must specify the Collider Type
         template<typename T>
         T* create_collider(const std::string& name) {
             if (!std::is_base_of<Collider, T>::value) {
