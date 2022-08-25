@@ -454,6 +454,7 @@ int main() {
 
 //    test_save_serialize_data();
     test_save_serialize_plane();
+    test_load_id_from_file();
 
 //    test_variadic_class_access();
 //    test_file_byte_pos();

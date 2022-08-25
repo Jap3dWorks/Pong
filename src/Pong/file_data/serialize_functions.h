@@ -109,10 +109,9 @@ namespace Pong::serializer {
 
         template<typename Archive>
         static inline void jump(Archive& ar, type& value, const Version& version) {
-            ar.get().seekg(sizeof(value), ar.stream_type::cur);
+            ar.get().seekg(sizeof(value), Archive::stream_type::cur);
         }
     };
-
 
     template<Intersects<char, const char> T, size_t N>
     struct SaveLoadSize<T[N]> {
@@ -135,7 +134,7 @@ namespace Pong::serializer {
 
         template<typename Archive>
         static inline void jump(Archive& ar, type& value, const Version& version) {
-            ar.get().seekg(sizeof(T) * N, ar.stream_type::cur);
+            ar.get().seekg(sizeof(T) * N, Archive::stream_type::cur);
         }
     };
 
@@ -217,7 +216,7 @@ namespace Pong::serializer {
             SaveLoadSize<data_size_t>::load(ar, string_size, version);
             value.resize(string_size);
 
-            ar.get().seekg(string_size, ar.stream_type::cur);
+            ar.get().seekg(string_size, Archive::stream_type::cur);
         }
 
     };

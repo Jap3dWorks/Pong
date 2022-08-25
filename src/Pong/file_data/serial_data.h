@@ -71,11 +71,9 @@ namespace Pong::serializer {
         serialize_data_t<Material>& material_data{data.data.material_data};
     };
 
-    struct oasset_t{};
-    using IAssetDescriptor = AssetDescriptor_<Any_t>;
-    using OAssetDescriptor = AssetDescriptor_<oasset_t>;
-    REG_DESCRIPTOR(IAssetDescriptor, 1);
-    REG_DESCRIPTOR(OAssetDescriptor, 1);
+
+    using AssetDescriptor = AssetDescriptor_<Any_t>;
+    REG_DESCRIPTOR(AssetDescriptor, 1);
 
 
     struct MapData {
@@ -93,15 +91,13 @@ namespace Pong::serializer {
         serialize_data_t<ActorData>& actor_data{data.data.actor_data};
     };
 
-    struct omap_t{};
-    using IMapDescriptor = MapDescriptor_<Any_t>;
-    using OMapDescriptor = MapDescriptor_<omap_t>;
-    REG_DESCRIPTOR(IMapDescriptor, 1);
-    REG_DESCRIPTOR(OMapDescriptor, 1);
+
+    using MapDescriptor = MapDescriptor_<Any_t>;
+    REG_DESCRIPTOR(MapDescriptor, 1);
 
 
-    template <Intersects<OAssetDescriptor, IAssetDescriptor> Descriptor>
-    inline std::string ensure_file_name(Descriptor&,  const char* file_name) {
+//    template <Intersects<AssetDescriptor, AssetDescriptor> Descriptor>
+    inline std::string ensure_file_name(AssetDescriptor&,  const char* file_name) {
 
         auto string_path = std::string(file_name);
         if (!string_path.ends_with(P_ASSET_EXTENSION)) {
@@ -111,8 +107,7 @@ namespace Pong::serializer {
         return string_path;
     }
 
-    template <Intersects<OMapDescriptor, IMapDescriptor> Descriptor>
-    inline std::string ensure_file_name(Descriptor&,  const char* file_name) {
+    inline std::string ensure_file_name(MapDescriptor&,  const char* file_name) {
 
         auto string_path = std::string(file_name);
         if (!string_path.ends_with(P_MAPS_EXTENSION)) {
@@ -155,7 +150,30 @@ namespace Pong::serializer {
         srlizer >> descriptor;
     }
 
+    template<std::derived_from<base_descriptor_> Descriptor>
+    inline void load_headers(Descriptor & descriptor, const char *file_name) {
+        auto ifstream = std::ifstream(
+                ensure_file_name(descriptor, file_name),
+                std::ifstream::binary);
 
+        assert(ifstream.is_open() && "File doesn't exists!");
+
+        auto srlizer = ISHeaderSerializer(ifstream);
+        srlizer >> descriptor;
+    }
+
+    template<typename data_type, std::derived_from<base_descriptor_> Descriptor>
+    inline void load_reg_id(Descriptor & descriptor, RegId reg_id, const char *file_name) {
+        auto ifstream = std::ifstream(
+                ensure_file_name(descriptor, file_name),
+                std::ifstream::binary);
+
+        assert(ifstream.is_open() && "File doesn't exists!");
+
+        auto srlizer = IRegIdSerializer<data_type>(ifstream, reg_id);
+
+        srlizer >> descriptor;
+    }
 
 }
 

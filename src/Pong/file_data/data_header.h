@@ -59,7 +59,6 @@ namespace Pong::serializer {
         ar & value.type_name;
     }
 
-
     template<typename Header_, typename Data_, typename DataType_=Any_t>
     struct HeadedData {
         Header_ header{};
@@ -93,7 +92,7 @@ namespace Pong::serializer {
 
         template<typename Archive>
         static inline void jump(Archive& ar, type& value, const Version& version) {
-            ar.get().seekg(type::header_size, ar.stream_type::cur);
+            ar.get().seekg(type::header_size, Archive::stream_type::cur);
         }
 
 

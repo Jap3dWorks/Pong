@@ -28,7 +28,7 @@ void test_class_reflection() {
 }
 
 void test_save_serialize_data() {
-    auto description = Pong::serializer::OAssetDescriptor();
+    auto description = Pong::serializer::AssetDescriptor();
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola"));
     LOG_INFO(Pong::serializer::ensure_file_name(description, "Hola.asset"));
 
@@ -58,8 +58,7 @@ void test_save_serialize_plane() {
 
     auto mesh_ = Pong::Mesh{vertices, indices};
 
-
-    auto odescriptor = Pong::serializer::OAssetDescriptor();
+    auto odescriptor = Pong::serializer::AssetDescriptor();
     odescriptor.mesh_data.data.push_back({{1, {}}, mesh_});
 
     Pong::serializer::save_file(
@@ -68,7 +67,7 @@ void test_save_serialize_plane() {
     );
 
     // read plane.asset
-    auto idescriptor =  Pong::serializer::IAssetDescriptor();
+    auto idescriptor =  Pong::serializer::AssetDescriptor();
     Pong::serializer::load_file(
             idescriptor,
             "./assets/plane");
@@ -80,8 +79,23 @@ void test_save_serialize_plane() {
     }
 
     LOG_INFO("-test save serialize Success-");
+}
+
+
+void test_load_id_from_file() {
+    auto descriptor = Pong::serializer::AssetDescriptor();
+
+    Pong::serializer::load_reg_id<Pong::Mesh, decltype(descriptor)>(
+            descriptor, {1}, "./assets/plane"
+            );
+
+    for (auto& d: descriptor.mesh_data.data) {
+        assert(d.header.reg_id.id == 1 && "Wrong Id Loaded!");
+        LOG_INFO(d.header.reg_id);
+    }
 
 }
+
 
 
 
