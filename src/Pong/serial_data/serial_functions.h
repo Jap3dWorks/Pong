@@ -2,10 +2,10 @@
 // Created by Jordi on 8/16/2022.
 //
 
-#ifndef PONG_SERIALIZE_FUNCTIONS_H_
-#define PONG_SERIALIZE_FUNCTIONS_H_
+#ifndef PONG_SRC_PONG_FILE_DATA_SERIALIZE_FUNCTIONS_H_
+#define PONG_SRC_PONG_FILE_DATA_SERIALIZE_FUNCTIONS_H_
 #include "Pong/core/geometry_data.h"
-#include "Pong/file_data/serialize_types.h"
+#include "Pong/serial_data/serial_types.h"
 #include "Pong/config/config.h"
 #include "Pong/core/material.h"
 #include "Utils/type_conditions.h"
@@ -16,10 +16,10 @@
 #define SERIALIZABLE REFLECTABLE
 
 
-#define IMPL_SERIALIZE(type_) \
+#define IMPL_SERIALIZE(type) \
     template<typename Archive> \
     void serialize(Archive &ar,\
-        type_ &value, \
+        type &value, \
         const Version& version) { \
         serialize_fields(ar, value); \
     }
@@ -109,7 +109,7 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void jump(Archive& ar, Type& value, const Version& version) {
-            ar.get().seekg(sizeof(value), Archive::stream_type::cur);
+            ar.get().seekg(sizeof(value), Archive::StreamType::cur);
         }
     };
 
@@ -134,7 +134,7 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void jump(Archive& ar, Type& value, const Version& version) {
-            ar.get().seekg(sizeof(T) * N, Archive::stream_type::cur);
+            ar.get().seekg(sizeof(T) * N, Archive::StreamType::cur);
         }
     };
 
@@ -144,8 +144,8 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void save(Archive &ar, Type &value, const Version& version) {
-            data_size_t size = value.size();
-            SaveLoadSize<data_size_t>::save(ar, size, version);
+            DataSize size = value.size();
+            SaveLoadSize<DataSize>::save(ar, size, version);
 
             for (uint32_t i=0; i<size; ++i) {
                 serialize(ar, value[i], version);
@@ -154,8 +154,8 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void load(Archive &ar, Type &value, const Version& version) {
-            data_size_t vector_size;
-            SaveLoadSize<data_size_t>::load(ar, vector_size, version);
+            DataSize vector_size;
+            SaveLoadSize<DataSize>::load(ar, vector_size, version);
             value.resize(vector_size);
             for(uint32_t i=0; i<vector_size; ++i) {
                 serialize(ar, value[i], version);
@@ -164,12 +164,12 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void size(Archive& ar, Type& value, const Version& version) {
-            ar += sizeof(data_size_t);
+            ar += sizeof(DataSize);
 
             auto v_size = value.size();
             auto temp_ar = Archive();
 
-            for (data_size_t i=0; i<v_size; ++i) {
+            for (DataSize i=0; i<v_size; ++i) {
                 serialize(temp_ar, value[i], version);
                 ar += temp_ar;
                 temp_ar.clear();
@@ -188,16 +188,16 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void save(Archive& ar, Type& value, const Version& version) {
-            data_size_t size = value.size();
-            SaveLoadSize<data_size_t>::save(ar, size, version);
+            DataSize size = value.size();
+            SaveLoadSize<DataSize>::save(ar, size, version);
 
             ar.get().write((char *) value.data(), size);
         }
 
         template<typename Archive>
         static inline void load(Archive& ar, Type& value, const Version& version) {
-            data_size_t string_size;
-            SaveLoadSize<data_size_t>::load(ar, string_size, version);
+            DataSize string_size;
+            SaveLoadSize<DataSize>::load(ar, string_size, version);
             value.resize(string_size);
 
             ar.get().read((char *) value.data(), string_size);
@@ -205,18 +205,18 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void size(Archive& ar, Type& value, const Version& version) {
-            data_size_t size = value.size();
-            ar += sizeof(data_size_t);
+            DataSize size = value.size();
+            ar += sizeof(DataSize);
             ar += size;
         }
 
         template<typename Archive>
         static inline void jump(Archive& ar, Type& value, const Version& version) {
-            data_size_t string_size;
-            SaveLoadSize<data_size_t>::load(ar, string_size, version);
+            DataSize string_size;
+            SaveLoadSize<DataSize>::load(ar, string_size, version);
             value.resize(string_size);
 
-            ar.get().seekg(string_size, Archive::stream_type::cur);
+            ar.get().seekg(string_size, Archive::StreamType::cur);
         }
 
     };
@@ -294,4 +294,4 @@ namespace pong::serializer {
 }
 
 
-#endif //PONG_SERIALIZE_FUNCTIONS_H_
+#endif //PONG_SRC_PONG_FILE_DATA_SERIALIZE_FUNCTIONS_H_

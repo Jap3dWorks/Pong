@@ -2,13 +2,13 @@
 // Created by Jordi on 8/13/2022.
 //
 
-#ifndef GL_TEST_SERIALIZATION_H
-#define GL_TEST_SERIALIZATION_H
+#ifndef PONG_SRC_PONG_SERIAL_DATA_SERIALIZERS_H_
+#define PONG_SRC_PONG_SERIAL_DATA_SERIALIZERS_H_
 
-#include "Pong/file_data/serialize_types.h"
-#include "Pong/file_data/reflectable.h"
-#include "Pong/file_data/serialize_functions.h"
-#include "Pong/file_data/data_header.h"
+#include "Pong/serial_data/serial_types.h"
+#include "Pong/serial_data/reflectable.h"
+#include "Pong/serial_data/serial_functions.h"
+#include "Pong/serial_data/header_data.h"
 #include <iostream>
 #include <ostream>
 #include "Utils/type_conditions.h"
@@ -28,19 +28,19 @@ namespace pong::serializer {
 
 
     template<typename stream_t>
-    class base_serializer_ {
+    class BaseSerializer {
     public:
-        using stream_type = stream_t;
-        using stream_reference = stream_type &;
+        using StreamType = stream_t;
+        using StreamReference = StreamType &;
     protected:
-        stream_reference stream_;
+        StreamReference stream;
 
     public:
-        explicit base_serializer_(stream_reference &stream):
-        stream_(stream) {}
+        explicit BaseSerializer(StreamReference &stream_p):
+            stream(stream_p) {}
 
         auto &get() {
-            return stream_;
+            return stream;
         }
 
     public:
@@ -62,22 +62,22 @@ namespace pong::serializer {
         }
 
         template<typename Archive>
-        void collect_version(Archive &ar, std::ifstream &stream) {
+        void collect_version(Archive &ar, std::ifstream &stream_p) {
             auto header = FileHeader();
             serialize(ar, header, {});
             version = header.version;
-            stream.seekg(0, stream_type::beg);
+            stream_p.seekg(0, StreamType::beg);
         }
 
     };
 
-    class obase_serializer : public base_serializer_<std::ofstream> {
-        using base_serializer_::base_serializer_;
+    class OBaseSerializer : public BaseSerializer<std::ofstream> {
+        using BaseSerializer::BaseSerializer;
     };
 
-    class OSSerializer: public obase_serializer {
-    SERIALIZER_COMMON(OSSerializer);
-    using obase_serializer::obase_serializer;
+    class OSerializer: public OBaseSerializer {
+    SERIALIZER_COMMON(OSerializer);
+    using OBaseSerializer::OBaseSerializer;
 
     public:
         template<typename Descriptor>
@@ -96,24 +96,24 @@ namespace pong::serializer {
         }
     };
 
-    class ibase_serializer_ : public base_serializer_<std::ifstream> {
+    class IbaseSerializer : public BaseSerializer<std::ifstream> {
     public:
-        using base_serializer_<std::ifstream>::base_serializer_;
+        using BaseSerializer<std::ifstream>::BaseSerializer;
 
     };
 
 #define IBASE_SERIALIZER_CONSTRUCTORS() \
-    using ibase_serializer_::ibase_serializer_; \
+    using IbaseSerializer::IbaseSerializer; \
     public: \
     template<typename Descriptor> \
     auto &operator>>(Descriptor &descriptor) { \
-        collect_version(self, stream_); \
+        collect_version(self, stream); \
         serialize(*this, descriptor, version); \
         return *this;\
     }
 
-    class ISSerializer: public ibase_serializer_ {
-    SERIALIZER_COMMON(ISSerializer);
+    class ISerializer: public IbaseSerializer {
+    SERIALIZER_COMMON(ISerializer);
     IBASE_SERIALIZER_CONSTRUCTORS();
 
     public:
@@ -124,8 +124,8 @@ namespace pong::serializer {
         }
     };
 
-    class ISHeaderSerializer: public ibase_serializer_ {
-        SERIALIZER_COMMON(ISHeaderSerializer);
+    class IHeaderSerializer: public IbaseSerializer {
+        SERIALIZER_COMMON(IHeaderSerializer);
         IBASE_SERIALIZER_CONSTRUCTORS();
 
         template<typename T>
@@ -142,9 +142,9 @@ namespace pong::serializer {
     };
 
     template<typename data_type>
-    class IRegIdSerializer: public ibase_serializer_ {
+    class IRegIdSerializer: public IbaseSerializer {
     public:
-        using headed_dt = HeadedData<Header<data_type>, data_type>;
+        using HeadedDt = HeadedData<Header<data_type>, data_type>;
     private:
         RegId reg_id_;
         bool found_{false};
@@ -153,10 +153,10 @@ namespace pong::serializer {
     IBASE_SERIALIZER_CONSTRUCTORS();
 
     public:
-        IRegIdSerializer(stream_reference stream,
+        IRegIdSerializer(StreamReference stream,
                          RegId reg_id) :
-                ibase_serializer_(stream),
-                reg_id_(reg_id) {}
+            IbaseSerializer(stream),
+            reg_id_(reg_id) {}
 
         [[nodiscard]] RegId get_reg_id() const {
             return reg_id_;
@@ -179,26 +179,26 @@ namespace pong::serializer {
 
         template<typename Archive, typename T>
         RegId get_reg_id(Archive &ar, Header<T> header, Version& version) {
-            auto pos = stream_.tellg();
+            auto pos = stream.tellg();
 
-            auto input_serializer = ISSerializer(stream_);
+            auto input_serializer = ISerializer(stream);
             serialize(input_serializer, header, version);
-            stream_.seekg(pos, stream_type::beg);
+            stream.seekg(pos, StreamType::beg);
 
             return header.reg_id;
         }
 
-        auto &operator&(headed_dt& other) {
+        auto &operator&(HeadedDt& other) {
             // get header data
             auto reg_id = get_reg_id(self, other.header, version);
 
             if (reg_id == reg_id_) {
                 found_ = true;
-                SaveLoadSize<headed_dt>::load(*this, other, version);
+                SaveLoadSize<HeadedDt>::load(*this, other, version);
             }
             else {
                 found_ = false;
-                SaveLoadSize<headed_dt>::jump(*this, other, version);
+                SaveLoadSize<HeadedDt>::jump(*this, other, version);
             }
             return *this;
         }
@@ -207,4 +207,4 @@ namespace pong::serializer {
 
 }
 
-#endif //GL_TEST_SERIALIZATION_H
+#endif //PONG_SRC_PONG_SERIAL_DATA_SERIALIZERS_H_

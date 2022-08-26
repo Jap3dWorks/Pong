@@ -1,5 +1,5 @@
-#ifndef COMPONENT_H
-#define COMPONENT_H
+#ifndef PONG_SRC_PONG_COMPONENTS_COMPONENT_H_
+#define PONG_SRC_PONG_COMPONENTS_COMPONENT_H_
 
 //#include "Pong/core/actor/actor.h"
 //#include "Pong/core/collider.h"
@@ -43,9 +43,9 @@ namespace pong {
         float fov{_P_PI / 3.5};
 
         explicit CameraComponent(
-                float fov_ = _P_PI / 3.5
+                float fov = _P_PI / 3.5
         ) :
-                fov(fov_) {}
+                fov(fov) {}
     };
 
     struct TransformComponent : Component {
@@ -81,4 +81,4 @@ namespace pong {
 
 
 
-#endif // COMPONENT_H
+#endif // PONG_SRC_PONG_COMPONENTS_COMPONENT_H_

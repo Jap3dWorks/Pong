@@ -8,4 +8,5 @@
 /3dmodels/
 /libraries
 /cmake-build-*
+/build
 /.venv

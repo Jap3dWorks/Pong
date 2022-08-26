@@ -27,7 +27,7 @@ namespace pong {
 //
 //    void AKinetic::by_frame()
 //    {
-//        float dtime = Pong::Render::get_instance()->get_delta_time();
+//        float dtime = pong::.Render::get_instance()->get_delta_time();
 //        _vector_director = _direction * _velocity;
 //        translation = glm::translate(
 //                translation, _vector_director * dtime;
@@ -57,10 +57,10 @@ namespace pong {
 //    void APlayer::process_keyboard(Movements move_direction, const double& delta_time) {
 //        float f_speed = _base_speed * delta_time;
 //
-//        if (move_direction == Pong::Movements::UP) {
+//        if (move_direction == pong::.Movements::UP) {
 //            _velocity += f_speed;
 //            _key_pressed = true;
-//        } else if (move_direction == Pong::Movements::DOWN) {
+//        } else if (move_direction == pong::.Movements::DOWN) {
 //            _velocity -= f_speed;
 //            _key_pressed = true;
 //        }
@@ -90,19 +90,19 @@ namespace pong {
 //        return glm::lookAt(Position, Position + Front, Up);
 //    }
 //
-//    void ACamera::process_keyboard(Pong::Movements direction, const double& delta_time) {
+//    void ACamera::process_keyboard(pong::.Movements direction, const double& delta_time) {
 //        float velocity = MovementSpeed * delta_time;
-//        if (direction == Pong::Movements::FORWARD)
+//        if (direction == pong::.Movements::FORWARD)
 //            Position += Front * velocity;
-//        if (direction == Pong::Movements::BACKWARD)
+//        if (direction == pong::.Movements::BACKWARD)
 //            Position -= Front * velocity;
-//        if (direction == Pong::Movements::LEFT)
+//        if (direction == pong::.Movements::LEFT)
 //            Position -= Right * velocity;
-//        if (direction == Pong::Movements::RIGHT)
+//        if (direction == pong::.Movements::RIGHT)
 //            Position += Right * velocity;
-//        if (direction == Pong::Movements::UP)
+//        if (direction == pong::.Movements::UP)
 //            Position += Up * velocity;
-//        if (direction == Pong::Movements::DOWN)
+//        if (direction == pong::.Movements::DOWN)
 //            Position -= Up * velocity;
 //    }
 //

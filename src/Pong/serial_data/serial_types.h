@@ -2,15 +2,15 @@
 // Created by Jordi on 8/16/2022.
 //
 
-#ifndef GL_TEST_SERIALIZE_TYPES_H
-#define GL_TEST_SERIALIZE_TYPES_H
+#ifndef PONG_SRC_PONG_FILE_DATA_SERIALIZE_TYPES_H_
+#define PONG_SRC_PONG_FILE_DATA_SERIALIZE_TYPES_H_
 #include <optional>
 #include <iostream>
 
 namespace pong::serializer {
     using Version=std::optional<uint32_t>;
 
-    using data_size_t = size_t;
+    using DataSize = size_t;
 
     struct Any_t{};
     struct reference_data_t{};
@@ -18,4 +18,4 @@ namespace pong::serializer {
 }
 
 
-#endif //GL_TEST_SERIALIZE_TYPES_H
+#endif //PONG_SRC_PONG_FILE_DATA_SERIALIZE_TYPES_H_

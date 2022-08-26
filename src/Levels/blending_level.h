@@ -70,19 +70,19 @@ protected:
 //        // vertex size
 //        auto vert_shd = _scene->create_shader("vert_shd",
 //                                              "./src/shaders/point.glsl");
-//        auto vert_mat = _scene->create_material<Pong::MaterialController>("vert_mat",
+//        auto vert_mat = _scene->create_material<pong::.MaterialController>("vert_mat",
 //                                                                vert_shd,
 //                                                                {});
-//        auto vert_shp = _scene->create_shape<Pong::IcosphereShape>("vert_shp", 2.0);
+//        auto vert_shp = _scene->create_shape<pong::.IcosphereShape>("vert_shp", 2.0);
 //        vert_shp->primitive = GL_POINTS;
 //        LOG_DEBUG("Change vert_shp to GL_POINTS primitive " << GL_POINTS);
-//        auto vert2_shp = _scene->create_shape<Pong::IcosphereShape>("vert2_shp", 2.0);
+//        auto vert2_shp = _scene->create_shape<pong::.IcosphereShape>("vert2_shp", 2.0);
 //        vert2_shp->primitive = GL_LINE_STRIP;
 //        LOG_DEBUG("Change vert2_shp to GL_LINE_STRIP primitive " << GL_LINE_STRIP);
 //
 //        LOG_DEBUG("GL_TRIANGLES id " << GL_TRIANGLES);
 //
-//        auto vert_act = _scene->create_id<Pong::Actor>("vert_act");
+//        auto vert_act = _scene->create_id<pong::.Actor>("vert_act");
 //        _scene->assign_material(vert_mat, vert_shp);
 //        _scene->assign_material(vert_mat, vert2_shp);
 //        _scene->assign_shape(vert_shp, vert_act);
@@ -127,7 +127,7 @@ protected:
         blinn_mat->set_param("glow", 16.f);
         blinn_mat->set_param("specular", .8f);
 
-//        auto blinn_shp = _scene->create_shape<Pong::IcosphereShape>("blinn_shp");
+//        auto blinn_shp = _scene->create_shape<pong::.IcosphereShape>("blinn_shp");
 //        _scene->assign_material(blinn_mat, blinn_shp);
 //        _scene->assign_shape(blinn_shp, vert_act);
 

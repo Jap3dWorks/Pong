@@ -16,7 +16,7 @@ namespace pong {
     public:
         RegId collider;
 
-        //        virtual void at_collision(Pong::Collider *owner, Pong::Collider *other) = 0;
+        //        virtual void at_collision(pong::.Collider *owner, pong::.Collider *other) = 0;
     };
 }
 

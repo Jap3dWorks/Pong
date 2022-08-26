@@ -17,7 +17,6 @@
 #include <concepts>
 
 namespace pong {
-
     /**
      * RegDataLocation represents where you can find the RegId associated data
      * in the file system.
@@ -26,14 +25,12 @@ namespace pong {
     struct RegDataLocation {
         RegId reg_id{};
         std::string file_path{};
-        size_t offset{};
 
         static constexpr inline uint32_t types_count{sizeof...(Args)};
 
         template<uint32_t N>
-        using type_i = variadic_id_t<N, Args...>;
+        using IndexType = variadic_id_t<N, Args...>;
     };
-
 
 
     /**

@@ -2,13 +2,13 @@
 // Created by Jordi on 8/11/2022.
 //
 
-#ifndef PONG_SERIAL_DATA_H_
-#define PONG_SERIAL_DATA_H_
+#ifndef PONG_SRC_PONG_SERIAL_DATA_SERIAL_DATA_H_
+#define PONG_SRC_PONG_SERIAL_DATA_SERIAL_DATA_H_
 
 #include "Pong/core/geometry_data.h"
 #include "Pong/registers/reg_id.h"
 #include "Pong/core/material.h"
-#include "Pong/file_data/serializers.h"
+#include "Pong/serial_data/serializers.h"
 #include "Utils/type_conditions.h"
 #include "Pong/config/config.h"
 #include "Pong/components/component.h"
@@ -132,7 +132,7 @@ namespace pong::serializer {
         auto size_ser = SizeSerializer();
         size_ser >> descriptor;
 
-        auto out_ser = OSSerializer(ofstream);
+        auto out_ser = OSerializer(ofstream);
 
         out_ser << descriptor;
     }
@@ -146,7 +146,7 @@ namespace pong::serializer {
 
         assert(ifstream.is_open() && "File doesn't exists!");
 
-        auto srlizer = ISSerializer(ifstream);
+        auto srlizer = ISerializer(ifstream);
         srlizer >> descriptor;
     }
 
@@ -158,7 +158,7 @@ namespace pong::serializer {
 
         assert(ifstream.is_open() && "File doesn't exists!");
 
-        auto srlizer = ISHeaderSerializer(ifstream);
+        auto srlizer = IHeaderSerializer(ifstream);
         srlizer >> descriptor;
     }
 
@@ -175,6 +175,32 @@ namespace pong::serializer {
         srlizer >> descriptor;
     }
 
+    template<typename Descriptor, typename DtType>
+    struct descriptor_type_data {
+    };
+
+#define DESCRIPTOR_TYPE_DATA_IMPL(asset_descriptor_type, data_type, data_member) \
+    template<> \
+    struct descriptor_type_data<asset_descriptor_type, data_type> { \
+    using DescriptorType = asset_descriptor_type; \
+    using DataType = data_type; \
+    const DescriptorType& descriptor; \
+    explicit descriptor_type_data(const DescriptorType &descriptor_p) : \
+        descriptor(descriptor_p) { \
+    } \
+    const auto cbegin() { \
+        return descriptor.data_member.data.cbegin(); \
+    } \
+    const auto cend() { \
+        return descriptor.data_member.data.cend(); \
+    } \
+    }
+
+    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, ActorData, actor_data);
+    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, Mesh, mesh_data);
+    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, Curve, curve_data);
+    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, Material, material_data);
+
 }
 
-#endif //PONG_SERIAL_DATA_H_
+#endif //PONG_SRC_PONG_SERIAL_DATA_SERIAL_DATA_H_

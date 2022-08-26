@@ -10,9 +10,9 @@ include(cmake/functions.cmake)
 set(LIBRARIES ${CMAKE_SOURCE_DIR}/libraries)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-if(NOT EXISTS ${LIBRARIES})
-    error("Libraries path %s{LIBRARIES} doesn't exists!")
-endif()
+if (NOT EXISTS ${LIBRARIES})
+    message(FATAL_ERROR "Libraries path %s{LIBRARIES} doesn't exists!")
+endif ()
 
 set(CMAKE_CXX_STANDARD 20)
 

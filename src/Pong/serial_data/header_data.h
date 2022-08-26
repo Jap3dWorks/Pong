@@ -2,12 +2,12 @@
 // Created by Jordi on 8/21/2022.
 //
 
-#ifndef PONG_DATA_HEADER_H_
-#define PONG_DATA_HEADER_H_
+#ifndef PONG_SRC_PONG_SERIAL_DATA_HEADER_DATA_H_
+#define PONG_SRC_PONG_SERIAL_DATA_HEADER_DATA_H_
 
-#include "Pong/file_data/reflectable.h"
-#include "Pong/file_data/serialize_functions.h"
-#include "Pong/file_data/serialize_types.h"
+#include "Pong/serial_data/reflectable.h"
+#include "Pong/serial_data/serial_functions.h"
+#include "Pong/serial_data/serial_types.h"
 #include <vector>
 #include <string>
 #include <type_traits>
@@ -18,14 +18,14 @@ namespace pong::serializer {
 
     template<typename T>
     struct data_header_ {
-        static inline constexpr data_size_t header_size{
+        static inline constexpr DataSize header_size{
             sizeof(RegId) +
-                sizeof(data_size_t)
+                sizeof(DataSize)
         };
 
         SERIALIZABLE (
             FIELD(RegId, reg_id, 0),
-            FIELD(data_size_t, data_size, 0)
+            FIELD(DataSize, data_size, 0)
         )
 
         using Type = T;
@@ -33,10 +33,10 @@ namespace pong::serializer {
 
     template<>
     struct data_header_<FileHeader_t> {
-        static inline constexpr data_size_t header_size{
-            (sizeof(data_size_t)*2) + P_MAX_SERIALIZER_NAME_LENGTH};
+        static inline constexpr DataSize header_size{
+            (sizeof(DataSize)*2) + P_MAX_SERIALIZER_NAME_LENGTH};
 
-        data_size_t data_size{0};
+        DataSize data_size{0};
         Version version{};
         const char type_name[P_MAX_SERIALIZER_NAME_LENGTH]{};
 
@@ -92,7 +92,7 @@ namespace pong::serializer {
 
         template<typename Archive>
         static inline void jump(Archive &ar, Type &value, const Version &version) {
-            ar.get().seekg(Type::header_size, Archive::stream_type::cur);
+            ar.get().seekg(Type::header_size, Archive::StreamType::cur);
         }
 
     };
@@ -131,7 +131,7 @@ namespace pong::serializer {
 
     class SizeSerializer {
     private:
-        data_size_t size_{0};
+        DataSize size_{0};
 
     public:
         template<typename T>
@@ -228,4 +228,4 @@ namespace pong::serializer {
 
 }
 
-#endif //PONG_DATA_HEADER_H_
+#endif //PONG_SRC_PONG_SERIAL_DATA_HEADER_DATA_H_

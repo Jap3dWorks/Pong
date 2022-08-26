@@ -110,7 +110,7 @@ namespace pong {
 //            Render* render = Render::get_instance();
 
             // create callbacks
-//            glfwSetCursorPosCallback(render->get_window(), Pong::mouse_callback);
+//            glfwSetCursorPosCallback(render->get_window(), pong::.mouse_callback);
 //            glfwSetScrollCallback(render->get_window(), scroll_callback);
         }
 

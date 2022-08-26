@@ -35,7 +35,7 @@ namespace pong {
 
 #define ACCESS_HASH_NAME_(class_)                                           \
     template<typename T, typename U>                                        \
-    friend struct Pong::valid_names;
+    friend struct pong::valid_names;
 
 
 #define COMMAND_NAME_(command_name_)                                        \

@@ -28,9 +28,9 @@
 //#include "Pong/core/component.h"
 
 #include "Pong/registers/reg_data_controller.h"
-#include "Pong/file_data/reflectable.h"
-#include "Pong/file_data/serial_data.h"
-#include "Pong/file_data/serializers.h"
+#include "Pong/serial_data/reflectable.h"
+#include "Pong/serial_data/serial_data.h"
+#include "Pong/serial_data/serializers.h"
 
 #include <cassert>
 
@@ -70,8 +70,8 @@ void _test_shader_parser() {
 }
 
 //void _test_sizes() {
-//    LOG_INFO("position size " << sizeof(Pong::Vertex::position));
-//    LOG_INFO("OFFSET texcoords " << offsetoff(Pong::Vertex, tex_coords));
+//    LOG_INFO("position size " << sizeof(pong::.Vertex::position));
+//    LOG_INFO("OFFSET texcoords " << offsetoff(pong::.Vertex, tex_coords));
 //}
 
 enum class TextureWrap : int32_t {
@@ -309,10 +309,10 @@ namespace pong {
     class Actor;
 }
 
-//class DComponent: public Pong::Component {
+//class DComponent: public pong::.Component {
 //public:
-//    inline void start(Pong::Actor* actor, Pong::Component* parent) override {}
-//    inline void update(Pong::Actor* actor, Pong::Component* parent) override {}
+//    inline void start(pong::.Actor* actor, pong::.Component* parent) override {}
+//    inline void update(pong::.Actor* actor, pong::.Component* parent) override {}
 //};
 
 void test_component() {

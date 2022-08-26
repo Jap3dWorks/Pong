@@ -2,8 +2,8 @@
 // Created by Jordi on 8/12/2022.
 //
 
-#ifndef GL_TEST_REFLECTABLE_H
-#define GL_TEST_REFLECTABLE_H
+#ifndef PONG_SRC_PONG_SERIAL_DATA_REFLECTABLE_H_
+#define PONG_SRC_PONG_SERIAL_DATA_REFLECTABLE_H_
 
 
 #include <boost/preprocessor.hpp>
@@ -24,10 +24,9 @@
 #define NAME(type, name, ...) name
 #define NAME_STR(type, name, ...) #name
 
-
 template<typename M, typename T>
 struct make_const {
-    using type=T;
+    using type = T;
 };
 
 template<typename M, typename T>
@@ -88,9 +87,9 @@ inline static constexpr void field_visitor(C& c, Visitor v, I) {
 
 template<typename C, typename Visitor>
 void visit_each(C &c, Visitor v) {
-    typedef boost::mpl::range_c<int, 0, reflector::fields<C>::n> range;
+    typedef boost::mpl::range_c<int, 0, reflector::fields<C>::n> Range;
 
-    boost::mpl::for_each<range>(
+    boost::mpl::for_each<Range>(
             [&]<typename I>(I i) constexpr -> void {
                 field_visitor<C, Visitor, I>(
                         c, v, i
@@ -113,4 +112,4 @@ void print_fields(T& x) {
     visit_each(x, print_visitor());
 }
 
-#endif //GL_TEST_REFLECTABLE_H
+#endif //PONG_SRC_PONG_SERIAL_DATA_REFLECTABLE_H_
