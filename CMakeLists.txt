@@ -8,8 +8,6 @@ project(${PROJECT_NAME}
 include(cmake/functions.cmake)
 
 set(LIBRARIES ${CMAKE_SOURCE_DIR}/libraries)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-
 if (NOT EXISTS ${LIBRARIES})
     message(FATAL_ERROR "Libraries path %s{LIBRARIES} doesn't exists!")
 endif ()
@@ -17,6 +15,12 @@ endif ()
 set(CMAKE_CXX_STANDARD 20)
 
 include_directories(src)
+
+if(WIN32)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+include_directories(${LIBRARIES}/glad/include)
+message("include glad")
 include_directories(${LIBRARIES}/glfw3/glfw-3.3.7.bin.WIN64/include)
 message("Include glm")
 include_directories(${LIBRARIES}/glm/include)
@@ -29,6 +33,11 @@ include_directories(${LIBRARIES}/doctest/doctest)
 message("Include boost")
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIR})
+
+else()
+# check if exists
+
+endif(WIN32)
 
 add_subdirectory(src)
 
@@ -47,7 +56,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             __LOG_ERROR__
     )
 endif()
-
 
 
 # -- Test and gltest --

@@ -2,14 +2,15 @@
 // Created by Jordi on 6/14/2020.
 //
 #include <iostream>
+#include <stdlib.h>
 
 #ifndef PONG_LOGGER_H
 #define PONG_LOGGER_H
 
 // debug
 #ifdef __LOG_DEBUG__
-#define LOG_DEBUG(what_) \
-    std::cout << "DEBUG: " << what_ << std::endl
+#define LOG_DEBUG(message) \
+    std::cout << "DEBUG: " << message << std::endl
 #else
 #define LOG_DEBUG(message)
 #endif

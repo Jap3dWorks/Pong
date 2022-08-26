@@ -23,7 +23,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE glad)
 
 message("Link assimp")
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBRARIES}/assimp/lib/assimp-vc140-mt.lib)
-
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 
 CREATE_SYMLINKS()
