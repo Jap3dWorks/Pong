@@ -142,7 +142,7 @@ namespace pong::serializer {
 
         template<typename T>
         auto &operator>>(T &other) {
-            auto version = descriptor_data<T>::version;
+            auto version = descriptor_info<T>::version;
 
             serialize(*this, other, version);
             return *this;

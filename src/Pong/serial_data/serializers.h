@@ -49,13 +49,13 @@ namespace pong::serializer {
         template<typename Descriptor>
         inline void update_descriptor_name(Descriptor& descriptor) {
             strncpy((char*) descriptor.data.header.type_name,
-                    descriptor_data<Descriptor>::type,
-                    strlen(descriptor_data<Descriptor>::type));
+                    descriptor_info<Descriptor>::type,
+                    strlen(descriptor_info<Descriptor>::type));
         }
 
         template<typename Descriptor>
         inline void collect_version(std::optional<Descriptor *> descriptor) {
-            version = descriptor_data<Descriptor>::version;
+            version = descriptor_info<Descriptor>::version;
             if (descriptor) {
                 descriptor.value()->data.header.version = version;
             }

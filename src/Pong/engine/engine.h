@@ -2,8 +2,8 @@
 // Created by Jordi on 7/25/2022.
 //
 
-#ifndef GL_TEST_ENGINE_H
-#define GL_TEST_ENGINE_H
+#ifndef PONG_SRC_PONG_ENGINE_ENGINE_H_
+#define PONG_SRC_PONG_ENGINE_ENGINE_H_
 
 #include <memory>
 #include <vector>
@@ -11,6 +11,9 @@
 #include <memory>
 #include "Pong/render/render.h"
 #include "Pong/core/outputs.h"
+#include "Pong/engine/file_inspector.h"
+#include "Pong/registers/reg_data_controller.h"
+
 #include <GLFW/glfw3.h>
 
 namespace pong {
@@ -21,6 +24,7 @@ namespace pong {
 }
 
 namespace pong::engine {
+
     class Engine {
     public:
         using OutputPtr = std::unique_ptr<Output>;
@@ -34,23 +38,25 @@ namespace pong::engine {
 
         using ScenePtr = std::unique_ptr<Map>;
         using SceneMap = std::unordered_map<std::string, ScenePtr>;
-
-
+        
         using EngineUniquePtr = std::unique_ptr<Engine>;
 
     private:
-        inline static EngineUniquePtr _instance{};
+        inline static EngineUniquePtr instance_{};
 
     protected:
-        OutputMap _outputs{};
-        InputMap _inputs{};
-        SceneMap _scenes{};
-        RenderPtr _render=nullptr;
+        OutputMap outputs{};
+        InputMap inputs{};
+        SceneMap scenes{};
+        RenderPtr render=nullptr;
+
+        AssetInspector asset_inspector{};
+        BufferedRegister buffered_register{};
 
     private:
         Engine() {
             glfwInit();
-            _render = std::make_unique<Render>();
+            render = std::make_unique<Render>();
         };
 
     public:
@@ -59,20 +65,30 @@ namespace pong::engine {
         }
 
         inline static Engine* get_instance() {
-            if (!_instance) {
-                _instance = std::unique_ptr<Engine>(new Engine);
+            if (!instance_) {
+                instance_ = std::unique_ptr<Engine>(new Engine);
             }
-            return _instance.get();
+            return instance_.get();
         }
 
         void add_output(const std::string& name, OutputPtr&& output) {
-            _outputs[name] = std::move(output);
+            outputs[name] = std::move(output);
         }
 
         void run() {}
 
         void setup() {
             // inspect asset and seg asset ids
+            asset_inspector.collect_asset_files();
+            asset_inspector.collect_asset_data();
+        }
+
+        const auto& get_data_location_reg() {
+            return asset_inspector.get_data_location_reg();
+        }
+
+        auto& get_buffered_register() {
+            return buffered_register;
         }
 
     };
@@ -95,4 +111,4 @@ namespace pong::engine {
 
 
 }
-#endif //GL_TEST_ENGINE_H
+#endif //PONG_SRC_PONG_ENGINE_ENGINE_H_

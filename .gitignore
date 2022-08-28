@@ -10,3 +10,8 @@
 /cmake-build-*
 /build
 /.venv
+/.ignoreme
+/ignoreme
+*.pyc
+/sandbox
+/.ignoreme

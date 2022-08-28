@@ -2,8 +2,8 @@
 // Created by Jordi on 7/27/2022.
 //
 
-#ifndef GL_TEST_COMMAND_H
-#define GL_TEST_COMMAND_H
+#ifndef PONG_SRC_PONG_CORE_COMMAND_H_
+#define PONG_SRC_PONG_CORE_COMMAND_H_
 
 #include "Utils/hash_utils.h"
 #include "Utils/reflection_utils.h"
@@ -111,4 +111,4 @@ namespace pong {
 
 
 }
-#endif //GL_TEST_COMMAND_H
+#endif //PONG_SRC_PONG_CORE_COMMAND_H_

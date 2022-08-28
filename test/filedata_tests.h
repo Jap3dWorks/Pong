@@ -6,7 +6,7 @@
 #define PONG_FILEDATA_TESTS_H
 
 #include "Pong/serial_data/reflectable.h"
-#include "Pong/serial_data/serial_data.h"
+#include "Pong/serial_data/header_data.h"
 #include "Pong/serial_data/serializers.h"
 #include "Utils/logger.h"
 

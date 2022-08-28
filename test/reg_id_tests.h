@@ -6,7 +6,7 @@
 #define PONG_REG_ID_TESTS_H
 
 #include "Pong/registers/reg_data_controller.h"
-#include "Pong/serial_data/serial_data.h"
+#include "Pong/serial_data/header_data.h"
 #include "Pong/registers/reg_id.h"
 #include "Pong/core/geometry_data.h"
 #include "Utils/type_conditions.h"

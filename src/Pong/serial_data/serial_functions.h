@@ -27,12 +27,12 @@
 
 #define REG_DESCRIPTOR(type_, version_) \
 template<> \
-struct descriptor_data<type_> { \
+struct descriptor_info<type_> { \
     static inline constexpr Version version{version_}; \
     static inline const char* type = #type_; \
 }; \
 template<> \
-struct descriptor_data<const type_> { \
+struct descriptor_info<const type_> { \
     static inline constexpr Version version{version_}; \
     static inline const char* type = #type_; \
 };
@@ -59,7 +59,7 @@ namespace pong::serializer {
 
 
     template<typename T>
-    struct descriptor_data {};
+    struct descriptor_info {};
 
 
     template<typename Archive, typename Value>

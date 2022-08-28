@@ -2,8 +2,8 @@
 // Created by Jordi on 8/11/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIAL_DATA_SERIAL_DATA_H_
-#define PONG_SRC_PONG_SERIAL_DATA_SERIAL_DATA_H_
+#ifndef PONG_SRC_PONG_SERIAL_DATA_DESCRIPTORS_H_
+#define PONG_SRC_PONG_SERIAL_DATA_DESCRIPTORS_H_
 
 #include "Pong/core/geometry_data.h"
 #include "Pong/registers/reg_id.h"
@@ -176,16 +176,16 @@ namespace pong::serializer {
     }
 
     template<typename Descriptor, typename DtType>
-    struct descriptor_type_data {
+    struct descriptor_data {
     };
 
-#define DESCRIPTOR_TYPE_DATA_IMPL(asset_descriptor_type, data_type, data_member) \
+#define IMPL_DESCRIPTOR_DATA(asset_descriptor_type, data_type, data_member) \
     template<> \
-    struct descriptor_type_data<asset_descriptor_type, data_type> { \
+    struct descriptor_data<asset_descriptor_type, data_type> { \
     using DescriptorType = asset_descriptor_type; \
     using DataType = data_type; \
     const DescriptorType& descriptor; \
-    explicit descriptor_type_data(const DescriptorType &descriptor_p) : \
+    explicit descriptor_data(const DescriptorType &descriptor_p) : \
         descriptor(descriptor_p) { \
     } \
     const auto cbegin() { \
@@ -194,13 +194,19 @@ namespace pong::serializer {
     const auto cend() { \
         return descriptor.data_member.data.cend(); \
     } \
+    const auto begin() { \
+        return descriptor.data_member.data.begin(); \
+    } \
+    const auto end() { \
+        return descriptor.data_member.data.end(); \
+    } \
     }
 
-    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, ActorData, actor_data);
-    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, Mesh, mesh_data);
-    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, Curve, curve_data);
-    DESCRIPTOR_TYPE_DATA_IMPL(AssetDescriptor, Material, material_data);
+    IMPL_DESCRIPTOR_DATA(AssetDescriptor, ActorData, actor_data);
+    IMPL_DESCRIPTOR_DATA(AssetDescriptor, Mesh, mesh_data);
+    IMPL_DESCRIPTOR_DATA(AssetDescriptor, Curve, curve_data);
+    IMPL_DESCRIPTOR_DATA(AssetDescriptor, Material, material_data);
 
 }
 
-#endif //PONG_SRC_PONG_SERIAL_DATA_SERIAL_DATA_H_
+#endif //PONG_SRC_PONG_SERIAL_DATA_DESCRIPTORS_H_
