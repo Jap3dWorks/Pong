@@ -8,7 +8,7 @@
 #include "Pong/components/component.h"
 #include "Pong/core/collider.h"
 #include "Pong/registers/reg_id.h"
-// #include "Pong/core/actor/actor.h"
+// #include "Pong/core/entity/entity.h"
 
 namespace pong {
 // collision components

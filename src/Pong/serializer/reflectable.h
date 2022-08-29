@@ -2,8 +2,8 @@
 // Created by Jordi on 8/12/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIAL_DATA_REFLECTABLE_H_
-#define PONG_SRC_PONG_SERIAL_DATA_REFLECTABLE_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_REFLECTABLE_H_
+#define PONG_SRC_PONG_SERIALIZER_REFLECTABLE_H_
 
 
 #include <boost/preprocessor.hpp>
@@ -112,4 +112,4 @@ void print_fields(T& x) {
     visit_each(x, print_visitor());
 }
 
-#endif //PONG_SRC_PONG_SERIAL_DATA_REFLECTABLE_H_
+#endif //PONG_SRC_PONG_SERIALIZER_REFLECTABLE_H_

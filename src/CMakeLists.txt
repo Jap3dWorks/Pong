@@ -1,10 +1,10 @@
 
 add_executable(${PROJECT_NAME}
         main.cpp
-        Pong/actor/actor.cpp
+        Pong/entity/actor.cpp
         Pong/core/collider.cpp
         Pong/core/level.cpp
-        Pong/map/map.cpp
+        Pong/map/deprecated/map.cpp
         )
 
 # --External Libraries--

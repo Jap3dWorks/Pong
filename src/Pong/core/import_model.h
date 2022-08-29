@@ -116,7 +116,7 @@ namespace pong {
 //        {
 //            shape->set_name(file_name + ":" + shape->get_name());
 //            shape_map[shape->get_name()] = shape;
-//            assign_shape(shape, actor);
+//            assign_shape(shape, entity);
 //        }
 
         return result;

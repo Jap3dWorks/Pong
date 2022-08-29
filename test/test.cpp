@@ -28,9 +28,9 @@
 //#include "Pong/core/component.h"
 
 #include "Pong/registers/reg_data_controller.h"
-#include "Pong/serial_data/reflectable.h"
-#include "Pong/serial_data/header_data.h"
-#include "Pong/serial_data/serializers.h"
+#include "Pong/serializer/reflectable.h"
+#include "Pong/serializer/header_data.h"
+#include "Pong/serializer/serializers.h"
 
 #include <cassert>
 
@@ -311,8 +311,8 @@ namespace pong {
 
 //class DComponent: public pong::.Component {
 //public:
-//    inline void start(pong::.Actor* actor, pong::.Component* parent) override {}
-//    inline void update(pong::.Actor* actor, pong::.Component* parent) override {}
+//    inline void start(pong::.Actor* entity, pong::.Component* parent) override {}
+//    inline void update(pong::.Actor* entity, pong::.Component* parent) override {}
 //};
 
 void test_component() {

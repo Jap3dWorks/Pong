@@ -10,7 +10,7 @@
 #include "Pong/core/process_input.h"
 
 /**
- * Default functions like create a camera with its actor and components
+ * Default functions like create a camera with its entity and components
  * This file is like a cookbook of all typycal ops with actors.
  */
 

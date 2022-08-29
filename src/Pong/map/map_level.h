@@ -2,8 +2,8 @@
 // Created by Jordi on 8/8/2022.
 //
 
-#ifndef GL_TEST_MAP_LEVEL_H
-#define GL_TEST_MAP_LEVEL_H
+#ifndef PONG_SRC_PONG_MAP_MAP_LEVEL_H_
+#define PONG_SRC_PONG_MAP_MAP_LEVEL_H_
 
 #include "Pong/registers/reg_data_controller.h"
 #include "Pong/engine/engine.h"
@@ -22,22 +22,21 @@ namespace pong::map {
  * Provisionaly MapLevel also has all the logic related with send jobs to renderer and
  * update scene each frame.
  */
+
     class MapLevel {
     private:
-        std::reference_wrapper<RenderQueueSubmitter> submitter;
-
-    public:
-        engine::MapRegister components_reg{};
+        std::reference_wrapper<RenderQueueSubmitter> submitter_;
 
     public:
 
         virtual void setup() {}
 
         void start() {
-            auto& registry = components_reg.get_reg_data();
-//            registry.registry<>();
-                // Build here views or gruops, e.g staticMesh with transp materials and transforms
-                // staticMesh with opaque materials and transforms
+            // auto& registry = map_register.get_reg_data();
+            // registry.registry<>();
+            // Build here views or gruops, e.g staticMesh with transp materials and transforms
+            // staticMesh with opaque materials and transforms
+
         }
 
         void load() {
@@ -52,11 +51,11 @@ namespace pong::map {
 
         }
 
-        void update_meshes() {
-            for (auto& mshcmp: components_reg.get_types<StaticMeshComponent>()) {
-                // do things
-            }
-        }
+//        void update_meshes() {
+//            for (auto& mshcmp: map_register.get_types<StaticMeshComponent>()) {
+//                 do things
+//            }
+//        }
 
 
 //        auto& get_mesh(RegId id_) {
@@ -67,4 +66,4 @@ namespace pong::map {
     };
 }
 
-#endif //GL_TEST_MAP_LEVEL_H
+#endif //PONG_SRC_PONG_MAP_MAP_LEVEL_H_

@@ -6,7 +6,7 @@
 #define GL_TEST_COMFIG_H
 
 
-#define P_ASSETS_DIR "/assets"
+#define P_CONTENT_DIR "/content"
 #define P_ASSET_EXTENSION ".asset"
 
 #define P_MAPS_DIR "/maps"

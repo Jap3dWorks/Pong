@@ -2,10 +2,10 @@
 // Created by Jordi on 8/16/2022.
 //
 
-#ifndef PONG_SRC_PONG_FILE_DATA_SERIALIZE_FUNCTIONS_H_
-#define PONG_SRC_PONG_FILE_DATA_SERIALIZE_FUNCTIONS_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_SERIAL_FUNCTIONS_H_
+#define PONG_SRC_PONG_SERIALIZER_SERIAL_FUNCTIONS_H_
 #include "Pong/core/geometry_data.h"
-#include "Pong/serial_data/serial_types.h"
+#include "Pong/serializer/serial_types.h"
 #include "Pong/config/config.h"
 #include "Pong/core/material.h"
 #include "Utils/type_conditions.h"
@@ -294,4 +294,4 @@ namespace pong::serializer {
 }
 
 
-#endif //PONG_SRC_PONG_FILE_DATA_SERIALIZE_FUNCTIONS_H_
+#endif //PONG_SRC_PONG_SERIALIZER_SERIAL_FUNCTIONS_H_

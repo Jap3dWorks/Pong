@@ -2,8 +2,8 @@
 // Created by Jordi on 8/16/2022.
 //
 
-#ifndef PONG_SRC_PONG_FILE_DATA_SERIALIZE_TYPES_H_
-#define PONG_SRC_PONG_FILE_DATA_SERIALIZE_TYPES_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_SERIAL_TYPES_H_
+#define PONG_SRC_PONG_SERIALIZER_SERIAL_TYPES_H_
 #include <optional>
 #include <iostream>
 
@@ -18,4 +18,4 @@ namespace pong::serializer {
 }
 
 
-#endif //PONG_SRC_PONG_FILE_DATA_SERIALIZE_TYPES_H_
+#endif //PONG_SRC_PONG_SERIALIZER_SERIAL_TYPES_H_

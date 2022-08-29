@@ -7,8 +7,10 @@
 
 #include "Pong/registers/reg_data_controller.h"
 #include "Pong/components/component.h"
+#include "Pong/components/map_component.h"
 #include "Pong/core/geometry_data.h"
 #include "Pong/core/material.h"
+#include "Pong/map/map.h"
 
 
 namespace pong::engine {
@@ -17,12 +19,16 @@ namespace pong::engine {
     struct location_data_t {};
     struct map_data_t {};
 
+    using GraphicBufferRegister = RegDataController<Mesh, Curve, Material>;
+    using MapBufferRegister = RegDataController<map::Map>;
+
     template<typename T=buffered_data_t>
     struct EngineDataRegister {
-        using type = T;
-
-        RegDataController<Mesh, Curve, Material> graphic_reg{};
+        using Type = T;
+        GraphicBufferRegister graphic_reg{};
+        MapBufferRegister map_reg{};
     };
+
 
     template<typename ...Args>
     struct RegDataLocation {
@@ -39,35 +45,25 @@ namespace pong::engine {
     using MeshDtLocation = RegDataLocation<Mesh>;
     using CurveDtLocation = RegDataLocation<Curve>;
     using MaterialDtLocation = RegDataLocation<Material>;
+    using MapDtLocation = RegDataLocation<map::Map>;
 
     using GraphicRegisterLocation = RegDataController<MeshDtLocation,
                                                       CurveDtLocation,
                                                       MaterialDtLocation>;
 
+    using MapRegisterLocation = RegDataController<MapDtLocation>;
 
     template<>
     struct EngineDataRegister<location_data_t> {
-        using type = location_data_t;
+        using Type = location_data_t;
 
         GraphicRegisterLocation graphic_reg{};
-    };
-
-    using BufferedRegister = EngineDataRegister<buffered_data_t>;
-    using LocationRegister = EngineDataRegister<location_data_t>;
-
-
-    using ComponentDataController = RegDataController<TransformComponent,
-                                                      CameraComponent,
-                                                      StaticMeshComponent>;
-    template<>
-    struct EngineDataRegister<map_data_t> {
-        using type = map_data_t;
-
-        ComponentDataController component_reg{};
+        MapRegisterLocation map_reg{};
 
     };
 
-    using MapRegister = EngineDataRegister<map_data_t>;
+    using BufferedRegisters = EngineDataRegister<buffered_data_t>;
+    using LocationRegisters = EngineDataRegister<location_data_t>;
 
 }
 

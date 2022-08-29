@@ -1,7 +1,7 @@
 #ifndef PONG_SRC_PONG_COMPONENTS_COMPONENT_H_
 #define PONG_SRC_PONG_COMPONENTS_COMPONENT_H_
 
-//#include "Pong/core/actor/actor.h"
+//#include "Pong/core/entity/entity.h"
 //#include "Pong/core/collider.h"
 //#include "Utils/subclasses_map.h"
 //#include "Utils/fixed_address_buffer.h"
@@ -23,7 +23,7 @@
 #include <iostream>
 #include <algorithm>
 
-namespace pong {
+namespace pong::component {
     /**
      *  Component class, an Actor has a list of components, each Component
      *  can contain a custom script you only have to inherit from Component.

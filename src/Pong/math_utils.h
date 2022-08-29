@@ -83,7 +83,7 @@ namespace pong::math {
 
     // vew matrix calculated using euler angles and lookat matrix
         [[nodiscard]] static glm::mat4 get_view_matrix() {
-//            return actor->translation;
+//            return entity->translation;
 //            return glm::lookAt(position, position + front, up);
 
             return {};

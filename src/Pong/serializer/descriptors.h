@@ -2,13 +2,13 @@
 // Created by Jordi on 8/11/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIAL_DATA_DESCRIPTORS_H_
-#define PONG_SRC_PONG_SERIAL_DATA_DESCRIPTORS_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_DESCRIPTORS_H_
+#define PONG_SRC_PONG_SERIALIZER_DESCRIPTORS_H_
 
 #include "Pong/core/geometry_data.h"
 #include "Pong/registers/reg_id.h"
 #include "Pong/core/material.h"
-#include "Pong/serial_data/serializers.h"
+#include "Pong/serializer/serializers.h"
 #include "Utils/type_conditions.h"
 #include "Pong/config/config.h"
 #include "Pong/components/component.h"
@@ -31,16 +31,16 @@
 
 namespace pong::serializer {
 
-    struct ActorData {
+    struct EntityData {
         SERIALIZABLE(
                 FIELD(RegId, parent, 0),
-                FIELD(std::vector<TransformComponent>, transform_component),
-                FIELD(std::vector<CameraComponent>, camera_component),
-                FIELD(std::vector<StaticMeshComponent>, staticmesh_component),
-                FIELD(std::vector<CubemapComponent>, cubemap_component)
+                FIELD(std::vector<pong::component::TransformComponent>, transform_component),
+                FIELD(std::vector<pong::component::CameraComponent>, camera_component),
+                FIELD(std::vector<pong::component::StaticMeshComponent>, staticmesh_component),
+                FIELD(std::vector<pong::component::CubemapComponent>, cubemap_component)
         )
     };
-    IMPL_SERIALIZE(ActorData);
+    IMPL_SERIALIZE(EntityData);
 
     class BaseDescriptor {
     public:
@@ -52,7 +52,7 @@ namespace pong::serializer {
 
     struct AssetData {
         SERIALIZABLE (
-                FIELD(BaseDescriptor::SerializeDataT<ActorData>, actor_data),
+                FIELD(BaseDescriptor::SerializeDataT<EntityData>, actor_data),
                 FIELD(BaseDescriptor::SerializeDataT<Mesh>, mesh_data),
                 FIELD(BaseDescriptor::SerializeDataT<Curve>, curve_data),
                 FIELD(BaseDescriptor::SerializeDataT<Material>, material_data)
@@ -65,7 +65,7 @@ namespace pong::serializer {
     public:
         HeadedData<FileHeader, AssetData> data{};
     public:
-        SerializeDataT<ActorData>& actor_data{data.data.actor_data};
+        SerializeDataT<EntityData>& actor_data{data.data.actor_data};
         SerializeDataT<Mesh>& mesh_data{data.data.mesh_data};
         SerializeDataT<Curve>& curve_data{data.data.curve_data};
         SerializeDataT<Material>& material_data{data.data.material_data};
@@ -78,7 +78,7 @@ namespace pong::serializer {
 
     struct MapData {
         SERIALIZABLE (
-                FIELD(BaseDescriptor::SerializeDataT<ActorData>, actor_data)
+                FIELD(BaseDescriptor::SerializeDataT<EntityData>, actor_data)
         )
     };
     IMPL_SERIALIZE(MapData);
@@ -88,7 +88,7 @@ namespace pong::serializer {
 
     public:
         HeadedData<FileHeader, MapData> data{};
-        SerializeDataT<ActorData>& actor_data{data.data.actor_data};
+        SerializeDataT<EntityData>& actor_data{data.data.actor_data};
     };
 
 
@@ -202,11 +202,11 @@ namespace pong::serializer {
     } \
     }
 
-    IMPL_DESCRIPTOR_DATA(AssetDescriptor, ActorData, actor_data);
+    IMPL_DESCRIPTOR_DATA(AssetDescriptor, EntityData, actor_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Mesh, mesh_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Curve, curve_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Material, material_data);
 
 }
 
-#endif //PONG_SRC_PONG_SERIAL_DATA_DESCRIPTORS_H_
+#endif //PONG_SRC_PONG_SERIALIZER_DESCRIPTORS_H_

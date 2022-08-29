@@ -11,7 +11,7 @@
 #include <memory>
 #include "Pong/render/render.h"
 #include "Pong/core/outputs.h"
-#include "Pong/engine/file_inspector.h"
+#include "Pong/engine/asset_inspector.h"
 #include "Pong/registers/reg_data_controller.h"
 
 #include <GLFW/glfw3.h>
@@ -50,8 +50,9 @@ namespace pong::engine {
         SceneMap scenes{};
         RenderPtr render=nullptr;
 
-        AssetInspector asset_inspector{};
-        BufferedRegister buffered_register{};
+        ContentInspector asset_inspector{};  // inspect asset files
+        BufferedRegisters buffered_register{}; // geos and data
+
 
     private:
         Engine() {
@@ -79,7 +80,7 @@ namespace pong::engine {
 
         void setup() {
             // inspect asset and seg asset ids
-            asset_inspector.collect_asset_files();
+            asset_inspector.collect_files();
             asset_inspector.collect_asset_data();
         }
 

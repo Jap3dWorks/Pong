@@ -2,16 +2,16 @@
 // Created by Jordi on 8/18/2022.
 //
 
-#ifndef GL_TEST_INSPECTOR_H
-#define GL_TEST_INSPECTOR_H
+#ifndef PONG_SRC_PONG_ENGINE_ASSET_INSPECTOR_H_
+#define PONG_SRC_PONG_ENGINE_ASSET_INSPECTOR_H_
 
 #include "Pong/engine/engine_registers.h"
 #include "Pong/config/config.h"
 #include "Pong/registers/reg_data_controller.h"
 #include "Pong/core/geometry_data.h"
 #include "Pong/core/material.h"
-#include "Pong/serial_data/header_data.h"
-#include "Pong/serial_data/descriptors.h"
+#include "Pong/serializer/header_data.h"
+#include "Pong/serializer/descriptors.h"
 #include <string>
 #include <regex>
 #include <iostream>
@@ -25,46 +25,56 @@ namespace pong::engine {
     * in the file system.
     */
 
-    class AssetInspector {
-    public:
-
-
+    class ContentInspector {
     private:
         std::string asset_pattern_{std::string(".*\\") + P_ASSET_EXTENSION + "$"};
-        std::string assets_path_{P_ASSETS_DIR};
+        std::string map_pattern_{std::string(".*\\") + P_ASSET_EXTENSION + "$"};
+        std::string content_path_{P_CONTENT_DIR};
+
         std::regex re_asset_pattern_{asset_pattern_};
+        std::regex re_map_pattern_{map_pattern_};
 
-        std::vector<std::string> collected_files_{};
+        std::vector<std::string> asset_files_{};
+        std::vector<std::string> map_files_{};
 
-        LocationRegister data_location_reg_{};
+        LocationRegisters data_location_reg_{};
 
     public:
-        AssetInspector() = default;
+        ContentInspector() = default;
 
-        AssetInspector(std::string asset_dir, std::string asset_patt) :
-            assets_path_(std::move(asset_dir)),
-            asset_pattern_(std::move(asset_patt)) {
+        ContentInspector(std::string content_path, std::string asset_pattern, std::string map_pattern) :
+            content_path_(std::move(content_path)),
+            asset_pattern_(std::move(asset_pattern)),
+            map_pattern_(std::move(map_pattern)) {
+
             re_asset_pattern_ = std::regex(asset_pattern_);
+            re_map_pattern_ =std::regex(map_pattern_);
+
         }
 
-        void collect_asset_files() {
+        void collect_files() {
             auto inspect = [&](const auto &path_, auto &&inspect) -> void {
                 auto m_ = std::smatch();
                 for (const auto &entry : std::filesystem::directory_iterator(path_)) {
                     if (entry.is_directory()) {
                         inspect(entry.path().c_str(), inspect);
-                    } else if (std::regex_search(entry.path().string(),
+                    }
+                    else if (std::regex_search(entry.path().string(),
                                                  re_asset_pattern_)) {
-                        collected_files_.push_back(entry.path().string());
+                        asset_files_.push_back(entry.path().string());
+                    }
+                    else if(std::regex_search(entry.path().string(),
+                                                re_map_pattern_)) {
+                        map_files_.push_back(entry.path().string());
                     }
                 }
             };
 
-            inspect(assets_path_, inspect);
+            inspect(content_path_, inspect);
         }
 
         void collect_asset_data() {
-            for (const auto &asset_path : collected_files_) {
+            for (const auto &asset_path : asset_files_) {
                 auto descriptor = serializer::AssetDescriptor();
                 pong::serializer::load_headers(descriptor, asset_path.c_str());
 
@@ -92,6 +102,8 @@ namespace pong::engine {
             }
         }
 
+        void collect_maps_data() {}
+
         auto& get_data_location_reg() {
             return data_location_reg_;
         }
@@ -100,4 +112,4 @@ namespace pong::engine {
 
 }
 
-#endif //GL_TEST_INSPECTOR_H
+#endif //PONG_SRC_PONG_ENGINE_ASSET_INSPECTOR_H_

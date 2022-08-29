@@ -2,12 +2,12 @@
 // Created by Jordi on 8/23/2022.
 //
 
-#ifndef PONG_FILEDATA_TESTS_H
-#define PONG_FILEDATA_TESTS_H
+#ifndef PONG_TEST_FILEDATA_TESTS_H_
+#define PONG_TEST_FILEDATA_TESTS_H_
 
-#include "Pong/serial_data/reflectable.h"
-#include "Pong/serial_data/header_data.h"
-#include "Pong/serial_data/serializers.h"
+#include "Pong/serializer/reflectable.h"
+#include "Pong/serializer/header_data.h"
+#include "Pong/serializer/descriptors.h"
 #include "Utils/logger.h"
 
 #include <iostream>
@@ -32,7 +32,7 @@ void test_save_serialize_data() {
     LOG_INFO(pong::serializer::ensure_file_name(description, "Hola"));
     LOG_INFO(pong::serializer::ensure_file_name(description, "Hola.asset"));
 
-    auto elem = pong::serializer::ActorData{{}, {}};
+    auto elem = pong::serializer::EntityData{{}, {}};
 //    description.actor_data.push_back({elem});
     description.actor_data.data.push_back({{}, elem});
 
@@ -63,14 +63,14 @@ void test_save_serialize_plane() {
 
     pong::serializer::save_file(
             odescriptor,
-            "./assets/plane"
+            "./content/plane"
     );
 
     // read plane.asset
     auto idescriptor =  pong::serializer::AssetDescriptor();
     pong::serializer::load_file(
             idescriptor,
-            "./assets/plane");
+            "./content/plane");
 
     assert(!idescriptor.mesh_data.data.empty() && "Data is empty");
 
@@ -86,7 +86,7 @@ void test_load_id_from_file() {
     auto descriptor = pong::serializer::AssetDescriptor();
 
     pong::serializer::load_reg_id<pong::Mesh, decltype(descriptor)>(
-            descriptor, {1}, "./assets/plane"
+            descriptor, {1}, "./content/plane"
             );
 
     for (auto& d: descriptor.mesh_data.data) {
@@ -101,4 +101,4 @@ void test_load_id_from_file() {
 
 
 
-#endif //PONG_FILEDATA_TESTS_H
+#endif //PONG_TEST_FILEDATA_TESTS_H_

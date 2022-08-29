@@ -2,12 +2,12 @@
 // Created by Jordi on 8/21/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIAL_DATA_HEADER_DATA_H_
-#define PONG_SRC_PONG_SERIAL_DATA_HEADER_DATA_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_HEADER_DATA_H_
+#define PONG_SRC_PONG_SERIALIZER_HEADER_DATA_H_
 
-#include "Pong/serial_data/reflectable.h"
-#include "Pong/serial_data/serial_functions.h"
-#include "Pong/serial_data/serial_types.h"
+#include "Pong/serializer/reflectable.h"
+#include "Pong/serializer/serial_functions.h"
+#include "Pong/serializer/serial_types.h"
 #include <vector>
 #include <string>
 #include <type_traits>
@@ -228,4 +228,4 @@ namespace pong::serializer {
 
 }
 
-#endif //PONG_SRC_PONG_SERIAL_DATA_HEADER_DATA_H_
+#endif //PONG_SRC_PONG_SERIALIZER_HEADER_DATA_H_
