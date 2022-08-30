@@ -78,6 +78,12 @@ namespace pong::engine {
                 auto descriptor = serializer::AssetDescriptor();
                 pong::serializer::load_headers(descriptor, asset_path.c_str());
 
+                auto entity_iter = serializer::descriptor_data<
+                    serializer::AssetDescriptor, serializer::EntityData>(descriptor);
+                for (auto &dt: entity_iter) {
+
+                }
+
                 auto mesh_iter = serializer::descriptor_data<
                     serializer::AssetDescriptor, Mesh>(descriptor);
                 for (auto &dt : mesh_iter) {
@@ -97,8 +103,10 @@ namespace pong::engine {
                 auto material_iter = serializer::descriptor_data<
                     serializer::AssetDescriptor, Material>(descriptor);
                 for (auto &dt : material_iter) {
-
                 }
+
+
+
             }
         }
 

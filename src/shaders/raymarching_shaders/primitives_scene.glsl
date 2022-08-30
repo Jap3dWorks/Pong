@@ -181,7 +181,7 @@ vec3 render(in vec3 ro, in vec3 rd, in vec3 ddx_rd, in vec3 ddy_rd) {
         // sun
         #ifdef SUN_LIGHT
         {
-            // TODO: lights from scene
+            // TODO: lights from map
             vec3 lig = normalize(vec3(0.5, 0.4, 0.6));
             vec3 hal = normalize(lig-rd);
             float dif = clamp(dot(nor, lig), 0.0, 1.0);

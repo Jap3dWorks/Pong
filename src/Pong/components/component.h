@@ -8,7 +8,7 @@
 #include "Utils/logger.h"
 #include "Pong/math_utils.h"
 #include "Pong/core/core_vals.h"
-
+#include "Pong/core/parameter_map.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,6 +22,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <unordered_map>
 
 namespace pong::component {
     /**
@@ -75,6 +76,16 @@ namespace pong::component {
 
     struct CubemapComponent : public Component {
         RegId material{};
+    };
+
+    struct PythonComponent : public Component {
+        std::string script_path{};
+        ParameterMap parameters{};
+    };
+
+    struct LuaComponent : public Component {
+        std::string script_path{};
+        ParameterMap parameters{};
     };
 
 }

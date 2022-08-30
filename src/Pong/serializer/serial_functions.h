@@ -9,6 +9,7 @@
 #include "Pong/config/config.h"
 #include "Pong/core/material.h"
 #include "Utils/type_conditions.h"
+
 #include <iostream>
 #include <concepts>
 #include <type_traits>

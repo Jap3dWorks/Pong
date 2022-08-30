@@ -64,9 +64,42 @@ struct variadic_id_t: variadic_id_t<N-1, Args...>{
 template<typename T, typename ...Args>
 struct variadic_id_t<0, T, Args...> {
     static constexpr uint32_t index{0};
-    using type_t = T;
+    using type = T;
 };
 
+
+template<typename ...Args>
+struct TypesStruct  {
+
+    static inline constexpr uint32_t count{sizeof...(Args)};
+
+    template<uint32_t N>
+    using get = variadic_id_t<N, Args...>;
+};
+
+
+template<typename T>
+struct BaseTemplate: public std::false_type {};
+
+template<template<typename ...Args> typename T, typename ...Args>
+struct BaseTemplate<T<Args...>> : public std::true_type {
+
+    template<typename ...args_>
+    using TemplateType = T<args_...>;
+
+    using Types = TypesStruct<Args...>;
+};
+
+
+template<template<typename ...Args> typename T, typename U>
+struct IsTemplatedFrom: public std::false_type {};
+
+template<template<typename ...Args> typename T, typename U>
+struct IsTemplatedFrom<T, T<U>>: public std::true_type {};
+
+
+template<typename U, template<typename ...Args> typename T>
+concept templated_from = IsTemplatedFrom<T, U>::value;
 
 
 #endif //GL_TEST_TYPE_CONDITIONS_H

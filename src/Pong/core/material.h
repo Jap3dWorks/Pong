@@ -1,10 +1,11 @@
-#ifndef PONG_MATERIAL_H
-#define PONG_MATERIAL_H
+#ifndef PONG_SRC_PONG_CORE_MATERIAL_H_
+#define PONG_SRC_PONG_CORE_MATERIAL_H_
 
 #include "Pong/core/shader.h"
 #include "Pong/core/core_vals.h"
 #include "Pong/core/texture.h"
 #include "Pong/registers/reg_id.h"
+#include "Pong/map/map.h"
 
 #include <stb/stb_image.h>
 
@@ -16,7 +17,6 @@
 
 namespace pong {
     class Render;
-    class Map;
 }
 
 namespace pong {
@@ -141,7 +141,7 @@ namespace pong {
                 _mat4_params.insert(std::pair<std::string, glm::mat4>(param, value));
         }
 
-        virtual void update_shader(Render*, Map*) {
+        virtual void update_shader(Render*, map::Map*) {
             update_params();
         }
 
@@ -170,4 +170,4 @@ namespace pong {
     };
 }
 
-#endif // !PONG_MATERIAL_H
+#endif // !PONG_SRC_PONG_CORE_MATERIAL_H_

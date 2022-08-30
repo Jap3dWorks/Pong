@@ -7,15 +7,21 @@
 
 #include "Pong/registers/reg_id.h"
 #include "Pong/registers/reg_data_controller.h"
-#include "Pong/engine/engine_registers.h"
+#include "Utils/type_conditions.h"
 #include <vector>
 
 namespace pong::map {
-    using ComponentRegController = RegDataController<component::TransformComponent,
-                                                     component::CameraComponent,
-                                                     component::StaticMeshComponent>;
+    using EntityComponentsTypes = TypesStruct<component::TransformComponent,
+                                              component::CameraComponent,
+                                              component::StaticMeshComponent>;
 
-    using MapComponentRegController = RegDataController<component::PythonComponent>;
+    using ComponentRegController = RegDataController<EntityComponentsTypes::get<0>::type,
+                                                     EntityComponentsTypes::get<1>::type,
+                                                     EntityComponentsTypes::get<2>::type>;
+
+    using MapComponentsTypes = TypesStruct<component::PythonComponent>;
+    using MapComponentRegController = RegDataController<MapComponentsTypes::get<0>::type>;
+
 
     struct MapRegister {
         ComponentRegController component_reg{};
@@ -23,7 +29,7 @@ namespace pong::map {
     };
 
     struct Map {
-        RegId reg_id{0};
+        RegId reg_id;
         MapRegister map_register{};
         std::vector<RegId> maps;
     };

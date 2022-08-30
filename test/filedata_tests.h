@@ -33,7 +33,7 @@ void test_save_serialize_data() {
     LOG_INFO(pong::serializer::ensure_file_name(description, "Hola.asset"));
 
     auto elem = pong::serializer::EntityData{{}, {}};
-//    description.actor_data.push_back({elem});
+//    description.entity_data.push_back({elem});
     description.actor_data.data.push_back({{}, elem});
 
     pong::serializer::save_file(

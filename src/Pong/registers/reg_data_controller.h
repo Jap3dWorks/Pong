@@ -6,7 +6,7 @@
 #define GL_TEST_REG_DATA_H
 
 #include "sparse_set.h"
-#include "type_reg_map.h"
+#include "Pong/core/parameter_map.h"
 #include "Pong/registers/reg_id.h"
 #include "Pong/components/component.h"
 #include "Utils/type_conditions.h"
@@ -21,7 +21,7 @@ namespace pong {
     /**
      * RegDataController represents conjunction of related classes data.
      * RegDataController manages each class separately using a SparseSets system
-     * (TypeRegMap).
+     * (ParameterMap).
      * e.g all components should be included in the same RegDataController.
      * Also RegDataController use RegId for elements conjunction.
      * RegDataController do not apply any restriction with ids parallelism.
@@ -30,7 +30,7 @@ namespace pong {
     template<typename ...Types>
     class RegDataController {
     private:
-        using reg_data_t = TypeRegMap;
+        using reg_data_t = ParameterMap;
         using id_array_t = RegIdArray<>;
 
         template<Intersects<Types...> comp>

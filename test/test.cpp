@@ -4,6 +4,7 @@
 #include "reg_id_tests.h"
 #include "basic_tests.h"
 #include "filedata_tests.h"
+#include "metap_tests.h"
 
 #include <iostream>
 #include <string>
@@ -23,7 +24,7 @@
 #include "Utils/fixed_address_buffer.h"
 #include "Utils/logger.h"
 #include "Pong/core/command.h"
-#include "Pong/registers/type_reg_map.h"
+#include "Pong/core/parameter_map.h"
 //#include "Pong/core/primitive_component.h"
 //#include "Pong/core/component.h"
 
@@ -391,7 +392,7 @@ struct CompC {
 
 void test_class_map() {
 
-    auto typereg = pong::TypeRegMap();
+    auto typereg = pong::ParameterMap();
     typereg.registry<CompA>();
     typereg.registry<CompB>();
     try {
@@ -453,13 +454,15 @@ int main() {
 //    test_class_reflection();
 
 //    test_save_serialize_data();
-    test_save_serialize_plane();
-    test_load_id_from_file();
+//    test_save_serialize_plane();
+//    test_load_id_from_file();
 
 //    test_variadic_class_access();
 //    test_file_byte_pos();
 
 //    test_char_list_cpy();
+
+    test_tesmplated_from_concept();
 
     return 0;
 }

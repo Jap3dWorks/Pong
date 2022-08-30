@@ -12,6 +12,7 @@
 #include "Utils/type_conditions.h"
 #include "Pong/config/config.h"
 #include "Pong/components/component.h"
+#include "Pong/map/map.h"
 
 #include <concepts>
 #include <iostream>
@@ -27,6 +28,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <unordered_map>
 #include <concepts>
+#include <boost/mpl/range_c.hpp>
+#include <boost/mpl/for_each.hpp>
+#include <unordered_map>
 
 
 namespace pong::serializer {
@@ -34,10 +38,10 @@ namespace pong::serializer {
     struct EntityData {
         SERIALIZABLE(
                 FIELD(RegId, parent, 0),
-                FIELD(std::vector<pong::component::TransformComponent>, transform_component),
-                FIELD(std::vector<pong::component::CameraComponent>, camera_component),
-                FIELD(std::vector<pong::component::StaticMeshComponent>, staticmesh_component),
-                FIELD(std::vector<pong::component::CubemapComponent>, cubemap_component)
+                FIELD(component::TransformComponent, transform_component),
+                FIELD(component::CameraComponent, camera_component),
+                FIELD(component::StaticMeshComponent, staticmesh_component),
+                FIELD(component::CubemapComponent, cubemap_component)
         )
     };
     IMPL_SERIALIZE(EntityData);
@@ -63,7 +67,9 @@ namespace pong::serializer {
     template<typename U>
     class AssetDescriptorT : public BaseDescriptor {
     public:
-        HeadedData<FileHeader, AssetData> data{};
+        using DataType = HeadedData<FileHeader, AssetData>;
+    public:
+        DataType data{};
     public:
         SerializeDataT<EntityData>& actor_data{data.data.actor_data};
         SerializeDataT<Mesh>& mesh_data{data.data.mesh_data};
@@ -78,7 +84,7 @@ namespace pong::serializer {
 
     struct MapData {
         SERIALIZABLE (
-                FIELD(BaseDescriptor::SerializeDataT<EntityData>, actor_data)
+                FIELD(BaseDescriptor::SerializeDataT<EntityData>, entity_data)
         )
     };
     IMPL_SERIALIZE(MapData);
@@ -87,8 +93,10 @@ namespace pong::serializer {
     class MapDescriptorT: public BaseDescriptor {
 
     public:
-        HeadedData<FileHeader, MapData> data{};
-        SerializeDataT<EntityData>& actor_data{data.data.actor_data};
+        using DataType = HeadedData<FileHeader, HeadedDataT<MapData>>;
+    public:
+        DataType data{};
+        SerializeDataT<EntityData>& entity_data{data.data.data.entity_data};
     };
 
 
@@ -206,6 +214,39 @@ namespace pong::serializer {
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Mesh, mesh_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Curve, curve_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Material, material_data);
+
+    IMPL_DESCRIPTOR_DATA(MapDescriptor, MapData, entity_data);
+
+
+    MapDescriptor translate_map(map::Map& map) {
+        auto result = MapDescriptor();
+        result.data.data.header.reg_id = map.reg_id;
+
+        auto temp_dt = std::unordered_map<RegId, component::TransformComponent>;
+
+
+
+        using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
+        boost::mpl::for_each<Range>(
+            [&]<typename I>(I i) constexpr -> void {
+//                data_visitor<MapDescriptor, map::Map, TranslateVisitor, I>(
+//                    result, map.map_register.component_reg, TranslateVisitor(), i
+//                    );
+
+                auto& sparse_set = map.map_register.component_reg.template get_types<
+                    typename map::EntityComponentsTypes::get<I::value>::type>();
+
+                for(auto& reg_id: SparseSetRegIdIter(sparse_set)) {
+
+                    sparse_set.at(reg_id);
+                }
+
+             }
+        );
+
+//        map.map_register.component_reg.get_types<>()
+
+    }
 
 }
 

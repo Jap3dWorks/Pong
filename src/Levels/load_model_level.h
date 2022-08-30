@@ -15,7 +15,7 @@
 #include "Pong/shapes/plane_shape.h"
 #include <vector>
 
-// Load a model scene
+// Load a model map
 class LoadModelLevel : public pong::AbstractLevel {
 protected:
     void _level_setup() override {

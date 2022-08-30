@@ -18,9 +18,9 @@
 namespace pong::map {
 /*
  * MapLevel (provisional name) should manage the current map actors and components
- * And apply changes to any component in the scene.
+ * And apply changes to any component in the map.
  * Provisionaly MapLevel also has all the logic related with send jobs to renderer and
- * update scene each frame.
+ * update map each frame.
  */
 
     class MapLevel {
