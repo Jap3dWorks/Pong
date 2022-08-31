@@ -13,11 +13,16 @@
 namespace pong::map {
     using EntityComponentsTypes = TypesStruct<component::TransformComponent,
                                               component::CameraComponent,
-                                              component::StaticMeshComponent>;
+                                              component::StaticMeshComponent,
+                                              component::CubemapComponent,
+                                              component::PythonComponent>;
 
     using ComponentRegController = RegDataController<EntityComponentsTypes::get<0>::type,
                                                      EntityComponentsTypes::get<1>::type,
-                                                     EntityComponentsTypes::get<2>::type>;
+                                                     EntityComponentsTypes::get<2>::type,
+                                                     EntityComponentsTypes::get<3>::type,
+                                                     EntityComponentsTypes::get<4>::type
+                                                     >;
 
     using MapComponentsTypes = TypesStruct<component::PythonComponent>;
     using MapComponentRegController = RegDataController<MapComponentsTypes::get<0>::type>;

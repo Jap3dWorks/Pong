@@ -41,7 +41,8 @@ namespace pong::serializer {
                 FIELD(component::TransformComponent, transform_component),
                 FIELD(component::CameraComponent, camera_component),
                 FIELD(component::StaticMeshComponent, staticmesh_component),
-                FIELD(component::CubemapComponent, cubemap_component)
+                FIELD(component::CubemapComponent, cubemap_component),
+                FIELD(component::PythonComponent, python_component)
         )
     };
     IMPL_SERIALIZE(EntityData);
@@ -218,35 +219,61 @@ namespace pong::serializer {
     IMPL_DESCRIPTOR_DATA(MapDescriptor, MapData, entity_data);
 
 
-    MapDescriptor translate_map(map::Map& map) {
+    void add_component(EntityData &data, const component::TransformComponent &component) {
+        data.transform_component = component;
+    }
+
+    void add_component(EntityData &data, const component::CameraComponent &component) {
+        data.camera_component = component;
+    }
+
+    void add_component(EntityData &data, const component::StaticMeshComponent &component) {
+        data.staticmesh_component = component;
+    }
+
+    void add_component(EntityData &data, const component::CubemapComponent &component) {
+        data.cubemap_component = component;
+    }
+
+    void add_component(EntityData &data, const component::PythonComponent &component) {
+        data.python_component = component;
+    }
+
+
+    MapDescriptor to_descriptor(map::Map &map) {
         auto result = MapDescriptor();
         result.data.data.header.reg_id = map.reg_id;
 
-        auto temp_dt = std::unordered_map<RegId, component::TransformComponent>;
-
-
+        auto temp_dt = std::unordered_map<RegId, EntityData>();
 
         using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
         boost::mpl::for_each<Range>(
             [&]<typename I>(I i) constexpr -> void {
-//                data_visitor<MapDescriptor, map::Map, TranslateVisitor, I>(
-//                    result, map.map_register.component_reg, TranslateVisitor(), i
-//                    );
-
                 auto& sparse_set = map.map_register.component_reg.template get_types<
                     typename map::EntityComponentsTypes::get<I::value>::type>();
 
                 for(auto& reg_id: SparseSetRegIdIter(sparse_set)) {
-
-                    sparse_set.at(reg_id);
+                    auto value = sparse_set.at(reg_id);
+                    if (!temp_dt.contains(reg_id)) {
+                        temp_dt[reg_id] = {};
+                    }
+                    add_component(temp_dt[reg_id], value);
                 }
-
              }
         );
 
-//        map.map_register.component_reg.get_types<>()
+        for (auto &p : temp_dt) {
+            result.entity_data.data.push_back(
+                {{p.first}, p.second}
+            );
+        }
+
+        return result;
 
     }
+
+
+
 
 }
 

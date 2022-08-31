@@ -20,6 +20,10 @@ namespace pong {
 
         IdType id{0};
 
+//        RegId()=default;
+        ~RegId()=default;
+//        RegId(IdType id_p) noexcept : id(id_p) {}
+
         static inline constexpr RegId from_index(IndexType index) {
             return RegId{index + 1};
         }
@@ -318,4 +322,12 @@ namespace pong {
 
 
 }
+
+template<>
+struct std::hash <pong::RegId> {
+    std::size_t operator()(const pong::RegId& reg_id) const noexcept {
+        return std::hash<pong::RegId::IdType>()(reg_id.id);
+    }
+};
+
 #endif //PONG_REG_ID_H_
