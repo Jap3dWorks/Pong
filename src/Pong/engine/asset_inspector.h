@@ -12,6 +12,9 @@
 #include "Pong/core/material.h"
 #include "Pong/serializer/header_data.h"
 #include "Pong/serializer/descriptors.h"
+#include "Pong/map/map_logic.h"
+#include "Pong/map/map.h"
+
 #include <string>
 #include <regex>
 #include <iostream>
@@ -69,7 +72,6 @@ namespace pong::engine {
                     }
                 }
             };
-
             inspect(content_path_, inspect);
         }
 
@@ -104,9 +106,18 @@ namespace pong::engine {
                     serializer::AssetDescriptor, Material>(descriptor);
                 for (auto &dt : material_iter) {
                 }
+            }
+        }
 
+        void collect_map_data() {
+            for (auto &map_path : map_files_) {
+                auto descriptor = serializer::MapDescriptor();
+                pong::serializer::load_headers(descriptor, map_path.c_str());
 
-
+                data_location_reg_.map_reg.insert_type<MapDtLocation>(
+                    descriptor.map_data.header.reg_id,
+                    {descriptor.map_data.header.reg_id, map_path}
+                );
             }
         }
 
@@ -115,8 +126,14 @@ namespace pong::engine {
         auto& get_data_location_reg() {
             return data_location_reg_;
         }
-
     };
+
+    map::Map load_location(MapDtLocation & map_location) {
+        auto descriptor = serializer::MapDescriptor();
+        serializer::load_file(descriptor, map_location.file_path.c_str());
+
+        return from_descriptor(descriptor);
+    }
 
 }
 

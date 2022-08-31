@@ -17,25 +17,19 @@ namespace pong::map {
                                               component::CubemapComponent,
                                               component::PythonComponent>;
 
-    using ComponentRegController = RegDataController<EntityComponentsTypes::get<0>::type,
-                                                     EntityComponentsTypes::get<1>::type,
-                                                     EntityComponentsTypes::get<2>::type,
-                                                     EntityComponentsTypes::get<3>::type,
-                                                     EntityComponentsTypes::get<4>::type
+    using EntityComponentRegController = RegDataController<EntityComponentsTypes::get<0>::type,
+                                                           EntityComponentsTypes::get<1>::type,
+                                                           EntityComponentsTypes::get<2>::type,
+                                                           EntityComponentsTypes::get<3>::type,
+                                                           EntityComponentsTypes::get<4>::type
                                                      >;
-
-    using MapComponentsTypes = TypesStruct<component::PythonComponent>;
-    using MapComponentRegController = RegDataController<MapComponentsTypes::get<0>::type>;
-
-
-    struct MapRegister {
-        ComponentRegController component_reg{};
-        MapComponentRegController map_component_reg{};
-    };
 
     struct Map {
         RegId reg_id;
-        MapRegister map_register{};
+        EntityComponentRegController entity_reg{};
+
+        component::PythonComponent python_component{};
+
         std::vector<RegId> maps;
     };
 

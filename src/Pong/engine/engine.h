@@ -11,6 +11,7 @@
 #include <memory>
 #include "Pong/render/render.h"
 #include "Pong/core/outputs.h"
+#include "Pong/serializer/descriptors.h"
 #include "Pong/engine/asset_inspector.h"
 #include "Pong/registers/reg_data_controller.h"
 
@@ -42,7 +43,11 @@ namespace pong::engine {
         using EngineUniquePtr = std::unique_ptr<Engine>;
 
     private:
+
+        map::Map map_;
+
         inline static EngineUniquePtr instance_{};
+        bool close_ = false;
 
     protected:
         OutputMap outputs{};
@@ -76,12 +81,22 @@ namespace pong::engine {
             outputs[name] = std::move(output);
         }
 
-        void run() {}
+        void run() {
+            while(!close_) {
+
+            }
+        }
 
         void setup() {
             // inspect asset and seg asset ids
             asset_inspector.collect_files();
             asset_inspector.collect_asset_data();
+            asset_inspector.collect_map_data();
+
+            auto map_location = asset_inspector.get_data_location_reg().map_reg.get_type<MapDtLocation>(RegId{1});
+
+            map_ = load_location(map_location);
+
         }
 
         const auto& get_data_location_reg() {
@@ -91,8 +106,11 @@ namespace pong::engine {
         auto& get_buffered_register() {
             return buffered_register;
         }
-
     };
+
+
+
+
 
     OutputTemplate(typename ...Args)
     inline T* create_output(std::string name, Args ...args) {

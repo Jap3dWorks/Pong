@@ -38,11 +38,11 @@ namespace pong::serializer {
     struct EntityData {
         SERIALIZABLE(
                 FIELD(RegId, parent, 0),
-                FIELD(component::TransformComponent, transform_component),
-                FIELD(component::CameraComponent, camera_component),
-                FIELD(component::StaticMeshComponent, staticmesh_component),
-                FIELD(component::CubemapComponent, cubemap_component),
-                FIELD(component::PythonComponent, python_component)
+                FIELD(std::optional<component::TransformComponent>, transform_component),
+                FIELD(std::optional<component::CameraComponent>, camera_component),
+                FIELD(std::optional<component::StaticMeshComponent>, staticmesh_component),
+                FIELD(std::optional<component::CubemapComponent>, cubemap_component),
+                FIELD(std::optional<component::PythonComponent>, python_component)
         )
     };
     IMPL_SERIALIZE(EntityData);
@@ -85,10 +85,12 @@ namespace pong::serializer {
 
     struct MapData {
         SERIALIZABLE (
+                FIELD(std::optional<component::PythonComponent>, python_component),
                 FIELD(BaseDescriptor::SerializeDataT<EntityData>, entity_data)
         )
     };
     IMPL_SERIALIZE(MapData);
+
 
     template<typename U>
     class MapDescriptorT: public BaseDescriptor {
@@ -97,6 +99,8 @@ namespace pong::serializer {
         using DataType = HeadedData<FileHeader, HeadedDataT<MapData>>;
     public:
         DataType data{};
+
+        HeadedDataT<MapData>& map_data{data.data};
         SerializeDataT<EntityData>& entity_data{data.data.data.entity_data};
     };
 
@@ -215,29 +219,40 @@ namespace pong::serializer {
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Mesh, mesh_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Curve, curve_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Material, material_data);
+    IMPL_DESCRIPTOR_DATA(MapDescriptor, EntityData, entity_data);
+//    IMPL_DESCRIPTOR_DATA(MapDescriptor, MapData, map_data);
 
-    IMPL_DESCRIPTOR_DATA(MapDescriptor, MapData, entity_data);
+
+#define IMPL_ADD_COMPONENT(data_type, component_type, member) \
+    void add_component(data_type &data, const component_type &component) { \
+    data.member = component;\
+}
+
+    IMPL_ADD_COMPONENT(EntityData, component::TransformComponent, transform_component)
+    IMPL_ADD_COMPONENT(EntityData, component::CameraComponent, camera_component)
+    IMPL_ADD_COMPONENT(EntityData, component::StaticMeshComponent, staticmesh_component)
+    IMPL_ADD_COMPONENT(EntityData, component::CubemapComponent, cubemap_component)
+    IMPL_ADD_COMPONENT(EntityData, component::PythonComponent, python_component)
 
 
-    void add_component(EntityData &data, const component::TransformComponent &component) {
-        data.transform_component = component;
-    }
+    template<typename T, typename U>
+    struct get_component;
 
-    void add_component(EntityData &data, const component::CameraComponent &component) {
-        data.camera_component = component;
-    }
+#define IMPL_GET_COMPONENT(data_type, component_type, member) \
+    template<> \
+    struct get_component<data_type, component_type> {         \
+        using DataType = data_type;\
+        using ComponentType = component_type; \
+        static inline std::optional<ComponentType> get(const DataType &data_type) { \
+            return data_type.member; \
+        } \
+    };
 
-    void add_component(EntityData &data, const component::StaticMeshComponent &component) {
-        data.staticmesh_component = component;
-    }
-
-    void add_component(EntityData &data, const component::CubemapComponent &component) {
-        data.cubemap_component = component;
-    }
-
-    void add_component(EntityData &data, const component::PythonComponent &component) {
-        data.python_component = component;
-    }
+    IMPL_GET_COMPONENT(EntityData, component::TransformComponent, transform_component)
+    IMPL_GET_COMPONENT(EntityData, component::CameraComponent, camera_component)
+    IMPL_GET_COMPONENT(EntityData, component::PythonComponent, python_component)
+    IMPL_GET_COMPONENT(EntityData, component::StaticMeshComponent, staticmesh_component)
+    IMPL_GET_COMPONENT(EntityData, component::CubemapComponent, cubemap_component)
 
 
     MapDescriptor to_descriptor(map::Map &map) {
@@ -249,7 +264,7 @@ namespace pong::serializer {
         using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
         boost::mpl::for_each<Range>(
             [&]<typename I>(I i) constexpr -> void {
-                auto& sparse_set = map.map_register.component_reg.template get_types<
+                auto& sparse_set = map.entity_reg.template get_types<
                     typename map::EntityComponentsTypes::get<I::value>::type>();
 
                 for(auto& reg_id: SparseSetRegIdIter(sparse_set)) {
@@ -272,6 +287,39 @@ namespace pong::serializer {
 
     }
 
+    map::Map from_descriptor(MapDescriptor & descriptor) {
+        auto result = map::Map();
+        result.reg_id = descriptor.map_data.header.reg_id;
+        using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
+
+        for (auto& dt: descriptor_data<MapDescriptor, EntityData>(descriptor)) {
+            auto reg_id = dt.header.reg_id;
+
+            auto entity = dt.data;
+
+            boost::mpl::for_each<Range>(
+                [&]<typename I>(I i) constexpr -> void {
+                    auto component = get_component<
+                        EntityData,
+                        typename map::EntityComponentsTypes::get<I::value>::type
+                    >::get(entity);
+
+                    if (component) {
+                        result.entity_reg.template insert_type<
+                            typename decltype(component)::value_type>(
+                            reg_id, component.value()
+                        );
+                    }
+                }
+            );
+        }
+
+        if (descriptor.map_data.data.python_component) {
+            result.python_component = descriptor.map_data.data.python_component.value();
+        }
+
+        return result;
+    }
 
 
 

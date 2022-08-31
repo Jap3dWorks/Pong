@@ -68,8 +68,6 @@ namespace pong::engine {
     using BufferedRegisters = EngineDataRegister<buffered_data_t>;
     using LocationRegisters = EngineDataRegister<location_data_t>;
 
-
-
 }
 
 

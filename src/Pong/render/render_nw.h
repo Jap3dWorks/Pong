@@ -7,7 +7,7 @@
 
 #include "Pong/registers/reg_id.h"
 #include "Pong/core/graphic_flags.h"
-#include "Pong/map/map_level.h"
+#include "Pong/map/map_logic.h"
 #include "Pong/render/render_queue.h"
 #include <vector>
 #include <queue>

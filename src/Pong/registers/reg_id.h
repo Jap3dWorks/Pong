@@ -310,16 +310,6 @@ namespace pong {
     };
 
 
-//    template<typename ...Types>
-//    struct RegIdCollection {
-//        inline static constexpr RegIdArray<> reg_id_array_{};
-//
-//        inline static auto& get() {
-//            return reg_id_array_;
-//        }
-//
-//    };
-
 
 }
 

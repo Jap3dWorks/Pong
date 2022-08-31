@@ -2,8 +2,8 @@
 // Created by Jordi on 8/4/2022.
 //
 
-#ifndef GL_TEST_REG_DATA_H
-#define GL_TEST_REG_DATA_H
+#ifndef PONG_SRC_PONG_REGISTERS_REG_DATA_CONTROLLER_H_
+#define PONG_SRC_PONG_REGISTERS_REG_DATA_CONTROLLER_H_
 
 #include "sparse_set.h"
 #include "Pong/core/parameter_map.h"
@@ -72,9 +72,16 @@ namespace pong {
         }
 
         template<Intersects<Types...> type_>
-        constexpr auto& get_type(RegId reg_id) const {
+        constexpr const auto& get_type(RegId reg_id) const {
             return reg_data_.template get<data_t<type_>>().at(
                     reg_id
+            );
+        }
+
+        template<Intersects<Types...> type_>
+        auto& get_type(RegId reg_id) {
+            return reg_data_.template get<data_t<type_>>().at(
+                reg_id
             );
         }
 
@@ -85,7 +92,18 @@ namespace pong {
             }
 
             reg_data_.template get<data_t<type_>>().insert(
-                    reg_id, std::forward<type_>(object_)
+                reg_id, std::forward<type_>(object_)
+            );
+        }
+
+        template<Intersects<Types...> type_>
+        auto insert_type(RegId reg_id, const type_ &object_) {
+            if (!id_array_.contains(reg_id)) {
+                id_array_.insert(reg_id);
+            }
+
+            reg_data_.template get<data_t<type_>>().insert(
+                reg_id, object_
             );
         }
 
@@ -97,4 +115,4 @@ namespace pong {
 }
 
 
-#endif //GL_TEST_REG_DATA_H
+#endif //PONG_SRC_PONG_REGISTERS_REG_DATA_CONTROLLER_H_

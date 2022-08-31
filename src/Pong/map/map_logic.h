@@ -2,8 +2,8 @@
 // Created by Jordi on 8/8/2022.
 //
 
-#ifndef PONG_SRC_PONG_MAP_MAP_LEVEL_H_
-#define PONG_SRC_PONG_MAP_MAP_LEVEL_H_
+#ifndef PONG_SRC_PONG_MAP_MAP_LOGIC_H_
+#define PONG_SRC_PONG_MAP_MAP_LOGIC_H_
 
 #include "Pong/registers/reg_data_controller.h"
 #include "Pong/engine/engine.h"
@@ -17,13 +17,13 @@
 
 namespace pong::map {
 /*
- * MapLevel (provisional name) should manage the current map actors and components
+ * MapLogic (provisional name) should manage the current map actors and components
  * And apply changes to any component in the map.
- * Provisionaly MapLevel also has all the logic related with send jobs to renderer and
+ * Provisionaly MapLogic also has all the logic related with send jobs to renderer and
  * update map each frame.
  */
 
-    class MapLevel {
+    class MapLogic {
     private:
         std::reference_wrapper<RenderQueueSubmitter> submitter_;
 
@@ -32,7 +32,7 @@ namespace pong::map {
         virtual void setup() {}
 
         void start() {
-            // auto& registry = map_register.get_reg_data();
+            // auto& registry = entity_reg.get_reg_data();
             // registry.registry<>();
             // Build here views or gruops, e.g staticMesh with transp materials and transforms
             // staticMesh with opaque materials and transforms
@@ -52,7 +52,7 @@ namespace pong::map {
         }
 
 //        void update_meshes() {
-//            for (auto& mshcmp: map_register.get_types<StaticMeshComponent>()) {
+//            for (auto& mshcmp: entity_reg.get_types<StaticMeshComponent>()) {
 //                 do things
 //            }
 //        }
@@ -66,4 +66,4 @@ namespace pong::map {
     };
 }
 
-#endif //PONG_SRC_PONG_MAP_MAP_LEVEL_H_
+#endif //PONG_SRC_PONG_MAP_MAP_LOGIC_H_
