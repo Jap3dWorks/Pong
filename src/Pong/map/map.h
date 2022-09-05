@@ -34,4 +34,5 @@ namespace pong::map {
     };
 
 }
+
 #endif //PONG_SRC_PONG_MAP_MAP_H_

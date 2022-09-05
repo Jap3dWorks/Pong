@@ -287,39 +287,39 @@ namespace pong::serializer {
 
     }
 
-    map::Map from_descriptor(MapDescriptor & descriptor) {
-        auto result = map::Map();
-        result.reg_id = descriptor.map_data.header.reg_id;
-        using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
-
-        for (auto& dt: descriptor_data<MapDescriptor, EntityData>(descriptor)) {
-            auto reg_id = dt.header.reg_id;
-
-            auto entity = dt.data;
-
-            boost::mpl::for_each<Range>(
-                [&]<typename I>(I i) constexpr -> void {
-                    auto component = get_component<
-                        EntityData,
-                        typename map::EntityComponentsTypes::get<I::value>::type
-                    >::get(entity);
-
-                    if (component) {
-                        result.entity_reg.template insert_type<
-                            typename decltype(component)::value_type>(
-                            reg_id, component.value()
-                        );
-                    }
-                }
-            );
-        }
-
-        if (descriptor.map_data.data.python_component) {
-            result.python_component = descriptor.map_data.data.python_component.value();
-        }
-
-        return result;
-    }
+//    map::Map from_descriptor(MapDescriptor & descriptor) {
+//        auto result = map::Map();
+//        result.reg_id = descriptor.map_data.header.reg_id;
+//        using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
+//
+//        for (auto& dt: descriptor_data<MapDescriptor, EntityData>(descriptor)) {
+//            auto reg_id = dt.header.reg_id;
+//
+//            auto entity = dt.data;
+//
+//            boost::mpl::for_each<Range>(
+//                [&]<typename I>(I i) constexpr -> void {
+//                    auto component = get_component<
+//                        EntityData,
+//                        typename map::EntityComponentsTypes::get<I::value>::type
+//                    >::get(entity);
+//
+//                    if (component) {
+//                        result.entity_reg.template insert_type<
+//                            typename decltype(component)::value_type>(
+//                            reg_id, component.value()
+//                        );
+//                    }
+//                }
+//            );
+//        }
+//
+//        if (descriptor.map_data.data.python_component) {
+//            result.python_component = descriptor.map_data.data.python_component.value();
+//        }
+//
+//        return result;
+//    }
 
 
 

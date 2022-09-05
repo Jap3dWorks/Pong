@@ -10,7 +10,7 @@
 #include <iostream>
 #include <memory>
 #include <exception>
-#include <optional>
+//#include <optional>
 
 
 namespace pong {
@@ -105,7 +105,7 @@ namespace pong {
                 std::string class_name = typeid(reg_t_).name();
                 auto hash_name = class_name + "__" + param_name;
 
-                return std::hash<decltype(hash_name)>()(hash_name);
+                return std::hash<std::string>()(hash_name);
             }
         }
 
@@ -115,6 +115,7 @@ namespace pong {
                     "Type already registered in ParameterMap."
                 );
             }
+            return false;
         }
 
     public:
@@ -140,9 +141,12 @@ namespace pong {
         }
 
         template<typename reg_t_>
-        inline auto &get(const std::string &param_name="") {
-            return *(static_cast<reg_t_ *>(_data_map[hash<reg_t_>(param_name)].get()->get()));
+        inline auto &get() {
+            return *(static_cast<reg_t_ *>(_data_map[hash<reg_t_>()].get()->get()));
         }
+
     };
+
 }
+
 #endif //PONG_SRC_PONG_REGISTERS_PARAMETER_MAP_H_

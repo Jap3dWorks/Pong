@@ -131,8 +131,8 @@ namespace pong::engine {
     map::Map load_location(MapDtLocation & map_location) {
         auto descriptor = serializer::MapDescriptor();
         serializer::load_file(descriptor, map_location.file_path.c_str());
-
-        return from_descriptor(descriptor);
+        return{};
+//        return from_descriptor(descriptor);
     }
 
 }

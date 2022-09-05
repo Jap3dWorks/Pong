@@ -13,6 +13,7 @@
 #include <exception>
 #include <optional>
 #include <type_traits>
+#include <algorithm>
 
 // https://www.geeksforgeeks.org/sparse-set/
 
@@ -60,6 +61,8 @@ namespace pong {
         using denset_set_index = std::vector<index_type>;
 
         using sparse_value_type = std::optional<index_type>;
+
+//        using sparse_value_type = index_type;
         using sparse_set = std::vector<sparse_value_type>;
         using sparse_set_class = SparseSet<Type_>;
 
@@ -98,11 +101,13 @@ namespace pong {
         sparse_set_class &operator=(sparse_set_class &&other) noexcept {
             dense_set_ = std::move(other.dense_set_);
             sparse_set_ = std::move(other.sparse_set_);
+            return *this;
         }
 
     private:
         inline void ensure_sparse_size_(index_type index) {
-            if (index > sparse_set_.max_size() - 1) {
+            auto l = sparse_set_.size();
+            if (index > std::min(size_t{0}, sparse_set_.size() - 1)) {
                 sparse_set_.resize(index + 1);
             }
         }
@@ -136,7 +141,9 @@ namespace pong {
             auto dense_position = size();
             dense_set_.push_back(value);
             dense_set_index_.push_back(index);
-            sparse_set_[index] = dense_position;
+
+            auto l = sparse_set_.size();
+            sparse_set_[index] = {dense_position};
 
             dense_set_[dense_position];
 
@@ -179,7 +186,7 @@ namespace pong {
             dense_set_index_[erase_pos.dense_pos] =
                     std::move(dense_set_index_[back_pos.dense_pos]);
 
-            sparse_set_[back_pos.sparse_pos] = erase_pos.dense_pos;
+            sparse_set_[back_pos.sparse_pos] = {erase_pos.dense_pos};
 
             sparse_set_[erase_pos.sparse_pos] = std::nullopt;
             ensure_dense_size_(temp_size - 1);

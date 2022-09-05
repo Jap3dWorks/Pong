@@ -13,9 +13,9 @@
 #include <string>
 
 
-void test_len(const char value[]) {
-    LOG_INFO("Len "<< (sizeof(value) / sizeof(char)) );
-}
+//void test_len(const char value[]) {
+//    LOG_INFO("Len "<< (sizeof(value) / sizeof(char)) );
+//}
 
 template<typename T>
 struct TestTemp {
@@ -46,7 +46,7 @@ void test_char_list_cpy() {
     auto str = std::string(namer);
     LOG_INFO("as str: " << str);
 
-    test_len(namer);
+//    test_len(namer);
 
     TestTemp<decltype(namer)>::func(namer);
 

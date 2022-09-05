@@ -27,13 +27,14 @@ namespace pong {
      * RegDataController do not apply any restriction with ids parallelism.
      * This behaviour its ok with Components, but is the desired behaviour between shapes and meshes?.
      * */
-    template<typename ...Types>
+//    template<typename ...Types>
     class RegDataController {
     private:
         using reg_data_t = ParameterMap;
         using id_array_t = RegIdArray<>;
 
-        template<Intersects<Types...> comp>
+//        template<Intersects<Types...> comp>
+        template<typename comp>
         using data_t = SparseSet<comp>;
 
     private:
@@ -41,9 +42,11 @@ namespace pong {
         id_array_t id_array_{};
 
     public:
-        RegDataController() {
-            (reg_data_.registry<Types>(), ...);
-    }
+//        RegDataController() {
+//            (reg_data_.registry<Types>(), ...);
+//        }
+
+        RegDataController() = default;
 
         auto& get_reg_data() noexcept {
             return reg_data_;
@@ -60,7 +63,8 @@ namespace pong {
             return id_array_.create();
         }
 
-        template<Intersects<Types...> type_>
+//        template<Intersects<Types...> type_>
+        template<typename type_>
         auto erase_type(RegId reg_id) {
             if (id_array_.contains(reg_id)) {
                 id_array_.erase(reg_id);
@@ -71,21 +75,24 @@ namespace pong {
             );
         }
 
-        template<Intersects<Types...> type_>
+//        template<Intersects<Types...> type_>
+        template<typename type_>
         constexpr const auto& get_type(RegId reg_id) const {
             return reg_data_.template get<data_t<type_>>().at(
                     reg_id
             );
         }
 
-        template<Intersects<Types...> type_>
+//        template<Intersects<Types...> type_>
+        template<typename type_>
         auto& get_type(RegId reg_id) {
             return reg_data_.template get<data_t<type_>>().at(
                 reg_id
             );
         }
 
-        template<Intersects<Types...> type_>
+//        template<Intersects<Types...> type_>
+        template<typename type_>
         auto insert_type(RegId reg_id, type_&& object_) {
             if (!id_array_.contains(reg_id)) {
                 id_array_.insert(reg_id);
@@ -96,7 +103,8 @@ namespace pong {
             );
         }
 
-        template<Intersects<Types...> type_>
+//        template<Intersects<Types...> type_>
+        template<typename type_>
         auto insert_type(RegId reg_id, const type_ &object_) {
             if (!id_array_.contains(reg_id)) {
                 id_array_.insert(reg_id);
@@ -107,10 +115,19 @@ namespace pong {
             );
         }
 
-        template<Intersects<Types...> type_>
+//        template<Intersects<Types...> type_>
+        template<typename type_>
         constexpr auto& get_types() {
             return reg_data_.template get<data_t<type_>>();
         }
+
+        template<typename type_>
+        constexpr void reg_type() {
+            if (!reg_data_.template contains<type_>()) {
+                reg_data_.registry<data_t<type_>>();
+            }
+        }
+
     };
 }
 

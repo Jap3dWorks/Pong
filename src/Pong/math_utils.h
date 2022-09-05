@@ -62,8 +62,8 @@ namespace pong::math {
 	{
 	    for (length_t i = 0; i < 3; i++)
 	    {
-		scale[i] *= static_cast<T>(-1);
-		Row[i] *= static_cast<T>(-1);
+		scale[i] *= static_cast<N>(-1);
+		Row[i] *= static_cast<N>(-1);
 	    }
 	}
 #endif

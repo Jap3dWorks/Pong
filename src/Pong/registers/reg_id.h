@@ -2,11 +2,11 @@
 // Created by Jordi on 8/8/2022.
 //
 
-#ifndef PONG_REG_ID_H_
-#define PONG_REG_ID_H_
+#ifndef PONG_SRC_PONG_REGISTERS_REG_ID_H_
+#define PONG_SRC_PONG_REGISTERS_REG_ID_H_
 
-#include<iostream>
-#include<unordered_set>
+#include <iostream>
+#include <unordered_set>
 #include <queue>
 #include <cassert>
 #include <array>
@@ -21,7 +21,7 @@ namespace pong {
         IdType id{0};
 
 //        RegId()=default;
-        ~RegId()=default;
+//        ~RegId()=default;
 //        RegId(IdType id_p) noexcept : id(id_p) {}
 
         static inline constexpr RegId from_index(IndexType index) {
@@ -91,10 +91,10 @@ namespace pong {
     template<size_t MAX=4096>
     class StaticSparseSet {
     public:
-        using index_type = RegId::IndexType;
+        using IndexType = RegId::IndexType;
     private:
-        index_type dense_[MAX]{0};
-        index_type sparse_[MAX]{0};
+        IndexType dense_[MAX]{0};
+        IndexType sparse_[MAX]{0};
         uint8_t values_[MAX]{0};
         size_t size_{0};
         size_t highest_{0};
@@ -104,7 +104,7 @@ namespace pong {
 
         DECLARE_ASSERT_MAX_SIZE(MAX);
 
-        inline auto constexpr insert(index_type index) noexcept {
+        inline auto constexpr insert(IndexType index) noexcept {
             if (!contains(index)) {
                 sparse_[index] = size_;
                 dense_[size_]=index;
@@ -123,7 +123,7 @@ namespace pong {
             }
         }
 
-        inline auto constexpr erase(index_type index) noexcept {
+        inline auto constexpr erase(IndexType index) noexcept {
             if (contains(index)) {
                 auto dense_id = sparse_[index];
                 dense_[dense_id] = dense_[size_ - 1];
@@ -138,7 +138,7 @@ namespace pong {
             }
         }
 
-        [[nodiscard]] inline auto constexpr contains(index_type index) const noexcept {
+        [[nodiscard]] inline auto constexpr contains(IndexType index) const noexcept {
 //            ASSERT_MAX_SIZE(index);
             if (values_[index] != 0) {
                 return true;
@@ -191,8 +191,8 @@ namespace pong {
     template<size_t MAX=4096>
     class RegIdArray {
     private:
-        StaticSparseSet<MAX> indices_free{};
-        StaticSparseSet<MAX> indices_valid{};
+        StaticSparseSet<MAX> indices_free_{};
+        StaticSparseSet<MAX> indices_valid_{};
 
     public:
 
@@ -202,14 +202,14 @@ namespace pong {
 
 
         inline auto create() {
-            ASSERT_MAX_SIZE(indices_valid.size());
+            ASSERT_MAX_SIZE(indices_valid_.size());
 
-            auto index = indices_free.get();
-            indices_free.erase(index);
-            indices_valid.insert(index);
+            auto index = indices_free_.get();
+            indices_free_.erase(index);
+            indices_valid_.insert(index);
 
-            if (index == indices_valid.highest()) {
-                indices_free.insert(indices_valid.highest() + 1);
+            if (index == indices_valid_.highest()) {
+                indices_free_.insert(indices_valid_.highest() + 1);
             }
 
             return RegId::from_index(index);
@@ -219,18 +219,18 @@ namespace pong {
             ASSERT_MAX_SIZE(index);
 
             if (!contains(index)) {
-                auto temp_highest = indices_valid.highest();
-                indices_valid.insert(index);
+                auto temp_highest = indices_valid_.highest();
+                indices_valid_.insert(index);
 
-                if (indices_free.contains(index)) {
-                    indices_free.erase(index);
+                if (indices_free_.contains(index)) {
+                    indices_free_.erase(index);
                 }
 
-                if (temp_highest < indices_valid.highest()) {
-                    for (size_t i = temp_highest + 2; i < indices_valid.highest(); ++i) {
-                        indices_free.insert(i);
+                if (temp_highest < indices_valid_.highest()) {
+                    for (size_t i = temp_highest + 2; i < indices_valid_.highest(); ++i) {
+                        indices_free_.insert(i);
                     }
-                    indices_free.insert(index + 1);
+                    indices_free_.insert(index + 1);
                 }
             }
         }
@@ -241,13 +241,13 @@ namespace pong {
 
 
         inline auto constexpr erase(RegId::IndexType index) noexcept {
-            indices_valid.erase(index);
-            indices_free.insert(index);
+            indices_valid_.erase(index);
+            indices_free_.insert(index);
         }
 
         inline auto constexpr erase(RegId index) noexcept {
-            indices_valid.erase(index.index());
-            indices_free.insert(index.index());
+            indices_valid_.erase(index.index());
+            indices_free_.insert(index.index());
         }
 
         [[nodiscard]] inline auto constexpr contains(RegId reg_id) const noexcept {
@@ -255,7 +255,7 @@ namespace pong {
         }
 
         [[nodiscard]] inline auto constexpr contains(RegId::IndexType index) const noexcept {
-            return indices_valid.contains(index);
+            return indices_valid_.contains(index);
         }
 
         [[nodiscard]] inline auto constexpr max_size() const noexcept  {
@@ -263,49 +263,49 @@ namespace pong {
         }
 
         [[nodiscard]] inline auto constexpr size() const noexcept {
-            return indices_valid.size();
+            return indices_valid_.size();
         }
 
         struct Iterator {
-            RegId::IndexType * ptr_;
+            RegId::IndexType * ptr;
 
             RegId operator*() {
-                return RegId::from_index(*ptr_);
+                return RegId::from_index(*ptr);
             }
 
             Iterator& operator++ () {
-                ++ptr_;
+                ++ptr;
                 return *this;
             }
 
             Iterator operator++ (int) {
                 auto temp = *this;
-                ++ptr_;
+                ++ptr;
                 return temp;
             }
 
             Iterator& operator-- () {
-                --ptr_;
+                --ptr;
                 return *this;
             }
 
             Iterator operator-- (int) {
                 auto temp = *this;
-                --ptr_;
+                --ptr;
                 return temp;
             }
 
             bool operator==(const Iterator& other) {
-                return ptr_ == other.ptr_;
+                return ptr == other.ptr;
             }
         };
 
         [[nodiscard]] inline auto constexpr begin() const noexcept {
-            return RegIdArray::Iterator{indices_valid.begin()};
+            return RegIdArray::Iterator{indices_valid_.begin()};
         }
 
         [[nodiscard]] inline auto constexpr end() const noexcept {
-            return RegIdArray::Iterator{indices_valid.end()};
+            return RegIdArray::Iterator{indices_valid_.end()};
         }
     };
 
@@ -320,4 +320,4 @@ struct std::hash <pong::RegId> {
     }
 };
 
-#endif //PONG_REG_ID_H_
+#endif //PONG_SRC_PONG_REGISTERS_REG_ID_H_
