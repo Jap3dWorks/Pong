@@ -9,13 +9,16 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <GLFW/glfw3.h>
+
 #include "Pong/render/render.h"
 #include "Pong/core/outputs.h"
 #include "Pong/serializer/descriptors.h"
 #include "Pong/engine/asset_inspector.h"
 #include "Pong/registers/reg_data_controller.h"
 
-#include <GLFW/glfw3.h>
+#include "Pong/serializer/component_serialize.h"
+
 
 namespace pong {
     class Output;
@@ -96,6 +99,15 @@ namespace pong::engine {
             auto map_location = asset_inspector.get_data_location_reg().map_reg.get_type<MapDtLocation>(RegId{1});
 
             map_ = load_location(map_location);
+
+            // register components
+            using Range = boost::mpl::range_c<uint32_t, 1, COUNTER_READ(serializer::component_tag) + 1>;
+
+            boost::mpl::for_each<Range>(
+                [&]<typename I>(I i) constexpr -> void {
+//                    datacontroller.reg_type<typename serializer::components_collected<I::value>::type>();
+                }
+            );
 
         }
 

@@ -7,6 +7,12 @@
 #include <iostream>
 #include <utility>
 #include "Utils/type_conditions.h"
+#include "Utils/hash_utils.h"
+
+#include <boost/mpl/for_each.hpp>
+#include <boost/mpl/range_c.hpp>
+#include <boost/bind.hpp>
+
 
 namespace pong::serializer {
 
@@ -21,7 +27,7 @@ namespace pong::serializer {
     }
 
 
-#define COUNTER_READ_CRUMB(TAG, RANK, ACC) counter_crumb(TAG(), constant_index<RANK>(), constant_index<ACC>())
+#define COUNTER_READ_CRUMB(TAG, RANK, ACC) counter_crumb(TAG(), serializer::constant_index<RANK>(), serializer::constant_index<ACC>())
 
 #define COUNTER_READ(TAG) COUNTER_READ_CRUMB(TAG, 1, \
                                 COUNTER_READ_CRUMB(TAG, 2, \
@@ -47,7 +53,7 @@ namespace pong::serializer {
 
     template<typename T>
     struct to_hash {
-        static inline constexpr size_t hash=0;
+        using hash = hash_number<0>;
     };
 
     template<typename T>
@@ -61,14 +67,14 @@ namespace pong::serializer {
 
 
     template<typename ...Args>
-    struct typesA {};
+    struct ArgsType {};
 
     template<typename T, typename ...Args>
-    struct combine_types {};
+    struct CombineTypes {};
 
     template<template<typename ...Args> typename T, typename ...Args, typename ...Extra>
-    struct combine_types<T<Args...>, Extra...> {
-        using types = typesA<Args..., Extra...>;
+    struct CombineTypes<T<Args...>, Extra...> {
+        using types = ArgsType<Args..., Extra...>;
 
         template<uint32_t N>
         using variadic_types = variadic_id_t<N, Extra..., Args...>;
@@ -80,38 +86,26 @@ namespace pong::serializer {
 
     template<uint32_t N>
     struct components_collected {
-        using types = combine_types<typesA<uint32_t>, uint32_t>;
+        using combine_types = CombineTypes<ArgsType<std::false_type>>;
     };
-
-    combine_types<typesA<>, uint32_t>::variadic_types<0> get_component_hash(hash_number<0>) {return {};}
 
 
 #define REG_COMPONENT(component) \
     COUNTER_INC(component_tag) \
     template<> \
-    struct to_hash<component> { \
-        static inline constexpr hash_number<COUNTER_READ(component_tag)> hash; \
+    struct to_hash<component> {  \
+        using hash = hash_number<COMPILE_TIME_CRC32_STR(#component)>; \
     }; \
     template<> \
-    struct from_hash<hash_number<COUNTER_READ(component_tag)>> { \
+    struct from_hash<hash_number<COMPILE_TIME_CRC32_STR(#component)>> { \
         using type = component; \
-    };                           \
-    template<>                                      \
-    struct components_collected<COUNTER_READ(component_tag)> {                 \
-        using types = combine_types<components_collected<COUNTER_READ(component_tag) - 1>::types::types, component>; \
+    }; \
+    template<> \
+    struct components_collected<COUNTER_READ(component_tag)> { \
+        using combine_types = CombineTypes<components_collected<COUNTER_READ(component_tag) - 1>::combine_types::types, component>; \
+        using hash = hash_number<COMPILE_TIME_CRC32_STR(#component)>; \
+        using type = component; \
     };
-
-
-
-#define COMPONENT_TYPE(hash) \
-    from_hash<hash>::type
-
-#define COMPONENT_HASH(type) \
-    to_hash<type>::hash
-
-
-
-
 
 }
 
