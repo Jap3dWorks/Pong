@@ -2,8 +2,9 @@
 // Created by Jordi on 9/4/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIALIZER_COMPONENT_SERIALIZE_H_
-#define PONG_SRC_PONG_SERIALIZER_COMPONENT_SERIALIZE_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_COMPONENT_HASHER_H_
+#define PONG_SRC_PONG_SERIALIZER_COMPONENT_HASHER_H_
+
 #include <iostream>
 #include <utility>
 #include "Utils/type_conditions.h"
@@ -14,7 +15,7 @@
 #include <boost/bind.hpp>
 
 
-namespace pong::serializer {
+namespace pong::component {
 
 
     // -- Component serialization test
@@ -27,7 +28,7 @@ namespace pong::serializer {
     }
 
 
-#define COUNTER_READ_CRUMB(TAG, RANK, ACC) counter_crumb(TAG(), serializer::constant_index<RANK>(), serializer::constant_index<ACC>())
+#define COUNTER_READ_CRUMB(TAG, RANK, ACC) pong::component::counter_crumb(TAG(), pong::component::constant_index<RANK>(), pong::component::constant_index<ACC>())
 
 #define COUNTER_READ(TAG) COUNTER_READ_CRUMB(TAG, 1, \
                                 COUNTER_READ_CRUMB(TAG, 2, \
@@ -109,4 +110,4 @@ namespace pong::serializer {
 
 }
 
-#endif //PONG_SRC_PONG_SERIALIZER_COMPONENT_SERIALIZE_H_
+#endif //PONG_SRC_PONG_SERIALIZER_COMPONENT_HASHER_H_

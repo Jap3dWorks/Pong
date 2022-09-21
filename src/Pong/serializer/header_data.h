@@ -15,6 +15,7 @@
 
 namespace pong::serializer {
     struct FileHeader_t {};
+    struct ComponentHeader_t {};
 
     template<typename T>
     struct data_header_ {
@@ -33,7 +34,7 @@ namespace pong::serializer {
 
     template<>
     struct data_header_<FileHeader_t> {
-        static inline constexpr DataSize header_size{
+        static constexpr DataSize header_size{
             (sizeof(DataSize)*2) + P_MAX_SERIALIZER_NAME_LENGTH};
 
         DataSize data_size{0};
@@ -43,9 +44,25 @@ namespace pong::serializer {
         using Type = FileHeader_t;
     };
 
+    template<>
+    struct data_header_<ComponentHeader_t> {
+        static constexpr DataSize header_size{
+            (sizeof(DataSize) * 4)
+        };
+
+        RegId reg_id{0};
+        DataSize data_size{0};
+        Version version{};
+        size_t hash{};
+
+        using Type = ComponentHeader_t;
+    };
+
+    using FileHeader = data_header_<FileHeader_t>;
     template<typename T>
     using Header = data_header_<T>;
-    using FileHeader = data_header_<FileHeader_t>;
+    using ComponentHeader = data_header_<ComponentHeader_t>;
+
 
     template<typename Archive, typename T>
     void serialize(Archive &ar, Header<T> &value, const Version &version) {
@@ -59,6 +76,13 @@ namespace pong::serializer {
         ar & value.type_name;
     }
 
+    template<typename Archive>
+    void serialize(Archive &ar, ComponentHeader &value, const Version &version) {
+        ar & value.data_size;
+        ar & value.version;
+        ar & value.hash;
+    }
+
     template<typename Header_, typename Data_, typename DataType_=Any_t>
     struct HeadedData {
         Header_ header{};
@@ -70,6 +94,7 @@ namespace pong::serializer {
         Header_ header{};
         Data_ &data{};
     };
+
 
     template<typename T>
     struct SaveLoadSize<Header<T>> {

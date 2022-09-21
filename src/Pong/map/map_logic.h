@@ -52,7 +52,7 @@ namespace pong::map {
         }
 
 //        void update_meshes() {
-//            for (auto& mshcmp: entity_reg.get_types<StaticMeshComponent>()) {
+//            for (auto& mshcmp: entity_reg.get_types<TransformComp>()) {
 //                 do things
 //            }
 //        }

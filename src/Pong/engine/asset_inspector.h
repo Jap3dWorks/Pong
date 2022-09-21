@@ -81,7 +81,7 @@ namespace pong::engine {
                 pong::serializer::load_headers(descriptor, asset_path.c_str());
 
                 auto entity_iter = serializer::descriptor_data<
-                    serializer::AssetDescriptor, serializer::EntityData>(descriptor);
+                    serializer::AssetDescriptor, serializer::NodeData>(descriptor);
                 for (auto &dt: entity_iter) {
 
                 }
@@ -131,7 +131,7 @@ namespace pong::engine {
     map::Map load_location(MapDtLocation & map_location) {
         auto descriptor = serializer::MapDescriptor();
         serializer::load_file(descriptor, map_location.file_path.c_str());
-        return{};
+        return {};
 //        return from_descriptor(descriptor);
     }
 

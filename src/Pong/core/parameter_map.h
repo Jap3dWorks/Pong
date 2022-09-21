@@ -76,7 +76,7 @@ namespace pong {
      * This class is been used for components storage, so each component has its own data structure storage
      * class instance.
      * In the case above ParameterMap do not apply any restriction for parallelism id between data structures,
-     * this means that a TransformComponent can share id with a CameraComponent.
+     * this means that a TransformComp can share id with a CameraComp.
      * */
     class ParameterMap {
     public:

@@ -17,7 +17,7 @@
 #include "Pong/engine/asset_inspector.h"
 #include "Pong/registers/reg_data_controller.h"
 
-#include "Pong/serializer/component_serialize.h"
+#include "Pong/components/component_hasher.h"
 
 
 namespace pong {

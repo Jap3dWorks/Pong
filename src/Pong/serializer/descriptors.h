@@ -35,17 +35,18 @@
 
 namespace pong::serializer {
 
-    struct EntityData {
+    struct NodeData {
         SERIALIZABLE(
                 FIELD(RegId, parent, 0),
-                FIELD(std::optional<component::TransformComponent>, transform_component),
-                FIELD(std::optional<component::CameraComponent>, camera_component),
-                FIELD(std::optional<component::StaticMeshComponent>, staticmesh_component),
-                FIELD(std::optional<component::CubemapComponent>, cubemap_component),
-                FIELD(std::optional<component::PythonComponent>, python_component)
+                // TODO: reflection registered components.
+                FIELD(std::optional<component::TransformComp>, transform_component),
+                FIELD(std::optional<component::CameraComp>, camera_component),
+                FIELD(std::optional<component::StaticMeshComp>, staticmesh_component),
+                FIELD(std::optional<component::CubemapComp>, cubemap_component),
+                FIELD(std::optional<component::PythonComp>, python_component)
         )
     };
-    IMPL_SERIALIZE(EntityData);
+    IMPL_SERIALIZE(NodeData);
 
     class BaseDescriptor {
     public:
@@ -57,7 +58,7 @@ namespace pong::serializer {
 
     struct AssetData {
         SERIALIZABLE (
-                FIELD(BaseDescriptor::SerializeDataT<EntityData>, actor_data),
+                FIELD(BaseDescriptor::SerializeDataT<NodeData>, actor_data),
                 FIELD(BaseDescriptor::SerializeDataT<Mesh>, mesh_data),
                 FIELD(BaseDescriptor::SerializeDataT<Curve>, curve_data),
                 FIELD(BaseDescriptor::SerializeDataT<Material>, material_data)
@@ -72,7 +73,7 @@ namespace pong::serializer {
     public:
         DataType data{};
     public:
-        SerializeDataT<EntityData>& actor_data{data.data.actor_data};
+        SerializeDataT<NodeData>& actor_data{data.data.actor_data};
         SerializeDataT<Mesh>& mesh_data{data.data.mesh_data};
         SerializeDataT<Curve>& curve_data{data.data.curve_data};
         SerializeDataT<Material>& material_data{data.data.material_data};
@@ -85,8 +86,8 @@ namespace pong::serializer {
 
     struct MapData {
         SERIALIZABLE (
-                FIELD(std::optional<component::PythonComponent>, python_component),
-                FIELD(BaseDescriptor::SerializeDataT<EntityData>, entity_data)
+                FIELD(std::optional<component::PythonComp>, python_component),
+                FIELD(BaseDescriptor::SerializeDataT<NodeData>, entity_data)
         )
     };
     IMPL_SERIALIZE(MapData);
@@ -101,7 +102,7 @@ namespace pong::serializer {
         DataType data{};
 
         HeadedDataT<MapData>& map_data{data.data};
-        SerializeDataT<EntityData>& entity_data{data.data.data.entity_data};
+        SerializeDataT<NodeData>& entity_data{data.data.data.entity_data};
     };
 
 
@@ -188,6 +189,8 @@ namespace pong::serializer {
         srlizer >> descriptor;
     }
 
+
+
     template<typename Descriptor, typename DtType>
     struct descriptor_data {
     };
@@ -215,11 +218,11 @@ namespace pong::serializer {
     } \
     }
 
-    IMPL_DESCRIPTOR_DATA(AssetDescriptor, EntityData, actor_data);
+    IMPL_DESCRIPTOR_DATA(AssetDescriptor, NodeData, actor_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Mesh, mesh_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Curve, curve_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Material, material_data);
-    IMPL_DESCRIPTOR_DATA(MapDescriptor, EntityData, entity_data);
+    IMPL_DESCRIPTOR_DATA(MapDescriptor, NodeData, entity_data);
 //    IMPL_DESCRIPTOR_DATA(MapDescriptor, MapData, map_data);
 
 
@@ -228,11 +231,11 @@ namespace pong::serializer {
     data.member = component;\
 }
 
-    IMPL_ADD_COMPONENT(EntityData, component::TransformComponent, transform_component)
-    IMPL_ADD_COMPONENT(EntityData, component::CameraComponent, camera_component)
-    IMPL_ADD_COMPONENT(EntityData, component::StaticMeshComponent, staticmesh_component)
-    IMPL_ADD_COMPONENT(EntityData, component::CubemapComponent, cubemap_component)
-    IMPL_ADD_COMPONENT(EntityData, component::PythonComponent, python_component)
+    IMPL_ADD_COMPONENT(NodeData, component::TransformComp, transform_component)
+    IMPL_ADD_COMPONENT(NodeData, component::CameraComp, camera_component)
+    IMPL_ADD_COMPONENT(NodeData, component::StaticMeshComp, staticmesh_component)
+    IMPL_ADD_COMPONENT(NodeData, component::CubemapComp, cubemap_component)
+    IMPL_ADD_COMPONENT(NodeData, component::PythonComp, python_component)
 
 
     template<typename T, typename U>
@@ -248,18 +251,18 @@ namespace pong::serializer {
         } \
     };
 
-    IMPL_GET_COMPONENT(EntityData, component::TransformComponent, transform_component)
-    IMPL_GET_COMPONENT(EntityData, component::CameraComponent, camera_component)
-    IMPL_GET_COMPONENT(EntityData, component::PythonComponent, python_component)
-    IMPL_GET_COMPONENT(EntityData, component::StaticMeshComponent, staticmesh_component)
-    IMPL_GET_COMPONENT(EntityData, component::CubemapComponent, cubemap_component)
+    IMPL_GET_COMPONENT(NodeData, component::TransformComp, transform_component)
+    IMPL_GET_COMPONENT(NodeData, component::CameraComp, camera_component)
+    IMPL_GET_COMPONENT(NodeData, component::PythonComp, python_component)
+    IMPL_GET_COMPONENT(NodeData, component::StaticMeshComp, staticmesh_component)
+    IMPL_GET_COMPONENT(NodeData, component::CubemapComp, cubemap_component)
 
 
     MapDescriptor to_descriptor(map::Map &map) {
         auto result = MapDescriptor();
         result.data.data.header.reg_id = map.reg_id;
 
-        auto temp_dt = std::unordered_map<RegId, EntityData>();
+        auto temp_dt = std::unordered_map<RegId, NodeData>();
 
         using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
         boost::mpl::for_each<Range>(
@@ -292,7 +295,7 @@ namespace pong::serializer {
 //        result.reg_id = descriptor.map_data.header.reg_id;
 //        using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
 //
-//        for (auto& dt: descriptor_data<MapDescriptor, EntityData>(descriptor)) {
+//        for (auto& dt: descriptor_data<MapDescriptor, NodeData>(descriptor)) {
 //            auto reg_id = dt.header.reg_id;
 //
 //            auto entity = dt.data;
@@ -300,7 +303,7 @@ namespace pong::serializer {
 //            boost::mpl::for_each<Range>(
 //                [&]<typename I>(I i) constexpr -> void {
 //                    auto component = get_component<
-//                        EntityData,
+//                        NodeData,
 //                        typename map::EntityComponentsTypes::get<I::value>::type
 //                    >::get(entity);
 //

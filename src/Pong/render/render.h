@@ -335,7 +335,7 @@ namespace pong {
             update_time_data();
         }
 
-        _P_INLINE void update_ubo_camera(CameraComponent* camera) const {
+        _P_INLINE void update_ubo_camera(CameraComp* camera) const {
             glBindBuffer(GL_UNIFORM_BUFFER, _ubo_view);
 
             uint32_t buffer_offset = 0;

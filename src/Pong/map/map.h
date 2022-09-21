@@ -11,11 +11,11 @@
 #include <vector>
 
 namespace pong::map {
-    using EntityComponentsTypes = TypesStruct<component::TransformComponent,
-                                              component::CameraComponent,
-                                              component::StaticMeshComponent,
-                                              component::CubemapComponent,
-                                              component::PythonComponent>;
+    using EntityComponentsTypes = TypesStruct<component::TransformComp,
+                                              component::CameraComp,
+                                              component::TransformComp,
+                                              component::CubemapComp,
+                                              component::PythonComp>;
 
     using EntityComponentRegController = RegDataController<EntityComponentsTypes::get<0>::type,
                                                            EntityComponentsTypes::get<1>::type,
@@ -28,7 +28,7 @@ namespace pong::map {
         RegId reg_id;
         EntityComponentRegController entity_reg{};
 
-        component::PythonComponent python_component{};
+        component::PythonComp python_component{};
 
         std::vector<RegId> maps;
     };

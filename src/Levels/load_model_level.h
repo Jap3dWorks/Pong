@@ -38,7 +38,7 @@ protected:
 			pong::RenderLayer::BASE,
 			basic_shd);
 
-        auto grass_shp = _scene->create_shape<pong::StaticMeshComponent>("grass_shp");
+        auto grass_shp = _scene->create_shape<pong::TransformComp>("grass_shp");
         pong::CubeShape(grass_shp->mesh).build();
         auto grass_act_01 = _scene->create_actor<pong::APlayer>("grass_act_01");
         _scene->assign_material(basic_mat, grass_shp);
