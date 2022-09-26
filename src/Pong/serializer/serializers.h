@@ -96,14 +96,14 @@ namespace pong::serializer {
         }
     };
 
-    class IbaseSerializer : public BaseSerializer<std::ifstream> {
+    class IBaseSerializer : public BaseSerializer<std::ifstream> {
     public:
         using BaseSerializer<std::ifstream>::BaseSerializer;
 
     };
 
 #define IBASE_SERIALIZER_CONSTRUCTORS() \
-    using IbaseSerializer::IbaseSerializer; \
+    using IBaseSerializer::IBaseSerializer; \
     public: \
     template<typename Descriptor> \
     auto &operator>>(Descriptor &descriptor) { \
@@ -112,7 +112,8 @@ namespace pong::serializer {
         return *this;\
     }
 
-    class ISerializer: public IbaseSerializer {
+
+    class ISerializer: public IBaseSerializer {
     SERIALIZER_COMMON(ISerializer);
     IBASE_SERIALIZER_CONSTRUCTORS();
 
@@ -124,7 +125,8 @@ namespace pong::serializer {
         }
     };
 
-    class IHeaderSerializer: public IbaseSerializer {
+
+    class IHeaderSerializer: public IBaseSerializer {
         SERIALIZER_COMMON(IHeaderSerializer);
         IBASE_SERIALIZER_CONSTRUCTORS();
 
@@ -141,8 +143,9 @@ namespace pong::serializer {
         }
     };
 
+
     template<typename data_type>
-    class IRegIdSerializer: public IbaseSerializer {
+    class IRegIdSerializer: public IBaseSerializer {
     public:
         using HeadedDt = HeadedData<Header<data_type>, data_type>;
     private:
@@ -155,7 +158,7 @@ namespace pong::serializer {
     public:
         IRegIdSerializer(StreamReference stream,
                          RegId reg_id) :
-            IbaseSerializer(stream),
+            IBaseSerializer(stream),
             reg_id_(reg_id) {}
 
         [[nodiscard]] RegId get_reg_id() const {
@@ -204,6 +207,18 @@ namespace pong::serializer {
         }
 
     };
+
+
+    class IComponentSerializer: public IBaseSerializer {
+    SERIALIZER_COMMON(IComponentSerializer);
+    IBASE_SERIALIZER_CONSTRUCTORS();
+
+    public:
+
+
+
+    };
+
 
 }
 

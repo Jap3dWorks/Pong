@@ -11,11 +11,13 @@
 #include "Pong/core/parameter_map.h"
 #include "Pong/components/component_hasher.h"
 #include "Pong/registers/reg_id.h"
+#include "Pong/serializer/serial_functions.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 
 
 #include <vector>
@@ -38,7 +40,6 @@ namespace pong::component {
 
         virtual inline void start() {};
         virtual inline void update() {};
-
     };
 
 
@@ -51,7 +52,12 @@ namespace pong::component {
         ) : fov(fov) {}
     };
     REG_COMPONENT(CameraComp);
-#define component_count_1
+#define component_count_1 CameraComp
+
+    template<typename Archive>
+    void serialize(Archive & ar, CameraComp &camera_comp, const Version& version) {
+        ar & camera_comp.fov;
+    }
 
 
     struct TransformComp : Component {
@@ -71,7 +77,15 @@ namespace pong::component {
         }
     };
     REG_COMPONENT(TransformComp);
-#define component_count_2
+#define component_count_2 TransformComp
+
+    template<typename Archive>
+    void serialize(Archive & ar, TransformComp & transform_comp, const Version &version) {
+        ar & transform_comp.translation;
+        ar & transform_comp.rotation;
+        ar & transform_comp.scale;
+        ar & transform_comp.visibility;
+    }
 
 
     // TransformComp
@@ -82,14 +96,25 @@ namespace pong::component {
         RegId mesh{};
     };
     REG_COMPONENT(StaticMeshComp);
-#define component_count_3
+#define component_count_3 StaticMeshComp
+
+    template<typename Archive>
+    void serialize(Archive & ar, StaticMeshComp & static_mesh_comp, const Version &version) {
+        ar & static_mesh_comp.material;
+        ar & static_mesh_comp.mesh;
+    }
 
 
     struct CubemapComp : public Component {
         RegId material{};
     };
     REG_COMPONENT(CubemapComp);
-#define component_count_4
+#define component_count_4 CubemapComp
+
+    template<typename Archive>
+    void serialize(Archive & ar, CubemapComp & cubemap_comp, const Version & version) {
+        ar & cubemap_comp.material;
+    }
 
 
     struct PythonComp : public Component {
@@ -97,7 +122,12 @@ namespace pong::component {
         ParameterMap parameters{};
     };
     REG_COMPONENT(PythonComp);
-#define component_count_5
+#define component_count_5 PythonComp
+
+    template<typename Archive>
+    void serialize(Archive & ar, PythonComp & python_comp, const Version & version) {
+        ar & python_comp.script_path;
+    }
 
 
     struct LuaComp : public Component {
@@ -105,8 +135,12 @@ namespace pong::component {
         ParameterMap parameters{};
     };
     REG_COMPONENT(LuaComp);
-#define component_count_6 // TODO: change the counter method
+#define component_count_6 LuaComp // TODO: change the counter method
 
+    template<typename Archive>
+    void serialize(Archive & ar, LuaComp & lua_comp, const Version & version) {
+        ar & lua_comp.script_path;
+    }
 
 }
 

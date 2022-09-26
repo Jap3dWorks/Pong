@@ -18,6 +18,9 @@
 #include "Pong/components/component.h"
 
 namespace pong::serializer {
+// https://metricpanda.com/rival-fortress-update-39-how-i-use-__counter__-to-localize-text-and-hash-strings-at-compile-time/
+
+#define T(name) name##__COUNTER__
 
 
 #define prev_count_range_1(...)(1)

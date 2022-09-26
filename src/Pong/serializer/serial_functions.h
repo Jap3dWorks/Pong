@@ -58,10 +58,8 @@ namespace pong::serializer {
         visit_each(x, serialize_visitor(ar));
     }
 
-
     template<typename T>
     struct descriptor_info {};
-
 
     template<typename Archive, typename Value>
     void serialize(Archive &ar, Value &value, const Version& version) {

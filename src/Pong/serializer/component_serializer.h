@@ -35,8 +35,11 @@ namespace pong::serializer {
 
 
     template<typename T>
-    void deserialize_component(std::ifstream & file_path, size_t hash_number) {
-        if (component::to_hash<T>::hash::value) {
+    void deserialize_component(std::ifstream & file_path,
+                               size_t hash_number,
+                               RegDataController & controller) {
+        if (component::to_hash<T>::hash::value == hash_number) {
+
             LOG_INFO(typeid(T).name());
             LOG_INFO("Hash value:" << component::to_hash<T>::hash::value);
         }
@@ -46,7 +49,7 @@ namespace pong::serializer {
     struct DeserializeComponents;
 
     template<template<typename ...Args> typename T, typename ...Args>
-    struct DeserializeComponents<T<Args...>>{
+    struct DeserializeComponents<T<Args...>> {
         std::ifstream &stream;
         RegDataController &reg_controller;
 
@@ -60,6 +63,10 @@ namespace pong::serializer {
             }
         }
     };
+
+
+    void serialize_components(RegDataController& reg_controller) {
+    }
 
 }
 #endif //PONG_SRC_PONG_SERIALIZER_COMPONENT_SERIALIZER_H_

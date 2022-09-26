@@ -59,6 +59,7 @@ namespace pong::serializer {
     };
 
     using FileHeader = data_header_<FileHeader_t>;
+
     template<typename T>
     using Header = data_header_<T>;
     using ComponentHeader = data_header_<ComponentHeader_t>;
