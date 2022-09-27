@@ -54,6 +54,7 @@ namespace pong::component {
     REG_COMPONENT(CameraComp);
 #define component_count_1 CameraComp
 
+
     template<typename Archive>
     void serialize(Archive & ar, CameraComp &camera_comp, const Version& version) {
         ar & camera_comp.fov;
@@ -79,6 +80,7 @@ namespace pong::component {
     REG_COMPONENT(TransformComp);
 #define component_count_2 TransformComp
 
+
     template<typename Archive>
     void serialize(Archive & ar, TransformComp & transform_comp, const Version &version) {
         ar & transform_comp.translation;
@@ -98,6 +100,7 @@ namespace pong::component {
     REG_COMPONENT(StaticMeshComp);
 #define component_count_3 StaticMeshComp
 
+
     template<typename Archive>
     void serialize(Archive & ar, StaticMeshComp & static_mesh_comp, const Version &version) {
         ar & static_mesh_comp.material;
@@ -110,6 +113,7 @@ namespace pong::component {
     };
     REG_COMPONENT(CubemapComp);
 #define component_count_4 CubemapComp
+
 
     template<typename Archive>
     void serialize(Archive & ar, CubemapComp & cubemap_comp, const Version & version) {
@@ -124,6 +128,7 @@ namespace pong::component {
     REG_COMPONENT(PythonComp);
 #define component_count_5 PythonComp
 
+
     template<typename Archive>
     void serialize(Archive & ar, PythonComp & python_comp, const Version & version) {
         ar & python_comp.script_path;
@@ -135,7 +140,8 @@ namespace pong::component {
         ParameterMap parameters{};
     };
     REG_COMPONENT(LuaComp);
-#define component_count_6 LuaComp // TODO: change the counter method
+#define component_count_6 LuaComp
+
 
     template<typename Archive>
     void serialize(Archive & ar, LuaComp & lua_comp, const Version & version) {

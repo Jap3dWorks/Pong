@@ -53,12 +53,12 @@ namespace pong::serializer {
         std::ifstream &stream;
         RegDataController &reg_controller;
 
-        DeserializeComponents(std::ifstream &file_path, RegDataController &controller):
-            stream(file_path), reg_controller(controller) {
+        DeserializeComponents(std::ifstream &file_stream, RegDataController &controller):
+            stream(file_stream), reg_controller(controller) {
             // get hash here
-            while (file_path.is_open() || true) {
-                (deserialize_component<Args>(file_path, 10), ...);
-                file_path.close();
+            while (file_stream.is_open() || true) {
+                (deserialize_component<Args>(file_stream, 10), ...);
+                file_stream.close();
                 break;
             }
         }

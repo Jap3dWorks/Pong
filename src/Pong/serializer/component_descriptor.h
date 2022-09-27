@@ -2,8 +2,8 @@
 // Created by Jordi on 9/21/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIALIZER_COMPONENT_DATA_H_
-#define PONG_SRC_PONG_SERIALIZER_COMPONENT_DATA_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_COMPONENT_DESCRIPTOR_H_
+#define PONG_SRC_PONG_SERIALIZER_COMPONENT_DESCRIPTOR_H_
 
 #include <boost/preprocessor.hpp>
 #include <boost/mpl/at.hpp>
@@ -16,11 +16,10 @@
 #include <boost/preprocessor/repetition/repeat.hpp>
 
 #include "Pong/components/component.h"
+#include "Pong/serializer/descriptors.h"
 
 namespace pong::serializer {
 // https://metricpanda.com/rival-fortress-update-39-how-i-use-__counter__-to-localize-text-and-hash-strings-at-compile-time/
-
-#define T(name) name##__COUNTER__
 
 
 #define prev_count_range_1(...)(1)
@@ -89,12 +88,7 @@ namespace pong::serializer {
 #define prev_count_range_64(...) prev_count_range_63()(64)
 
 
-#define clean_val(...) __VA_ARGS__
-#define seq_val(...) (__VA_ARGS__)
-
 #define REVERSE_SEQ(v) prev_count_range_##v()
-
-constexpr uint32_t total_components = COUNTER_READ(component::component_tag);
 
 #if defined(component_count_32)
 #define comp_seq REVERSE_SEQ(32)
@@ -163,41 +157,34 @@ constexpr uint32_t total_components = COUNTER_READ(component::component_tag);
 #endif
 
 
+#define COMPONENT_CLASS(n) component_count_##n
+#define COMPONENT_FIELD(n) fld_##n
 
-template<typename C>
-struct CompoData{};
+#define COMPONENT_ATTR(n, attrib, k, total) \
+     SerializeDataT<component::COMPONENT_CLASS(n)> COMPONENT_FIELD(n){}; \
 
 
-#define COMPONENT_ATTRIB(z, n, k, total) \
-    template<>                                      \
-    struct CompoData<typename component::components_collected<total>::combine_types::variadic_types<z>::type> { \
-    using compo_type = typename component::components_collected<total>::combine_types::variadic_types<z>::type; \
-    compo_type component_type{};                 \
+    struct ComponentData {
+        BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_ATTR, int, comp_seq);
     };
 
 
-BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_ATTRIB, int, comp_seq);
+#define SERIALIZE_FLD(n, attrib, k, total) \
+    if(ar.get().peek() != EOF) {ar & value.COMPONENT_FIELD(n);} \
 
 
-//
-//#define _ALLCOMPODATAS() \
-//BOOST_PP_TUPLE_ELEM(2, 0, BOOST_PP_WHILE(PRED, OP, (n, n)))
+    template<typename Archive>
+    void serialize(Archive & ar, ComponentData & value, const Version &version) {
+        BOOST_PP_SEQ_FOR_EACH_I(SERIALIZE_FLD, int, comp_seq);
+    }
 
-
-
-//static void all_compodatas() {
-//    using Range = boost::mpl::range_c<uint32_t, 1 , COUNTER_READ(component::component_tag)>;
-//    boost::mpl::for_each<Range>(
-//        [&]<typename I>(I i) constexpr -> void {
-//            typename component::components_collected<COUNTER_READ(component::component_tag)>::combine_types::variadic_types<I::value>::type;
-//        }
-//        );
-//}
-
-
-
-
+    class ComponentDescriptor : public BaseDescriptor {
+    public:
+        using DataType = HeadedData<FileHeader, ComponentData>;
+    public:
+        DataType data{};
+    };
 
 }
 
-#endif //PONG_SRC_PONG_SERIALIZER_COMPONENT_DATA_H_
+#endif //PONG_SRC_PONG_SERIALIZER_COMPONENT_DESCRIPTOR_H_

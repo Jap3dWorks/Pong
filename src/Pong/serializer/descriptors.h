@@ -48,20 +48,20 @@ namespace pong::serializer {
     };
     IMPL_SERIALIZE(NodeData);
 
-    class BaseDescriptor {
-    public:
-        template<typename T>
-        using HeadedDataT = HeadedData<Header<T>, T>;
-        template<typename T>
-        using SerializeDataT = HeadedDataT<std::vector<HeadedDataT<T>>>;
-    };
+    template<typename T>
+    using HeadedDataT = HeadedData<Header<T>, T>;
+
+    template<typename T>
+    using SerializeDataT = HeadedDataT<std::vector<HeadedDataT<T>>>;
+
+    class BaseDescriptor {};
 
     struct AssetData {
         SERIALIZABLE (
-                FIELD(BaseDescriptor::SerializeDataT<NodeData>, actor_data),
-                FIELD(BaseDescriptor::SerializeDataT<Mesh>, mesh_data),
-                FIELD(BaseDescriptor::SerializeDataT<Curve>, curve_data),
-                FIELD(BaseDescriptor::SerializeDataT<Material>, material_data)
+                FIELD(SerializeDataT<NodeData>, actor_data),
+                FIELD(SerializeDataT<Mesh>, mesh_data),
+                FIELD(SerializeDataT<Curve>, curve_data),
+                FIELD(SerializeDataT<Material>, material_data)
         )
     };
     IMPL_SERIALIZE(AssetData);
@@ -87,7 +87,7 @@ namespace pong::serializer {
     struct MapData {
         SERIALIZABLE (
                 FIELD(std::optional<component::PythonComp>, python_component),
-                FIELD(BaseDescriptor::SerializeDataT<NodeData>, entity_data)
+                FIELD(SerializeDataT<NodeData>, entity_data)
         )
     };
     IMPL_SERIALIZE(MapData);

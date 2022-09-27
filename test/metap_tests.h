@@ -50,8 +50,8 @@ namespace metap_tests {
         auto controller = pong::RegDataController();
         auto file_stream = std::ifstream();
         auto deserializer = pong::serializer::DeserializeComponents<
-            pong::component::components_collected<COUNTER_READ(pong::component::component_tag)>::combine_types::types>(
-            file_stream, controller);
+            pong::component::components_collected<COUNTER_READ(pong::component::component_tag)>::combine_types::types
+            >(file_stream, controller);
 
         LOG_INFO("End function");
 //        from_hash<hash_number<complist.arr[0]>>::type;
