@@ -93,23 +93,6 @@ namespace pong::serializer {
     IMPL_SERIALIZE(MapData);
 
 
-    template<typename U>
-    class MapDescriptorT: public BaseDescriptor {
-
-    public:
-        using DataType = HeadedData<FileHeader, HeadedDataT<MapData>>;
-    public:
-        DataType data{};
-
-        HeadedDataT<MapData>& map_data{data.data};
-        SerializeDataT<NodeData>& entity_data{data.data.data.entity_data};
-    };
-
-
-    using MapDescriptor = MapDescriptorT<Any_t>;
-    REG_DESCRIPTOR(MapDescriptor, 1);
-
-
 //    template <Intersects<AssetDescriptor, AssetDescriptor> Descriptor>
     inline std::string ensure_file_name(AssetDescriptor&,  const char* file_name) {
 
@@ -118,15 +101,6 @@ namespace pong::serializer {
             string_path.append(P_ASSET_EXTENSION);
         }
 
-        return string_path;
-    }
-
-    inline std::string ensure_file_name(MapDescriptor&,  const char* file_name) {
-
-        auto string_path = std::string(file_name);
-        if (!string_path.ends_with(P_MAPS_EXTENSION)) {
-            string_path.append(P_MAPS_EXTENSION);
-        }
         return string_path;
     }
 
@@ -222,8 +196,8 @@ namespace pong::serializer {
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Mesh, mesh_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Curve, curve_data);
     IMPL_DESCRIPTOR_DATA(AssetDescriptor, Material, material_data);
-    IMPL_DESCRIPTOR_DATA(MapDescriptor, NodeData, entity_data);
-//    IMPL_DESCRIPTOR_DATA(MapDescriptor, MapData, map_data);
+
+//    IMPL_DESCRIPTOR_DATA(MapDescriptor, NodeData, entity_data);
 
 
 #define IMPL_ADD_COMPONENT(data_type, component_type, member) \
@@ -258,37 +232,37 @@ namespace pong::serializer {
     IMPL_GET_COMPONENT(NodeData, component::CubemapComp, cubemap_component)
 
 
-    MapDescriptor to_descriptor(map::Map &map) {
-        auto result = MapDescriptor();
-        result.data.data.header.reg_id = map.reg_id;
-
-        auto temp_dt = std::unordered_map<RegId, NodeData>();
-
-        using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
-        boost::mpl::for_each<Range>(
-            [&]<typename I>(I i) constexpr -> void {
-                auto& sparse_set = map.entity_reg.template get_types<
-                    typename map::EntityComponentsTypes::get<I::value>::type>();
-
-                for(auto& reg_id: SparseSetRegIdIter(sparse_set)) {
-                    auto value = sparse_set.at(reg_id);
-                    if (!temp_dt.contains(reg_id)) {
-                        temp_dt[reg_id] = {};
-                    }
-                    add_component(temp_dt[reg_id], value);
-                }
-             }
-        );
-
-        for (auto &p : temp_dt) {
-            result.entity_data.data.push_back(
-                {{p.first}, p.second}
-            );
-        }
-
-        return result;
-
-    }
+//    MapDescriptor to_descriptor(map::Map &map) {
+//        auto result = MapDescriptor();
+//        result.data.data.header.reg_id = map.reg_id;
+//
+//        auto temp_dt = std::unordered_map<RegId, NodeData>();
+//
+//        using Range = boost::mpl::range_c<uint32_t, 0, map::EntityComponentsTypes::count>;
+//        boost::mpl::for_each<Range>(
+//            [&]<typename I>(I i) constexpr -> void {
+//                auto& sparse_set = map.entity_reg.template get_types<
+//                    typename map::EntityComponentsTypes::get<I::value>::type>();
+//
+//                for(auto& reg_id: SparseSetRegIdIter(sparse_set)) {
+//                    auto value = sparse_set.at(reg_id);
+//                    if (!temp_dt.contains(reg_id)) {
+//                        temp_dt[reg_id] = {};
+//                    }
+//                    add_component(temp_dt[reg_id], value);
+//                }
+//             }
+//        );
+//
+//        for (auto &p : temp_dt) {
+//            result.entity_data.data.push_back(
+//                {{p.first}, p.second}
+//            );
+//        }
+//
+//        return result;
+//
+//    }
 
 //    map::Map from_descriptor(MapDescriptor & descriptor) {
 //        auto result = map::Map();

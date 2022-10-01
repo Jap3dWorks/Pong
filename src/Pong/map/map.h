@@ -17,6 +17,7 @@ namespace pong::map {
                                               component::CubemapComp,
                                               component::PythonComp>;
 
+// TODO: reflection here, update components
     using EntityComponentRegController = RegDataController<EntityComponentsTypes::get<0>::type,
                                                            EntityComponentsTypes::get<1>::type,
                                                            EntityComponentsTypes::get<2>::type,

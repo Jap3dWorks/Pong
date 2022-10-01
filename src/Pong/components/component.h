@@ -43,6 +43,20 @@ namespace pong::component {
     };
 
 
+    struct RelationshipComponent : public Component {
+        RegId parent{};
+        std::vector<RegId> children{};
+    };
+    REG_COMPONENT(RelationshipComponent);
+#define component_count_1 RelationshipComponent
+
+    template<typename Archive>
+    void serialize(Archive & ar, RelationshipComponent &relationship_component, const Version& version) {
+        ar & relationship_component.parent;
+        ar & relationship_component.children;
+    }
+
+
     struct CameraComp : public Component {
 
         float fov{};
@@ -52,8 +66,7 @@ namespace pong::component {
         ) : fov(fov) {}
     };
     REG_COMPONENT(CameraComp);
-#define component_count_1 CameraComp
-
+#define component_count_2 CameraComp
 
     template<typename Archive>
     void serialize(Archive & ar, CameraComp &camera_comp, const Version& version) {
@@ -78,8 +91,7 @@ namespace pong::component {
         }
     };
     REG_COMPONENT(TransformComp);
-#define component_count_2 TransformComp
-
+#define component_count_3 TransformComp
 
     template<typename Archive>
     void serialize(Archive & ar, TransformComp & transform_comp, const Version &version) {
@@ -98,8 +110,7 @@ namespace pong::component {
         RegId mesh{};
     };
     REG_COMPONENT(StaticMeshComp);
-#define component_count_3 StaticMeshComp
-
+#define component_count_4 StaticMeshComp
 
     template<typename Archive>
     void serialize(Archive & ar, StaticMeshComp & static_mesh_comp, const Version &version) {
@@ -112,7 +123,7 @@ namespace pong::component {
         RegId material{};
     };
     REG_COMPONENT(CubemapComp);
-#define component_count_4 CubemapComp
+#define component_count_5 CubemapComp
 
 
     template<typename Archive>
@@ -126,7 +137,7 @@ namespace pong::component {
         ParameterMap parameters{};
     };
     REG_COMPONENT(PythonComp);
-#define component_count_5 PythonComp
+#define component_count_6 PythonComp
 
 
     template<typename Archive>
@@ -140,7 +151,7 @@ namespace pong::component {
         ParameterMap parameters{};
     };
     REG_COMPONENT(LuaComp);
-#define component_count_6 LuaComp
+#define component_count_7 LuaComp
 
 
     template<typename Archive>

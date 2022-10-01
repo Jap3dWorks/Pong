@@ -2,8 +2,8 @@
 // Created by Jordi on 9/21/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIALIZER_COMPONENT_DESCRIPTOR_H_
-#define PONG_SRC_PONG_SERIALIZER_COMPONENT_DESCRIPTOR_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_MAP_DESCRIPTOR_H_
+#define PONG_SRC_PONG_SERIALIZER_MAP_DESCRIPTOR_H_
 
 #include <boost/preprocessor.hpp>
 #include <boost/mpl/at.hpp>
@@ -17,6 +17,8 @@
 
 #include "Pong/components/component.h"
 #include "Pong/serializer/descriptors.h"
+#include "Pong/map/map.h"
+
 
 namespace pong::serializer {
 // https://metricpanda.com/rival-fortress-update-39-how-i-use-__counter__-to-localize-text-and-hash-strings-at-compile-time/
@@ -170,21 +172,35 @@ namespace pong::serializer {
 
 
 #define SERIALIZE_FLD(n, attrib, k, total) \
-    if(ar.get().peek() != EOF) {ar & value.COMPONENT_FIELD(n);} \
+    bool continue_##n;                 \
+    ar & continue_##n;                     \
+    if(!continue_##n) {return;}            \
+    ar & value.COMPONENT_FIELD(n);
 
 
     template<typename Archive>
     void serialize(Archive & ar, ComponentData & value, const Version &version) {
         BOOST_PP_SEQ_FOR_EACH_I(SERIALIZE_FLD, int, comp_seq);
+        bool no_continue = false;
+        ar & no_continue;
     }
 
-    class ComponentDescriptor : public BaseDescriptor {
+    class MapDescriptor : public BaseDescriptor {
     public:
         using DataType = HeadedData<FileHeader, ComponentData>;
     public:
         DataType data{};
     };
 
+
+    map::Map to_map(MapDescriptor & map_descriptor) {
+
+    }
+
+    MapDescriptor to_descriptor(map::Map & _map) {
+
+    }
+
 }
 
-#endif //PONG_SRC_PONG_SERIALIZER_COMPONENT_DESCRIPTOR_H_
+#endif //PONG_SRC_PONG_SERIALIZER_MAP_DESCRIPTOR_H_
