@@ -313,6 +313,12 @@ namespace pong {
     };
 
 
+    template<templated_from<SparseSet> T>
+    inline SparseSetRegIdIter<T> to_sparse_set_id_iter(T& sparse_set) {
+        auto result = SparseSetRegIdIter<T>(sparse_set);
+        return result;
+    }
+
 }
 
 

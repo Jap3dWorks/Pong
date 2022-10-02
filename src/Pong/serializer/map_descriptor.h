@@ -15,6 +15,8 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/repetition/repeat.hpp>
 
+
+#include "Pong/registers/sparse_set.h"
 #include "Pong/components/component.h"
 #include "Pong/serializer/descriptors.h"
 #include "Pong/map/map.h"
@@ -162,17 +164,19 @@ namespace pong::serializer {
 #define COMPONENT_CLASS(n) component_count_##n
 #define COMPONENT_FIELD(n) fld_##n
 
+
 #define COMPONENT_ATTR(n, attrib, k, total) \
-     SerializeDataT<component::COMPONENT_CLASS(n)> COMPONENT_FIELD(n){}; \
+     SerializeDataT<component::COMPONENT_CLASS(n)> COMPONENT_FIELD(n){};
 
 
     struct ComponentData {
         BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_ATTR, int, comp_seq);
+
     };
 
 
 #define SERIALIZE_FLD(n, attrib, k, total) \
-    bool continue_##n;                 \
+    bool continue_##n;                     \
     ar & continue_##n;                     \
     if(!continue_##n) {return;}            \
     ar & value.COMPONENT_FIELD(n);
@@ -193,12 +197,49 @@ namespace pong::serializer {
     };
 
 
-    map::Map to_map(MapDescriptor & map_descriptor) {
+    struct MapDescriptorStruc {
+        map::Map& map;
+        MapDescriptor& descriptor;
+    };
 
+
+#define DESCRIPTOR_TO_MAP(n, data, k, total) \
+    for(auto& head_dt: data.descriptor.data.data.COMPONENT_FIELD(n).data) { \
+        data.map.entity_reg.insert_type<component::COMPONENT_CLASS(n)>(head_dt.header.reg_id, head_dt.data);  \
     }
 
-    MapDescriptor to_descriptor(map::Map & _map) {
 
+    map::Map to_map(MapDescriptor & map_descriptor) {
+        auto result = map::Map();
+        result.reg_id = map_descriptor.data.header.reg_id;
+
+        MapDescriptorStruc data = {result, map_descriptor};
+
+        BOOST_PP_SEQ_FOR_EACH_I(DESCRIPTOR_TO_MAP, data, comp_seq);
+
+        return result;
+    }
+
+
+#define COMPONENT_TO_DESCRIPTOR(n, data, k, total) \
+    auto& component_set_##n = data.map.entity_reg.get_types<component::COMPONENT_CLASS(n)>(); \
+    auto reg_iter_##n = to_sparse_set_id_iter(component_set_##n); \
+    auto & comp_dt_##n = data.descriptor.data.data.COMPONENT_FIELD(n); \
+    for (auto& reg_id: reg_iter_##n) { \
+        auto compo_##n = component_set_##n.at(reg_id); \
+        compo_##n.actor = reg_id;                  \
+        comp_dt_##n.data.push_back({{reg_id, 0}, std::move(compo_##n)}); \
+    }
+
+
+    MapDescriptor to_descriptor(map::Map & map) {
+        auto result = MapDescriptor();
+        result.data.header.reg_id = map.reg_id;
+        MapDescriptorStruc data = {map, result};
+
+        BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_TO_DESCRIPTOR, data, comp_seq);
+
+        return result;
     }
 
 }

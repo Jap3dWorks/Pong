@@ -19,7 +19,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-
 #include <vector>
 #include <cassert>
 #include <concepts>
@@ -125,7 +124,6 @@ namespace pong::component {
     REG_COMPONENT(CubemapComp);
 #define component_count_5 CubemapComp
 
-
     template<typename Archive>
     void serialize(Archive & ar, CubemapComp & cubemap_comp, const Version & version) {
         ar & cubemap_comp.material;
@@ -152,7 +150,6 @@ namespace pong::component {
     };
     REG_COMPONENT(LuaComp);
 #define component_count_7 LuaComp
-
 
     template<typename Archive>
     void serialize(Archive & ar, LuaComp & lua_comp, const Version & version) {

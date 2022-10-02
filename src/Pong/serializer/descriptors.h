@@ -52,7 +52,7 @@ namespace pong::serializer {
     using HeadedDataT = HeadedData<Header<T>, T>;
 
     template<typename T>
-    using SerializeDataT = HeadedDataT<std::vector<HeadedDataT<T>>>;
+    using SerializeDataT = HeadedDataT<std::vector<HeadedDataT<T> > >;
 
     class BaseDescriptor {};
 
