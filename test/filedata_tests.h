@@ -5,9 +5,14 @@
 #ifndef PONG_TEST_FILEDATA_TESTS_H_
 #define PONG_TEST_FILEDATA_TESTS_H_
 
+#include "Pong/components/component.h"
+#include "Pong/map/map.h"
+#include "Pong/serializer/component_serializer.h"
+#include "Pong/serializer/map_descriptor.h"
 #include "Pong/serializer/reflectable.h"
 #include "Pong/serializer/header_data.h"
 #include "Pong/serializer/descriptors.h"
+#include "Pong/serializer/serialize_descriptors.h"
 #include "Utils/logger.h"
 
 #include <iostream>
@@ -96,7 +101,16 @@ void test_load_id_from_file() {
 }
 
 
+void test_serialize_map() {
+    auto tmap = pong::map::Map();
 
+    tmap.entity_reg.insert_type<pong::component::TransformComp>({1}, {});
+
+    auto map_descriptor = pong::serializer::to_descriptor(tmap);
+
+    pong::serializer::save_file(map_descriptor, "./content/testmap");
+
+}
 
 
 

@@ -171,7 +171,6 @@ namespace pong::serializer {
 
     struct ComponentData {
         BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_ATTR, int, comp_seq);
-
     };
 
 
@@ -195,6 +194,7 @@ namespace pong::serializer {
     public:
         DataType data{};
     };
+    REG_DESCRIPTOR(MapDescriptor, 1);
 
 
     struct MapDescriptorStruc {

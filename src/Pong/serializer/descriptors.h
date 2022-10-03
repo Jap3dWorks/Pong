@@ -84,90 +84,14 @@ namespace pong::serializer {
     REG_DESCRIPTOR(AssetDescriptor, 1);
 
 
-    struct MapData {
-        SERIALIZABLE (
-                FIELD(std::optional<component::PythonComp>, python_component),
-                FIELD(SerializeDataT<NodeData>, entity_data)
-        )
-    };
-    IMPL_SERIALIZE(MapData);
-
-
-//    template <Intersects<AssetDescriptor, AssetDescriptor> Descriptor>
-    inline std::string ensure_file_name(AssetDescriptor&,  const char* file_name) {
-
-        auto string_path = std::string(file_name);
-        if (!string_path.ends_with(P_ASSET_EXTENSION)) {
-            string_path.append(P_ASSET_EXTENSION);
-        }
-
-        return string_path;
-    }
-
     template<typename Archive, std::derived_from<BaseDescriptor> Descriptor>
     inline void serialize(Archive &ar, Descriptor &descriptor, const Version &version) {
         ar & descriptor.data;
     }
 
-    template<std::derived_from<BaseDescriptor> Descriptor>
-    inline void save_file(Descriptor &descriptor, const char *file_name) {
-
-        auto ofstream = std::ofstream(
-                ensure_file_name(descriptor, file_name),
-                std::ofstream::binary
-        );
-
-        auto size_ser = SizeSerializer();
-        size_ser >> descriptor;
-
-        auto out_ser = OSerializer(ofstream);
-
-        out_ser << descriptor;
-    }
-
-    template<std::derived_from<BaseDescriptor> Descriptor>
-    inline void load_file(Descriptor &descriptor, const char *file_name) {
-
-        auto ifstream = std::ifstream(
-                ensure_file_name(descriptor, file_name),
-                std::ifstream::binary);
-
-        assert(ifstream.is_open() && "File doesn't exists!");
-
-        auto srlizer = ISerializer(ifstream);
-        srlizer >> descriptor;
-    }
-
-    template<std::derived_from<BaseDescriptor> Descriptor>
-    inline void load_headers(Descriptor & descriptor, const char *file_name) {
-        auto ifstream = std::ifstream(
-                ensure_file_name(descriptor, file_name),
-                std::ifstream::binary);
-
-        assert(ifstream.is_open() && "File doesn't exists!");
-
-        auto srlizer = IHeaderSerializer(ifstream);
-        srlizer >> descriptor;
-    }
-
-    template<typename data_type, std::derived_from<BaseDescriptor> Descriptor>
-    inline void load_reg_id(Descriptor & descriptor, RegId reg_id, const char *file_name) {
-        auto ifstream = std::ifstream(
-                ensure_file_name(descriptor, file_name),
-                std::ifstream::binary);
-
-        assert(ifstream.is_open() && "File doesn't exists!");
-
-        auto srlizer = IRegIdSerializer<data_type>(ifstream, reg_id);
-
-        srlizer >> descriptor;
-    }
-
-
-
     template<typename Descriptor, typename DtType>
-    struct descriptor_data {
-    };
+    struct descriptor_data {};
+
 
 #define IMPL_DESCRIPTOR_DATA(asset_descriptor_type, data_type, data_member) \
     template<> \
