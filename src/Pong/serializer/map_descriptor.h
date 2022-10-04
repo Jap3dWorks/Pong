@@ -197,7 +197,7 @@ namespace pong::serializer {
     REG_DESCRIPTOR(MapDescriptor, 1);
 
 
-    struct MapDescriptorStruc {
+    struct MapDescriptorData {
         map::Map& map;
         MapDescriptor& descriptor;
     };
@@ -213,7 +213,7 @@ namespace pong::serializer {
         auto result = map::Map();
         result.reg_id = map_descriptor.data.header.reg_id;
 
-        MapDescriptorStruc data = {result, map_descriptor};
+        MapDescriptorData data = {result, map_descriptor};
 
         BOOST_PP_SEQ_FOR_EACH_I(DESCRIPTOR_TO_MAP, data, comp_seq);
 
@@ -235,7 +235,7 @@ namespace pong::serializer {
     MapDescriptor to_descriptor(map::Map & map) {
         auto result = MapDescriptor();
         result.data.header.reg_id = map.reg_id;
-        MapDescriptorStruc data = {map, result};
+        MapDescriptorData data = {map, result};
 
         BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_TO_DESCRIPTOR, data, comp_seq);
 

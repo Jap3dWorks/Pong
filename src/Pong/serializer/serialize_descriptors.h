@@ -5,9 +5,11 @@
 #ifndef PONG_SRC_PONG_SERIALIZER_SERIALIZE_DESCRIPTORS_H_
 #define PONG_SRC_PONG_SERIALIZER_SERIALIZE_DESCRIPTORS_H_
 
+#include "Pong/serializer/reflectable.h"
 #include "Pong/components/component.h"
 #include "Pong/map/map.h"
-#include "Pong/serializer/component_serializer.h"
+
+#include "Pong/serializer/descriptors.h"
 #include "Pong/serializer/map_descriptor.h"
 
 namespace pong::serializer {

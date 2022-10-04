@@ -4,17 +4,17 @@
 
 #ifndef PONG_SRC_PONG_SERIALIZER_COMPONENT_SERIALIZER_H_
 #define PONG_SRC_PONG_SERIALIZER_COMPONENT_SERIALIZER_H_
-
-#include "Utils/logger.h"
-#include "Pong/components/component.h"
-#include "Pong/registers/reg_data_controller.h"
-
 #include <unordered_map>
 #include <iostream>
 #include <fstream>
 #include <boost/mpl/for_each.hpp>
 #include <boost/mpl/range_c.hpp>
 #include <boost/bind.hpp>
+
+#include "Utils/logger.h"
+#include "Pong/components/component.h"
+
+#include "Pong/registers/reg_data_controller.h"
 
 
 namespace pong::serializer {
