@@ -5,18 +5,20 @@
 #ifndef PONG_SRC_PONG_SERIALIZER_SERIALIZERS_H_
 #define PONG_SRC_PONG_SERIALIZER_SERIALIZERS_H_
 
-#include "Pong/serializer/serial_types.h"
-#include "Pong/serializer/reflectable.h"
-#include "Pong/serializer/serial_functions.h"
-#include "Pong/serializer/header_data.h"
 #include <iostream>
 #include <ostream>
-#include "Utils/type_conditions.h"
 #include <functional>
 #include <vector>
 #include <concepts>
 #include <string>
 #include <optional>
+
+#include "Utils/type_conditions.h"
+#include "Pong/serializer/serial_types.h"
+#include "Pong/serializer/reflectable.h"
+#include "Pong/serializer/serial_functions.h"
+#include "Pong/serializer/header_data.h"
+
 
 namespace pong::serializer {
 
@@ -209,15 +211,12 @@ namespace pong::serializer {
     };
 
 
-    class IComponentSerializer: public IBaseSerializer {
-    SERIALIZER_COMMON(IComponentSerializer);
-    IBASE_SERIALIZER_CONSTRUCTORS();
-
-    public:
-
-
-
-    };
+//    class IComponentSerializer: public IBaseSerializer {
+//    SERIALIZER_COMMON(IComponentSerializer);
+//    IBASE_SERIALIZER_CONSTRUCTORS();
+//
+//
+//    };
 
 
 }

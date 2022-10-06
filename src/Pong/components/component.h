@@ -1,24 +1,6 @@
 #ifndef PONG_SRC_PONG_COMPONENTS_COMPONENT_H_
 #define PONG_SRC_PONG_COMPONENTS_COMPONENT_H_
 
-//#include "Pong/core/entity/entity.h"
-//#include "Pong/core/collider.h"
-//#include "Utils/subclasses_map.h"
-//#include "Utils/fixed_address_buffer.h"
-#include "Utils/logger.h"
-#include "Pong/math_utils.h"
-#include "Pong/core/core_vals.h"
-#include "Pong/core/parameter_map.h"
-#include "Pong/components/component_hasher.h"
-#include "Pong/registers/reg_id.h"
-#include "Pong/serializer/serial_functions.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-
 #include <vector>
 #include <cassert>
 #include <concepts>
@@ -26,6 +8,19 @@
 #include <iostream>
 #include <algorithm>
 #include <unordered_map>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "Utils/logger.h"
+#include "Pong/math_utils.h"
+#include "Pong/core/core_vals.h"
+#include "Pong/core/parameter_map.h"
+#include "Pong/components/component_hasher.h"
+#include "Pong/registers/reg_id.h"
+#include "Pong/serializer/serial_functions.h"
 
 
 namespace pong::component {
@@ -42,17 +37,17 @@ namespace pong::component {
     };
 
 
-    struct RelationshipComponent : public Component {
+    struct RelationComp : public Component {
         RegId parent{};
         std::vector<RegId> children{};
     };
-    REG_COMPONENT(RelationshipComponent);
-#define component_count_1 RelationshipComponent
+    REG_COMPONENT(RelationComp);
+#define component_count_1 RelationComp
 
     template<typename Archive>
-    void serialize(Archive & ar, RelationshipComponent &relationship_component, const Version& version) {
-        ar & relationship_component.parent;
-        ar & relationship_component.children;
+    void serialize(Archive & ar, RelationComp &relation_comp, const serializer::Version& version) {
+        ar & relation_comp.parent;
+        ar & relation_comp.children;
     }
 
 
@@ -68,7 +63,7 @@ namespace pong::component {
 #define component_count_2 CameraComp
 
     template<typename Archive>
-    void serialize(Archive & ar, CameraComp &camera_comp, const Version& version) {
+    void serialize(Archive & ar, CameraComp &camera_comp, const serializer::Version& version) {
         ar & camera_comp.fov;
     }
 
@@ -93,7 +88,7 @@ namespace pong::component {
 #define component_count_3 TransformComp
 
     template<typename Archive>
-    void serialize(Archive & ar, TransformComp & transform_comp, const Version &version) {
+    void serialize(Archive & ar, TransformComp & transform_comp, const serializer::Version &version) {
         ar & transform_comp.translation;
         ar & transform_comp.rotation;
         ar & transform_comp.scale;
@@ -112,7 +107,7 @@ namespace pong::component {
 #define component_count_4 StaticMeshComp
 
     template<typename Archive>
-    void serialize(Archive & ar, StaticMeshComp & static_mesh_comp, const Version &version) {
+    void serialize(Archive & ar, StaticMeshComp & static_mesh_comp, const serializer::Version &version) {
         ar & static_mesh_comp.material;
         ar & static_mesh_comp.mesh;
     }
@@ -125,34 +120,34 @@ namespace pong::component {
 #define component_count_5 CubemapComp
 
     template<typename Archive>
-    void serialize(Archive & ar, CubemapComp & cubemap_comp, const Version & version) {
+    void serialize(Archive & ar, CubemapComp & cubemap_comp, const serializer::Version & version) {
         ar & cubemap_comp.material;
     }
 
 
     struct PythonComp : public Component {
         std::string script_path{};
-        ParameterMap parameters{};
+        std::string parameters{};
     };
     REG_COMPONENT(PythonComp);
 #define component_count_6 PythonComp
 
 
     template<typename Archive>
-    void serialize(Archive & ar, PythonComp & python_comp, const Version & version) {
+    void serialize(Archive & ar, PythonComp & python_comp, const serializer::Version & version) {
         ar & python_comp.script_path;
     }
 
 
     struct LuaComp : public Component {
         std::string script_path{};
-        ParameterMap parameters{};
+        std::string parameters{};
     };
     REG_COMPONENT(LuaComp);
 #define component_count_7 LuaComp
 
     template<typename Archive>
-    void serialize(Archive & ar, LuaComp & lua_comp, const Version & version) {
+    void serialize(Archive & ar, LuaComp & lua_comp, const serializer::Version & version) {
         ar & lua_comp.script_path;
     }
 

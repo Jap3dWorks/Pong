@@ -46,18 +46,20 @@ namespace pong {
 
     private:
         template<typename ...Args>
-        explicit TypeValue(Args ...args) {
-            value_ = InternalType(std::forward<Args>(args)...);
-        }
+        explicit TypeValue(Args&& ...args) :
+            value_(InternalType(std::forward<Args>(args)...)) {}
 
     public:
-        TypeValue(const TypeValue &) = delete;
-
-        TypeValue(TypeValue &&) = delete;
+        TypeValue(const TypeValue &) = default;
 
         TypeValue &operator=(const TypeValue &) = delete;
 
-        TypeValue &operator=(TypeValue &&) = delete;
+        TypeValue(TypeValue && other) noexcept :
+            value_(std::move(other.value_)) {}
+
+        TypeValue &operator=(TypeValue && other)  noexcept {
+            value_ = std::move(other.value_);
+        }
 
         ~TypeValue() override = default;
 
@@ -79,6 +81,7 @@ namespace pong {
      * this means that a TransformComp can share id with a CameraComp.
      * */
     class ParameterMap {
+
     public:
         using hash_type = size_t;
         using reg_wrapper = BaseTypeValue;
@@ -116,6 +119,20 @@ namespace pong {
                 );
             }
             return false;
+        }
+
+    public:
+        ParameterMap() = default;
+        ~ParameterMap() = default;
+
+        ParameterMap(const ParameterMap &other) = delete;
+        ParameterMap &operator=(const ParameterMap &other) = delete;
+
+        ParameterMap(ParameterMap &&other) noexcept :
+            _data_map(std::move(other._data_map)) {}
+
+        ParameterMap &operator=(ParameterMap &&other)  noexcept {
+            _data_map = std::move(other._data_map);
         }
 
     public:

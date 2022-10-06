@@ -17,7 +17,6 @@
 #include <iostream>
 
 
-
 struct ReflectData {
     REFLECTABLE(
     FIELD(uint32_t, attr_1, 0),
@@ -26,10 +25,12 @@ struct ReflectData {
     );
 };
 
+
 void test_class_reflection() {
     auto rdata = ReflectData();
     print_fields(rdata);
 }
+
 
 void test_save_serialize_data() {
     auto description = pong::serializer::AssetDescriptor();
@@ -103,6 +104,7 @@ void test_load_id_from_file() {
 void test_serialize_map() {
     auto tmap = pong::map::Map();
 
+    tmap.entity_reg.reg_type<pong::component::TransformComp>();
     tmap.entity_reg.insert_type<pong::component::TransformComp>({1}, {});
 
     auto map_descriptor = pong::serializer::to_descriptor(tmap);
@@ -112,6 +114,10 @@ void test_serialize_map() {
 }
 
 
+void filedata_tests() {
+    test_save_serialize_plane();
+    test_serialize_map();
+}
 
 
 #endif //PONG_TEST_FILEDATA_TESTS_H_

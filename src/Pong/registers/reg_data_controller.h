@@ -105,13 +105,13 @@ namespace pong {
 
 //        template<Intersects<Types...> type_>
         template<typename type_>
-        auto insert_type(RegId reg_id, const type_ &object_) {
+        auto insert_type(RegId reg_id, const type_ &object) {
             if (!id_array_.contains(reg_id)) {
                 id_array_.insert(reg_id);
             }
 
             reg_data_.template get<data_t<type_>>().insert(
-                reg_id, object_
+                reg_id, object
             );
         }
 
@@ -128,6 +128,10 @@ namespace pong {
             }
         }
 
+        template<typename type_>
+        constexpr bool is_reg() {
+            return reg_data_.template contains<type_>();
+        }
 
     };
 }

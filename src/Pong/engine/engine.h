@@ -125,7 +125,7 @@ namespace pong::engine {
 
 
     OutputTemplate(typename ...Args)
-    inline T* create_output(std::string name, Args ...args) {
+    inline T* create_output(std::string name, Args&& ...args) {
         auto output = new T(std::move(name), std::forward<Args>(args)...);
 
         Engine::get_instance()->add_output(
