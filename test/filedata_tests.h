@@ -5,13 +5,13 @@
 #ifndef PONG_TEST_FILEDATA_TESTS_H_
 #define PONG_TEST_FILEDATA_TESTS_H_
 
-#include "Pong/serializer/serialize_descriptors.h"
+#include "Pong/serializer/descriptor_serializers.h"
 
 #include "Pong/components/component.h"
 #include "Pong/map/map.h"
 
-#include "Pong/serializer/descriptors.h"
-#include "Pong/serializer/map_descriptor.h"
+#include "Pong/serializer/descriptor_asset.h"
+#include "Pong/serializer/descriptor_map.h"
 #include "Utils/logger.h"
 
 #include <iostream>
@@ -37,9 +37,9 @@ void test_save_serialize_data() {
     LOG_INFO(pong::serializer::ensure_file_name(description, "Hola"));
     LOG_INFO(pong::serializer::ensure_file_name(description, "Hola.asset"));
 
-    auto elem = pong::serializer::NodeData{{}, {}};
+//    auto elem = pong::serializer::NodeData{{}, {}};
 //    description.entity_data.push_back({elem});
-    description.actor_data.data.push_back({{}, elem});
+//    description.actor_data.data.push_back({{}, elem});
 
     pong::serializer::save_file(
             description,
@@ -64,7 +64,7 @@ void test_save_serialize_plane() {
     auto mesh_ = pong::Mesh{vertices, indices};
 
     auto odescriptor = pong::serializer::AssetDescriptor();
-    odescriptor.mesh_data.data.push_back({{1, {}}, mesh_});
+    odescriptor.data.data.shape_data.mesh_data.data.push_back({{1, {}}, mesh_});
 
     pong::serializer::save_file(
             odescriptor,

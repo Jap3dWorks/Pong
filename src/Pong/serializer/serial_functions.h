@@ -4,15 +4,19 @@
 
 #ifndef PONG_SRC_PONG_SERIALIZER_SERIAL_FUNCTIONS_H_
 #define PONG_SRC_PONG_SERIALIZER_SERIAL_FUNCTIONS_H_
+
+#include <iostream>
+#include <concepts>
+#include <type_traits>
+
+#include "Pong/serializer/header_data.h"
+#include "Pong/serializer/descriptor_base.h"
+
 #include "Pong/core/geometry_data.h"
 #include "Pong/serializer/serial_types.h"
 #include "Pong/config/config.h"
 #include "Pong/core/material.h"
 #include "Utils/type_conditions.h"
-
-#include <iostream>
-#include <concepts>
-#include <type_traits>
 
 #define SERIALIZABLE REFLECTABLE
 
@@ -26,20 +30,8 @@
     }
 
 
-#define REG_DESCRIPTOR(type_, version_) \
-template<> \
-struct descriptor_info<type_> { \
-    static inline constexpr Version version{version_}; \
-    static inline const char* type = #type_; \
-}; \
-template<> \
-struct descriptor_info<const type_> { \
-    static inline constexpr Version version{version_}; \
-    static inline const char* type = #type_; \
-};
-
-
 namespace pong::serializer {
+
     template<typename Archive>
     struct serialize_visitor {
         Archive &ar;
@@ -58,8 +50,7 @@ namespace pong::serializer {
         visit_each(x, serialize_visitor(ar));
     }
 
-    template<typename T>
-    struct descriptor_info {};
+
 
     template<typename Archive, typename Value>
     void serialize(Archive &ar, Value &value, const Version& version) {
@@ -289,6 +280,66 @@ namespace pong::serializer {
             }
         }
     };
+
+
+    template<typename T>
+    struct SaveLoadSize<Header<T>> {
+        using Type = Header<T>;
+
+        template<typename Archive>
+        static inline void save(Archive &ar, Type &value, const Version &version) {
+            serialize(ar, value, version);
+        }
+
+        template<typename Archive>
+        static inline void load(Archive &ar, Type &value, const Version &version) {
+            serialize(ar, value, version);
+        }
+
+        template<typename Archive>
+        static inline void size(Archive &ar, Type &value, const Version &version) {
+            ar += Type::header_size;
+        }
+
+        template<typename Archive>
+        static inline void jump(Archive &ar, Type &value, const Version &version) {
+            ar.get().seekg(Type::header_size, Archive::StreamType::cur);
+        }
+
+    };
+
+    template<typename T, typename U>
+    struct SaveLoadSize<HeadedData<T, U>> {
+        using Type = HeadedData<T, U>;
+
+        template<typename Archive>
+        static inline void save(Archive &ar, Type &value, const Version &version) {
+            serialize(ar, value.header, version);
+            serialize(ar, value.data, version);
+        }
+
+        template<typename Archive>
+        static inline void load(Archive &ar, Type &value, const Version &version) {
+            serialize(ar, value.header, version);
+            serialize(ar, value.data, version);
+        }
+
+        template<typename Archive>
+        static inline void size(Archive &ar, Type &value, const Version &version) {
+            auto new_ar = Archive();
+            serialize(new_ar, value.data, version);
+            value.header.data_size = new_ar.get();
+
+            ar += T::header_size + new_ar;
+        }
+
+        template<typename Archive>
+        static inline void jump(Archive &ar, Type &value, const Version &version) {
+            load(ar, value, version);
+        }
+
+    };
+
 
 }
 

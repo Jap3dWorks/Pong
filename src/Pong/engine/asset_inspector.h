@@ -11,7 +11,7 @@
 #include "Pong/core/geometry_data.h"
 #include "Pong/core/material.h"
 #include "Pong/serializer/header_data.h"
-#include "Pong/serializer/descriptors.h"
+#include "Pong/serializer/descriptor_asset.h"
 #include "Pong/map/map_logic.h"
 #include "Pong/map/map.h"
 
@@ -24,7 +24,7 @@
 
 namespace pong::engine {
     /**
-    * RegDataLocation represents where you can find the RegId associated data
+    * RegDataLocation represents where you can find the RegId associated shape_data
     * in the file system.
     */
 
@@ -86,7 +86,7 @@ namespace pong::engine {
 
                 }
 
-                auto mesh_iter = serializer::descriptor_data<
+                auto mesh_iter = serializer::DescriporData<
                     serializer::AssetDescriptor, Mesh>(descriptor);
                 for (auto &dt : mesh_iter) {
                     data_location_reg_.graphic_reg.insert_type<MeshDtLocation>(
@@ -94,7 +94,7 @@ namespace pong::engine {
                     );
                 }
 
-                auto curve_iter = serializer::descriptor_data<
+                auto curve_iter = serializer::DescriporData<
                     serializer::AssetDescriptor, Curve>(descriptor);
                 for (auto &dt : curve_iter) {
                     data_location_reg_.graphic_reg.insert_type<CurveDtLocation>(
@@ -102,7 +102,7 @@ namespace pong::engine {
                     );
                 }
 
-                auto material_iter = serializer::descriptor_data<
+                auto material_iter = serializer::DescriporData<
                     serializer::AssetDescriptor, Material>(descriptor);
                 for (auto &dt : material_iter) {
                 }

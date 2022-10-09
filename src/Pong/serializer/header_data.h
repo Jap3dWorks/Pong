@@ -5,17 +5,19 @@
 #ifndef PONG_SRC_PONG_SERIALIZER_HEADER_DATA_H_
 #define PONG_SRC_PONG_SERIALIZER_HEADER_DATA_H_
 
-#include "Pong/serializer/reflectable.h"
-#include "Pong/serializer/serial_functions.h"
-#include "Pong/serializer/serial_types.h"
 #include <vector>
 #include <string>
 #include <type_traits>
 #include <algorithm>
 
+#include "Pong/serializer/serial_types.h"
+#include "Pong/registers/reg_id.h"
+#include "Pong/config/config.h"
+
+
 namespace pong::serializer {
+
     struct FileHeader_t {};
-    struct ComponentHeader_t {};
 
     template<typename T>
     struct data_header_ {
@@ -24,10 +26,8 @@ namespace pong::serializer {
                 sizeof(DataSize)
         };
 
-        SERIALIZABLE (
-            FIELD(RegId, reg_id, 0),
-            FIELD(DataSize, data_size, 0)
-        )
+        RegId reg_id{0};
+        DataSize data_size{0};
 
         using Type = T;
     };
@@ -47,32 +47,15 @@ namespace pong::serializer {
         using Type = FileHeader_t;
     };
 
-//    template<>
-//    struct data_header_<ComponentHeader_t> {
-//        static constexpr DataSize header_size{
-//            (sizeof(DataSize) * 4)
-//        };
-//
-//        RegId reg_id{0};
-//        DataSize data_size{0};
-//        Version version{};
-//        size_t hash{};
-//
-//        using Type = ComponentHeader_t;
-//    };
-
-
     using FileHeader = data_header_<FileHeader_t>;
 
     template<typename T>
     using Header = data_header_<T>;
 
-//    using ComponentHeader = data_header_<ComponentHeader_t>;
-
-
     template<typename Archive, typename T>
     void serialize(Archive &ar, Header<T> &value, const Version &version) {
-        serialize_fields(ar, value);
+        ar & value.reg_id;
+        ar & value.data_size;
     }
 
     template<typename Archive>
@@ -82,14 +65,6 @@ namespace pong::serializer {
         ar & value.version;
         ar & value.type_name;
     }
-
-//    template<typename Archive>
-//    void serialize(Archive &ar, ComponentHeader &value, const Version &version) {
-//        ar & value.reg_id;
-//        ar & value.data_size;
-//        ar & value.version;
-//        ar & value.hash;
-//    }
 
     template<typename Header_, typename Data_, typename DataType_=Any_t>
     struct HeadedData {
@@ -103,161 +78,6 @@ namespace pong::serializer {
         Data_ &data{};
     };
 
-
-    template<typename T>
-    struct SaveLoadSize<Header<T>> {
-        using Type = Header<T>;
-
-        template<typename Archive>
-        static inline void save(Archive &ar, Type &value, const Version &version) {
-            serialize(ar, value, version);
-        }
-
-        template<typename Archive>
-        static inline void load(Archive &ar, Type &value, const Version &version) {
-            serialize(ar, value, version);
-        }
-
-        template<typename Archive>
-        static inline void size(Archive &ar, Type &value, const Version &version) {
-            ar += Type::header_size;
-        }
-
-        template<typename Archive>
-        static inline void jump(Archive &ar, Type &value, const Version &version) {
-            ar.get().seekg(Type::header_size, Archive::StreamType::cur);
-        }
-
-    };
-
-    template<typename T, typename U>
-    struct SaveLoadSize<HeadedData<T, U>> {
-        using Type = HeadedData<T, U>;
-
-        template<typename Archive>
-        static inline void save(Archive &ar, Type &value, const Version &version) {
-            serialize(ar, value.header, version);
-            serialize(ar, value.data, version);
-        }
-
-        template<typename Archive>
-        static inline void load(Archive &ar, Type &value, const Version &version) {
-            serialize(ar, value.header, version);
-            serialize(ar, value.data, version);
-        }
-
-        template<typename Archive>
-        static inline void size(Archive &ar, Type &value, const Version &version) {
-            auto new_ar = Archive();
-            serialize(new_ar, value.data, version);
-            value.header.data_size = new_ar.get();
-
-            ar += T::header_size + new_ar;
-        }
-
-        template<typename Archive>
-        static inline void jump(Archive &ar, Type &value, const Version &version) {
-            load(ar, value, version);
-        }
-
-    };
-
-    class SizeSerializer {
-    private:
-        DataSize size_{0};
-
-    public:
-        template<typename T>
-        auto &operator&(T &other) {
-            SaveLoadSize<T>::size(*this, other, {});
-            return *this;
-        }
-
-        template<typename T>
-        auto &operator>>(T &other) {
-            auto version = descriptor_info<T>::version;
-
-            serialize(*this, other, version);
-            return *this;
-        }
-
-        [[nodiscard]] auto get() const noexcept {
-            return size_;
-        }
-
-        auto clear() noexcept {
-            size_ = 0;
-        }
-
-        template<typename T>
-        SizeSerializer &operator+=(const T &other) {
-            size_ += other;
-            return *this;
-        }
-
-        template<typename T>
-        SizeSerializer operator+(const T &other) {
-            auto temp = size_ + other;
-            return temp;
-        }
-
-        template<typename T>
-        SizeSerializer &operator*=(const T &other) {
-            size_ *= other;
-            return *this;
-        }
-
-        template<typename T>
-        SizeSerializer operator*(const T &other) {
-            auto temp = *this;
-            temp += other;
-            return temp;
-        }
-
-        template<typename T>
-        requires (!std::is_same_v<T, SizeSerializer>)
-        friend T &operator+=(T &left, const SizeSerializer &right);
-
-        template<typename T>
-        requires (!std::is_same_v<T, SizeSerializer>)
-        friend T operator+(T &left, const SizeSerializer &right);
-
-        template<typename T>
-        requires (!std::is_same_v<T, SizeSerializer>)
-        friend T &operator*=(T &left, const SizeSerializer &right);
-
-        template<typename T>
-        requires (!std::is_same_v<T, SizeSerializer>)
-        friend T operator*(T &left, const SizeSerializer &right);
-    };
-
-    template<typename T>
-    requires (!std::is_same_v<T, SizeSerializer>)
-    T &operator+=(T &left, const SizeSerializer &right) {
-        left += right.size_;
-        return left;
-    }
-
-    template<typename T>
-    requires (!std::is_same_v<T, SizeSerializer>)
-    T operator+(T &left, const SizeSerializer &right) {
-        auto temp = left + right.size_;
-        return temp;
-    }
-
-    template<typename T>
-    requires (!std::is_same_v<T, SizeSerializer>)
-    T &operator*=(T &left, const SizeSerializer &right) {
-        left *= right.size_;
-        return left;
-    }
-
-    template<typename T>
-    requires (!std::is_same_v<T, SizeSerializer>)
-    T operator*(T &left, const SizeSerializer &right) {
-        auto temp = left*right.size_;
-        return temp;
-    }
 
 }
 

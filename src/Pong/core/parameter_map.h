@@ -36,6 +36,7 @@ namespace pong {
         virtual void *get() noexcept = 0;
     };
 
+
     template<typename T>
     class TypeValue : public BaseTypeValue {
     public:
@@ -49,10 +50,12 @@ namespace pong {
         explicit TypeValue(Args&& ...args) :
             value_(InternalType(std::forward<Args>(args)...)) {}
 
-    public:
-        TypeValue(const TypeValue &) = default;
+        TypeValue(const TypeValue &other):
+            value_(other.value_) {};
 
-        TypeValue &operator=(const TypeValue &) = delete;
+        TypeValue &operator=(const TypeValue & other) {
+            value_ = other.value_;
+        }
 
         TypeValue(TypeValue && other) noexcept :
             value_(std::move(other.value_)) {}
@@ -63,6 +66,7 @@ namespace pong {
 
         ~TypeValue() override = default;
 
+    public:
         void *get() noexcept override  {
             return (void *) &value_;
         }
@@ -71,13 +75,14 @@ namespace pong {
         friend class ParameterMap;
     };
 
+
     /**
      * ParameterMap is en essence an unordered_map<hash, Type()>, so each entry
      * of the class is the hash of the registered class, and an unique
      * instance of the registered class is stored as value.
-     * This class is been used for components storage, so each component has its own data structure storage
+     * This class is been used for components storage, so each component has its own shape_data structure storage
      * class instance.
-     * In the case above ParameterMap do not apply any restriction for parallelism id between data structures,
+     * In the case above ParameterMap do not apply any restriction for parallelism id between shape_data structures,
      * this means that a TransformComp can share id with a CameraComp.
      * */
     class ParameterMap {
@@ -124,9 +129,11 @@ namespace pong {
     public:
         ParameterMap() = default;
         ~ParameterMap() = default;
+        ParameterMap(const ParameterMap &other) = default;
 
-        ParameterMap(const ParameterMap &other) = delete;
-        ParameterMap &operator=(const ParameterMap &other) = delete;
+        ParameterMap &operator=(const ParameterMap &other) {
+            _data_map = other._data_map;
+        }
 
         ParameterMap(ParameterMap &&other) noexcept :
             _data_map(std::move(other._data_map)) {}

@@ -13,7 +13,7 @@
 
 #include "Pong/render/render.h"
 #include "Pong/core/outputs.h"
-#include "Pong/serializer/descriptors.h"
+#include "Pong/serializer/descriptor_asset.h"
 #include "Pong/engine/asset_inspector.h"
 #include "Pong/registers/reg_data_controller.h"
 

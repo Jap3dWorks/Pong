@@ -1,9 +1,11 @@
 //
-// Created by Jordi on 9/21/2022.
+// Created by Jordi on 10/9/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIALIZER_MAP_DESCRIPTOR_H_
-#define PONG_SRC_PONG_SERIALIZER_MAP_DESCRIPTOR_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_DATA_COMPONENTS_H_
+#define PONG_SRC_PONG_SERIALIZER_DATA_COMPONENTS_H_
+
+#include <iostream>
 
 #include <boost/preprocessor.hpp>
 #include <boost/mpl/at.hpp>
@@ -15,15 +17,13 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/repetition/repeat.hpp>
 
-
 #include "Pong/registers/sparse_set.h"
 #include "Pong/components/component.h"
-#include "Pong/serializer/descriptors.h"
-#include "Pong/map/map.h"
+#include "Pong/serializer/data_base.h"
+#include "Pong/serializer/descriptor_base.h"
 
 
 namespace pong::serializer {
-// https://metricpanda.com/rival-fortress-update-39-how-i-use-__counter__-to-localize-text-and-hash-strings-at-compile-time/
 
 
 #define prev_count_range_1(...)(1)
@@ -95,69 +95,69 @@ namespace pong::serializer {
 #define REVERSE_SEQ(v) prev_count_range_##v()
 
 #if defined(component_count_32)
-#define comp_seq REVERSE_SEQ(32)
+#define COMP_SEQ REVERSE_SEQ(32)
 #elif defined(component_count_31)
-#define comp_seq REVERSE_SEQ(31)
+#define COMP_SEQ REVERSE_SEQ(31)
 #elif defined(component_count_30)
-#define comp_seq REVERSE_SEQ(30)
+#define COMP_SEQ REVERSE_SEQ(30)
 #elif defined(component_count_29)
-#define comp_seq REVERSE_SEQ(29)
+#define COMP_SEQ REVERSE_SEQ(29)
 #elif defined(component_count_28)
-#define comp_seq REVERSE_SEQ(28)
+#define COMP_SEQ REVERSE_SEQ(28)
 #elif defined(component_count_27)
-#define comp_seq REVERSE_SEQ(27)
+#define COMP_SEQ REVERSE_SEQ(27)
 #elif defined(component_count_26)
-#define comp_seq REVERSE_SEQ(26)
+#define COMP_SEQ REVERSE_SEQ(26)
 #elif defined(component_count_25)
-#define comp_seq REVERSE_SEQ(25)
+#define COMP_SEQ REVERSE_SEQ(25)
 #elif defined(component_count_24)
-#define comp_seq REVERSE_SEQ(24)
+#define COMP_SEQ REVERSE_SEQ(24)
 #elif defined(component_count_23)
-#define comp_seq REVERSE_SEQ(23)
+#define COMP_SEQ REVERSE_SEQ(23)
 #elif defined(component_count_22)
-#define comp_seq REVERSE_SEQ(22)
+#define COMP_SEQ REVERSE_SEQ(22)
 #elif defined(component_count_21)
-#define comp_seq REVERSE_SEQ(21)
+#define COMP_SEQ REVERSE_SEQ(21)
 #elif defined(component_count_20)
-#define comp_seq REVERSE_SEQ(20)
+#define COMP_SEQ REVERSE_SEQ(20)
 #elif defined(component_count_19)
-#define comp_seq REVERSE_SEQ(19)
+#define COMP_SEQ REVERSE_SEQ(19)
 #elif defined(component_count_17)
-#define comp_seq REVERSE_SEQ(17)
+#define COMP_SEQ REVERSE_SEQ(17)
 #elif defined(component_count_16)
-#define comp_seq REVERSE_SEQ(16)
+#define COMP_SEQ REVERSE_SEQ(16)
 #elif defined(component_count_15)
-#define comp_seq REVERSE_SEQ(15)
+#define COMP_SEQ REVERSE_SEQ(15)
 #elif defined(component_count_14)
-#define comp_seq REVERSE_SEQ(14)
+#define COMP_SEQ REVERSE_SEQ(14)
 #elif defined(component_count_13)
-#define comp_seq REVERSE_SEQ(13)
+#define COMP_SEQ REVERSE_SEQ(13)
 #elif defined(component_count_12)
-#define comp_seq REVERSE_SEQ(12)
+#define COMP_SEQ REVERSE_SEQ(12)
 #elif defined(component_count_12)
-#define comp_seq REVERSE_SEQ(12)
+#define COMP_SEQ REVERSE_SEQ(12)
 #elif defined(component_count_11)
-#define comp_seq REVERSE_SEQ(11)
+#define COMP_SEQ REVERSE_SEQ(11)
 #elif defined(component_count_10)
-#define comp_seq REVERSE_SEQ(10)
+#define COMP_SEQ REVERSE_SEQ(10)
 #elif defined(component_count_9)
-#define comp_seq REVERSE_SEQ(9)
+#define COMP_SEQ REVERSE_SEQ(9)
 #elif defined(component_count_8)
-#define comp_seq REVERSE_SEQ(8)
+#define COMP_SEQ REVERSE_SEQ(8)
 #elif defined(component_count_7)
-#define comp_seq REVERSE_SEQ(7)
+#define COMP_SEQ REVERSE_SEQ(7)
 #elif defined(component_count_6)
-#define comp_seq REVERSE_SEQ(6)
+#define COMP_SEQ REVERSE_SEQ(6)
 #elif defined(component_count_5)
-#define comp_seq REVERSE_SEQ(5)
+#define COMP_SEQ REVERSE_SEQ(5)
 #elif defined(component_count_4)
-#define comp_seq REVERSE_SEQ(4)
+#define COMP_SEQ REVERSE_SEQ(4)
 #elif defined(component_count_3)
-#define comp_seq REVERSE_SEQ(3)
+#define COMP_SEQ REVERSE_SEQ(3)
 #elif defined(component_count_2)
-#define comp_seq REVERSE_SEQ(2)
+#define COMP_SEQ REVERSE_SEQ(2)
 #else
-#define comp_seq REVERSE_SEQ(1)
+#define COMP_SEQ REVERSE_SEQ(1)
 #endif
 
 
@@ -168,9 +168,8 @@ namespace pong::serializer {
 #define COMPONENT_ATTR(n, attrib, k, total) \
      SerializeDataT<component::COMPONENT_CLASS(n)> COMPONENT_FIELD(n){};
 
-
     struct ComponentData {
-        BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_ATTR, int, comp_seq);
+        BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_ATTR, int, COMP_SEQ);
     };
 
 
@@ -183,65 +182,27 @@ namespace pong::serializer {
 
     template<typename Archive>
     void serialize(Archive & ar, ComponentData & value, const Version &version) {
-        BOOST_PP_SEQ_FOR_EACH_I(SERIALIZE_FLD, int, comp_seq);
+        BOOST_PP_SEQ_FOR_EACH_I(SERIALIZE_FLD, int, COMP_SEQ);
         bool no_continue = false;
         ar & no_continue;
     }
 
-    class MapDescriptor : public BaseDescriptor {
-    public:
-        using DataType = HeadedData<FileHeader, ComponentData>;
-    public:
-        DataType data{};
-    };
-    REG_DESCRIPTOR(MapDescriptor, 1);
 
 
-    struct MapDescriptorData {
-        map::Map& map;
-        MapDescriptor& descriptor;
+#define IMPL_GET_COMPONENT_DATA_FLD(n, attrib, k, total) \
+    template<> \
+    struct GetDataField<ComponentData, component::COMPONENT_CLASS(n)> {         \
+        using DataType = ComponentData;\
+        using FieldType = component::COMPONENT_CLASS(n); \
+        static inline SerializeDataT<FieldType>& get(DataType &data_obj) { \
+            return data_obj.COMPONENT_FIELD(n); \
+        } \
     };
 
-
-#define DESCRIPTOR_TO_MAP(n, data, k, total) \
-    for(auto& head_dt: data.descriptor.data.data.COMPONENT_FIELD(n).data) { \
-        data.map.entity_reg.insert_type<component::COMPONENT_CLASS(n)>(head_dt.header.reg_id, head_dt.data);  \
-    }
+    BOOST_PP_SEQ_FOR_EACH_I(IMPL_GET_COMPONENT_DATA_FLD, int, COMP_SEQ);
 
 
-    map::Map to_map(MapDescriptor & map_descriptor) {
-        auto result = map::Map();
-        result.reg_id = map_descriptor.data.header.reg_id;
-
-        MapDescriptorData data = {result, map_descriptor};
-
-        BOOST_PP_SEQ_FOR_EACH_I(DESCRIPTOR_TO_MAP, data, comp_seq);
-
-        return result;
-    }
-
-
-#define COMPONENT_TO_DESCRIPTOR(n, data, k, total) \
-    auto& component_set_##n = data.map.entity_reg.get_types<component::COMPONENT_CLASS(n)>(); \
-    auto reg_iter_##n = to_sparse_set_id_iter(component_set_##n); \
-    auto & comp_dt_##n = data.descriptor.data.data.COMPONENT_FIELD(n); \
-    for (auto& reg_id: reg_iter_##n) { \
-        auto compo_##n = component_set_##n.at(reg_id); \
-        compo_##n.actor = reg_id;                  \
-        comp_dt_##n.data.push_back({{reg_id, 0}, std::move(compo_##n)}); \
-    }
-
-
-    MapDescriptor to_descriptor(map::Map & map) {
-        auto result = MapDescriptor();
-        result.data.header.reg_id = map.reg_id;
-        MapDescriptorData data = {map, result};
-
-        BOOST_PP_SEQ_FOR_EACH_I(COMPONENT_TO_DESCRIPTOR, data, comp_seq);
-
-        return result;
-    }
 
 }
 
-#endif //PONG_SRC_PONG_SERIALIZER_MAP_DESCRIPTOR_H_
+#endif //PONG_SRC_PONG_SERIALIZER_DATA_COMPONENTS_H_

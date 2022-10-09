@@ -2,15 +2,15 @@
 // Created by Jordi on 10/3/2022.
 //
 
-#ifndef PONG_SRC_PONG_SERIALIZER_SERIALIZE_DESCRIPTORS_H_
-#define PONG_SRC_PONG_SERIALIZER_SERIALIZE_DESCRIPTORS_H_
+#ifndef PONG_SRC_PONG_SERIALIZER_DESCRIPTOR_SERIALIZERS_H_
+#define PONG_SRC_PONG_SERIALIZER_DESCRIPTOR_SERIALIZERS_H_
 
 #include "Pong/serializer/reflectable.h"
 #include "Pong/components/component.h"
 #include "Pong/map/map.h"
 
-#include "Pong/serializer/descriptors.h"
-#include "Pong/serializer/map_descriptor.h"
+#include "Pong/serializer/descriptor_asset.h"
+#include "Pong/serializer/descriptor_map.h"
 
 namespace pong::serializer {
 
@@ -93,4 +93,4 @@ namespace pong::serializer {
 }
 
 
-#endif //PONG_SRC_PONG_SERIALIZER_SERIALIZE_DESCRIPTORS_H_
+#endif //PONG_SRC_PONG_SERIALIZER_DESCRIPTOR_SERIALIZERS_H_

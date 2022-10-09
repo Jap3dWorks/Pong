@@ -5,7 +5,7 @@
 #ifndef PONG_TEST_METAP_TESTS_H_
 #define PONG_TEST_METAP_TESTS_H_
 
-#include "Pong/serializer/component_serializer.h"
+#include "Pong/serializer/_dep/component_serializer.h"
 
 #include <utility>
 #include <unordered_map>

@@ -50,14 +50,14 @@ namespace pong::serializer {
 
         template<typename Descriptor>
         inline void update_descriptor_name(Descriptor& descriptor) {
-            strncpy((char*) descriptor.data.header.type_name,
-                    descriptor_info<Descriptor>::type,
-                    strlen(descriptor_info<Descriptor>::type));
+            strncpy((char*) descriptor.file_header.type_name,
+                    DescriptorInfo<Descriptor>::type,
+                    strlen(DescriptorInfo<Descriptor>::type));
         }
 
         template<typename Descriptor>
         inline void collect_version(std::optional<Descriptor *> descriptor) {
-            version = descriptor_info<Descriptor>::version;
+            version = DescriptorInfo<Descriptor>::version;
             if (descriptor) {
                 descriptor.value()->data.header.version = version;
             }
@@ -211,12 +211,102 @@ namespace pong::serializer {
     };
 
 
-//    class IComponentSerializer: public IBaseSerializer {
-//    SERIALIZER_COMMON(IComponentSerializer);
-//    IBASE_SERIALIZER_CONSTRUCTORS();
-//
-//
-//    };
+    class SizeSerializer {
+    private:
+        DataSize size_{0};
+
+    public:
+        template<typename T>
+        auto &operator&(T &other) {
+            SaveLoadSize<T>::size(*this, other, {});
+            return *this;
+        }
+
+        template<typename T>
+        auto &operator>>(T &other) {
+            auto version = DescriptorInfo<T>::version;
+
+            serialize(*this, other, version);
+            return *this;
+        }
+
+        [[nodiscard]] auto get() const noexcept {
+            return size_;
+        }
+
+        auto clear() noexcept {
+            size_ = 0;
+        }
+
+        template<typename T>
+        SizeSerializer &operator+=(const T &other) {
+            size_ += other;
+            return *this;
+        }
+
+        template<typename T>
+        SizeSerializer operator+(const T &other) {
+            auto temp = size_ + other;
+            return temp;
+        }
+
+        template<typename T>
+        SizeSerializer &operator*=(const T &other) {
+            size_ *= other;
+            return *this;
+        }
+
+        template<typename T>
+        SizeSerializer operator*(const T &other) {
+            auto temp = *this;
+            temp += other;
+            return temp;
+        }
+
+        template<typename T>
+        requires (!std::is_same_v<T, SizeSerializer>)
+        friend T &operator+=(T &left, const SizeSerializer &right);
+
+        template<typename T>
+        requires (!std::is_same_v<T, SizeSerializer>)
+        friend T operator+(T &left, const SizeSerializer &right);
+
+        template<typename T>
+        requires (!std::is_same_v<T, SizeSerializer>)
+        friend T &operator*=(T &left, const SizeSerializer &right);
+
+        template<typename T>
+        requires (!std::is_same_v<T, SizeSerializer>)
+        friend T operator*(T &left, const SizeSerializer &right);
+    };
+
+    template<typename T>
+    requires (!std::is_same_v<T, SizeSerializer>)
+    T &operator+=(T &left, const SizeSerializer &right) {
+        left += right.size_;
+        return left;
+    }
+
+    template<typename T>
+    requires (!std::is_same_v<T, SizeSerializer>)
+    T operator+(T &left, const SizeSerializer &right) {
+        auto temp = left + right.size_;
+        return temp;
+    }
+
+    template<typename T>
+    requires (!std::is_same_v<T, SizeSerializer>)
+    T &operator*=(T &left, const SizeSerializer &right) {
+        left *= right.size_;
+        return left;
+    }
+
+    template<typename T>
+    requires (!std::is_same_v<T, SizeSerializer>)
+    T operator*(T &left, const SizeSerializer &right) {
+        auto temp = left*right.size_;
+        return temp;
+    }
 
 
 }

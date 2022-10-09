@@ -15,3 +15,5 @@
 *.pyc
 /sandbox
 /.ignoreme
+/src/content/*
+

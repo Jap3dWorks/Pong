@@ -20,10 +20,6 @@ namespace pong {
 
         IdType id{0};
 
-//        RegId()=default;
-//        ~RegId()=default;
-//        RegId(IdType id_p) noexcept : id(id_p) {}
-
         static inline constexpr RegId from_index(IndexType index) {
             return RegId{index + 1};
         }
