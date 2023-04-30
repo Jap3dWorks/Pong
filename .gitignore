@@ -18,4 +18,5 @@
 /.ignoreme
 /src/content/*
 *.code-workspace
+environment.bat
 
