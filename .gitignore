@@ -1,6 +1,7 @@
 /.idea
 /.vscode
 /.emacs
+/.helix
 /Textures
 /examples_documentation
 /docs/sources.txt
@@ -16,4 +17,5 @@
 /sandbox
 /.ignoreme
 /src/content/*
+*.code-workspace
 
